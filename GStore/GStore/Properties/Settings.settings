@@ -1,0 +1,65 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GStore.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="AppFriendlyExceptionHandling" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GStoreDB" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionString&gt;Data Source=(LocalDb)\mssqllocaldb;Initial Catalog=GStore;Integrated Security=True;MultipleActiveResultSets=True;Application Name=EntityFramework&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Data Source=(LocalDb)\mssqllocaldb;Initial Catalog=GStore;Integrated Security=True;MultipleActiveResultSets=True;Application Name=EntityFramework</Value>
+    </Setting>
+    <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">EntityFrameworkCodeFirstProvider</Value>
+    </Setting>
+    <Setting Name="InitializeEFCodeFirstMigrateLatest" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="InitializeEFCodeFirstDropCreate" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AspNetIdentityNameOrConnectionString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GStore.Properties.Settings.GStoreDB</Value>
+    </Setting>
+    <Setting Name="AppEnableEmail" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppEnableSMS" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppEnablePageViewLog" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="IdentityEnableNewUserRegisteredBroadcast" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="IdentitySendGridMailFromEmail" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">admin@domain.com</Value>
+    </Setting>
+    <Setting Name="IdentitySendGridMailFromName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GStore System Administrator</Value>
+    </Setting>
+    <Setting Name="IdentitySendGridMailAccount" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SendGridAccount</Value>
+    </Setting>
+    <Setting Name="IdentitySendGridMailPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SendGridPassword</Value>
+    </Setting>
+    <Setting Name="IdentityTwilioSid" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">twilio sid</Value>
+    </Setting>
+    <Setting Name="IdentityTwilioToken" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">twilio token</Value>
+    </Setting>
+    <Setting Name="IdentityTwilioFromPhone" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">8885551212</Value>
+    </Setting>
+    <Setting Name="IdentityTwoFactorSignature" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Sent From GStore Security Admin admin@domain.com</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

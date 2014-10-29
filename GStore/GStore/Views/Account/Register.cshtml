@@ -1,0 +1,74 @@
+﻿@model GStore.Models.RegisterViewModel
+@{
+	ViewBag.Title = "Register";
+}
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	<h4>Please register to get site updates and full access to the site.</h4>
+	<hr />
+	@Html.ValidationSummary("", new { @class = "text-danger" })
+	<div class="form-group">
+		@Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.TextBoxFor(m => m.Email, new { @class = "form-control", MaxLength = 150 })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(m => m.FullName, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.TextBoxFor(m => m.FullName, new { @class = "form-control", MaxLength = 150 })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.PasswordFor(m => m.Password, new { @class = "form-control", MaxLength = 50 })
+		</div>
+	</div>
+	<div class="form-group">
+		@Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", MaxLength = 50 })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(m => m.NotifyOfSiteUpdates, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.EditorFor(m => m.NotifyOfSiteUpdates, new { @class = "form-control" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(m => m.SendMeMoreInfo, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.EditorFor(m => m.SendMeMoreInfo, new { @class = "form-control" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(m => m.SignupNotes, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.TextAreaFor(m => m.SignupNotes, 10, 60, new { @class = "form-control", MaxLength = 1000 })
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" class="btn btn-primary" value="Register" />
+		</div>
+	</div>
+}
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('input:text:first').focus();
+	})
+</script>
+}

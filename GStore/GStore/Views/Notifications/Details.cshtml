@@ -1,0 +1,233 @@
+﻿@model GStore.Models.Notification
+@using GStore.AppHtmlHelpers
+
+@{
+	ViewBag.Title = "Message Details";
+}
+<style>
+	.bg-adminonly {
+		background-color: #313131;
+	}
+</style>
+<h2>Message Details</h2>
+
+<div>
+	<hr />
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.To)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.To)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.From)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.From)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Subject)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Subject)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Importance)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Importance)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Read)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Read)
+		</dd>
+
+		<dt>
+			Sent
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			<hr />
+			@Html.DisplayNameFor(model => model.Message)
+		</dt>
+
+		<dd>
+			<hr />
+			@Html.DisplayFor(model => model.Message)
+		</dd>
+
+		@if (Model.NotificationLinks.Count() != 0)
+		{
+			<dt>
+				<hr />
+				Links [@Model.NotificationLinks.Count()]
+			</dt>
+
+			<dd>
+				<hr />
+				@{
+			if (Model.NotificationLinks.Count() == 0)
+			{
+				@:None
+				}
+			else
+			{
+				int counter = 0;
+				foreach (GStore.Data.NotificationLink link in Model.NotificationLinks.OrderBy(link => link.Order))
+				{
+					counter++;
+					if (counter != 1)
+					{
+						@:<br />
+						}
+						@Html.RenderNotificationLink(link, counter)
+				}
+			}
+				}
+			</dd>
+		}
+
+		<dt>
+			<hr />
+			&nbsp;
+		</dt>
+		<dd>
+			<hr />
+			@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-info col-xs-4 col-sm-3", style = "margin-bottom: 1em" })
+			<span class="col-xs-2 col-sm-1 text-center">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+			@Html.ActionLink("Delete", "Delete", new { id = Model.NotificationId }, new { @class = "btn btn-danger col-xs-6 col-sm-3", style = "margin-bottom: 1em" })
+			@if (Model.Read)
+			{
+				<span class="hidden-xs col-sm-1 text-center">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+				@Html.ActionLink("Mark As Unread", "MarkAsUnread", new { id = Model.NotificationId }, new { @class = "btn btn-warning col-xs-12 col-sm-3", style = "margin-bottom: 1em" })
+			}
+			@if (User.IsInRole("SystemAdmin"))
+			{
+				@:<span class="hidden-xs col-sm-1 text-center" style="margin-bottom: 1em">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+				@Html.ActionLink("Edit", "Edit", new { id = Model.NotificationId }, new { @class = "btn btn-success col-xs-12 col-sm-3" })
+			}
+		</dd>
+
+		@if (User.IsInRole("SystemAdmin"))
+		{
+			<dt class="bg-adminonly">
+				<hr />
+				@Html.DisplayNameFor(model => model.NotificationId)
+			</dt>
+			<dd class="bg-adminonly">
+				<hr />
+				@Html.DisplayFor(model => model.NotificationId)
+			</dd>
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.FromUserProfileId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.FromUserProfileId)
+			</dd>
+
+			<dt class="bg-adminonly">
+				To UserProfileId
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfileId)
+			</dd>
+			<dt class="bg-adminonly">
+				To (Profile.UserName)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfile.UserName)
+			</dd>
+
+			<dt class="bg-adminonly">
+				To (Profile.FullName)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfile.FullName)
+			</dd>
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UrlHost)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UrlHost)
+			</dd>
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.BaseUrl)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.BaseUrl)
+			</dd>
+
+
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.CreateUserId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.CreateUserId)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.CreateDateTimeUtc)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UpdateUserId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UpdateUserId)
+			</dd>
+		}
+	</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<hr />
+<p>@Html.ActionLink("Back to My Messages", "Index", "Notifications")</p>

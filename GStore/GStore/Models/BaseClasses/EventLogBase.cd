@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="GStore.Models.BaseClasses.EventLogBase">
+    <Position X="6" Y="4" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>gAAQAAAAAwgQAICABIAAAApBAAAAAAABCQAFIBAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\EventLogBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.SystemEvent">
+    <Position X="0.5" Y="10.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAgAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.SecurityEvent">
+    <Position X="2.75" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAgAAAAABAAAAAQAAAAA=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.PageViewEvent">
+    <Position X="5" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.UserActionEvent">
+    <Position X="7.25" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAQ=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.FileNotFoundLog">
+    <Position X="9.5" Y="10.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BadRequest">
+    <Position X="12" Y="10.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.AuditFieldsUserProfileOptional">
+    <Position X="5.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAQQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

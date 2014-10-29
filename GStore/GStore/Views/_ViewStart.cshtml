@@ -1,0 +1,24 @@
+﻿@{
+	ControllerBase controller = this.ViewContext.Controller;
+	GStore.Models.StoreFront storeFront = null;
+	
+	//page controller sets its own layout dynamically, for others use store front settings
+	if (controller is GStore.Controllers.BaseClass.BaseController && !(controller is GStore.Controllers.PageController))
+	{
+		GStore.Controllers.BaseClass.BaseController baseController = controller as GStore.Controllers.BaseClass.BaseController;
+		storeFront = baseController.CurrentStoreFront;
+		
+		if (baseController is GStore.Controllers.AccountController)
+		{
+			Layout = "Shared/_Layout_" + storeFront.AccountLayout + ".cshtml";
+		}
+		else if (baseController is GStore.Controllers.ManageController)
+		{
+			Layout = "Shared/_Layout_" + storeFront.ManageLayout + ".cshtml";
+		}
+		else if (baseController is GStore.Controllers.NotificationsController)
+		{
+			Layout = "Shared/_Layout_" + storeFront.NotificationsLayout + ".cshtml";
+		}
+	}
+}

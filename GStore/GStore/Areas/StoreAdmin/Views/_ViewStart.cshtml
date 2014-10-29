@@ -1,0 +1,10 @@
+﻿@{
+	ControllerBase controller = this.ViewContext.Controller;
+	GStore.Models.StoreFront storeFront = null;
+	if (controller is GStore.Controllers.BaseClass.BaseController)
+	{
+		GStore.Controllers.BaseClass.BaseController baseController = controller as GStore.Controllers.BaseClass.BaseController;
+		storeFront = baseController.CurrentStoreFront;
+		Layout = storeFront.AdminLayout;
+	}
+}

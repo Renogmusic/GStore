@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+	using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+	{
+		@Html.AntiForgeryToken()
+
+		<ul class="nav navbar-nav navbar-right">
+			<li>
+				<a href="@Url.Action("Index", "Manage")" title="My Profile">
+					^^My Profile - ^^ @User.Identity.GetUserName()
+				</a>
+			</li>
+		@{
+			if (User.IsInRole("AdminMenuItem1") || User.IsInRole("SystemAdmin"))
+			{
+				<li>
+					@Html.ActionLink("^^Admin Menu Item 1^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 1" })
+				</li>
+			}
+			if (User.IsInRole("AdminMenuItem2") || User.IsInRole("SystemAdmin"))
+			{
+				<li>
+					@Html.ActionLink("^^Admin Menu Item 2^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 2" })
+				</li>
+			}
+			if (User.IsInRole("AdminMenuItem3") || User.IsInRole("SystemAdmin"))
+			{
+				<li>
+					@Html.ActionLink("^^Admin Menu Item 3^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 3" })
+				</li>
+			}
+		}
+
+
+			<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+		</ul>
+	}
+}
+else
+{
+	<ul class="nav navbar-nav navbar-right">
+		<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+		<li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+	</ul>
+}

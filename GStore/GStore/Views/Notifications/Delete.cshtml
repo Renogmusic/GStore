@@ -1,0 +1,182 @@
+﻿@model GStore.Models.Notification
+
+@{
+	ViewBag.Title = "Delete Message";
+}
+<style>
+	.bg-adminonly {
+		background-color: #313131;
+	}
+</style>
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Notification</h4>
+    <hr />
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.To)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.To)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.From)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.From)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Subject)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Subject)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Importance)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Importance)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Read)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Read)
+		</dd>
+
+		<dt>
+			Sent
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			<hr />
+			@Html.DisplayNameFor(model => model.Message)
+		</dt>
+
+		<dd>
+			<hr />
+			@Html.Raw(Html.Encode(Model.Message).Replace("\n", "<br/>\n"))
+		</dd>
+
+		<dt>&nbsp;</dt>
+		<dd>
+			<div class="form-actions no-color">
+				<hr />
+				@using (Html.BeginForm())
+				{
+					@Html.AntiForgeryToken()
+					<input type="submit" value="Delete" class="btn btn-danger" accesskey="z" />
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+					@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning" })
+				}
+			</div>
+		</dd>
+
+		@if (User.IsInRole("SystemAdmin"))
+		{
+			<dt class="bg-adminonly">
+				<hr />
+				@Html.DisplayNameFor(model => model.NotificationId)
+			</dt>
+			<dd class="bg-adminonly">
+				<hr />
+				@Html.DisplayFor(model => model.NotificationId)
+			</dd>
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.FromUserProfileId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.FromUserProfileId)
+			</dd>
+
+			<dt class="bg-adminonly">
+				To UserProfileId
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfileId)
+			</dd>
+			<dt class="bg-adminonly">
+				To (Profile.UserName)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfile.UserName)
+			</dd>
+
+			<dt class="bg-adminonly">
+				To (Profile.FullName)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UserProfile.FullName)
+			</dd>
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UrlHost)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UrlHost)
+			</dd>
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.BaseUrl)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.BaseUrl)
+			</dd>
+
+
+
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.CreateUserId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.CreateUserId)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.CreateDateTimeUtc)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+			</dd>
+
+			<dt class="bg-adminonly">
+				@Html.DisplayNameFor(model => model.UpdateUserId)
+			</dt>
+			<dd class="bg-adminonly">
+				@Html.DisplayFor(model => model.UpdateUserId)
+			</dd>
+		}
+
+	</dl>
+
+</div>
+<hr />
+<div>
+	@Html.ActionLink("Back to My Messages", "Index")
+</div>

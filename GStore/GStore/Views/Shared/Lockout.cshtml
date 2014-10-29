@@ -1,0 +1,15 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+	ViewBag.Title = "Locked Out";
+}
+
+<hgroup>
+	<h1 class="text-danger">Sorry, this account is temporarily locked out.</h1>
+</hgroup>
+
+<p class="text-danger">
+	For security reasons, this account has been locked out for 5 minutes.<br />
+	Please try again later, or
+	@Html.ActionLink("click here to reset your password", "ForgotPassword", "Account")
+</p>

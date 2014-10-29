@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="GStore.Models.BaseClasses.ClientLiveRecord">
+    <Position X="12.75" Y="6.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAEEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\ClientLiveRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientLiveRecordExtensions" Collapsed="true">
+    <Position X="22" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\ClientLiveRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientRecord">
+    <Position X="13.25" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
+    <Position X="12.75" Y="0.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAQQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.Page">
+    <Position X="7" Y="9.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AIICEAAAAAAiAAAAAAAAAAQAAQABAAAACUAAAABAQAA=</HashCode>
+      <FileName>Models\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.PageSection">
+    <Position X="10.5" Y="9.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>CAACAAAAAAAQAAACAAQAAAAACQAAEAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Models\PageSection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.StoreBinding">
+    <Position X="14.75" Y="9.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>gAMCEAAAAAAAAAAAAAAAAAIAiAAIAAAAEAAAAAAAAgA=</HashCode>
+      <FileName>Models\StoreBinding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.StoreFront">
+    <Position X="17.75" Y="9.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>QAAAEYAAACAZAAEwAAAAAQQAAIQAAAAQAAEAAABQBEg=</HashCode>
+      <FileName>Models\StoreFront.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

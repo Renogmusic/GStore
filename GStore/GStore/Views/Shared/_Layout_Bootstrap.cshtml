@@ -1,0 +1,141 @@
+﻿@using GStore.AppHtmlHelpers
+@using GStore.Controllers
+@using GStore.Controllers.BaseClass
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@{
+		GStore.Controllers.PageController pageController = null;
+		GStore.Models.StoreFront storeFront = null;
+		GStore.Models.Client client = null;
+		GStore.Models.Page page = null;
+
+		if (this.ViewContext.Controller is BaseController)
+		{
+			BaseController baseController = this.ViewContext.Controller as BaseController;
+			storeFront = baseController.CurrentStoreFront;
+			client = baseController.CurrentClient;
+		}
+
+		if (this.ViewContext.Controller is PageController)
+		{
+			pageController = this.ViewContext.Controller as PageController;
+			page = pageController.CurrentPage;
+		}
+		string title = storeFront.Name;
+		if ((page != null) && !string.IsNullOrWhiteSpace(page.PageTitle))
+		{
+			title = page.PageTitle + " - " + title;
+		}
+
+	}
+	<title>@title</title>
+
+	<meta name="application-name" content="@(storeFront.MetaApplicationName)" />
+	<meta name="msapplication-TileColor" content="#@(storeFront.MetaApplicationTileColor)" />
+	<meta name="msapplication-square70x70logo" content="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/tiny.png" />
+	<meta name="msapplication-square150x150logo" content="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/square.png" />
+	<meta name="msapplication-wide310x150logo" content="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/wide.png" />
+	<meta name="msapplication-square310x310logo" content="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/large.png" />
+
+	<link rel="shortcut icon" href="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/favicon.ico" type="image/x-icon">
+	<meta name="description" content="@(storeFront.MetaDescription)" />
+	<meta name="keywords" content="@(storeFront.MetaKeywords)" />
+	<link rel="apple-touch-icon" href="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/Logo.png" />
+	<link rel="apple-touch-startup-image" href="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/Logo.png" />
+
+	@Styles.Render(
+		"~/Content/Site.css",
+		"~/Content/Themes/" + storeFront.Theme.FolderName + "/Bootstrap.css",
+				"~/Content/Clients/" + client.Folder + "/" + storeFront.Folder + "/Styles/Styles.css")
+	@*@Styles.Render("~/Content/css")*@
+	@Scripts.Render("~/bundles/modernizr")
+	<script>
+		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+	</script>
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/jqueryval")
+	@Scripts.Render("~/bundles/jqueryui")
+	@Scripts.Render("~/bundles/bootstrap")
+	<script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+	<script src="~/signalr/hubs"></script>
+	@Scripts.Render("~/Scripts/App/script.js")
+</head>
+<body>
+	@if (page != null)
+	{
+		@Html.Raw(page.BodyTopScriptTag)
+	}
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<img id="TinyLogo" class="TinyLogo" src="~/Content/Clients/@(client.Folder)/@(storeFront.Folder)/Images/Logo/menu.png" alt="@(storeFront.Name)" />
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="~/" class = "navbar-brand"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li>@Html.ActionLink("^^Menu Item 1 Text^^", "^^MenuItem1ActionTarget^^", "^^MenuItem1ControllerTarget^^")</li>
+					<li>@Html.ActionLink("^^Menu Item 2 Text^^", "^^MenuItem2ActionTarget^^", "^^MenuItem2ControllerTarget^^")</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							^^Menu Item 3 Text^^<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">sub item 1</a></li>
+							<li><a href="#">sub item 2</a></li>
+							<li class="divider"></li>
+							<li><a href="#">sub item 3</a></li>
+							<li class="divider"></li>
+						</ul>
+					</li>
+					<li>@Html.ActionLink("^^Menu Item 4 Text^^", "^^MenuItem4ActionTarget^^", "^^MenuItem4ControllerTarget^^")</li>
+					<li>@Html.ActionLink("^^Menu Item 5 Text^^", "^^MenuItem5ActionTarget^^", "^^MenuItem5ControllerTarget^^")</li>
+				</ul>
+				@Html.Partial("_LoginPartial")
+			</div>
+		</div>
+	</div>
+	<div class="container body-content">
+		<!-- top alert container for dynamic alerts-->
+		<div id="usermessagecontainer" style="padding-top: 2em"></div>
+		@RenderBody()
+		<hr />
+		<div id="usermessagebottomcontainer"></div>
+		<footer>
+			<div class="row">
+				<div class="col-sm-4 text-center">
+					&copy; RenoGMusic <a href="mailto:renogmusic@yahoo.com" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">renogmusic@yahoo.com</a>
+				</div>
+				<div class="col-sm-4 text-center">
+					@Html.ActionLink("Register to get site updates and cool stuff!", "Register", "Account")
+				</div>
+				<div class="col-sm-4 text-center">
+					<span id="ActiveUsers"> - </span>
+				</div>
+			</div>
+		</footer>
+	</div>
+
+	@RenderSection("scripts", required: false)
+
+	@Html.RenderUserMessages()
+	@Html.RenderUserMessagesBottom()
+	@Html.RenderAnnouncements()
+	@Html.RenderGaEvents()
+	@if (page != null)
+	{
+		@Html.Raw(page.BodyBottomScriptTag)
+	}
+</body>
+
+
+</html>

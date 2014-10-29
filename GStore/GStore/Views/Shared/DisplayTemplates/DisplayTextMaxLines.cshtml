@@ -1,0 +1,64 @@
+﻿@model string
+@{
+	///this display template shows text up to a maximum number of lines, then shows "...more" if the text is too long
+	///To incorporate long wrapping lines, LineLength is used to determine how many lines the text might wrap to
+
+	int? maxLines = (int?)ViewData["MaxLines"];
+	int? lineLength = (int?)ViewData["LineLength"];
+	
+	if (!maxLines.HasValue || maxLines < 1) { maxLines = 4;}
+	if (!lineLength.HasValue || lineLength < 1) { lineLength = 40;}
+	
+	if (string.IsNullOrEmpty(Model))
+	{
+		return;
+	}
+
+	System.Text.StringBuilder outputHtml = new System.Text.StringBuilder();
+	
+	string[] linesByBreaks = Model.Split('\n');
+	int lineCount = 0;
+	foreach (string lineText in linesByBreaks)
+	{
+		lineCount++;
+		if (lineCount > maxLines)
+		{
+
+			outputHtml.AppendLine(" ...more");
+			break;
+		}
+
+		string line = lineText.Replace("\r", string.Empty);
+		if (line.Length > lineLength)
+		{
+			
+			//line is long, count it as extra lines
+			while (line.Length > lineLength.Value)
+			{
+				string nextLine = line.Substring(0, lineLength.Value);
+				line = line.Substring(lineLength.Value);
+				outputHtml.Append(nextLine);
+				if (lineCount >= maxLines)
+				{
+					break;
+				}
+				lineCount++;
+			}
+
+			if (lineCount >= maxLines)
+			{
+				outputHtml.AppendLine(" ...more");
+				break;
+			}
+			outputHtml.AppendLine(Html.Encode(line) + "<br/>");
+			lineCount++;
+		}
+		else
+		{
+			outputHtml.AppendLine(Html.Encode(line) + "<br/>");
+		}
+
+	}
+		
+	
+}@Html.Raw(outputHtml.ToString())
