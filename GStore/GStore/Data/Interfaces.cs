@@ -36,18 +36,25 @@ namespace GStore.Data
 
 		int SaveChanges();
 		int SaveChangesDirect();
+		int SaveChangesEx(bool updateAuditableRecords, bool runEmailNotifications, bool runSmsNotifications, bool updateCategoryCounts);
 
 		IGStoreRepository<Models.BadRequest> BadRequests { get; }
 		IGStoreRepository<Models.Client> Clients { get; }
+		IGStoreRepository<Models.ClientUserRole> ClientUserRoles { get; }
 		IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get; }
+		IGStoreRepository<Models.NavBarItem> NavBarItems { get; }
 		IGStoreRepository<Models.Notification> Notifications { get; }
 		IGStoreRepository<Models.NotificationLink> NotificationLinks { get; }
 		IGStoreRepository<Models.Page> Pages { get; }
+		IGStoreRepository<Models.PageSection> PageSections { get; }
 		IGStoreRepository<Models.PageTemplate> PageTemplates { get; }
 		IGStoreRepository<Models.PageTemplateSection> PageTemplateSections { get; }
 		IGStoreRepository<Models.PageViewEvent> PageViewEvents { get; }
+		IGStoreRepository<Models.Product> Products { get; }
+		IGStoreRepository<Models.ProductCategory> ProductCategories { get; }
 		IGStoreRepository<Models.SecurityEvent> SecurityEvents { get; }
 		IGStoreRepository<Models.StoreFront> StoreFronts { get; }
+		IGStoreRepository<Models.StoreFrontUserRole> StoreFrontUserRoles { get; }
 		IGStoreRepository<Models.StoreBinding> StoreBindings { get; }
 		IGStoreRepository<Models.SystemEvent> SystemEvents { get; }
 		IGStoreRepository<Models.Theme> Themes { get; }

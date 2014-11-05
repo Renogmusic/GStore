@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using GStore.Models;
 using GStore.Models.Extensions;
+using GStore.Models.ViewModels;
 
 namespace GStore.Controllers
 {
@@ -115,7 +116,7 @@ namespace GStore.Controllers
 					return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
 				case SignInStatus.Failure:
 				default:
-					UserProfile userProfileFailure = GStoreDb.GetUserProfileByEmail(model.Email);
+					UserProfile userProfileFailure = GStoreDb.GetUserProfileByEmail(model.Email, false);
 					GStoreDb.LogSecurityEvent_LoginFailed(this.HttpContext, RouteData, model.Email, model.Password, userProfileFailure, this);
 					//todo: handle login attempt with unknown email - maybe ask user to sign up, or let us know if spam?
 					ModelState.AddModelError("", "Invalid login attempt.");
@@ -141,6 +142,7 @@ namespace GStore.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = new Identity.AspNetIdentityUser(model.Email) { UserName = model.Email, Email = model.Email };
+				user.TwoFactorEnabled = Properties.Settings.Default.IdentityEnableTwoFactorAuth;
 				var result = await UserManager.CreateAsync(user, model.Password);
 				if (result.Succeeded)
 				{
@@ -163,7 +165,7 @@ namespace GStore.Controllers
 					newProfile.Active = true;
 					newProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 					newProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-					newProfile.StoreFront = ctx.GetCurrentStoreFront(Request, true);
+					newProfile.StoreFront = this.CurrentStoreFront;
 					ctx.UserProfiles.Add(newProfile);
 					ctx.SaveChanges();
 

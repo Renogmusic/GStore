@@ -1,0 +1,81 @@
+﻿@model GStore.Models.ViewModels.MenuViewModel
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+<!-- NavBar Catalog Menu-->
+@{
+	if (Model.StoreFront.NavBarCatalogMaxLevels > 6)
+	{
+		//this code item only iterates up to 6 levels
+		Model.StoreFront.NavBarCatalogMaxLevels = 6;
+	}
+	if (Model.StoreFront.NavBarCatalogMaxLevels > 0)
+	{
+		foreach (TreeNode<ProductCategory> level1Category in Model.CategoryTree)
+		{
+			//Level 1 (root)
+			bool level1HasChildMenuItems  = level1Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
+			@Html.CatalogMenuItemStart(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+			if (level1HasChildMenuItems)
+			{
+				@Html.CatalogMenuChildContainerStart(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+				foreach (TreeNode<ProductCategory> level2Category in level1Category.ChildNodes)
+				{
+					//Level 2
+					bool level2HasChildMenuItems = level2Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
+					@Html.CatalogMenuItemStart(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+					if (level2HasChildMenuItems) 
+					{
+						@Html.CatalogMenuChildContainerStart(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+						foreach (TreeNode<ProductCategory> level3Category in level2Category.ChildNodes)
+						{
+							//Level 3
+							bool level3HasChildMenuItems = level3Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
+							@Html.CatalogMenuItemStart(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+							if (level3HasChildMenuItems)
+							{
+								@Html.CatalogMenuChildContainerStart(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+								foreach (TreeNode<ProductCategory> level4Category in level3Category.ChildNodes)
+								{
+									//Level 4
+									bool level4HasChildMenuItems = level4Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
+									@Html.CatalogMenuItemStart(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+									if (level4HasChildMenuItems)
+									{
+										@Html.CatalogMenuChildContainerStart(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+										foreach (TreeNode<ProductCategory> level5Category in level4Category.ChildNodes)
+										{
+											//Level 5
+											bool level5HasChildMenuItems = level5Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
+											@Html.CatalogMenuItemStart(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+											if (level5HasChildMenuItems)
+											{
+												@Html.CatalogMenuChildContainerStart(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+												foreach (TreeNode<ProductCategory> level6Category in level5Category.ChildNodes)
+												{
+													//Level 6
+													@Html.CatalogMenuItemStart(level6Category, 6, Model.StoreFront.NavBarCatalogMaxLevels)
+													@Html.CatalogMenuItemEnd(level6Category, 6, Model.StoreFront.NavBarCatalogMaxLevels)
+												}
+												@Html.CatalogMenuChildContainerEnd(level1Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+											}
+											@Html.CatalogMenuItemEnd(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+										}
+										@Html.CatalogMenuChildContainerEnd(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+									}
+									@Html.CatalogMenuItemEnd(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+								}
+								@Html.CatalogMenuChildContainerEnd(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+							}
+							@Html.CatalogMenuItemEnd(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+						}
+						@Html.CatalogMenuChildContainerEnd(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+					}
+					@Html.CatalogMenuItemEnd(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+				}
+				@Html.CatalogMenuChildContainerEnd(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+			}
+			@Html.CatalogMenuItemEnd(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+		}
+	}
+}

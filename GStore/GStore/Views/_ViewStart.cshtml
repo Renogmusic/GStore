@@ -20,5 +20,11 @@
 		{
 			Layout = "Shared/_Layout_" + storeFront.NotificationsLayout + ".cshtml";
 		}
+		else if (baseController is GStore.Controllers.CatalogController)
+		{
+			Layout = "Shared/_Layout_" + storeFront.CatalogLayout + ".cshtml";
+		}
+		
+
 	}
 }

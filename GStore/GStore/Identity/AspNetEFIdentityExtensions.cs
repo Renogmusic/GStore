@@ -24,5 +24,15 @@ namespace GStore.Identity
 			}
 			return profile;
 		}
+
+		public static List<AspNetIdentityUser> AspNetIdentityUsers (this AspNetIdentityRole role)
+		{
+			return role.Users.Select(r => r.User).ToList();
+		}
+
+		public static List<AspNetIdentityRole> AspNetIdentityRoles (this AspNetIdentityUser user)
+		{
+			return user.Roles.Select(r => r.Role).ToList();
+		}
 	}
 }

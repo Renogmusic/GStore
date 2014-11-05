@@ -1,5 +1,9 @@
 ﻿@model GStore.Models.Page
+
 @using GStore.AppHtmlHelpers
+@using GStore.Models;
+@using GStore.Models.Extensions;
+
 @{
 	ViewBag.Title = Model.PageTitle;
 	GStore.Models.Page page = Model;
@@ -12,11 +16,8 @@
 	<br />
 	Client [@page.Client.ClientId]: @page.Client.Name
 	<br />
-	Store Admin [@page.StoreFront.Admin.UserProfileId]: @page.StoreFront.Admin.FullName &lt; @page.StoreFront.Admin.Email &gt;
-	<br />
 	Account Admin [@page.StoreFront.AccountAdmin.UserProfileId]: @page.StoreFront.AccountAdmin.FullName &lt; @page.StoreFront.AccountAdmin.Email &gt;
 	<br />
 	Registered Notify [@page.StoreFront.RegisteredNotify.UserProfileId]: @page.StoreFront.RegisteredNotify.FullName &lt; @page.StoreFront.RegisteredNotify.Email &gt;
 	<br />
 	Welcome Messages From [@page.StoreFront.WelcomePerson.UserProfileId]: @page.StoreFront.WelcomePerson.FullName &lt; @page.StoreFront.WelcomePerson.Email &gt;
-

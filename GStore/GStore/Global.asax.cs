@@ -30,6 +30,10 @@ namespace GStore
 					{
 						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreEFDbContextInitializerDropCreate());
 					}
+					else
+					{
+						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreDbContextInitializerCreateIfNotExists());
+					}
 					break;
 				case Data.RepositoryProviderEnum.ListProvider:
 					//can't really set an initializer on a list, so it's done at repository creation
@@ -43,15 +47,15 @@ namespace GStore
 			Exception ex = Server.GetLastError();
 			if (ex is HttpException)
 			{
-				GStore.ExceptionHandler.HandleHttpException(ex as HttpException, true, HttpContext.Current, null, null);
+				Exceptions.ExceptionHandler.HandleHttpException(ex as HttpException, true, HttpContext.Current, null, null);
 			}
 			else if (ex is ApplicationException)
 			{
-				GStore.ExceptionHandler.HandleAppException(ex as ApplicationException, true, HttpContext.Current, null, null);
+				Exceptions.ExceptionHandler.HandleAppException(ex as ApplicationException, true, HttpContext.Current, null, null);
 			}
 			else
 			{
-				GStore.ExceptionHandler.HandleUnknownException(ex, true, HttpContext.Current, null, null);
+				Exceptions.ExceptionHandler.HandleUnknownException(ex, true, HttpContext.Current, null, null);
 			}
 		}
 	}

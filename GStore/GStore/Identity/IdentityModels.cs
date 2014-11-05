@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Identity
 {
@@ -47,6 +48,11 @@ namespace GStore.Identity
 			// Add custom user claims here
 			return userIdentity;
 		}
+
+		public bool IsInRole(string roleName)
+		{
+			return Roles.Any(r=>r.Role.Name.ToLower() == roleName.ToLower());
+		}
 	}
 
 	public class AspNetIdentityRole : Microsoft.AspNet.Identity.EntityFramework.IdentityRole<string, AspNetIdentityUserRole>
@@ -85,6 +91,13 @@ namespace GStore.Identity
 			base.UserId = userId;
 			base.RoleId = RoleId;
 		}
+
+		[ForeignKey("UserId")]
+		public virtual AspNetIdentityUser User { get; set; }
+
+		[ForeignKey("RoleId")]
+		public virtual AspNetIdentityRole Role { get; set; }
+
 	}
 
 	public class AspNetIdentityUserClaim : Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>
@@ -285,6 +298,10 @@ namespace GStore.Identity
 
 		public Identity.AspNetIdentityUser AspNetIdentityUser(GStore.Models.UserProfile userProfile)
 		{
+			if (userProfile == null)
+			{
+				throw new ApplicationException("User profile is null, cannot check identity user with null profile");
+			}
 			Identity.AspNetIdentityContext ctx = new Identity.AspNetIdentityContext();
 			Identity.AspNetIdentityUser user = ctx.Users.SingleOrDefault(usr => usr.Id == userProfile.UserId);
 			if (user == null)

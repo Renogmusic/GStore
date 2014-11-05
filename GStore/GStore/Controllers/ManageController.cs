@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using GStore.Models;
 using GStore.Models.Extensions;
+using GStore.Models.ViewModels;
 
 namespace GStore.Controllers
 {

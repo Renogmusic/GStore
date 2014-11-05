@@ -1,0 +1,32 @@
+﻿@model GStore.Models.ViewModels.MenuViewModel
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+<!-- NavBar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a href="~/" class="navbar-brand">
+				@(Html.Encode(Model.StoreFront.Name))&nbsp;
+				<img id="TinyLogo" class="TinyLogo"
+					 src="~/Images/Logo/menu.png"
+					 alt="@(Html.AttributeEncode(Model.StoreFront.Name))"
+					 title="@(Html.AttributeEncode(Model.StoreFront.Name))" />
+		</a>
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+	</div>
+	<div class="navbar-collapse collapse">
+		<ul class="nav navbar-nav">
+			@Html.Partial("_NavBarCatalogPartial", Model)
+			@Html.Partial("_NavBarMenuPartial", Model)
+		</ul>
+		@Html.Partial("_LoginPartial")
+	</div>
+</div>
+</div>
+

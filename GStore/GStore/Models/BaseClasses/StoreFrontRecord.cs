@@ -13,5 +13,10 @@ namespace GStore.Models.BaseClasses
 		[ForeignKey("StoreFrontId")]
 		public virtual StoreFront StoreFront { get; set; }
 
+		public string StoreFrontVirtualDirectoryToMap()
+		{
+			return this.ClientVirtualDirectoryToMap() + "/StoreFronts/" + HttpUtility.UrlEncode(this.StoreFront.Folder);
+		}
+
 	}
 }

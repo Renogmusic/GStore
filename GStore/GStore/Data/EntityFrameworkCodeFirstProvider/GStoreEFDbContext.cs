@@ -14,6 +14,96 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 	public class GStoreEFDbContext : DbContext, IGstoreDb
 	{
+		#region IGStore interface methods
+
+		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreEFEntity<Models.BadRequest>(this); } }
+		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreEFEntity<Models.Client>(this); } }
+		public IGStoreRepository<Models.ClientUserRole> ClientUserRoles { get { return new GenericGStoreEFEntity<Models.ClientUserRole>(this); } }
+		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreEFEntity<Models.FileNotFoundLog>(this); } }
+		public IGStoreRepository<Models.NavBarItem> NavBarItems { get { return new GenericGStoreEFEntity<Models.NavBarItem>(this); } }
+		public IGStoreRepository<Models.Notification> Notifications { get { return new GenericGStoreEFEntity<Models.Notification>(this); } }
+		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreEFEntity<Models.NotificationLink>(this); } }
+		public IGStoreRepository<Models.Page> Pages { get { return new GenericGStoreEFEntity<Models.Page>(this); } }
+		public IGStoreRepository<Models.PageSection> PageSections { get { return new GenericGStoreEFEntity<Models.PageSection>(this); } }
+		public IGStoreRepository<Models.PageTemplate> PageTemplates { get { return new GenericGStoreEFEntity<Models.PageTemplate>(this); } }
+		public IGStoreRepository<Models.PageTemplateSection> PageTemplateSections { get { return new GenericGStoreEFEntity<Models.PageTemplateSection>(this); } }
+		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreEFEntity<Models.PageViewEvent>(this); } }
+		public IGStoreRepository<Models.Product> Products { get { return new GenericGStoreEFEntity<Models.Product>(this); } }
+		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreEFEntity<Models.ProductCategory>(this); } }
+		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreEFEntity<Models.SecurityEvent>(this); } }
+		public IGStoreRepository<Models.StoreBinding> StoreBindings { get { return new GenericGStoreEFEntity<Models.StoreBinding>(this); } }
+		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreEFEntity<Models.StoreFront>(this); } }
+		public IGStoreRepository<Models.StoreFrontUserRole> StoreFrontUserRoles { get { return new GenericGStoreEFEntity<Models.StoreFrontUserRole>(this); } }
+		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreEFEntity<Models.SystemEvent>(this); } }
+		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreEFEntity<Models.Theme>(this); } }
+		public IGStoreRepository<Models.UserActionEvent> UserActionEvents { get { return new GenericGStoreEFEntity<Models.UserActionEvent>(this); } }
+		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreEFEntity<Models.UserProfile>(this); } }
+
+		#endregion
+
+		#region Table DBSets for model creation
+
+		//Tables: note table name is used from attribute on class model to create tables
+		//Interface; for repository if new tables are added, be sure to add them to repository interface
+		public virtual DbSet<BadRequest> BadRequestsTable { get; set; }
+		public virtual DbSet<Client> ClientsTable { get; set; }
+		public virtual DbSet<ClientUserRole> ClientUserRolesTable { get; set; }
+		public virtual DbSet<FileNotFoundLog> FileNotFoundLogsTable { get; set; }
+		public virtual DbSet<NavBarItem> NavBarItemsTable { get; set; }
+		public virtual DbSet<Notification> NotificationsTable { get; set; }
+		public virtual DbSet<NotificationLink> NotificationLinksTable { get; set; }
+		public virtual DbSet<Page> PagesTable { get; set; }
+		public virtual DbSet<PageSection> PageSectionsTable { get; set; }
+		public virtual DbSet<PageTemplate> PageTemplatesTable { get; set; }
+		public virtual DbSet<PageTemplateSection> PageTemplateSectionsTable { get; set; }
+		public virtual DbSet<PageViewEvent> PageViewEventsTable { get; set; }
+		public virtual DbSet<Product> ProductsTable { get; set; }
+		public virtual DbSet<ProductCategory> ProductCategoriesTable { get; set; }
+		public virtual DbSet<SecurityEvent> SecurityEventsTable { get; set; }
+		public virtual DbSet<SystemEvent> SystemEventsTable { get; set; }
+		public virtual DbSet<StoreBinding> StoreBindingsTable { get; set; }
+		public virtual DbSet<StoreFront> StoreFrontsTable { get; set; }
+		public virtual DbSet<StoreFrontUserRole> StoreFrontUserRolesTable { get; set; }
+		public virtual DbSet<Theme> ThemesTable { get; set; }
+		public virtual DbSet<UserActionEvent> UserActionEventsTable { get; set; }
+		public virtual DbSet<UserProfile> UserProfilesTable { get; set; }
+
+		#endregion
+
+		#region IGStoreDb Repository Interface
+
+		public IGstoreDb NewContext()
+		{
+			return new GStoreEFDbContext(UserName, CachedStoreFront, CachedUserProfile);
+		}
+
+		/// <summary>
+		/// Creates a new db context with a specified user name, erases user cache on the new context
+		/// </summary>
+		/// <param name="userName"></param>
+		/// <returns></returns>
+		public IGstoreDb NewContext(string userName)
+		{
+			return new GStoreEFDbContext(userName, CachedStoreFront, null);
+		}
+
+		/// <summary>
+		/// Creates a new db context using specified user name, cached store front and cached user profile to pre-load cache
+		/// </summary>
+		/// <param name="userName"></param>
+		/// <param name="cachedStoreFront"></param>
+		/// <param name="cachedUserProfile"></param>
+		/// <returns></returns>
+		public IGstoreDb NewContext(string userName, Models.StoreFront cachedStoreFront, Models.UserProfile cachedUserProfile)
+		{
+			return new GStoreEFDbContext(userName, cachedStoreFront, cachedUserProfile);
+		}
+
+		public IGstoreDb GStoreDb { get { return this; } }
+
+		#endregion
+
+
 		public string UserName { get; set; }
 		public Models.StoreFront CachedStoreFront { get; set; }
 
@@ -56,73 +146,6 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			this.CachedUserProfile = cachedUserProfile;
 		}
 
-		//Tables: note table name is used from attribute on class model to create tables
-		//Interface; for repository if new tables are added, be sure to add them to repository interface
-		public virtual DbSet<BadRequest> BadRequestsTable { get; set; }
-		public virtual DbSet<Client> ClientsTable { get; set; }
-		public virtual DbSet<FileNotFoundLog> FileNotFoundLogsTable { get; set; }
-		public virtual DbSet<Notification> NotificationsTable { get; set; }
-		public virtual DbSet<NotificationLink> NotificationLinksTable { get; set; }
-		public virtual DbSet<PageViewEvent> PageViewEventsTable { get; set; }
-		public virtual DbSet<Page> PagesTable { get; set; }
-		public virtual DbSet<SecurityEvent> SecurityEventsTable { get; set; }
-		public virtual DbSet<SystemEvent> SystemEventsTable { get; set; }
-		public virtual DbSet<StoreBinding> StoreBindingsTable { get; set; }
-		public virtual DbSet<StoreFront> StoreFrontsTable { get; set; }
-		public virtual DbSet<Theme> ThemesTable { get; set; }
-		public virtual DbSet<UserActionEvent> UserActionEventsTable { get; set; }
-		public virtual DbSet<UserProfile> UserProfilesTable { get; set; }
-
-		#region IGStoreDb Repository Interface
-
-		public IGstoreDb NewContext()
-		{
-			return new GStoreEFDbContext(UserName, CachedStoreFront, CachedUserProfile);
-		}
-
-		/// <summary>
-		/// Creates a new db context with a specified user name, erases user cache on the new context
-		/// </summary>
-		/// <param name="userName"></param>
-		/// <returns></returns>
-		public IGstoreDb NewContext(string userName)
-		{
-			return new GStoreEFDbContext(userName, CachedStoreFront, null);
-		}
-
-		/// <summary>
-		/// Creates a new db context using specified user name, cached store front and cached user profile to pre-load cache
-		/// </summary>
-		/// <param name="userName"></param>
-		/// <param name="cachedStoreFront"></param>
-		/// <param name="cachedUserProfile"></param>
-		/// <returns></returns>
-		public IGstoreDb NewContext(string userName, Models.StoreFront cachedStoreFront, Models.UserProfile cachedUserProfile)
-		{
-			return new GStoreEFDbContext(userName, cachedStoreFront, cachedUserProfile);
-		}
-
-		public IGstoreDb GStoreDb { get { return this; } }
-
-		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreEFEntity<Models.BadRequest>(this); } }
-		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreEFEntity<Models.Client>(this); } }
-		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreEFEntity<Models.FileNotFoundLog>(this); } }
-		public IGStoreRepository<Models.Notification> Notifications { get { return new GenericGStoreEFEntity<Models.Notification>(this); } }
-		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreEFEntity<Models.NotificationLink>(this); } }
-		public IGStoreRepository<Models.Page> Pages { get { return new GenericGStoreEFEntity<Models.Page>(this); } }
-		public IGStoreRepository<Models.PageTemplate> PageTemplates { get { return new GenericGStoreEFEntity<Models.PageTemplate>(this); } }
-		public IGStoreRepository<Models.PageTemplateSection> PageTemplateSections { get { return new GenericGStoreEFEntity<Models.PageTemplateSection>(this); } }
-		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreEFEntity<Models.PageViewEvent>(this); } }
-		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreEFEntity<Models.SecurityEvent>(this); } }
-		public IGStoreRepository<Models.StoreBinding> StoreBindings { get { return new GenericGStoreEFEntity<Models.StoreBinding>(this); } }
-		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreEFEntity<Models.StoreFront>(this); } }
-		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreEFEntity<Models.SystemEvent>(this); } }
-		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreEFEntity<Models.Theme>(this); } }
-		public IGStoreRepository<Models.UserActionEvent> UserActionEvents { get { return new GenericGStoreEFEntity<Models.UserActionEvent>(this); } }
-		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreEFEntity<Models.UserProfile>(this); } }
-
-		#endregion
-
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
@@ -161,12 +184,6 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				.HasMany(sf => sf.UserProfiles)
 				.WithOptional(up => up.StoreFront)
 				.HasForeignKey(up => up.StoreFrontId)
-				.WillCascadeOnDelete(false);
-
-			modelBuilder.Entity<StoreFront>()
-				.HasRequired(s => s.Admin)
-				.WithMany(u => u.AdminStoreFronts)
-				.HasForeignKey(fk => fk.Admin_UserProfileId) 
 				.WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<StoreFront>()
@@ -232,7 +249,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		/// <returns></returns>
 		public int SaveChangesDirect()
 		{
-			return SaveChangesInternal(false, false, false);
+			return SaveChangesEx(false, false, false, false);
 		}
 
 		/// <summary>
@@ -241,31 +258,58 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		/// <returns></returns>
 		public override int SaveChanges()
 		{
-			return SaveChangesInternal(true, true, true);
+			return SaveChangesEx(true, true, true, true);
 		}
 
-		private int SaveChangesInternal(bool UpdateAuditableRecords, bool runEmailNotifications, bool runSmsNotifications)
+		/// <summary>
+		/// Runs Savechanges on the context, plus other automatic options, defaults are all true
+		/// </summary>
+		/// <param name="updateAuditableRecords"></param>
+		/// <param name="runEmailNotifications"></param>
+		/// <param name="runSmsNotifications"></param>
+		/// <param name="updateCategoryCounts"></param>
+		/// <returns></returns>
+		public int SaveChangesEx(bool updateAuditableRecords, bool runEmailNotifications, bool runSmsNotifications, bool updateCategoryCounts)
 		{
 			ChangeTracker.DetectChanges();
 			List<Notification> notificationsToProcess = new List<Notification>();
+			List<StoreFront> storeFrontsToRecalculate = new List<StoreFront>();
 
 			if (ChangeTracker.HasChanges())
 			{
 				foreach (DbEntityEntry item in ChangeTracker.Entries())
 				{
 
-					if (UpdateAuditableRecords && item.Entity is Models.BaseClasses.AuditFieldsAllRequired)
+					if (updateAuditableRecords && item.Entity is Models.BaseClasses.AuditFieldsAllRequired)
 					{
 						Models.BaseClasses.AuditFieldsAllRequired record = item.Entity as Models.BaseClasses.AuditFieldsAllRequired;
 						UserProfile userProfile = this.CachedUserProfile;
 						record.Update(userProfile);
 					}
 
-					if (UpdateAuditableRecords && item.Entity is Models.BaseClasses.AuditFieldsUserProfileOptional)
+					if (updateAuditableRecords && item.Entity is Models.BaseClasses.AuditFieldsUserProfileOptional)
 					{
 						Models.BaseClasses.AuditFieldsUserProfileOptional recordOptional = item.Entity as Models.BaseClasses.AuditFieldsUserProfileOptional;
 						UserProfile userProfileOptional = this.CachedUserProfile;
 						recordOptional.Update(userProfileOptional);
+					}
+
+					if (updateCategoryCounts && item.Entity is Models.Product)
+					{
+						StoreFront storeFront = ((Product)item.Entity).StoreFront;
+						if (!storeFrontsToRecalculate.Contains(storeFront))
+						{
+							storeFrontsToRecalculate.Add(storeFront);
+						}
+					}
+
+					if (updateCategoryCounts && item.Entity is Models.ProductCategory)
+					{
+						StoreFront storeFront = ((ProductCategory)item.Entity).StoreFront;
+						if (!storeFrontsToRecalculate.Contains(storeFront))
+						{
+							storeFrontsToRecalculate.Add(storeFront);
+						}
 					}
 
 					//new notification, process email and sms notification 
@@ -336,11 +380,19 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				throw exNew;
 			}
 
-			if (notificationsToProcess.Count() != 0)
+			if (notificationsToProcess.Count != 0)
 			{
 				foreach (Notification item in notificationsToProcess)
 				{
-					Extensions.NotificationExtensions.ProcessEmailAndSmsNotifications(this, item, runEmailNotifications, runSmsNotifications);
+					Models.Extensions.NotificationExtensions.ProcessEmailAndSmsNotifications(this, item, runEmailNotifications, runSmsNotifications);
+				}
+			}
+
+			if (storeFrontsToRecalculate.Count != 0)
+			{
+				foreach (StoreFront item in storeFrontsToRecalculate)
+				{
+					Models.Extensions.GStoreDBExtensions.RecalculateProductCategoryActiveCount(this, item);
 				}
 			}
 

@@ -1,0 +1,135 @@
+﻿#TinyLogo {
+	height: 40px;
+	width: 40px;
+}
+.navbar-brand
+{
+	float: none;
+}
+
+@media (max-width: 767px) {
+	.CategoryTopNavItem{
+		display: block;
+		text-align: center;
+	}
+	.block-xs {
+		display: block;
+	}
+	.text-left-xs {
+		text-align: left;
+	}
+	.text-right-xs {
+		text-align: right;
+	}
+	.text-center-xs {
+		text-align: center;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.CategoryTopNavItem{
+		display: block;
+		text-align: center;
+	}
+	.block-sm {
+		display: block;
+	}
+	.text-left-sm {
+		text-align: left;
+	}
+	.text-right-sm {
+		text-align: right;
+	}
+	.text-center-sm {
+		text-align: center;
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+	.CategoryTopNavItem{
+		display: block;
+		text-align: center;
+	}
+	.block-md {
+		display: block;
+	}
+
+	.text-left-md {
+		text-align: left;
+	}
+	.text-right-md {
+		text-align: right;
+	}
+	.text-center-md {
+		text-align: center;
+	}
+}
+
+@media (min-width: 1200px) {
+	.block-lg {
+		display: block;
+	}
+	.text-left-lg {
+		text-align: left;
+	}
+	.text-right-lg {
+		text-align: right;
+	}
+	.text-center-lg {
+		text-align: center;
+	}
+}
+
+.block
+{
+	display: block;
+}
+
+
+.CategoryListImage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	min-height: 100px;
+	min-width: 100px;
+}
+
+.CategoryListImageLink {
+}
+
+.CategoryListTextLink {
+}
+
+.CategoryListContainer {
+	text-align: center;
+}
+
+body {
+	text-align: center;
+	/*padding-bottom: 20px;*/
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 3em;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+	white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+	max-width: 700px;
+}
+
+.dl-horizontal {
+	padding-left: 10px;
+}

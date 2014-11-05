@@ -7,6 +7,7 @@ using System.Net;
 using GStore.Data;
 using GStore.Models.Extensions;
 using GStore.Models;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Controllers.BaseClass
 {
@@ -144,6 +145,16 @@ namespace GStore.Controllers.BaseClass
 			throw new HttpException((int)HttpStatusCode.NotFound, statusDescription ?? "");
         }
 
+		protected HttpUnauthorizedResult HttpUnauthorized(string statusDescription = null)
+		{
+			throw new HttpException((int)System.Net.HttpStatusCode.Unauthorized, statusDescription ?? "");
+		}
+
+		protected HttpUnauthorizedResult HttpForbidden(string statusDescription = null)
+		{
+			throw new HttpException((int)System.Net.HttpStatusCode.Forbidden, statusDescription ?? "");
+		}
+
 		protected class HttpStatusCodeResult : ActionResult
 		{
 			public HttpStatusCodeResult(HttpStatusCode code)
@@ -155,11 +166,6 @@ namespace GStore.Controllers.BaseClass
 			{
 				throw new NotImplementedException();
 			}
-		}
-
-        protected HttpUnauthorizedResult HttpUnauthorized(string statusDescription = null)
-        {
-			throw new HttpException((int)System.Net.HttpStatusCode.Unauthorized, statusDescription ?? "");
 		}
 
 		private void ExceptionHandler(ExceptionContext filterContext)
@@ -177,7 +183,7 @@ namespace GStore.Controllers.BaseClass
 				if (filterContext.Exception is HttpCompileException)
 				{
 					HttpCompileException httpCompileEx = filterContext.Exception as HttpCompileException;
-					GStore.ExceptionHandler.HandleHttpCompileException(httpCompileEx, false, true, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
+					Exceptions.ExceptionHandler.HandleHttpCompileException(httpCompileEx, false, true, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					filterContext.ExceptionHandled = true;
 					exceptionLogged = true;
 					return;
@@ -185,7 +191,7 @@ namespace GStore.Controllers.BaseClass
 				else if (filterContext.Exception is HttpParseException)
 				{
 					HttpParseException httpParseEx = filterContext.Exception as HttpParseException;
-					GStore.ExceptionHandler.HandleHttpParseException(httpParseEx, false, true, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
+					Exceptions.ExceptionHandler.HandleHttpParseException(httpParseEx, false, true, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					filterContext.ExceptionHandled = true;
 					exceptionLogged = true;
 					return;
@@ -193,7 +199,7 @@ namespace GStore.Controllers.BaseClass
 				else if (filterContext.Exception is HttpException)
 				{
 					HttpException httpEx = filterContext.Exception as HttpException;
-					GStore.ExceptionHandler.HandleHttpException(httpEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
+					Exceptions.ExceptionHandler.HandleHttpException(httpEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					filterContext.ExceptionHandled = true;
 					return;
 				}

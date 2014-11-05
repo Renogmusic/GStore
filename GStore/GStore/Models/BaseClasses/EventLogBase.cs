@@ -36,6 +36,26 @@ namespace GStore.Models.BaseClasses
 		public string FullName { get; set; }
 		public string Message { get; set; }
 
+		/// <summary>
+		/// Returns a string of common information for an event
+		/// </summary>
+		/// <returns></returns>
+		public string SimpleInfo(int maxMessageLength = 30)
+		{
+			return "-Source: " + Source
+				+ " -Message: " + (Message.Length > maxMessageLength ? Message.Substring(0, maxMessageLength) + "...more" : Message)
+				+ " -RawUrl: " + RawUrl
+				+ " -Controller: " + Controller
+				+ " -ActionName: " + ActionName
+				+ " -ActionParameters: " + ActionParameters
+				+ " -ClientId: " + (ClientId.HasValue ? ClientId.ToString() : "(null)")
+				+ " -StoreFrontId: " + (StoreFrontId.HasValue ? StoreFrontId.ToString() : "(null)")
+				+ " -UserName: " + UserName
+				+ " -Method: " + HttpMethod
+				+ " -UrlReferrer: " + UrlReferrer
+				+ " -UserAgent: " + UserAgent;
+		}
+
 		public void SetBasicFields(HttpContextBase httpContext, RouteData routeData, string source, string message, bool anonymous, UserProfile profile, Controllers.BaseClass.BaseController controller)
 		{
 			string siteId = httpContext.ApplicationInstance.Server.MachineName
@@ -71,7 +91,7 @@ namespace GStore.Models.BaseClasses
 				this.ActionName = string.Empty;
 				this.ActionParameters = string.Empty;
 			}
-
+ 
 			this.ServerName = httpContext.Server.MachineName;
 			this.ApplicationPath = httpContext.Request.ApplicationPath;
 			this.HostName = httpContext.Request.Url.Host;

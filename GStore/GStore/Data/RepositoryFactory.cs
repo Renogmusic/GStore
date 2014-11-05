@@ -74,7 +74,7 @@ namespace GStore.Data
 				case RepositoryProviderEnum.ListProvider :
 					//todo: note ListProvider uses a single static list, no copies or real separate contexts
 					_listDb = new Data.ListProvider.ListContext();
-					Extensions.SeedDataExtensions.AddSeedData(_listDb);
+					SeedDataExtensions.AddSeedData(_listDb);
 					return _listDb;
 				//todo: allow for other repositories, perhaps by class or project name; and config mapping here
 				//Example: pull in a provider that takes some lists, some ef, some web services, some whoknowswhats

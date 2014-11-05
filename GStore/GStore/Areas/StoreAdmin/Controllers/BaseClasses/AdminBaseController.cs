@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GStore.Controllers.BaseClass;
+using GStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,8 +8,9 @@ using System.Web.Mvc;
 
 namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 {
-	[Authorize(Roles = "AccountAdmin,NotificationAdmin,StoreAdmin,ClientAdmin,SystemAdmin")]
+	[UserHasAnyAdminPermission]
 	public class AdminBaseController : GStore.Controllers.BaseClass.BaseController
 	{
+		
 	}
 }

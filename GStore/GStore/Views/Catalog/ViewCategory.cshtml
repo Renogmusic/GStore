@@ -1,0 +1,28 @@
+﻿@model GStore.Models.ViewModels.CatalogViewModel
+@using GStore.AppHtmlHelpers;
+@using GStore.Models.Extensions;
+@using GStore.Models;
+@{
+	if (Model.CurrentCategoryOrNull == null)
+	{
+		throw new ApplicationException("Model.CurrentCategoryOrNull is null, set in controller for this page");
+	}
+	if (Model.CurrentCategoryNodeOrNull == null)
+	{
+		throw new ApplicationException("Model.CurrentCategoryNodeOrNull is null, problem finding category in tree. Check view CatalogViewModel.");
+	}
+
+	ViewBag.Title = Model.CurrentCategoryOrNull.Name;
+
+	@Html.Partial("_CategoryListingPartial", Model)
+
+	List<Product> products = Model.CurrentProductsListOrNull;
+	if (products != null)
+	{
+		@Html.Partial("_ProductListingPartial", Model)
+	}
+}
+
+
+
+

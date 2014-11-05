@@ -6,13 +6,23 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 	{
 		protected override void Seed(GStoreEFDbContext context)
 		{
-			Extensions.SeedDataExtensions.AddSeedData(context.GStoreDb);
+			SeedDataExtensions.AddSeedData(context.GStoreDb);
 			base.Seed(context);
 		}
 	}
 
 	class GStoreDbContextInitializerMigrateLatest : MigrateDatabaseToLatestVersion<GStoreEFDbContext, Migrations.Configuration>
 	{
+		//migration configuration will automatically call Seed
+	}
+
+	class GStoreDbContextInitializerCreateIfNotExists:System.Data.Entity.CreateDatabaseIfNotExists<GStoreEFDbContext>
+	{
+		protected override void Seed(GStoreEFDbContext context)
+		{
+			SeedDataExtensions.AddSeedData(context.GStoreDb);
+			base.Seed(context);
+		}
 	}
 
 }

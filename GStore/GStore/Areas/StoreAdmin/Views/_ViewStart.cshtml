@@ -5,6 +5,6 @@
 	{
 		GStore.Controllers.BaseClass.BaseController baseController = controller as GStore.Controllers.BaseClass.BaseController;
 		storeFront = baseController.CurrentStoreFront;
-		Layout = storeFront.AdminLayout;
+		Layout = "~/Views/Shared/_Layout_" + storeFront.AdminLayout + ".cshtml";
 	}
 }

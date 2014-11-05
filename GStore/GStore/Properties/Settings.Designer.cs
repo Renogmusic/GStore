@@ -25,10 +25,19 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppFriendlyExceptionHandling {
             get {
                 return ((bool)(this["AppFriendlyExceptionHandling"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppUseFileNotFoundImage {
+            get {
+                return ((bool)(this["AppUseFileNotFoundImage"]));
             }
         }
         
@@ -184,6 +193,15 @@ namespace GStore.Properties {
         public string IdentityTwoFactorSignature {
             get {
                 return ((string)(this["IdentityTwoFactorSignature"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IdentityEnableTwoFactorAuth {
+            get {
+                return ((bool)(this["IdentityEnableTwoFactorAuth"]));
             }
         }
     }

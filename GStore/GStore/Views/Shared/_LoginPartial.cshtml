@@ -7,32 +7,17 @@
 
 		<ul class="nav navbar-nav navbar-right">
 			<li>
-				<a href="@Url.Action("Index", "Manage")" title="My Profile">
-					^^My Profile - ^^ @User.Identity.GetUserName()
+				<a href="@Url.Action("Index", "Manage")" title="My Account">
+					My Account <small>( @User.Identity.GetUserName() )</small>
 				</a>
 			</li>
-		@{
-			if (User.IsInRole("AdminMenuItem1") || User.IsInRole("SystemAdmin"))
+			@if (User.IsInRole("StoreAdmin") || User.IsInRole("SystemAdmin"))
 			{
+			//if user can admin stores, show store admin menu
 				<li>
-					@Html.ActionLink("^^Admin Menu Item 1^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 1" })
+					@Html.ActionLink("Store Admin", "Index", "StoreAdmin", new { Area = "StoreAdmin" }, htmlAttributes: new { title = "Store Admin" })
 				</li>
 			}
-			if (User.IsInRole("AdminMenuItem2") || User.IsInRole("SystemAdmin"))
-			{
-				<li>
-					@Html.ActionLink("^^Admin Menu Item 2^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 2" })
-				</li>
-			}
-			if (User.IsInRole("AdminMenuItem3") || User.IsInRole("SystemAdmin"))
-			{
-				<li>
-					@Html.ActionLink("^^Admin Menu Item 3^^", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Admin Menu Item 3" })
-				</li>
-			}
-		}
-
-
 			<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
 		</ul>
 	}

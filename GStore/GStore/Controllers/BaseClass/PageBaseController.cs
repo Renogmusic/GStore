@@ -27,7 +27,7 @@ namespace GStore.Controllers.BaseClass
 					catch(Exceptions.DynamicPageNotFoundException dnfException)
 					{
 						string message = dnfException.Message;
-						HttpNotFound("Page Not Found");
+						HttpNotFound("Page Not Found for url: " + dnfException.Url);
 					}
 					catch (Exception ex)
 					{

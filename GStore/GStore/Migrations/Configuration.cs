@@ -14,7 +14,7 @@ namespace GStore.Migrations
         }
 		protected override void Seed(Data.EntityFrameworkCodeFirstProvider.GStoreEFDbContext context)
 		{
-			GStore.Data.Extensions.SeedDataExtensions.AddSeedData(context.GStoreDb);
+			GStore.Data.SeedDataExtensions.AddSeedData(context.GStoreDb);
 			base.Seed(context);
 		}
     }

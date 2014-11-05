@@ -40,7 +40,14 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		public virtual bool IsEmpty()
 		{
-			return !_dbSet.Any();
+			try
+			{
+				return !_dbSet.Any();
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException("IsEmpty database query failed. Check database initializer and database connection string", ex);
+			}
 		}
 
 		public virtual IQueryable<TEntity> AllIncluding(params Expression<Func<TEntity, object>>[] includeProperties)

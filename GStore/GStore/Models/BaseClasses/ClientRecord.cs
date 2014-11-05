@@ -12,5 +12,11 @@ namespace GStore.Models.BaseClasses
 
 		[ForeignKey("ClientId")]
 		public virtual Client Client { get; set; }
+
+		public string ClientVirtualDirectoryToMap()
+		{
+			return "/Content/Clients/" + HttpUtility.UrlEncode(this.Client.Folder);
+		}
+
 	}
 }

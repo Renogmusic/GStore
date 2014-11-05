@@ -1,0 +1,31 @@
+﻿@model GStore.Models.ViewModels.CatalogViewModel
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+@{
+	ViewBag.Title = "Index";
+	Product product = Model.CurrentProductOrNull;
+}
+
+
+<div class="row">
+	<div class="col-xs-12 text-left-lg col-lg-offset-2 col-lg-8 text-center">
+		<h1>@Model.StoreFront.Name Product Catalog</h1>
+		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true)
+	</div>
+</div>
+
+<h2>@product.Name</h2>
+<hr/>
+
+Feature: @Model.CurrentProductOrNull.Category.Name
+
+
+Feature: @Model.CurrentProductOrNull.Category.Name
+
+
+Feature: @Model.CurrentProductOrNull.Category.Name
+
+
+
+

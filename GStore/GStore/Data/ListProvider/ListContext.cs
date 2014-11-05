@@ -11,6 +11,29 @@ namespace GStore.Data.ListProvider
 	/// </summary>
 	public class ListContext : IGstoreDb
 	{
+		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreListSourceRepository<Models.BadRequest>(); } }
+		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreListSourceRepository<Models.Client>(); } }
+		public IGStoreRepository<Models.ClientUserRole> ClientUserRoles { get { return new GenericGStoreListSourceRepository<Models.ClientUserRole>(); } }
+		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreListSourceRepository<Models.FileNotFoundLog>(); } }
+		public IGStoreRepository<Models.NavBarItem> NavBarItems { get { return new GenericGStoreListSourceRepository<Models.NavBarItem>(); } }
+		public IGStoreRepository<Models.Notification> Notifications { get { return new GenericGStoreListSourceRepository<Models.Notification>(); } }
+		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreListSourceRepository<Models.NotificationLink>(); } }
+		public IGStoreRepository<Models.Page> Pages { get { return new GenericGStoreListSourceRepository<Models.Page>(); } }
+		public IGStoreRepository<Models.PageSection> PageSections { get { return new GenericGStoreListSourceRepository<Models.PageSection>(); } }
+		public IGStoreRepository<Models.PageTemplate> PageTemplates { get { return new GenericGStoreListSourceRepository<Models.PageTemplate>(); } }
+		public IGStoreRepository<Models.PageTemplateSection> PageTemplateSections { get { return new GenericGStoreListSourceRepository<Models.PageTemplateSection>(); } }
+		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreListSourceRepository<Models.PageViewEvent>(); } }
+		public IGStoreRepository<Models.Product> Products { get { return new GenericGStoreListSourceRepository<Models.Product>(); } }
+		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreListSourceRepository<Models.ProductCategory>(); } }
+		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreListSourceRepository<Models.SecurityEvent>(); } }
+		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreListSourceRepository<Models.StoreFront>(); } }
+		public IGStoreRepository<Models.StoreFrontUserRole> StoreFrontUserRoles { get { return new GenericGStoreListSourceRepository<Models.StoreFrontUserRole>(); } }
+		public IGStoreRepository<Models.StoreBinding> StoreBindings { get { return new GenericGStoreListSourceRepository<Models.StoreBinding>(); } }
+		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreListSourceRepository<Models.SystemEvent>(); } }
+		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreListSourceRepository<Models.Theme>(); } }
+		public IGStoreRepository<Models.UserActionEvent> UserActionEvents { get { return new GenericGStoreListSourceRepository<Models.UserActionEvent>(); } }
+		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreListSourceRepository<Models.UserProfile>(); } }
+	
 		public string UserName { get; set; }
 		public Models.StoreFront CachedStoreFront { get; set; }
 
@@ -84,27 +107,11 @@ namespace GStore.Data.ListProvider
 		/// <returns></returns>
 		public int SaveChangesDirect() { return 0; }
 
+		public int SaveChangesEx(bool updateAuditableRecords, bool runEmailNotifications, bool runSmsNotifications, bool updateCategoryCounts) { return 0; }
+
 		private void CreateRepositories()
 		{
 			//nothing to do in this, lists are static members for each listsource repository; keep across instances
 		}
-
-		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreListSourceRepository<Models.BadRequest>(); } }
-		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreListSourceRepository<Models.Client>(); } }
-		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreListSourceRepository<Models.FileNotFoundLog>(); } }
-		public IGStoreRepository<Models.Notification> Notifications { get { return new GenericGStoreListSourceRepository<Models.Notification>(); } }
-		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreListSourceRepository<Models.NotificationLink>(); } }
-		public IGStoreRepository<Models.Page> Pages { get { return new GenericGStoreListSourceRepository<Models.Page>(); } }
-		public IGStoreRepository<Models.PageTemplate> PageTemplates { get { return new GenericGStoreListSourceRepository<Models.PageTemplate>(); } }
-		public IGStoreRepository<Models.PageTemplateSection> PageTemplateSections { get { return new GenericGStoreListSourceRepository<Models.PageTemplateSection>(); } }
-		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreListSourceRepository<Models.PageViewEvent>(); } }
-		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreListSourceRepository<Models.SecurityEvent>(); } }
-		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreListSourceRepository<Models.StoreFront>(); } }
-		public IGStoreRepository<Models.StoreBinding> StoreBindings { get { return new GenericGStoreListSourceRepository<Models.StoreBinding>(); } }
-		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreListSourceRepository<Models.SystemEvent>(); } }
-		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreListSourceRepository<Models.Theme>(); } }
-		public IGStoreRepository<Models.UserActionEvent> UserActionEvents { get { return new GenericGStoreListSourceRepository<Models.UserActionEvent>(); } }
-		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreListSourceRepository<Models.UserProfile>(); } }
-	
 	}
 }

@@ -1,56 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="GStore.Models.StoreFront">
-    <Position X="5.75" Y="9" Width="2.75" />
-    <AssociationLine Name="Admin" Type="GStore.Models.UserProfile" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="7.688" Y="12.514" />
-        <Point X="7.688" Y="15.5" />
-        <Point X="4.5" Y="15.5" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="WelcomePerson" Type="GStore.Models.UserProfile" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="7" Y="12.514" />
-        <Point X="7" Y="14.625" />
-        <Point X="4.5" Y="14.625" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="AccountAdmin" Type="GStore.Models.UserProfile" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="6.25" Y="12.514" />
-        <Point X="6.25" Y="13.875" />
-        <Point X="4.5" Y="13.875" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="StoreBindings" Type="GStore.Models.StoreBinding">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.286" Y="0.06" Height="0.197" Width="3.131" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="Pages" Type="GStore.Models.Page" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="8.312" Y="12.514" />
-        <Point X="8.312" Y="13.108" />
-        <Point X="16" Y="13.108" />
-        <Point X="16" Y="12.514" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.081" Y="0.318" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="UserProfiles" Type="GStore.Models.UserProfile" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="8.125" Y="12.514" />
-        <Point X="8.125" Y="16.375" />
-        <Point X="4.5" Y="16.375" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.12" Y="0.07" />
-      </MemberNameLabel>
-    </AssociationLine>
+    <Position X="5.75" Y="9.75" Width="3.75" />
     <TypeIdentifier>
-      <HashCode>QAAAEYAAAAARAAEwAAAAAQQAAIQAAAAQAAEAAABQAEg=</HashCode>
+      <HashCode>RAIAE4oAACEZAAEwABAAARQgIIUBAAAQCAEAQCBRBEw=</HashCode>
       <FileName>Models\StoreFront.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -66,21 +19,11 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="GStore.Models.BaseClasses.ClientLiveRecord">
-    <Position X="8.25" Y="6" Width="2.5" />
+    <Position X="8" Y="7" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAABAAAAAAAAAAAAEEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\BaseClasses\ClientLivingRecord.cs</FileName>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\ClientLiveRecord.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="GStore.Models.BaseClasses.ClientRecordBase">
-    <Position X="8.5" Y="4" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
-      <FileName>Models\BaseClasses\ClientRecordBase.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Client" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
     <Position X="8" Y="0.5" Width="2.5" />
@@ -90,45 +33,52 @@
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Theme">
-    <Position X="11.75" Y="4" Width="3" />
+    <Position X="13.75" Y="4.25" Width="3" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAARAAhAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAEAAAAARAAhAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Theme.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.UserProfile">
-    <Position X="0.5" Y="12.75" Width="4" />
+    <Position X="0.5" Y="11.25" Width="4" />
     <TypeIdentifier>
       <HashCode>SAIBEiAAACBgAJAABAMAAAoQAAAAAQEsAQAACACIIAA=</HashCode>
       <FileName>Models\UserProfile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.UserProfileExtensions" Collapsed="true">
-    <Position X="18.75" Y="0.5" Width="1.5" />
+    <Position X="17.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAACAAAAAE=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAICAAAAAAAEAAAAAQACAAAAAA=</HashCode>
       <FileName>Models\UserProfile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Client">
-    <Position X="1" Y="4" Width="3.25" />
+    <Position X="1.75" Y="4.25" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AAARAAASUCAAEAAAkEEEAQQgAAAAAAAgEAAQCAAABAA=</HashCode>
+      <HashCode>AAARAAASUCAAEAAAgEEEgQQgAAAAAAAgEAAQCAAABAA=</HashCode>
       <FileName>Models\Client.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.StoreBinding">
-    <Position X="11.75" Y="9" Width="2.25" />
+    <Position X="10.75" Y="15.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>gAICEAAAAAAAAAAAAAAAAAIAiAAIAAAAEAAAAAAAAgA=</HashCode>
+      <HashCode>gAEAAAAAAAAAAAAAAAAAAAAACAAIAAAAAAAAAAAAAgA=</HashCode>
       <FileName>Models\StoreBinding.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Page">
-    <Position X="14.75" Y="9" Width="2.5" />
+    <Position X="10.25" Y="9.75" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAICEAAAAAAiAAAAAAAAAAQAAQABAAAACQAAAABAQAA=</HashCode>
+      <HashCode>AIMCEAAAAAAiAAAAAAAAAAQAAQABAAAACUAAAABAQAA=</HashCode>
       <FileName>Models\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientRecord">
+    <Position X="8" Y="4.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAgAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9.75" />

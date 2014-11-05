@@ -54,6 +54,8 @@ namespace GStore.Models
 
 		public virtual ICollection<StoreFront> StoreFronts { get; set; }
 
+		public virtual ICollection<ClientUserRole> ClientUserRoles { get; set; }
+
 		public bool IsActiveDirect()
 		{
 			return IsActiveDirect(DateTime.UtcNow);
@@ -67,5 +69,11 @@ namespace GStore.Models
 			}
 			return false;
 		}
+
+		public string ClientVirtualDirectoryToMap()
+		{
+			return "/Content/Clients/" + System.Web.HttpUtility.UrlEncode(this.Folder);
+		}
+
 	}
 }

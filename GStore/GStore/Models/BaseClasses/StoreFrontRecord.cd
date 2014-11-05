@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GStore.Models.BaseClasses.StoreFrontRecord">
+    <Position X="5.25" Y="8.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientRecord">
+    <Position X="5.25" Y="5.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAgAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
+    <Position X="5.5" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAQQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.StoreFrontLiveRecord">
+    <Position X="2.75" Y="11.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontLiveRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.Notification">
+    <Position X="6" Y="11.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EgAAAAAAAAAAAAAABIAAAAAoAAQIAACgABAAIAAAAAI=</HashCode>
+      <FileName>Models\Notification.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.NotificationLink">
+    <Position X="8.5" Y="11.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAQAAAASAAAAAAAAAAgAEAEAAQACACAAAAAgAAAA=</HashCode>
+      <FileName>Models\NotificationLink.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

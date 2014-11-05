@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using GStore;
 using GStore.Models;
+using GStore.Models.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
@@ -119,7 +120,7 @@ namespace GStore.AppHtmlHelpers
 			returnValue.AppendLine("<script>");
 			foreach (UserMessage userMessage in userMessages)
 			{
-				returnValue.AppendLine("AddAlert('" + userMessage.Title + "', '" + userMessage.Message + "', '" + userMessage.MessageType.ToString().ToLower() + "');");
+				returnValue.AppendLine("AddUserMessage('" + userMessage.Title + "', '" + userMessage.Message + "', '" + userMessage.MessageType.ToString().ToLower() + "');");
 			}
 			returnValue.AppendLine("</script>");
 
@@ -467,7 +468,264 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
+		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			StringBuilder html = new StringBuilder();
+			UrlHelper urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
+			if (level == 1 && category.HasChildMenuItems(maxLevels))
+			{
+				//for dropdown categories, make bootstrap dropdown menu for root
+				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown CatalogMenu CatalogMenuLevel" + level + "\">"
+					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
+						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" title=\"" +
+						htmlHelper.AttributeEncode(category.Entity.Name)
+						+ "\">"
+						+ htmlHelper.Encode(category.Entity.Name)
+						+ "<span class=\"caret\"></span>"
+					+ "</a>");
+			}
+			else
+			{
+				//regular Leaf category no dropdown
+				html.AppendLine(Tab(3 + level * 2)
+					+ "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">"
+					+ "\n" + Tab(4 + level * 2)
+						+ "<a href=\""
+							+ urlHelper.Action("ViewCategoryByName", "Catalog", new { urlName = category.Entity.UrlName })
+							+ "\""
+							+ " title=\"" +
+							htmlHelper.AttributeEncode(category.Entity.Name)
+						+ "\">"
+						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
+						+ htmlHelper.Encode(category.Entity.Name)
+					+ "</a>");
+			}
+			return new MvcHtmlString(html.ToString());
+		}
 
+		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			return new MvcHtmlString(Tab(3 + level * 2) + "</li>\n");
+		}
 
+		public static MvcHtmlString CatalogMenuChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu CatalogMenuChildContainer CatalogMenuChildContainerLevel" + level + "\" role=\"menu\">\n";
+			}
+			else
+			{
+				if (category.Entity.UseDividerBeforeOnMenu)
+				{
+					html = Tab(4 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
+				}
+				html += Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
+			}
+
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString CatalogMenuChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "</ul>\n";
+			}
+			else
+			{
+				html = Tab(4 + level * 2) + "</li>\n";
+				if (category.Entity.UseDividerAfterOnMenu)
+				{
+					html += Tab(4 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
+				}
+			}
+
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
+		{
+			StringBuilder html = new StringBuilder();
+			UrlHelper urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
+
+			navBarItem.Entity.Url(urlHelper);
+			string targetTag = string.Empty;
+			if (navBarItem.Entity.OpenInNewWindow)
+			{
+				targetTag = " target=\"_blank\"";
+			}
+
+			if (level == 1 && navBarItem.HasChildMenuItems(maxLevels))
+			{
+				//for dropdown categories, make bootstrap dropdown menu for root
+				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
+					+ "\n" + Tab(4 + level * 2) + "<a href=\"" + navBarItem.Entity.Url(urlHelper) + "\""
+						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" title=\"" +
+						htmlHelper.AttributeEncode(navBarItem.Entity.Name)
+						+ targetTag + "\">"
+						+ htmlHelper.Encode(navBarItem.Entity.Name)
+						+ "<span class=\"caret\"></span>"
+					+ "</a>");
+			}
+			else
+			{
+				//regular Leaf NavBarItem no dropdown
+				html.AppendLine(Tab(3 + level * 2)
+					+ "<li class=\"NavBarItem NavBarItemLevel" + level + "\">"
+					+ "\n" + Tab(4 + level * 2)
+						+ "<a href=\""
+							+ navBarItem.Entity.Url(urlHelper)
+							+ "\""
+							+ " title=\"" +
+							htmlHelper.AttributeEncode(navBarItem.Entity.Name)
+						+ targetTag + "\">"
+						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
+						+ htmlHelper.Encode(navBarItem.Entity.Name)
+					+ "</a>");
+			}
+			return new MvcHtmlString(html.ToString());
+		}
+
+		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		{
+			return new MvcHtmlString(Tab(3 + level * 2) + "</li>\n");
+		}
+
+		public static MvcHtmlString NavBarItemChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu NavBarItemChildContainer NavBarItemChildContainerLevel" + level + "\" role=\"menu\">\n";
+			}
+			else
+			{
+				if (NavBarItem.Entity.UseDividerBeforeOnMenu)
+				{
+					html = Tab(4 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
+				}
+				html += Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
+			}
+
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString NavBarItemChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "</ul>\n";
+			}
+			else
+			{
+				html = Tab(4 + level * 2) + "</li>\n";
+				if (NavBarItem.Entity.UseDividerAfterOnMenu)
+				{
+					html += Tab(4 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
+				}
+			}
+
+			return new MvcHtmlString(html);
+		}
+
+		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
+		{
+			if (navBarItem.IsAction)
+			{
+				if (!string.IsNullOrEmpty(navBarItem.Area))
+				{
+					return urlHelper.Action(navBarItem.Action, navBarItem.Controller, new { Area = navBarItem.Area });
+				}
+				return urlHelper.Action(navBarItem.Action, navBarItem.Controller);
+			}
+			else if (navBarItem.IsLocalHRef)
+			{
+				string url = navBarItem.LocalHRef;
+				string appRoot = HttpContext.Current.Request.ApplicationPath;
+				if (url.StartsWith("/") || url.StartsWith("~/"))
+				{
+					//starts with slash add root virtual path
+					url = appRoot + url.TrimStart('~').TrimStart('/');
+				}
+				else
+				{
+					url = appRoot + url;
+				}
+				return url;
+			}
+			else if (navBarItem.IsRemoteHRef)
+			{
+				if (navBarItem.RemoteHRef.ToLower().StartsWith("http://") || navBarItem.RemoteHRef.ToLower().StartsWith("mailto:"))
+				{
+					return navBarItem.RemoteHRef; 
+				}
+				return "http://" + navBarItem.RemoteHRef;
+			}
+			throw new ApplicationException("Unknown navBarItem type. NavBarItemId: " + navBarItem.NavBarItemId);
+		}
+
+		public static MvcHtmlString ProductCategoryWithParentLinks(this HtmlHelper htmlHelper, ProductCategory category, string catalogLinkText, bool level1IsLink, string htmlSeparator = " &gt; ", int maxLevels = 10)
+		{
+			//consider navigating from a treenode instead of recursing lazy nav props
+			string htmlCatalogLink = string.Empty;
+			if (!string.IsNullOrEmpty(catalogLinkText))
+			{
+				htmlCatalogLink = htmlHelper.ActionLink(catalogLinkText, "Index", "Catalog").ToHtmlString();
+			}
+
+			if (category == null)
+			{
+				return new MvcHtmlString(htmlCatalogLink);
+			}
+
+			string htmlLinks = RecurseProductCategoryParentLinks(category, 1, maxLevels, level1IsLink, htmlSeparator, htmlHelper).ToHtmlString();
+			if (string.IsNullOrEmpty(htmlLinks) || string.IsNullOrEmpty(htmlCatalogLink))
+			{
+				return new MvcHtmlString(htmlCatalogLink + htmlLinks);
+			}
+			return new MvcHtmlString(htmlCatalogLink + htmlSeparator + htmlLinks);
+			
+		}
+
+		private static MvcHtmlString RecurseProductCategoryParentLinks(ProductCategory category, int currentLevel, int maxLevels, bool level1IsLink, string htmlSeparator, HtmlHelper htmlHelper)
+		{
+			if (category == null)
+			{
+				return new MvcHtmlString(string.Empty);
+			}
+
+			MvcHtmlString link = null;
+			if (currentLevel == 1 && !level1IsLink)
+			{
+				link = new MvcHtmlString(htmlHelper.Encode(category.Name));
+			}
+			else
+			{
+				link = htmlHelper.ActionLink(category.Name, "ViewCategoryByName", "Catalog", new { urlName = category.UrlName }, null);
+			}
+			
+			if (category.ParentCategory != null && currentLevel < maxLevels)
+			{
+				MvcHtmlString parentHtml = RecurseProductCategoryParentLinks(category.ParentCategory, currentLevel + 1, maxLevels, level1IsLink, htmlSeparator, htmlHelper);
+				return new MvcHtmlString(parentHtml.ToHtmlString() + "<span class=\"CategoryTopNavItem\">" + htmlSeparator + link.ToHtmlString() + "</span>");
+			}
+
+			return link;
+
+		}
+
+		public static string Tab(int tabs)
+		{
+			return new string('\t', tabs);
+		}
+
+		public static string RepeatString(string value, int count)
+		{
+			return string.Concat(Enumerable.Repeat(value, count));
+		}
 	}
 }

@@ -26,11 +26,14 @@ namespace GStore.Models
 
 		public string MetaKeywords { get; set; }
 
-		public int ThemeId { get; set; }
-		public virtual Theme Theme { get; set; }
-
 		[Required]
 		public string Folder { get; set; }
+
+		public int NavBarCatalogMaxLevels { get; set; }
+
+		public int CatalogPageInitialLevels { get; set; }
+
+		public int NavBarItemsMaxLevels { get; set; }
 
 		[Required]
 		public string AccountLayout { get; set; }
@@ -42,11 +45,29 @@ namespace GStore.Models
 		public string NotificationsLayout { get; set; }
 
 		[Required]
-		public string AdminLayout { get; set; }
+		public string CatalogLayout { get; set; }
 
-		public int Admin_UserProfileId { get; set; }
-		[ForeignKey("Admin_UserProfileId")]
-		public virtual UserProfile Admin { get; set; }
+		[Required]
+		public int CatalogCategoryColSm { get; set; }
+
+		[Required]
+		public int CatalogCategoryColMd { get; set; }
+
+		[Required]
+		public int CatalogCategoryColLg { get; set; }
+
+
+		[Required]
+		public int CatalogProductColSm { get; set; }
+
+		[Required]
+		public int CatalogProductColMd { get; set; }
+
+		[Required]
+		public int CatalogProductColLg { get; set; }
+
+		[Required]
+		public string AdminLayout { get; set; }
 
 		public int WelcomePerson_UserProfileId { get; set; }
 		[ForeignKey("WelcomePerson_UserProfileId")]
@@ -60,14 +81,30 @@ namespace GStore.Models
 		[ForeignKey("RegisteredNotify_UserProfileId")]
 		public virtual UserProfile RegisteredNotify { get; set; }
 
-		public virtual ICollection<StoreBinding> StoreBindings { get; set; }
+		[ForeignKey("ThemeId")]
+		public virtual Theme Theme { get; set; }
+		public int ThemeId { get; set; }
+
+
+		public virtual ICollection<NavBarItem> NavBarItems { get; set; }
 		public virtual ICollection<Page> Pages { get; set; }
+		public virtual ICollection<Product> Products { get; set; }
+		public virtual ICollection<ProductCategory> ProductCategories { get; set; }
+		public virtual ICollection<StoreBinding> StoreBindings { get; set; }
+		public virtual ICollection<StoreFrontUserRole> StoreFrontUserRoles { get; set; }
 		public virtual ICollection<UserProfile> UserProfiles { get; set; }
+
+
+		public virtual ICollection<Notification> Notifications { get; set; }
 
 		public string OutgoingMessageSignature()
 		{
 			return "\n-Sent From " + Name + " \n " + PublicUrl;
 		}
 
+		public string StoreFrontVirtualDirectoryToMap()
+		{
+			return this.ClientVirtualDirectoryToMap() + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(this.Folder);
+		}
 	}
 }

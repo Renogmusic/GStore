@@ -33,7 +33,14 @@ namespace GStore.Models.Extensions
 
 			newEvent.Level = (int)level;
 			newEvent.LevelText = level.ToString();
+
+			string simpleInfo = newEvent.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--System Event: " + newEvent.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.SystemEvents.Add(newEvent);
+			
 			newctx.SaveChanges();
 
 		}
@@ -49,6 +56,12 @@ namespace GStore.Models.Extensions
 			newEvent.Level = (int)level;
 			newEvent.LevelText = level.ToString();
 			newEvent.Success = success;
+
+			string simpleInfo = newEvent.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--Security Event: " + newEvent.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.SecurityEvents.Add(newEvent);
 
 			newctx.SaveChanges();
@@ -74,6 +87,12 @@ namespace GStore.Models.Extensions
 				+ " \n-Url: " + context.HttpContext.Request.RawUrl;
 
 			newEvent.SetBasicFields(context.HttpContext, context.RouteData, source, message, !context.HttpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false), controller);
+
+			string simpleInfo = newEvent.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--Page View Event: " + newEvent.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.PageViewEvents.Add(newEvent);
 
 			newctx.SaveChanges();
@@ -95,6 +114,12 @@ namespace GStore.Models.Extensions
 			newEvent.Category = category;
 			newEvent.Action = action;
 			newEvent.Label = label;
+
+			string simpleInfo = newEvent.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--User Action Event: " + newEvent.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.UserActionEvents.Add(newEvent);
 
 			newctx.SaveChanges();
@@ -115,6 +140,12 @@ namespace GStore.Models.Extensions
 			}
 
 			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false), controller);
+
+			string simpleInfo = newLog.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--File Not Found Event: " + newLog.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.FileNotFoundLogs.Add(newLog);
 
 			newctx.SaveChanges();
@@ -136,6 +167,12 @@ namespace GStore.Models.Extensions
 			}
 
 			badRequest.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false), controller);
+
+			string simpleInfo = badRequest.SimpleInfo();
+			System.Diagnostics.Trace.Indent();
+			System.Diagnostics.Trace.WriteLine("--Bad Request Event: " + badRequest.SimpleInfo());
+			System.Diagnostics.Trace.Unindent();
+
 			newctx.BadRequests.Add(badRequest);
 
 			newctx.SaveChanges();

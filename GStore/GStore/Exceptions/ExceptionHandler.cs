@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Routing;
 using GStore.Models.Extensions;
 
-namespace GStore
+namespace GStore.Exceptions
 {
 	public static class ExceptionHandler
 	{
@@ -231,13 +231,20 @@ namespace GStore
 					{
 						throw new ApplicationException("No store front from controller");
 					}
-					string clientErrorFolder = "~/Content/Clients/" + controller.CurrentClient.Folder + "/" + controller.CurrentStoreFront.Folder + "/ErrorPages/";
-					string clientErrorPage = clientErrorFolder + errorPage;
-					if (!System.IO.File.Exists(context.Server.MapPath(clientErrorPage)))
+
+					string customErrorFolder = "~/Content/Clients/" + controller.CurrentClient.Folder + "/StoreFronts/" + controller.CurrentStoreFront.Folder + "/ErrorPages/";
+					string customErrorPath = customErrorFolder + errorPage;
+					if (!System.IO.File.Exists(context.Server.MapPath(customErrorPath)))
 					{
-						throw new ApplicationException("File not found");
+						//if store front error page not found, get client custom error page
+						customErrorFolder = "~/Content/Clients/" + controller.CurrentClient.Folder + "/ErrorPages/";
+						customErrorPath = customErrorFolder + errorPage;
+						if (!System.IO.File.Exists(context.Server.MapPath(customErrorPath)))
+						{
+							throw new ApplicationException("Custom error page not found");
+						}
 					}
-					context.Server.Execute(clientErrorPage);
+					context.Server.Execute(customErrorPath);
 				}
 				catch (Exception)
 				{

@@ -3,6 +3,9 @@
   <Profiles />
   <Settings>
     <Setting Name="AppFriendlyExceptionHandling" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppUseFileNotFoundImage" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="GStoreDB" Type="(Connection string)" Scope="Application">
@@ -60,6 +63,9 @@
     </Setting>
     <Setting Name="IdentityTwoFactorSignature" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Sent From GStore Security Admin admin@domain.com</Value>
+    </Setting>
+    <Setting Name="IdentityEnableTwoFactorAuth" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

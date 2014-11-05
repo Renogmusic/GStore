@@ -28,9 +28,8 @@ namespace GStore.Models.Extensions
 			//verify database has been seeded and not blank
 			if (db.StoreBindings.IsEmpty())
 			{
-				throw new ApplicationException("No Store bindings in database, be sure to run the Seed method");
+				throw new ApplicationException("No Store bindings in database, be sure to run the Seed method or Set Settings.InitializeEFCodeFirstMigrateLatest or Settings.InitializeEFCodeFirstDropCreate");
 			}
-
 			if (request == null)
 			{
 				throw new ApplicationException("Request context is null, cannot get current store front");
@@ -212,6 +211,10 @@ namespace GStore.Models.Extensions
 			return userProfile;
 		}
 
+		public static UserProfile GetUserProfileByIdentityUser(this IGstoreDb ctx, System.Security.Principal.IPrincipal user, bool throwErrorIfNotFound = true)
+		{
+			return ctx.GetUserProfileByEmail(user.Identity.Name, throwErrorIfNotFound);
+		}
 
 		public static UserProfile GetUserProfileByEmail(this IGstoreDb ctx, string email, bool throwErrorIfNotFound = true)
 		{
@@ -250,128 +253,6 @@ namespace GStore.Models.Extensions
 			}
 			return userProfile;
 		}
-
-		public static Page GetCurrentPage(this StoreFront storeFront, HttpRequestBase request, bool throwErrorIfNotFound = true)
-		{
-			string url = "/" + request.Url.AbsolutePath.Trim('/');
-			return storeFront.GetCurrentPage(url, throwErrorIfNotFound);
-		}
-		public static Page GetCurrentPage(this StoreFront storeFront, string url, bool throwErrorIfNotFound = true)
-		{
-			string urlLower = url.ToLower();
-			var query = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p=> p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
-			Page page = query.FirstOrDefault();
-			if (throwErrorIfNotFound && page == null)
-			{
-				string errorMessage = "Active Page not found for url: " + url
-					+ "\n-Store Front [" + storeFront.StoreFrontId + "]: " + storeFront.Name
-					+ "\n-Client [" + storeFront.Client.ClientId + "]: " + storeFront.Client.Name;
-
-				var inactivePagesQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().OrderBy(p=> p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
-				List<Page> inactivePages = inactivePagesQuery.ToList();
-
-				if (inactivePages.Count == 0)
-				{
-					throw new Exceptions.DynamicPageNotFoundException(errorMessage, url, storeFront);
-				}
-				errorMessage += "\n-Matching Pages found: " + inactivePages.Count
-					+ "\n---First (most likely to be selected)---"
-					+ "\n - PageId: " + inactivePages[0].PageId
-					+ "\n - Page.Name: " + inactivePages[0].Name
-					+ "\n - Page.IsActiveDirect: " + inactivePages[0].IsActiveDirect()
-					+ "\n - Page.IsPending: " + inactivePages[0].IsPending.ToString()
-					+ "\n - Page.StartDateTimeUtc(local): " + inactivePages[0].StartDateTimeUtc.ToLocalTime()
-					+ "\n - Page.EndDateTimeUtc(local): " + inactivePages[0].EndDateTimeUtc.ToLocalTime()
-					+ "\n - StoreFront [" + inactivePages[0].StoreFront.StoreFrontId + "]: " + inactivePages[0].StoreFront.Name
-					+ "\n - Client [" + inactivePages[0].StoreFront.Client.ClientId + "]: " + inactivePages[0].StoreFront.Client.Name;
-
-				throw new Exceptions.DynamicPageInactiveException(errorMessage, url, storeFront);
-
-			}
-			return page;
-		}
-
-		public static IQueryable<UserProfile> WhereIsActive(this IQueryable<UserProfile> query)
-		{
-			return query.WhereIsActive(DateTime.UtcNow);
-		}
-		public static IQueryable<UserProfile> WhereIsActive(this IQueryable<UserProfile> query, DateTime dateTimeUtc)
-		{
-			return query.Where(up =>
-				up.Active
-				&& (up.StartDateTimeUtc < dateTimeUtc)
-				&& (up.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
-
-		public static IQueryable<Client> WhereIsActive(this IQueryable<Client> query)
-		{
-			return query.WhereIsActive(DateTime.UtcNow);
-		}
-		public static IQueryable<Client> WhereIsActive(this IQueryable<Client> query, DateTime dateTimeUtc)
-		{
-			return query.Where(c =>
-				!c.IsPending
-				&& (c.StartDateTimeUtc < dateTimeUtc)
-				&& (c.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
-		public static IQueryable<StoreFront> WhereIsActive(this IQueryable<StoreFront> query)
-		{
-			return query.WhereIsActive(DateTime.UtcNow);
-		}
-		public static IQueryable<StoreFront> WhereIsActive(this IQueryable<StoreFront> query, DateTime dateTimeUtc)
-		{
-			return query.Where(sf =>
-				!sf.IsPending
-				&& (sf.StartDateTimeUtc < dateTimeUtc)
-				&& (sf.EndDateTimeUtc > dateTimeUtc)
-				&& (!sf.Client.IsPending)
-				&& (sf.Client.StartDateTimeUtc < dateTimeUtc)
-				&& (sf.Client.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
-		public static IQueryable<StoreBinding> WhereIsActive(this IQueryable<StoreBinding> query)
-		{
-			return query.WhereIsActive(DateTime.UtcNow);
-		}
-		public static IQueryable<StoreBinding> WhereIsActive(this IQueryable<StoreBinding> query, DateTime dateTimeUtc)
-		{
-			return query.Where(sb =>
-				!sb.IsPending
-				&& (sb.StartDateTimeUtc < dateTimeUtc)
-				&& (sb.EndDateTimeUtc > dateTimeUtc)
-				&& (!sb.Client.IsPending)
-				&& (sb.Client.StartDateTimeUtc < dateTimeUtc)
-				&& (sb.Client.EndDateTimeUtc > dateTimeUtc)
-				&& (!sb.StoreFront.IsPending)
-				&& (sb.StoreFront.StartDateTimeUtc < dateTimeUtc)
-				&& (sb.StoreFront.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
-		public static IQueryable<Page> WhereIsActive(this IQueryable<Page> query)
-		{
-			return query.WhereIsActive(DateTime.UtcNow);
-		}
-		public static IQueryable<Page> WhereIsActive(this IQueryable<Page> query, DateTime dateTimeUtc)
-		{
-			return query.Where(p =>
-				!p.IsPending
-				&& (p.StartDateTimeUtc < dateTimeUtc) 
-				&& (p.EndDateTimeUtc > dateTimeUtc)
-				&& (!p.Client.IsPending)
-				&& (p.Client.StartDateTimeUtc < dateTimeUtc) 
-				&& (p.Client.EndDateTimeUtc > dateTimeUtc)
-				&& (!p.StoreFront.IsPending)
-				&& (p.StoreFront.StartDateTimeUtc < dateTimeUtc)
-				&& (p.StoreFront.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
 
 		public static void HandleLockedOutNotification(this Controllers.BaseClass.BaseController controller, UserProfile profile)
 		{
@@ -515,5 +396,45 @@ namespace GStore.Models.Extensions
 				db.SaveChanges();
 			}
 		}
+
+		/// <summary>
+		/// This is an expensive database and recursion operation, use with caution
+		/// </summary>
+		/// <param name="storeDb"></param>
+		/// <param name="storeFront"></param>
+		public static void RecalculateProductCategoryActiveCount(this IGstoreDb storeDb, StoreFront storeFront)
+		{
+			List<ProductCategory> categories = storeFront.ProductCategories.ToList();
+
+			var treeQuery = storeFront.ProductCategories.AsTree(prod => prod.ProductCategoryId, prod => prod.ParentCategoryId);
+			List<TreeNode<ProductCategory>> categoriesTree = treeQuery.ToList();
+
+			foreach (ProductCategory category in categories)
+			{
+				//foreach category, calculate direct activecount
+				int activeCount = category.Products.WhereIsActive().Count();
+				category.DirectActiveCount = activeCount;
+			}
+
+			foreach (ProductCategory category in categories)
+			{
+				TreeNode<ProductCategory> categoryNode = categoriesTree.FindEntity(category);
+				int childActiveCount = categoryNode.ActiveCountWithChildren();
+				categoryNode.Entity.ChildActiveCount = childActiveCount;
+			}
+			storeDb.SaveChangesEx(false, false, false, false);
+		}
+
+		private static int ActiveCountWithChildren(this TreeNode<ProductCategory> categoryNode)
+		{
+			int count = categoryNode.Entity.DirectActiveCount;
+			foreach (TreeNode<ProductCategory> childNode in categoryNode.ChildNodes)
+			{
+				count += childNode.ActiveCountWithChildren();
+			}
+
+			return count;
+		}
+
 	}
 }

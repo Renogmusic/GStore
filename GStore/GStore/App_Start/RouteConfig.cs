@@ -32,6 +32,56 @@ namespace GStore
 				defaults: new { controller = "Notifications", action = "Index", id = UrlParameter.Optional }
 			);
 
+			routes.MapRoute(
+				name: "Products",
+				url: "Products/{urlName}",
+				defaults: new { controller = "Catalog", action = "ViewProductByName", urlName = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Category",
+				url: "Category/{urlName}",
+				defaults: new { controller = "Catalog", action = "ViewCategoryByName", urlName = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Catalog",
+				url: "Catalog/{action}/{id}",
+				defaults: new { controller = "Catalog", action = "Index", id = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Images",
+				url: "Images/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Images", path = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Styles",
+				url: "Styles/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Styles", path = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "JS",
+				url: "JS/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Scripts", path = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Themes",
+				url: "Themes/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Themes", path = UrlParameter.Optional }
+			);
+
+			routes.MapRoute(
+				name: "Fonts",
+				url: "Fonts/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Fonts", path = UrlParameter.Optional }
+			);
+
+
+
 			//routes.MapRoute(
 			//	name: "Default",
 			//	url: "{controller}/{action}/{id}",

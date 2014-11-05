@@ -5,22 +5,29 @@ renogmusic@yahoo.com
 --installing:
 download the solution file, ctrl-B to build, F5 to run.
 the app will build out the database structure, run migrations, and seed the database with a sample storefront, client, and sample site pages.
+two users are created by the seed class;   
+system administrator login:   admin@domain.com the password is: password
+regular user login: name@domain.com  password is: password
+verify project settings for GStore database connection to ensure the right SQL Server instance
+(right-click project, properties, go to settings tab)
 
-Technologies:
+
+Technologies Highlighted:
 
 Microsoft MVC 5, 
 Entity Framework 6 Code First,
-Repository Pattern with unit of work abstraction and multiple providers (list provider mock)
-ASP Identity 2.0
+Repository Pattern with unit of work abstraction and multiple providers (also in-memory list provider for unit testing)
+ASP Identity 2.0 forms cookie and token auth
 WebApi 2.0 and WebApi auth tokens for Http clients
 Twilio SMS API integrated with Identity and site for notification of messages
 SendGrid Email with email confirmation of accounts, forgot password, reset password, and lockout notification
 Dynamic bootstrap themes; some included and can be swapped out from admin section
-JQuery, JQueryUI : more to come
 Entity Framework Code first with POCO's; simple to add properties, fields to database structures in /Models
 ASP.Net Identity 2.0; identity classes brough into App classes in /Identity for customization of role, user, user claims
-
-eCommerce and CMS features including dynamic pages, dynamic urls, and structured exception handling with logging.
+JQuery, JQueryUI : more to come
+eCommerce and CMS features including dynamic pages, dynamic urls, and widgets for page sections
+Structured exception handling with logging to database tables: SystemEvents, SecurityEvents, PageViewEvents, FileNotFoundLog, BadRequests
+Multi-customer multi-store design with multiple clients able to run in the same app or in separate virtual directories
 
 Main Modules: 
 
@@ -69,7 +76,7 @@ Responsive fluid templates fit and WORK on all devices.  Auto-adapt to mobile an
 ... more to come: admin tools for page editing, widgets, SEO tools, optimizations for mobile and tablet and JQueryMobile
 
 
-- - - Ordering Module - - -
+- - - Order Module - - -
 ... Coming soon: wish lists, shopping cart, order status and notifications, share with a friend, tracking, order history, discounts, payment gateways
 
 

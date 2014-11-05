@@ -154,7 +154,9 @@ namespace GStore.Models
 		/// </summary>
 		public virtual ICollection<Notification> Notifications { get; set; }
 
-		public virtual ICollection<StoreFront> AdminStoreFronts { get; set; }
+		public virtual ICollection<ClientUserRole> ClientUserRoles { get; set; }
+		public virtual ICollection<StoreFrontUserRole> StoreFrontUserRoles { get; set; }
+
 		public virtual ICollection<StoreFront> WelcomeStoreFronts { get; set; }
 		public virtual ICollection<StoreFront> AccountAdminStoreFronts { get; set; }
 		public virtual ICollection<StoreFront> RegisteredNotifyStoreFronts { get; set; }
@@ -162,6 +164,28 @@ namespace GStore.Models
 
 	public static class UserProfileExtensions
 	{
+		/// <summary>
+		/// Checks if the user is in the ASP.Net Identity User Role "System Admin"
+		/// </summary>
+		/// <param name="profile"></param>
+		/// <param name="roleName"></param>
+		/// <returns></returns>
+		public static bool AspNetIdentityUserIsInRoleSystemAdmin(this UserProfile profile)
+		{
+			return profile.AspNetIdentityUser().IsInRole("SystemAdmin");
+		}
+
+		/// <summary>
+		/// Checks if the user is in a specific ASP.Net Identity User Role; i.e. "SystemAdmin"
+		/// </summary>
+		/// <param name="profile"></param>
+		/// <param name="roleName"></param>
+		/// <returns></returns>
+		public static bool AspNetIdentityUserIsInRole(this UserProfile profile, string roleName)
+		{
+			return profile.AspNetIdentityUser().IsInRole(roleName);
+		}
+
 		public static Identity.AspNetIdentityUser AspNetIdentityUser(this UserProfile profile)
 		{
 			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
