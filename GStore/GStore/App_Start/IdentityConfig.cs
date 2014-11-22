@@ -26,17 +26,17 @@ namespace GStore
 
 		private Task configSendGridasync(IdentityMessage message)
 		{
-			if (!Properties.Settings.Default.AppEnableEmail)
+			if (!Properties.Settings.Current.AppEnableEmail)
 			{
 				return Task.FromResult(0);
 			}
 
-			string sendGridMailFromEmail = Properties.Settings.Default.IdentitySendGridMailFromEmail;
-			string sendGridMailFromName = Properties.Settings.Default.IdentitySendGridMailFromName;
+			string sendGridMailFromEmail = Properties.Settings.Current.IdentitySendGridMailFromEmail;
+			string sendGridMailFromName = Properties.Settings.Current.IdentitySendGridMailFromName;
 
 			string textSignature = "\n-Sent from GStore " + HttpContext.Current.Request.Url.Host;
-			string sendGridMailAccount = Properties.Settings.Default.IdentitySendGridMailAccount;
-			string sendGridMailPassword = Properties.Settings.Default.IdentitySendGridMailPassword;
+			string sendGridMailAccount = Properties.Settings.Current.IdentitySendGridMailAccount;
+			string sendGridMailPassword = Properties.Settings.Current.IdentitySendGridMailPassword;
 
 			//string sendGridMailFromEmail = storeFront.Client.SendGridMailFromEmail;
 			//string sendGridMailFromName = storeFront.Client.SendGridMailFromName;
@@ -75,14 +75,14 @@ namespace GStore
 	{
 		public Task SendAsync(IdentityMessage message)
 		{
-			if (!Properties.Settings.Default.AppEnableSMS)
+			if (!Properties.Settings.Current.AppEnableSMS)
 			{
 				return Task.FromResult(0);
 			}
 
-			string twilioSid = Properties.Settings.Default.IdentityTwilioSid;
-			string twilioToken = Properties.Settings.Default.IdentityTwilioToken;
-			string twilioFromPhone = Properties.Settings.Default.IdentityTwilioFromPhone;
+			string twilioSid = Properties.Settings.Current.IdentityTwilioSid;
+			string twilioToken = Properties.Settings.Current.IdentityTwilioToken;
+			string twilioFromPhone = Properties.Settings.Current.IdentityTwilioFromPhone;
 			string textSignature = "\n-Sent from GStore " + HttpContext.Current.Request.Url.Host;
 
 			var Twilio = new TwilioRestClient(
@@ -138,12 +138,12 @@ namespace GStore
             // You can write your own provider and plug it in here.
 			manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<Identity.AspNetIdentityUser>
             {
-                MessageFormat = "Your security code is {0} \n " + Properties.Settings.Default.IdentityTwoFactorSignature
+                MessageFormat = "Your security code is {0} \n " + Properties.Settings.Current.IdentityTwoFactorSignature
             });
 			manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<Identity.AspNetIdentityUser>
             {
                 Subject = "Security Code",
-                BodyFormat = "Your security code is {0} \n " + Properties.Settings.Default.IdentityTwoFactorSignature
+                BodyFormat = "Your security code is {0} \n " + Properties.Settings.Current.IdentityTwoFactorSignature
             });
             manager.EmailService = new EmailService();
             manager.SmsService = new SmsService();

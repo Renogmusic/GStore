@@ -1,25 +1,26 @@
-﻿@model GStore.Models.Notification
+﻿@model GStore.Models.ViewModels.NotificationCreateViewModel
 
 @{
 	ViewBag.Title = "New Message";
 }
 
-<h2>Create</h2>
+<h2>New Message</h2>
 
-
-@using (Html.BeginForm())
+@using (Html.BeginForm("Create", "Notifications", FormMethod.Post))
 {
 	@Html.AntiForgeryToken()
 
 	<div class="form-horizontal">
 		<h4>Notification</h4>
 		<hr />
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		<hr />
 		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 		<div class="form-group">
 			<label class="control-label col-md-2">To</label>
 			<div class="col-md-10">
-				@Html.DropDownList("UserProfileId", null, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.UserProfileId, "", new { @class = "text-danger" })
+				@Html.DropDownList("ToUserProfileId", null, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ToUserProfileId, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
@@ -50,35 +51,58 @@
 		<div class="form-group">
 			<label class="control-label col-md-2">Link 1</label>
 			<div class="col-md-10">
-				@Html.Hidden("Links[0].Order", "1")
-				Url: @Html.TextBox("Links[0].Url", null, new { @class = "form-control" })
-				Text: @Html.TextBox("Links[0].LinkText", null, new { @class = "form-control" })
+				@Html.LabelFor(model => model.Link1Text, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link1Text, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link1Text, "", new { @class = "text-danger" })
+				<br />
+				@Html.LabelFor(model => model.Link1Url, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link1Url, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link1Url, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="control-label col-md-2">Link 2</label>
 			<div class="col-md-10">
-				@Html.Hidden("Links[1].Order", "2")
-				Url: @Html.TextBox("Links[1].Url", null, new { @class = "form-control" })
-				Text: @Html.TextBox("Links[1].LinkText", null, new { @class = "form-control" })
+				@Html.LabelFor(model => model.Link2Text, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link2Text, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link2Text, "", new { @class = "text-danger" })
+				<br />
+				@Html.LabelFor(model => model.Link2Url, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link2Url, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link2Url, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label class="control-label col-md-2">Link 3</label>
 			<div class="col-md-10">
-				@Html.Hidden("Links[2].Order", "3")
-				Url: @Html.TextBox("Links[2].Url", null, new { @class = "form-control" })
-				Text: @Html.TextBox("Links[2].LinkText", null, new { @class = "form-control" })
+				@Html.LabelFor(model => model.Link3Text, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link3Text, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link3Text, "", new { @class = "text-danger" })
+				<br />
+				@Html.LabelFor(model => model.Link3Url, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link3Url, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link3Url, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
-
+		<div class="form-group">
+			<label class="control-label col-md-2">Link 4</label>
+			<div class="col-md-10">
+				@Html.LabelFor(model => model.Link4Text, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link4Text, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link4Text, "", new { @class = "text-danger" })
+				<br>
+				@Html.LabelFor(model => model.Link4Url, htmlAttributes: new { @class = "control-label" })
+				@Html.EditorFor(model => model.Link4Url, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Link4Url, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
 		<div class="form-group">
 			<div class="col-md-offset-2 col-md-10">
-				<input type="submit" value="Create" class="btn btn-primary" />
+				<input type="submit" value="Send" class="btn btn-primary" />
 				&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning" })
 			</div>

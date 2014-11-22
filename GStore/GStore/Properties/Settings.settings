@@ -2,12 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="GStore.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="AppFriendlyExceptionHandling" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="AppUseFileNotFoundImage" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="GStoreDB" Type="(Connection string)" Scope="Application">
       <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
@@ -15,15 +9,6 @@
   &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
 &lt;/SerializableConnectionString&gt;</DesignTimeValue>
       <Value Profile="(Default)">Data Source=(LocalDb)\mssqllocaldb;Initial Catalog=GStore;Integrated Security=True;MultipleActiveResultSets=True;Application Name=EntityFramework</Value>
-    </Setting>
-    <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">EntityFrameworkCodeFirstProvider</Value>
-    </Setting>
-    <Setting Name="InitializeEFCodeFirstMigrateLatest" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="InitializeEFCodeFirstDropCreate" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AspNetIdentityNameOrConnectionString" Type="System.String" Scope="Application">
       <Value Profile="(Default)">GStore.Properties.Settings.GStoreDB</Value>
@@ -36,6 +21,78 @@
     </Setting>
     <Setting Name="AppEnablePageViewLog" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppUseFriendlyErrorPages" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppUseFileNotFoundImage" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogSystemEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogSystemEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogSecurityEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogSecurityEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogBadRequestEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogBadRequestEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogFileNotFoundEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogFileNotFoundEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogPageViewEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogPageViewEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogUserActionEventsToDb" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogUserActionEventsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppLogLogExceptionsToFile" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SystemAdminThemeFolderName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Slate</Value>
+    </Setting>
+    <Setting Name="AppEnableBindingAutoMapToFirstStoreFront" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppDefaultLayoutName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Bootstrap</Value>
+    </Setting>
+    <Setting Name="AppEnableBindingAutoMapCatchAll" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppEnableAutomaticHomePageCreation" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppDefaultLayoutViewName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Welcome</Value>
+    </Setting>
+    <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">EntityFrameworkCodeFirstProvider</Value>
+    </Setting>
+    <Setting Name="InitializeEFCodeFirstMigrateLatest" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="InitializeEFCodeFirstDropCreate" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="IdentityEnableNewUserRegisteredBroadcast" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>

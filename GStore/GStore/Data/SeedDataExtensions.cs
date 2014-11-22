@@ -19,15 +19,21 @@ namespace GStore.Data
 			string adminPassword = "password";
 			string adminFullName = "System Admin";
 
-			string browserUserName = "name@domain.com";
-			string browserEmail = "name@domain.com";
+			string browserUserName = "user@domain.com";
+			string browserEmail = "user@domain.com";
 			string browserPhone = "888-555-1212";
 			string browserPassword = "password";
 			string browserFullName = "John Doe User";
 
-			string layout = "Bootstrap";
-			string templateViewName = "NewStore";
+
+			string layout = Properties.Settings.Current.AppDefaultLayoutName;
+			string templateViewName = Properties.Settings.Current.AppDefaultLayoutViewName;
 			string preferedThemeName = "StarterTheme";
+
+			if (HttpContext.Current != null)
+			{
+				Models.Extensions.EventLogExtensions.CreateEventLogFolders(HttpContext.Current);
+			}
 
 			Identity.AspNetIdentityContext ctx = new Identity.AspNetIdentityContext();
 			ctx.CreateRoleIfNotExists("AccountAdmin");
@@ -86,7 +92,7 @@ namespace GStore.Data
 
 			if (storeDb.StoreBindings.IsEmpty())
 			{
-				StoreBinding storeBinding = storeDb.CreateSeedStoreBinding(firstStoreFront);
+				StoreBinding storeBinding = storeDb.CreateSeedStoreBindingToCurrentUrl(firstStoreFront);
 			}
 
 			if (storeDb.PageTemplates.IsEmpty())
@@ -101,10 +107,16 @@ namespace GStore.Data
 				Page page1 = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, firstStoreFront, firstPageTemplate);
 
 				Page page2 = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, firstStoreFront, firstPageTemplate);
+				NavBarItem aboutLink = storeDb.CreateSeedNavBarItem("About Us", page2.PageId, false, null, firstStoreFront);
 
 				Page page3 = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, firstStoreFront, firstPageTemplate);
+				NavBarItem contactLink = storeDb.CreateSeedNavBarItem("Contact Us", page3.PageId, false, null, firstStoreFront);
 
 				Page page4 = storeDb.CreateSeedPage("Questions?", "Questions?", "/Answers", 400, firstStoreFront, firstPageTemplate);
+				NavBarItem answersLink = storeDb.CreateSeedNavBarItem("Questions?", page4.PageId, false, null, firstStoreFront);
+
+				NavBarItem aboutGStoreLink = storeDb.CreateSeedNavBarItemForAction("About GStore", "About", "GStore", string.Empty, false, null, firstStoreFront);
+
 			}
 
 			//add browser user
@@ -114,13 +126,6 @@ namespace GStore.Data
 				browserProfile = storeDb.CreateSeedUserProfile(browserUser.Id, browserUserName, browserEmail, browserFullName, firstStoreFront);
 			}
 
-			//add menu items
-			if (storeDb.NavBarItems.IsEmpty())
-			{
-				NavBarItem aboutLink = storeDb.CreateSeedNavBarItem("About Us", "/About", false, null, firstStoreFront);
-				NavBarItem contactLink = storeDb.CreateSeedNavBarItem("Contact Us", "/Contact", false, null, firstStoreFront);
-				NavBarItem answersLink = storeDb.CreateSeedNavBarItem("Questions?", "/Answers", false, null, firstStoreFront);
-			}
 
 			//add product categories
 			if (storeDb.ProductCategories.IsEmpty())
@@ -168,7 +173,7 @@ namespace GStore.Data
 			UserProfile adminProfile = storeDb.UserProfiles.Create();
 			adminProfile.UserId = adminUserId;
 			//adminProfile.StoreFront = storeFront;
-			adminProfile.AllowUsersToSendSiteMessages = false;
+			adminProfile.AllowUsersToSendSiteMessages = true;
 			adminProfile.Email = adminEmail;
 			adminProfile.FullName = adminFullName;
 			adminProfile.NotifyAllWhenLoggedOn = false;
@@ -192,11 +197,12 @@ namespace GStore.Data
 		{
 			UserProfile profile = storeDb.UserProfiles.Create();
 			profile.UserId = userId;
-			profile.StoreFront = storeFront;
-			profile.AllowUsersToSendSiteMessages = false;
+			profile.StoreFrontId = storeFront.StoreFrontId;
+			profile.ClientId = storeFront.ClientId;
+			profile.AllowUsersToSendSiteMessages = true;
 			profile.Email = email;
 			profile.FullName = fullName;
-			profile.NotifyAllWhenLoggedOn = false;
+			profile.NotifyAllWhenLoggedOn = true;
 			profile.NotifyOfSiteUpdatesToEmail = true;
 			profile.SendMoreInfoToEmail = false;
 			profile.SendSiteMessagesToEmail = true;
@@ -275,11 +281,12 @@ namespace GStore.Data
 			storeFront.MetaApplicationTileColor = "#880088";
 			storeFront.MetaDescription = "New GStore Storefront " + storeFrontName;
 			storeFront.MetaKeywords = "GStore Storefront " + storeFrontName;
-			storeFront.AdminLayout = layout;
-			storeFront.AccountLayout = layout;
-			storeFront.ManageLayout = layout;
-			storeFront.NotificationsLayout = layout;
-			storeFront.CatalogLayout = layout;
+			storeFront.AdminLayoutName = layout;
+			storeFront.AccountLayoutName = layout;
+			storeFront.ProfileLayoutName = layout;
+			storeFront.NotificationsLayoutName = layout;
+			storeFront.CatalogLayoutName = layout;
+			storeFront.DefaultNewPageLayoutName = layout;
 			storeFront.CatalogPageInitialLevels = 6;
 			storeFront.NavBarCatalogMaxLevels = 6;
 			storeFront.NavBarItemsMaxLevels = 6;
@@ -313,19 +320,164 @@ namespace GStore.Data
 
 		}
 
-		public static StoreBinding CreateSeedStoreBinding(this IGstoreDb storeDb, StoreFront storeFront)
+		public static StoreBinding CreatAutoMapStoreBindingToCurrentUrl(this IGstoreDb storeDb, Controllers.BaseClass.BaseController baseController)
+		{
+			if (HttpContext.Current == null)
+			{
+				throw new ApplicationException("Cannot create auto-map binding when HttpContext.Current is null");
+			}
+			HttpRequestBase request = baseController.Request;
+
+			UserProfile profile = storeDb.SeedAutoMapUserBestGuess();
+			StoreFront storeFront = storeDb.SeedAutoMapStoreFrontBestGuess();
+
+			IGstoreDb systemDb = storeDb.NewContext(profile.UserName, storeFront, profile);
+			StoreBinding binding = systemDb.CreateSeedStoreBindingToCurrentUrl(storeFront);
+
+			string message = "--Bindings auto-mapped to StoreFront '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId + "]"
+				+ " For HostName: " + binding.HostName + " Port: " + binding.Port + " RootPath: " + binding.RootPath
+				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
+				+ " HTTPMethod: " + request.HttpMethod + " Client IP: " + request.UserHostAddress;
+
+			System.Diagnostics.Trace.WriteLine(message);
+			EventLogExtensions.LogSystemEvent(systemDb, baseController.HttpContext, baseController.RouteData, baseController.RouteData.ToSourceString(), SystemEventLevel.Information, message, string.Empty, string.Empty, string.Empty, baseController);
+
+			return binding;
+
+		}
+
+		public static StoreBinding CreatAutoMapStoreBindingToCatchAll(this IGstoreDb storeDb, GStore.Controllers.BaseClass.BaseController baseController)
+		{
+			UserProfile profile = storeDb.SeedAutoMapUserBestGuess();
+			StoreFront storeFront = storeDb.SeedAutoMapStoreFrontBestGuess();
+
+			IGstoreDb systemDb = storeDb;
+			systemDb.UserName = profile.UserName;
+			systemDb.CachedStoreFront = storeFront;
+			systemDb.CachedUserProfile = profile;
+			StoreBinding binding = systemDb.CreateSeedStoreBindingToCatchAll(storeFront);
+
+			HttpRequestBase request = baseController.Request;
+
+			string message = "--Bindings Catch-All auto-mapped to StoreFront '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId + "]"
+				+ " For HostName: " + request.BindingHostName() + " Port: " + request.BindingPort() + " RootPath: " + request.BindingRootPath()
+				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
+				+ " HTTPMethod: " + request.HttpMethod + " Client IP: " + request.UserHostAddress;
+
+			System.Diagnostics.Trace.WriteLine(message);
+
+			EventLogExtensions.LogSystemEvent(systemDb, baseController.HttpContext, baseController.RouteData, baseController.RouteData.ToSourceString(), SystemEventLevel.Information, message, string.Empty, string.Empty, string.Empty, baseController);
+			return binding;
+
+		}
+
+		public static StoreFront SeedAutoMapStoreFrontBestGuess(this IGstoreDb storeDb)
+		{
+
+			//find a suitable store front for auto-map
+			if (storeDb.StoreFronts.IsEmpty())
+			{
+				throw new ApplicationException("No storefronts in database for auto-mapping. Be sure database is seeded.");
+			}
+
+			StoreFront storeFrontFirstActive = storeDb.StoreFronts.All().WhereIsActive().OrderByDescending(sf=>sf.StoreFrontId).FirstOrDefault();
+			if (storeFrontFirstActive != null)
+			{
+				return storeFrontFirstActive;
+			}
+
+			var activeClientInactiveStoreFrontQuery = from sf in storeDb.StoreFronts.All()
+													  join c in storeDb.Clients.All().WhereIsActive()
+													  on sf.ClientId equals c.ClientId
+													  orderby sf.StoreFrontId descending, c.ClientId descending
+													  select sf;
+
+			//same qurery in lambda syntax
+			//var activeClientInactiveStoreFrontQuery2 = storeDb.StoreFronts.All().Join(
+			//	storeDb.Clients.All().WhereIsActive(),
+			//	sf => sf.ClientId,
+			//	c => c.ClientId,
+			//	(sf, c) => sf
+			//	);
+
+			StoreFront storeFrontFirstInactiveWithActiveClient = activeClientInactiveStoreFrontQuery.FirstOrDefault();
+			if (storeFrontFirstInactiveWithActiveClient != null)
+			{
+				return storeFrontFirstInactiveWithActiveClient;
+			}
+
+			//no active storefront, pick the first inactive one
+			return storeDb.StoreFronts.All().OrderBy(sf => sf.StoreFrontId).FirstOrDefault();
+		}
+
+
+		public static UserProfile SeedAutoMapUserBestGuess(this IGstoreDb storeDb)
+		{
+
+			//find a suitable user for auto-map
+			if (storeDb.UserProfiles.IsEmpty())
+			{
+				throw new ApplicationException("No users in database. Cannot auto-map. Be sure to seed database.");
+			}
+
+			string userName = storeDb.UserName;
+			if (!string.IsNullOrEmpty(userName ))
+			{
+				UserProfile currentUserIfAdmin = storeDb.UserProfiles.All().WhereIsActive().Where(up => up.ClientId == null && up.UserName == userName).OrderBy(up => up.UserProfileId).FirstOrDefault();
+				if (currentUserIfAdmin != null)
+				{
+					return currentUserIfAdmin;
+				}
+			}
+			
+			UserProfile profileNullClientIdAndActive = storeDb.UserProfiles.All().WhereIsActive().Where(up => up.ClientId == null).OrderBy(up => up.UserProfileId).FirstOrDefault();
+			if (profileNullClientIdAndActive != null)
+			{
+				return profileNullClientIdAndActive;
+			}
+
+			UserProfile profileActiveAny = storeDb.UserProfiles.All().WhereIsActive().OrderBy(up => up.UserProfileId).FirstOrDefault();
+			if (profileActiveAny != null)
+			{
+				return profileActiveAny;
+			}
+
+			//no active profiles, pick first inactive one
+			return storeDb.UserProfiles.All().OrderBy(up => up.UserProfileId).First();
+
+		}
+
+		public static StoreBinding CreateSeedStoreBindingToCatchAll(this IGstoreDb storeDb, StoreFront storeFront)
 		{
 			StoreBinding storeBinding = storeDb.StoreBindings.Create();
-			storeBinding.Client = storeFront.Client;
+			storeBinding.ClientId = storeFront.ClientId;
+			storeBinding.StoreFrontId = storeFront.StoreFrontId;
+			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
+			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			storeBinding.HostName = "*";
+			storeBinding.Port = 0;
+			storeBinding.RootPath = "*";
+
+			storeDb.StoreBindings.Add(storeBinding);
+			storeDb.SaveChangesEx(true, false, false, false);
+
+			return storeBinding;
+		}
+
+		public static StoreBinding CreateSeedStoreBindingToCurrentUrl(this IGstoreDb storeDb, StoreFront storeFront)
+		{
+			StoreBinding storeBinding = storeDb.StoreBindings.Create();
+			storeBinding.ClientId = storeFront.ClientId;
 			storeBinding.StoreFrontId = storeFront.StoreFrontId;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeBinding.RootPath = "/";
 			if (HttpContext.Current == null)
 			{
-				storeBinding.HostName = "localhost";
-				storeBinding.Port = 55520;
-				storeBinding.RootPath = "/";
+				storeBinding.HostName = "*";
+				storeBinding.Port = 0;
+				storeBinding.RootPath = "*";
 			}
 			else
 			{
@@ -353,18 +505,56 @@ namespace GStore.Data
 			return pageTemplate;
 		}
 
+		public static Page CreateAutoHomePage(this IGstoreDb db, HttpRequestBase request, StoreFront storeFront, Controllers.BaseClass.BaseController baseController)
+		{
+
+			UserProfile userProfile = db.SeedAutoMapUserBestGuess();
+			db.CachedStoreFront = null;
+			db.CachedUserProfile = userProfile;
+			db.UserName = userProfile.UserName;
+
+			PageTemplate pageTemplate = null;
+			if (!db.PageTemplates.IsEmpty())
+			{
+				//look for match for storefront default new page layout name
+				pageTemplate = db.PageTemplates.All().Where(pt => pt.LayoutName == storeFront.DefaultNewPageLayoutName).OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
+				if (pageTemplate == null)
+				{
+					pageTemplate = db.PageTemplates.All().OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
+				}
+			}
+			else
+			{
+				//no page templates in database, create a seed one
+				pageTemplate = db.CreateSeedPageTemplate(storeFront.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultLayoutViewName);
+			}
+
+			Page page = db.CreateSeedPage(storeFront.Name, storeFront.Name, "/", 1000, storeFront, pageTemplate);
+
+			string message = "--Auto-Created Home Page for StoreFront '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "]"
+				+ " For HostName: " + request.BindingHostName() + " Port: " + request.BindingPort() + " RootPath: " + request.BindingRootPath()
+				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
+				+ " HTTPMethod: " + request.HttpMethod + " Client IP: " + request.UserHostAddress;
+
+			System.Diagnostics.Trace.WriteLine(message);
+
+			EventLogExtensions.LogSystemEvent(db, baseController.HttpContext, baseController.RouteData, baseController.RouteData.ToSourceString(), SystemEventLevel.Information, message, string.Empty, string.Empty, string.Empty, baseController);
+
+			return page;
+		}
+
 		public static Page CreateSeedPage(this IGstoreDb storeDb, string name, string pageTitle, string url, int order, StoreFront storeFront, PageTemplate pageTemplate)
 		{
 			Page page = storeDb.Pages.Create();
-			page.Client = storeFront.Client;
-			page.PageTemplate = pageTemplate;
+			page.ClientId = storeFront.ClientId;
+			page.PageTemplateId = pageTemplate.PageTemplateId;
 			page.Order = 100;
 			page.Name = name;
 			page.PageTitle = pageTitle;
 			page.Public = true;
 			page.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-			page.StoreFront = storeFront;
+			page.StoreFrontId = storeFront.StoreFrontId;
 			page.Url = url;
 			storeDb.Pages.Add(page);
 			storeDb.SaveChangesEx(true, false, false, false);
@@ -373,19 +563,46 @@ namespace GStore.Data
 
 		}
 
-		public static NavBarItem CreateSeedNavBarItem(this IGstoreDb storeDb, string name, string localHRef, bool forRegisteredOnly, NavBarItem parentNavBarItem, StoreFront storeFront)
+		public static NavBarItem CreateSeedNavBarItem(this IGstoreDb storeDb, string name, int pageId, bool forRegisteredOnly, NavBarItem parentNavBarItem, StoreFront storeFront)
 		{
 			NavBarItem newItem = storeDb.NavBarItems.Create();
 			newItem.Client = storeFront.Client;
 			newItem.StoreFront = storeFront;
-			newItem.IsLocalHRef = true;
-			newItem.LocalHRef = localHRef;
+			newItem.IsPage = true;
+			newItem.PageId = pageId;
 			newItem.Name = name;
 			newItem.Order = 100;
 			newItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			newItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			newItem.ForRegisteredOnly = forRegisteredOnly;
-			newItem.UseDividerAfterOnMenu = true;
+			newItem.UseDividerAfterOnMenu = false;
+			newItem.UseDividerBeforeOnMenu = true;
+
+			if (parentNavBarItem != null)
+			{
+				newItem.ParentNavBarItem = parentNavBarItem;
+			}
+			storeDb.NavBarItems.Add(newItem);
+			storeDb.SaveChangesEx(true, false, false, false);
+
+			return newItem;
+		}
+
+		public static NavBarItem CreateSeedNavBarItemForAction(this IGstoreDb storeDb, string name, string action, string controller, string area, bool forRegisteredOnly, NavBarItem parentNavBarItem, StoreFront storeFront)
+		{
+			NavBarItem newItem = storeDb.NavBarItems.Create();
+			newItem.Client = storeFront.Client;
+			newItem.StoreFront = storeFront;
+			newItem.IsAction = true;
+			newItem.Action = action;
+			newItem.Controller = controller;
+			newItem.Area = area;
+			newItem.Name = name;
+			newItem.Order = 100;
+			newItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			newItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			newItem.ForRegisteredOnly = forRegisteredOnly;
+			newItem.UseDividerAfterOnMenu = false;
 			newItem.UseDividerBeforeOnMenu = true;
 
 			if (parentNavBarItem != null)
@@ -412,7 +629,7 @@ namespace GStore.Data
 			category.ShowInMenu = true;
 			category.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			category.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-			category.UseDividerAfterOnMenu = true;
+			category.UseDividerAfterOnMenu = false;
 			category.UseDividerBeforeOnMenu = true;
 
 			if (parentProductCategory != null)
@@ -442,6 +659,5 @@ namespace GStore.Data
 
 			return product;
 		}
-
 	}
 }

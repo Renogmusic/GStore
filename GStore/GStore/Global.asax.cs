@@ -22,11 +22,11 @@ namespace GStore
 			switch (Data.RepositoryFactory.RepositoryProvider())
 			{
 				case Data.RepositoryProviderEnum.EntityFrameworkCodeFirstProvider:
-					if (Properties.Settings.Default.InitializeEFCodeFirstMigrateLatest)
+					if (Properties.Settings.Current.InitializeEFCodeFirstMigrateLatest)
 					{
 						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreDbContextInitializerMigrateLatest());
 					}
-					else if (Properties.Settings.Default.InitializeEFCodeFirstDropCreate)
+					else if (Properties.Settings.Current.InitializeEFCodeFirstDropCreate)
 					{
 						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreEFDbContextInitializerDropCreate());
 					}
@@ -40,22 +40,36 @@ namespace GStore
 				default:
 					break;
 			}
+
+			
 		}
 
 		protected void Application_Error()
 		{
 			Exception ex = Server.GetLastError();
-			if (ex is HttpException)
+			try
 			{
-				Exceptions.ExceptionHandler.HandleHttpException(ex as HttpException, true, HttpContext.Current, null, null);
+				if (ex is HttpException)
+				{
+					Exceptions.ExceptionHandler.HandleHttpException(ex as HttpException, true, HttpContext.Current, null, null);
+				}
+				else if (ex is ApplicationException)
+				{
+					Exceptions.ExceptionHandler.HandleAppException(ex as ApplicationException, true, HttpContext.Current, null, null);
+				}
+				else if (ex is InvalidOperationException)
+				{
+					Exceptions.ExceptionHandler.HandleInvalidOperationException(ex as InvalidOperationException, true, HttpContext.Current, null, null);
+				}
+				else
+				{
+					Exceptions.ExceptionHandler.HandleUnknownException(ex, true, HttpContext.Current, null, null);
+				}
 			}
-			else if (ex is ApplicationException)
+			catch (Exception exInHandler)
 			{
-				Exceptions.ExceptionHandler.HandleAppException(ex as ApplicationException, true, HttpContext.Current, null, null);
-			}
-			else
-			{
-				Exceptions.ExceptionHandler.HandleUnknownException(ex, true, HttpContext.Current, null, null);
+				string errorInHandler = exInHandler.Message;
+				throw exInHandler;
 			}
 		}
 	}

@@ -1,0 +1,99 @@
+﻿@model IEnumerable<GStore.Models.StoreFront>
+<h2>StoreFront Index</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.Client.ClientId)
+		</th>
+		<th class="small">
+			Client Name
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.StoreFrontId)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.Name)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.Folder)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.PublicUrl)
+		</th>
+        <th class="small">
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.IsPending)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</th>
+		<th class="small"></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+		<td>
+			@Html.DisplayFor(modelItem => item.Client.ClientId)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.Client.Name)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.StoreFrontId)
+		</td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Folder)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PublicUrl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdatedBy.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsPending)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.StoreFrontId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.StoreFrontId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.StoreFrontId })
+        </td>
+    </tr>
+}
+
+</table>

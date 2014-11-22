@@ -14,11 +14,147 @@ using GStore.Models.Extensions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using GStore.Models.ViewModels;
+using GStore.Identity;
 
 namespace GStore.AppHtmlHelpers
 {
 	public static class AppHtmlHelper
 	{
+		public static string GStoreVersionNumber(this HtmlHelper htmlHelper)
+		{
+			System.Reflection.Assembly assembly = typeof(GStore.Models.StoreFront).Assembly;
+			return assembly.GetName().Version.ToString();
+		}
+
+		public static string GStoreVersionDateString(this HtmlHelper htmlHelper, bool useFileDate = false)
+		{
+			System.Reflection.Assembly assembly = typeof(GStore.Models.StoreFront).Assembly;
+			Version version = assembly.GetName().Version;
+			DateTime buildDate = new DateTime(2000, 1, 1, 0, 0, 0)
+				.AddDays(version.Build)
+				.AddSeconds(version.Revision * 2);
+
+			if (TimeZone.IsDaylightSavingTime(buildDate, TimeZone.CurrentTimeZone.GetDaylightChanges(buildDate.Year)))
+			{
+				buildDate = buildDate.AddHours(1);
+			}
+
+			return buildDate.ToString();
+
+		}
+
+		public static StoreFront CurrentStoreFront(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				throw new ApplicationException("Controller not found. Make sure controller inherits from Controllers.BaseClass.BaseController or a descendant");
+			}
+			if (throwErrorIfNotFound)
+			{
+				return controller.CurrentStoreFrontOrThrow;
+			}
+			return controller.CurrentStoreFrontOrNull;
+		}
+
+		public static Client CurrentClient(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				throw new ApplicationException("Controller not found. Make sure controller inherits from Controllers.BaseClass.BaseController or a descendant");
+			}
+			if (throwErrorIfNotFound)
+			{
+				return controller.CurrentClientOrThrow;
+			}
+			return controller.CurrentClientOrNull;
+		}
+
+		public static UserProfile CurrentUserProfile(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				if (throwErrorIfNotFound)
+				{
+					throw new ApplicationException("Base Controller not found. Make sure controller inherits from Controllers.BaseClass.PageBaseController or a descendant");
+				}
+				return null;
+			}
+
+			if (throwErrorIfNotFound)
+			{
+				return controller.CurrentUserProfileOrThrow;
+			}
+			return controller.CurrentUserProfileOrNull;
+
+		}
+
+		public static StoreBinding GetCurrentStoreBinding(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				if (throwErrorIfNotFound)
+				{
+					throw new ApplicationException("Base Controller not found. Make sure controller inherits from Controllers.BaseClass.PageBaseController or a descendant");
+				}
+				return null;
+			}
+
+			StoreBinding binding = controller.GStoreDb.GetCurrentStoreBindingOrNull(htmlHelper.ViewContext.HttpContext.Request);
+			if (throwErrorIfNotFound && binding == null)
+			{
+				throw new ApplicationException("Store Binding not found for " 
+					+ "Binding Host Name: " + htmlHelper.ViewContext.HttpContext.Request.BindingHostName()
+					+ "Binding Port: " + htmlHelper.ViewContext.HttpContext.Request.BindingPort()
+					+ "Binding Root Path: " + htmlHelper.ViewContext.HttpContext.Request.BindingRootPath());
+			}
+			return binding;
+		}
+
+		public static Page CurrentPage(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.PageBaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.PageBaseController;
+			if (controller == null)
+			{
+				if (throwErrorIfNotFound)
+				{
+					throw new ApplicationException("Page Controller not found. Make sure controller inherits from Controllers.BaseClass.PageBaseController or a descendant");
+				}
+				return null;
+			}
+			
+			if (throwErrorIfNotFound)
+			{
+				return controller.CurrentPageOrThrow;
+			}
+			return controller.CurrentPageOrNull;
+		}
+
+		public static Data.IGstoreDb GStoreDb(this HtmlHelper htmlHelper)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				throw new ApplicationException("Controller not found. Make sure controller inherits from Controllers.BaseClass.BaseController or a descendant");
+			}
+			return controller.GStoreDb;
+		}
+
+		public static string LayoutNameToUse(this HtmlHelper htmlHelper)
+		{
+			Controllers.BaseClass.PageBaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.PageBaseController;
+			if (controller == null)
+			{
+				return Properties.Settings.Current.AppDefaultLayoutName;
+			}
+
+			return controller.LayoutNameToUse;
+
+		}
 
 		public static MvcHtmlString ActionSortLink<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action)
 		{
@@ -29,6 +165,43 @@ namespace GStore.AppHtmlHelpers
 
 			return htmlHelper.ActionSortLink(displayName, action, modelPropertyName);
 
+		}
+
+		public static bool UserHasPermission(this HtmlHelper htmlHelper, Identity.GStoreAction action)
+		{
+			return htmlHelper.CurrentStoreFront(false).Authorization_IsAuthorized(htmlHelper.CurrentUserProfile(false), action);
+		}
+
+		public static bool UserHasPermissionToAny(this HtmlHelper htmlHelper, params GStoreAction[] actions)
+		{
+			if (actions.Count() == 0)
+			{
+				throw new ApplicationException("UserHasPermissionToAny called but no action (permission) was supplied.  Be sure call to UserHasPermission has at least one action to check permission for.");
+			}
+			foreach (GStoreAction action in actions)
+			{
+				if (htmlHelper.CurrentStoreFront(false).Authorization_IsAuthorized(htmlHelper.CurrentUserProfile(false), action))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static bool UserHasAllPermissionToAll(this HtmlHelper htmlHelper, params GStoreAction[] actions)
+		{
+			if (actions.Count() == 0)
+			{
+				throw new ApplicationException("UserHasAllPermissionToAll called but no action (permission) was supplied.  Be sure call to UserHasPermission has at least one action to check permission for.");
+			}
+			foreach (GStoreAction action in actions)
+			{
+				if (!htmlHelper.CurrentStoreFront(false).Authorization_IsAuthorized(htmlHelper.CurrentUserProfile(false), action))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 
 		public static MvcHtmlString ActionSortLink<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action)
@@ -118,9 +291,10 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			returnValue.AppendLine("<script>");
+			returnValue.AppendLine("<!-- User Messages -->");
 			foreach (UserMessage userMessage in userMessages)
 			{
-				returnValue.AppendLine("AddUserMessage('" + userMessage.Title + "', '" + userMessage.Message + "', '" + userMessage.MessageType.ToString().ToLower() + "');");
+				returnValue.AppendLine("AddUserMessage(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
 			}
 			returnValue.AppendLine("</script>");
 
@@ -150,9 +324,10 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			returnValue.AppendLine("<script>");
+			returnValue.AppendLine("<!-- User Messages Bottom -->");
 			foreach (UserMessage userMessage in userMessagesBottom)
 			{
-				returnValue.AppendLine("AddBottomAlert('" + userMessage.Title + "', '" + userMessage.Message + "', '" + userMessage.MessageType.ToString().ToLower() + "');");
+				returnValue.AppendLine("AddBottomAlert(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
 			}
 			returnValue.AppendLine("</script>");
 
@@ -235,7 +410,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="action"></param>
 		/// <param name="label"></param>
 		/// <returns></returns>
-		public static MvcHtmlString GaEventScript<TModel>(this HtmlHelper<TModel> htmlHelper, string category, string action, string label)
+		public static MvcHtmlString GaEventScript(this HtmlHelper htmlHelper, string category, string action, string label)
 		{
 			string script = "GaEvent("
 				+ "'" + HttpUtility.JavaScriptStringEncode(category) + "'"
@@ -247,15 +422,33 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
+		/// <summary>
+		/// Javascript value for the google Analytics web property id; or "null" (no quotes) if none
+		/// examples:   return  null  if EnableGoogleAnalytics = false, returns  'UA-example' if property id in storefront is UA-Example
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static MvcHtmlString GoogleAnalyticsWebPropertyIdValueJs(this HtmlHelper htmlHelper, StoreFront storeFront)
+		{
+			if (storeFront == null || !storeFront.EnableGoogleAnalytics)
+			{
+				return new MvcHtmlString("null");
+			}
+
+			string value = "'" + htmlHelper.JavaScriptEncode(storeFront.GoogleAnalyticsWebPropertyId, false) + "'";
+			return new MvcHtmlString(value);
+		}
+
 		public static MvcHtmlString RenderNotificationLink<TModel>(this HtmlHelper<TModel> htmlHelper, Models.NotificationLink link, int counter)
 		{
 			return new MvcHtmlString(link.NotificationLinkTag(counter));
 		}
 
 
-		public static MvcHtmlString DisplayTextMaxLines<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, int maxLines = 4, int lineLength=40)
+		public static MvcHtmlString DisplayTextMaxLines<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, int maxLines = 4, int lineLength = 40)
 		{
-			return htmlHelper.DisplayFor(expression, "DisplayTextMaxLines", new { MaxLines = maxLines, LineLength = lineLength} );
+			return htmlHelper.DisplayFor(expression, "DisplayTextMaxLines", new { MaxLines = maxLines, LineLength = lineLength });
 		}
 
 
@@ -399,7 +592,7 @@ namespace GStore.AppHtmlHelpers
 
 		public static void SendEmail(Client client, string toEmail, string toName, string subject, string textBody, string htmlBody, string urlHost)
 		{
-			if (!Properties.Settings.Default.AppEnableEmail)
+			if (!Properties.Settings.Current.AppEnableEmail)
 			{
 				return;
 			}
@@ -436,7 +629,7 @@ namespace GStore.AppHtmlHelpers
 
 		public static void SendSms(Client client, string toPhoneNumber, string textBody, string urlHost)
 		{
-			if (!Properties.Settings.Default.AppEnableSMS)
+			if (!Properties.Settings.Current.AppEnableSMS)
 			{
 				return;
 			}
@@ -459,7 +652,7 @@ namespace GStore.AppHtmlHelpers
 		   );
 			var result = Twilio.SendMessage(
 				client.TwilioFromPhone,
-				toPhoneNumber, 
+				toPhoneNumber,
 				textBody
 				);
 
@@ -471,7 +664,7 @@ namespace GStore.AppHtmlHelpers
 		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
 			StringBuilder html = new StringBuilder();
-			UrlHelper urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
+			UrlHelper urlHelper = htmlHelper.UrlHelper();
 			if (level == 1 && category.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
@@ -487,6 +680,10 @@ namespace GStore.AppHtmlHelpers
 			else
 			{
 				//regular Leaf category no dropdown
+				if (level != 1 && category.Entity.UseDividerBeforeOnMenu)
+				{
+					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
+				}
 				html.AppendLine(Tab(3 + level * 2)
 					+ "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">"
 					+ "\n" + Tab(4 + level * 2)
@@ -499,57 +696,18 @@ namespace GStore.AppHtmlHelpers
 						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
 						+ htmlHelper.Encode(category.Entity.Name)
 					+ "</a>");
-			}
-			return new MvcHtmlString(html.ToString());
-		}
-
-		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
-		{
-			return new MvcHtmlString(Tab(3 + level * 2) + "</li>\n");
-		}
-
-		public static MvcHtmlString CatalogMenuChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
-		{
-			string html = string.Empty;
-			if (level == 1)
-			{
-				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu CatalogMenuChildContainer CatalogMenuChildContainerLevel" + level + "\" role=\"menu\">\n";
-			}
-			else
-			{
-				if (category.Entity.UseDividerBeforeOnMenu)
-				{
-					html = Tab(4 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
-				}
-				html += Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
-			}
-
-			return new MvcHtmlString(html);
-		}
-
-		public static MvcHtmlString CatalogMenuChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
-		{
-			string html = string.Empty;
-			if (level == 1)
-			{
-				html = Tab(4 + level * 2) + "</ul>\n";
-			}
-			else
-			{
-				html = Tab(4 + level * 2) + "</li>\n";
 				if (category.Entity.UseDividerAfterOnMenu)
 				{
-					html += Tab(4 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
+					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
 				}
 			}
-
-			return new MvcHtmlString(html);
+			return new MvcHtmlString(html.ToString());
 		}
 
 		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
 		{
 			StringBuilder html = new StringBuilder();
-			UrlHelper urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
+			UrlHelper urlHelper = htmlHelper.UrlHelper();
 
 			navBarItem.Entity.Url(urlHelper);
 			string targetTag = string.Empty;
@@ -562,7 +720,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
 				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
-					+ "\n" + Tab(4 + level * 2) + "<a href=\"" + navBarItem.Entity.Url(urlHelper) + "\""
+					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
 						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" title=\"" +
 						htmlHelper.AttributeEncode(navBarItem.Entity.Name)
 						+ targetTag + "\">"
@@ -573,6 +731,11 @@ namespace GStore.AppHtmlHelpers
 			else
 			{
 				//regular Leaf NavBarItem no dropdown
+				if (level != 1 && navBarItem.Entity.UseDividerBeforeOnMenu)
+				{
+					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n");
+				}
+
 				html.AppendLine(Tab(3 + level * 2)
 					+ "<li class=\"NavBarItem NavBarItemLevel" + level + "\">"
 					+ "\n" + Tab(4 + level * 2)
@@ -589,9 +752,39 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html.ToString());
 		}
 
-		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
-			return new MvcHtmlString(Tab(3 + level * 2) + "</li>\n");
+			string html = Tab(3 + level * 2) + "</li>\n";
+			if (category.Entity.UseDividerAfterOnMenu && level != 1)
+			{
+				html += Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
+			}
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
+		{
+			string html = Tab(3 + level * 2) + "</li>\n";
+			if (navBarItem.Entity.UseDividerAfterOnMenu && level != 1)
+			{
+				html += Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
+			}
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString CatalogMenuChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu CatalogMenuChildContainer CatalogMenuChildContainerLevel" + level + "\" role=\"menu\">\n";
+			}
+			else
+			{
+				html += Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
+			}
+
+			return new MvcHtmlString(html);
 		}
 
 		public static MvcHtmlString NavBarItemChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
@@ -603,11 +796,22 @@ namespace GStore.AppHtmlHelpers
 			}
 			else
 			{
-				if (NavBarItem.Entity.UseDividerBeforeOnMenu)
-				{
-					html = Tab(4 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
-				}
 				html += Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
+			}
+
+			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString CatalogMenuChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		{
+			string html = string.Empty;
+			if (level == 1)
+			{
+				html = Tab(4 + level * 2) + "</ul>\n";
+			}
+			else
+			{
+				html = Tab(4 + level * 2) + "</li>\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -623,10 +827,6 @@ namespace GStore.AppHtmlHelpers
 			else
 			{
 				html = Tab(4 + level * 2) + "</li>\n";
-				if (NavBarItem.Entity.UseDividerAfterOnMenu)
-				{
-					html += Tab(4 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
-				}
 			}
 
 			return new MvcHtmlString(html);
@@ -634,6 +834,23 @@ namespace GStore.AppHtmlHelpers
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
 		{
+			if (navBarItem.IsPage)
+			{
+
+				string url = navBarItem.Page.Url.Trim('~').Trim('/');
+				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+				string appRoot = HttpContext.Current.Request.ApplicationPath.Trim('/').ToLower();
+				if (appRoot.Length == 0)
+				{
+					return "/" + url;
+				}
+				else if (currentRawUrl.StartsWith(appRoot))
+				{
+					return "/" + appRoot + "/" + url;
+				}
+				return "/" + url;
+
+			}
 			if (navBarItem.IsAction)
 			{
 				if (!string.IsNullOrEmpty(navBarItem.Area))
@@ -644,24 +861,25 @@ namespace GStore.AppHtmlHelpers
 			}
 			else if (navBarItem.IsLocalHRef)
 			{
-				string url = navBarItem.LocalHRef;
-				string appRoot = HttpContext.Current.Request.ApplicationPath;
-				if (url.StartsWith("/") || url.StartsWith("~/"))
+				string url = navBarItem.LocalHRef.Trim('~').Trim('/');
+				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+				string appRoot = HttpContext.Current.Request.ApplicationPath.Trim('/').ToLower();
+				if (appRoot.Length == 0)
 				{
-					//starts with slash add root virtual path
-					url = appRoot + url.TrimStart('~').TrimStart('/');
+					return "/" + url;
 				}
-				else
+				else if (currentRawUrl.StartsWith(appRoot))
 				{
-					url = appRoot + url;
+					return "/" + appRoot + "/" + url;
 				}
-				return url;
+				return "/" + url;
+
 			}
 			else if (navBarItem.IsRemoteHRef)
 			{
 				if (navBarItem.RemoteHRef.ToLower().StartsWith("http://") || navBarItem.RemoteHRef.ToLower().StartsWith("mailto:"))
 				{
-					return navBarItem.RemoteHRef; 
+					return navBarItem.RemoteHRef;
 				}
 				return "http://" + navBarItem.RemoteHRef;
 			}
@@ -688,7 +906,7 @@ namespace GStore.AppHtmlHelpers
 				return new MvcHtmlString(htmlCatalogLink + htmlLinks);
 			}
 			return new MvcHtmlString(htmlCatalogLink + htmlSeparator + htmlLinks);
-			
+
 		}
 
 		private static MvcHtmlString RecurseProductCategoryParentLinks(ProductCategory category, int currentLevel, int maxLevels, bool level1IsLink, string htmlSeparator, HtmlHelper htmlHelper)
@@ -707,7 +925,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				link = htmlHelper.ActionLink(category.Name, "ViewCategoryByName", "Catalog", new { urlName = category.UrlName }, null);
 			}
-			
+
 			if (category.ParentCategory != null && currentLevel < maxLevels)
 			{
 				MvcHtmlString parentHtml = RecurseProductCategoryParentLinks(category.ParentCategory, currentLevel + 1, maxLevels, level1IsLink, htmlSeparator, htmlHelper);
@@ -727,5 +945,162 @@ namespace GStore.AppHtmlHelpers
 		{
 			return string.Concat(Enumerable.Repeat(value, count));
 		}
+
+		/// <summary>
+		/// Renders hidden fields for CreatedBy_UserProfileId, UpdatedBy_UserProfileId, CreateDateTimeUtc, UpdateDateTimeUtc
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HiddenAuditFields<TModel>(this HtmlHelper<TModel> htmlHelper) where TModel : Models.BaseClasses.AuditFieldsAllRequired
+		{
+			if (!(htmlHelper.ViewContext.Controller is Controllers.BaseClass.BaseController))
+			{
+				throw new ApplicationException("htmlHelper.ViewContext.Controller must inherit from base controller for this method: HiddenAuditFields<AuditFieldsAllRequired>");
+			}
+			UserProfile profile = htmlHelper.CurrentUserProfile(true);
+			int createdByUserProfileId = profile.UserProfileId;
+			DateTime createDateTimeUtc = DateTime.UtcNow;
+			if (htmlHelper.ViewData.Model != null)
+			{
+				createdByUserProfileId = htmlHelper.ViewData.Model.CreatedBy_UserProfileId;
+				createDateTimeUtc = htmlHelper.ViewData.Model.CreateDateTimeUtc;
+			}
+
+			return new MvcHtmlString(htmlHelper.Hidden("CreatedBy_UserProfileId", createdByUserProfileId).ToHtmlString()
+				+ htmlHelper.Hidden("CreateDateTimeUtc", createDateTimeUtc).ToHtmlString()
+				+ htmlHelper.Hidden("UpdatedBy_UserProfileId", profile.UserProfileId).ToHtmlString()
+				+ htmlHelper.Hidden("UpdateDateTimeUtc", DateTime.UtcNow).ToHtmlString());
+
+		}
+
+		public static UrlHelper UrlHelper(this HtmlHelper htmlHelper)
+		{
+			return new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
+		}
+
+		public static string ToJsValue(this string value, bool addDoubleQuotes = true)
+		{
+			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes);
+		}
+
+		public static MvcHtmlString JavaScriptEncode(this HtmlHelper htmlHelper, string value, bool addDoubleQuotes = false)
+		{
+			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
+		}
+
+		/// <summary>
+		/// Returns a string representing the number of bytes, kb, mb, gb, tb
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToByteString(this long byteCount)
+		{
+			long value = byteCount;
+			if (value < 1024)
+			{
+				return value + " B";
+			}
+			value = value / 1024;
+			if (value < 1024)
+			{
+				return value + " KB";
+			}
+			value = value / 1024;
+			if (value < 1024)
+			{
+				return value + " MB";
+			}
+			value = value / 1024;
+			if (value < 1024)
+			{
+				return value + " GB";
+			}
+			value = value / 1024;
+			if (value < 1024)
+			{
+				return value + " TB";
+			}
+			return value + " (over limit)";
+
+		}
+
+		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index)
+		{
+			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
+			if (pageViewModel.Page == null)
+			{
+				throw new ApplicationException("Page cannot be null");
+			}
+			Page page = pageViewModel.Page;
+			PageTemplate pageTemplate = page.PageTemplate;
+			if (pageTemplate.Sections == null || pageTemplate.Sections.Count == 0)
+			{
+				throw new ApplicationException("No sections found in Page Template [" + pageTemplate.PageTemplateId + "] '" + pageTemplate.Name + "' Make sure to define sections in PageTemplateSections. Add a record for PageTemplateSection.Name: '" + sectionName + "'");
+			}
+
+			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+			if (pageTemplateSection == null)
+			{
+				throw new ApplicationException("Page Template section not found in Page Template [" + pageTemplate.PageTemplateId + "] '" + pageTemplate.Name + "' Add a record for PageTemplateSection.Name: '" + sectionName + "'");
+			}
+
+			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
+				.Where(ps => ps.PageTemplateSectionId == pageTemplateSection.PageTemplateSectionId)
+				.OrderBy(ps => ps.Order).ThenBy(ps => ps.PageSectionId)
+				.FirstOrDefault();
+
+			if (!pageViewModel.EditMode)
+			{
+				return pageTemplateSection.HtmlDisplay(pageSection, htmlHelper);
+			}
+			return pageTemplateSection.Editor(page, pageSection, index, htmlHelper);
+
+		}
+
+		/// <summary>
+		/// Returns HTML value of the section section
+		/// </summary>
+		/// <param name="pageSection"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HtmlDisplay<TModel>(this PageTemplateSection pageTemplateSection, PageSection pageSection, HtmlHelper<TModel> htmlHelper)
+		{
+			string value = string.Empty;
+			if (pageSection != null)
+			{
+				if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
+				{
+					value = pageSection.RawHtml;
+				}
+				else if (pageSection.HasPlainText && !string.IsNullOrEmpty(pageSection.PlainText))
+				{
+					value = HttpUtility.HtmlEncode(pageSection.PlainText).Replace("\n", "<br/>\n");
+				}
+			}
+			return new MvcHtmlString(value);
+		}
+
+		public static MvcHtmlString Editor<TModel>(this PageTemplateSection pageTemplateSection, Page page, PageSection pageSection, int index, HtmlHelper<TModel> htmlHelper) where TModel : PageViewModel
+		{
+
+			string value = string.Empty;
+			StringBuilder html = new StringBuilder();
+			if (pageSection != null)
+			{
+				if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
+				{
+					value = pageSection.RawHtml;
+				}
+				else if (pageSection.HasPlainText && !string.IsNullOrEmpty(pageSection.PlainText))
+				{
+					value = HttpUtility.HtmlEncode(pageSection.PlainText).Replace("\n", "<br/>\n");
+				}
+			}
+
+			Models.ViewModels.PageSectionEditViewModel viewModel = new Models.ViewModels.PageSectionEditViewModel(pageTemplateSection, page, pageSection, index);
+
+			return htmlHelper.EditorFor(model => viewModel);
+
+		}
+
 	}
 }

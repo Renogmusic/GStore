@@ -13,6 +13,8 @@ namespace GStore.Data.ListProvider
 	{
 		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreListSourceRepository<Models.BadRequest>(); } }
 		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreListSourceRepository<Models.Client>(); } }
+		public IGStoreRepository<Models.ClientRole> ClientRoles { get { return new GenericGStoreListSourceRepository<Models.ClientRole>(); } }
+		public IGStoreRepository<Models.ClientRoleAction> ClientRoleActions { get { return new GenericGStoreListSourceRepository<Models.ClientRoleAction>(); } }
 		public IGStoreRepository<Models.ClientUserRole> ClientUserRoles { get { return new GenericGStoreListSourceRepository<Models.ClientUserRole>(); } }
 		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreListSourceRepository<Models.FileNotFoundLog>(); } }
 		public IGStoreRepository<Models.NavBarItem> NavBarItems { get { return new GenericGStoreListSourceRepository<Models.NavBarItem>(); } }
@@ -27,7 +29,6 @@ namespace GStore.Data.ListProvider
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreListSourceRepository<Models.ProductCategory>(); } }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreListSourceRepository<Models.SecurityEvent>(); } }
 		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreListSourceRepository<Models.StoreFront>(); } }
-		public IGStoreRepository<Models.StoreFrontUserRole> StoreFrontUserRoles { get { return new GenericGStoreListSourceRepository<Models.StoreFrontUserRole>(); } }
 		public IGStoreRepository<Models.StoreBinding> StoreBindings { get { return new GenericGStoreListSourceRepository<Models.StoreBinding>(); } }
 		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreListSourceRepository<Models.SystemEvent>(); } }
 		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreListSourceRepository<Models.Theme>(); } }
@@ -93,6 +94,13 @@ namespace GStore.Data.ListProvider
 		{
 			//use same context for all lists until commit and separate contexts are coded
 			return new ListContext(userName, cachedStoreFront, cachedUserProfile);
+		}
+
+
+		public TEntity Refresh<TEntity>(TEntity entity) where TEntity : Models.BaseClasses.GStoreEntity, new()
+		{
+			//does nothing
+			return entity;
 		}
 
 		/// <summary>

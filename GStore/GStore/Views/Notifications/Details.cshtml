@@ -89,7 +89,7 @@
 			else
 			{
 				int counter = 0;
-				foreach (GStore.Data.NotificationLink link in Model.NotificationLinks.OrderBy(link => link.Order))
+				foreach (GStore.Models.NotificationLink link in Model.NotificationLinks.OrderBy(link => link.Order))
 				{
 					counter++;
 					if (counter != 1)
@@ -110,7 +110,13 @@
 		<dd>
 			<hr />
 			@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-info col-xs-4 col-sm-3", style = "margin-bottom: 1em" })
+
 			<span class="col-xs-2 col-sm-1 text-center">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+
+			@Html.ActionLink("Reply", "Reply", new { id = Model.NotificationId }, new { @class = "btn btn-warning col-xs-12 col-sm-3", style = "margin-bottom: 1em" })
+
+			<span class="hidden-xs col-sm-1 text-center">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+
 			@Html.ActionLink("Delete", "Delete", new { id = Model.NotificationId }, new { @class = "btn btn-danger col-xs-6 col-sm-3", style = "margin-bottom: 1em" })
 			@if (Model.Read)
 			{
@@ -135,34 +141,23 @@
 				@Html.DisplayFor(model => model.NotificationId)
 			</dd>
 
-
 			<dt class="bg-adminonly">
 				@Html.DisplayNameFor(model => model.FromUserProfileId)
 			</dt>
 			<dd class="bg-adminonly">
 				@Html.DisplayFor(model => model.FromUserProfileId)
+				- @Html.DisplayFor(model => model.FromUserProfile.FullName)
+				< @Html.DisplayFor(model => model.FromUserProfile.UserName) >
 			</dd>
 
 			<dt class="bg-adminonly">
-				To UserProfileId
+				@Html.DisplayNameFor(model => model.ToUserProfileId)
 			</dt>
 			<dd class="bg-adminonly">
-				@Html.DisplayFor(model => model.UserProfileId)
+				@Html.DisplayFor(model => model.ToUserProfileId)
+				- @Html.DisplayFor(model => model.ToUserProfile.FullName)
+				< @Html.DisplayFor(model => model.ToUserProfile.UserName) >
 			</dd>
-			<dt class="bg-adminonly">
-				To (Profile.UserName)
-			</dt>
-			<dd class="bg-adminonly">
-				@Html.DisplayFor(model => model.UserProfile.UserName)
-			</dd>
-
-			<dt class="bg-adminonly">
-				To (Profile.FullName)
-			</dt>
-			<dd class="bg-adminonly">
-				@Html.DisplayFor(model => model.UserProfile.FullName)
-			</dd>
-
 
 			<dt class="bg-adminonly">
 				@Html.DisplayNameFor(model => model.UrlHost)
@@ -177,14 +172,13 @@
 				@Html.DisplayFor(model => model.BaseUrl)
 			</dd>
 
-
-
-
 			<dt class="bg-adminonly">
-				@Html.DisplayNameFor(model => model.CreateUserId)
+				@Html.DisplayNameFor(model => model.CreatedBy_UserProfileId)
 			</dt>
 			<dd class="bg-adminonly">
-				@Html.DisplayFor(model => model.CreateUserId)
+				@Html.DisplayFor(model => model.CreatedBy_UserProfileId)
+				- @Html.DisplayFor(model => model.CreatedBy.FullName)
+				< @Html.DisplayFor(model => model.CreatedBy.UserName) >
 			</dd>
 
 			<dt class="bg-adminonly">
@@ -202,10 +196,12 @@
 			</dd>
 
 			<dt class="bg-adminonly">
-				@Html.DisplayNameFor(model => model.UpdateUserId)
+				@Html.DisplayNameFor(model => model.UpdatedBy_UserProfileId)
 			</dt>
 			<dd class="bg-adminonly">
-				@Html.DisplayFor(model => model.UpdateUserId)
+				@Html.DisplayFor(model => model.UpdatedBy_UserProfileId)
+				- @Html.DisplayFor(model => model.UpdatedBy.FullName)
+				< @Html.DisplayFor(model => model.UpdatedBy.UserName) >
 			</dd>
 		}
 	</dl>

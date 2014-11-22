@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
@@ -8,15 +9,13 @@ namespace GStore.Models.BaseClasses
 {
 	public abstract class StoreFrontRecord: ClientRecord
 	{
-		public int StoreFrontId { get; set;}
 
+		[Required]
 		[ForeignKey("StoreFrontId")]
 		public virtual StoreFront StoreFront { get; set; }
 
-		public string StoreFrontVirtualDirectoryToMap()
-		{
-			return this.ClientVirtualDirectoryToMap() + "/StoreFronts/" + HttpUtility.UrlEncode(this.StoreFront.Folder);
-		}
-
+		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 2)]
+		public int StoreFrontId { get; set; }
 	}
 }

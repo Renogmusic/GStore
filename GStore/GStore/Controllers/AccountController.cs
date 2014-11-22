@@ -22,12 +22,37 @@ namespace GStore.Controllers
 
 		public AccountController()
 		{
+			_throwErrorIfStoreFrontNotFound = false;
+			_throwErrorIfUserProfileNotFound = false;
+			_throwErrorIfAnonymous = false;
+			_useInactiveStoreFrontAsActive = false;
+		}
+
+		public AccountController(GStore.Data.IGstoreDb dbContext) : base(dbContext)
+		{
+			_throwErrorIfStoreFrontNotFound = false;
+			_throwErrorIfUserProfileNotFound = false;
+			_throwErrorIfAnonymous = false;
+			_useInactiveStoreFrontAsActive = false;
 		}
 
 		public AccountController(AspNetIdentityUserManager userManager, ApplicationSignInManager signInManager)
 		{
 			UserManager = userManager;
 			SignInManager = signInManager;
+			_throwErrorIfStoreFrontNotFound = false;
+			_throwErrorIfUserProfileNotFound = false;
+			_throwErrorIfAnonymous = false;
+			_useInactiveStoreFrontAsActive = false;
+		}
+
+
+		protected override string LayoutName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.AccountLayoutName;
+			}
 		}
 
 		public AspNetIdentityUserManager UserManager
@@ -47,6 +72,12 @@ namespace GStore.Controllers
 		[AllowAnonymous]
 		public ActionResult Login(string returnUrl)
 		{
+			if (CurrentStoreFrontOrThrow == null)
+			{
+				//client is inactive or not found
+				System.Diagnostics.Debug.WriteLine("No active storefront");
+			}
+
 			ViewBag.ReturnUrl = returnUrl;
 			return View();
 		}
@@ -108,7 +139,9 @@ namespace GStore.Controllers
 				case SignInStatus.LockedOut:
 					UserProfile profileLockout = GStoreDb.GetUserProfileByEmail(model.Email);
 					GStoreDb.LogSecurityEvent_LoginLockedOut(this.HttpContext, RouteData, model.Email, profileLockout, this);
-					this.HandleLockedOutNotification(profileLockout);
+					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
+					string forgotPasswordUrl = Request.Url.Host + (Request.Url.IsDefaultPort ? string.Empty : ":" + Request.Url.Port) + Url.Action("ForgotPassword", "Account");
+					CurrentStoreFrontOrThrow.HandleLockedOutNotification(GStoreDb, Request, profileLockout, notificationBaseUrl, forgotPasswordUrl);
 					return View("Lockout");
 				case SignInStatus.RequiresVerification:
 					UserProfile profileVerify = GStoreDb.GetUserProfileByEmail(model.Email);
@@ -142,7 +175,7 @@ namespace GStore.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = new Identity.AspNetIdentityUser(model.Email) { UserName = model.Email, Email = model.Email };
-				user.TwoFactorEnabled = Properties.Settings.Default.IdentityEnableTwoFactorAuth;
+				user.TwoFactorEnabled = Properties.Settings.Current.IdentityEnableTwoFactorAuth;
 				var result = await UserManager.CreateAsync(user, model.Password);
 				if (result.Succeeded)
 				{
@@ -165,15 +198,16 @@ namespace GStore.Controllers
 					newProfile.Active = true;
 					newProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 					newProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-					newProfile.StoreFront = this.CurrentStoreFront;
+					newProfile.StoreFrontId = CurrentStoreFrontOrThrow.StoreFrontId;
+					newProfile.ClientId = this.CurrentClientOrThrow.ClientId;
 					ctx.UserProfiles.Add(newProfile);
 					ctx.SaveChanges();
 
 					ctx.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
-					this.HandleNewUserRegisteredNotifications(newProfile, notificationBaseUrl);
+					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl);
 
-					if (Properties.Settings.Default.IdentityEnableNewUserRegisteredBroadcast && CurrentClient.EnableNewUserRegisteredBroadcast)
+					if (Properties.Settings.Current.IdentityEnableNewUserRegisteredBroadcast && CurrentClientOrThrow.EnableNewUserRegisteredBroadcast)
 					{
 						string title = model.FullName;
 						string message = "Newly registered!";
@@ -198,7 +232,7 @@ namespace GStore.Controllers
 		{
 			if (User.Identity.IsAuthenticated)
 			{
-				UserProfile profile = GStoreDb.GetCurrentUserProfile(false);
+				UserProfile profile = GStoreDb.GetCurrentUserProfile(false, true);
 				if (profile == null || profile.NotifyAllWhenLoggedOn)
 				{
 					string title = User.Identity.Name;
@@ -210,6 +244,7 @@ namespace GStore.Controllers
 					Microsoft.AspNet.SignalR.IHubContext hubCtx = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<GStore.Hubs.NotifyHub>();
 					hubCtx.Clients.All.addNewMessageToPage(title, message);
 				}
+				GStoreDb.LogSecurityEvent_LogOff(HttpContext, RouteData, profile, this);
 			}
 
 			AuthenticationManager.SignOut();
@@ -224,7 +259,7 @@ namespace GStore.Controllers
 			// Require that the user has already logged in via username/password or external login
 			if (!await SignInManager.HasBeenVerifiedAsync())
 			{
-				return View("Error");
+				return HttpBadRequest("VerifyCode SignInManager.HasBeenVerifiedAsync call failed");
 			}
 			var user = await UserManager.FindByIdAsync(await SignInManager.GetVerifiedUserIdAsync());
 			if (user != null)
@@ -273,7 +308,7 @@ namespace GStore.Controllers
 		{
 			if (userId == null || code == null)
 			{
-				return View("Error");
+				return HttpBadRequest("ConfirmEmail UserId and Code are blank");
 			}
 			IdentityResult result;
 			try
@@ -285,7 +320,7 @@ namespace GStore.Controllers
 				// ConfirmEmailAsync throws when the userId is not found.
 				GStoreDb.LogSecurityEvent_EmailConfirmFailedUserNotFound(HttpContext, RouteData, userId, code, this);
 				ViewBag.errorMessage = ioe.Message;
-				return View("Error");
+				return HttpBadRequest("ConfirmEmail InvalidOperationException");
 			}
 
 			if (result.Succeeded)
@@ -301,7 +336,7 @@ namespace GStore.Controllers
 
 			AddErrors(result);
 			ViewBag.errorMessage = "ConfirmEmail failed";
-			return View("Error");
+			return HttpBadRequest("ConfirmEmail failed");
 		}
 
 		//
@@ -337,12 +372,12 @@ namespace GStore.Controllers
 				// Send an email with this link
 				string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
 				var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-				string messageHtml = "Forgot your password??<br/><br/>"
-						+ "No worries! <br/><br/><a href=\"" + callbackUrl + "\">Click here to reset your password</a>"
-							+ "<br/><br/>" + Properties.Settings.Default.IdentitySendGridMailFromName + " - " + Properties.Settings.Default.IdentitySendGridMailFromEmail
-							+ Server.HtmlEncode(CurrentStoreFront.OutgoingMessageSignature()).Replace("\n", " \n<br/>");
 
-				await UserManager.SendEmailAsync(user.Id, "Reset Password for " + CurrentStoreFront.Name, messageHtml);
+				StoreFront storeFront = CurrentStoreFrontOrNull;
+				string subject = Models.Extensions.StoreFrontExtensions.ForgotPasswordSubject(storeFront, callbackUrl, Request.Url);
+				string messageHtml = Models.Extensions.StoreFrontExtensions.ForgotPasswordMessageHtml(storeFront, callbackUrl, Request.Url);
+
+				await UserManager.SendEmailAsync(user.Id, subject, messageHtml);
 				return RedirectToAction("ForgotPasswordConfirmation", "Account");
 
 			}
@@ -364,7 +399,11 @@ namespace GStore.Controllers
 		[AllowAnonymous]
 		public ActionResult ResetPassword(string code)
 		{
-			return code == null ? View("Error") : View();
+			if (code == null)
+			{
+				return HttpBadRequest("ResetPassword code = null");
+			}
+			return View();
 		}
 
 		//
@@ -429,7 +468,7 @@ namespace GStore.Controllers
 			var userId = await SignInManager.GetVerifiedUserIdAsync();
 			if (userId == null)
 			{
-				return View("Error");
+				return HttpBadRequest("SendCode SignInManager.GetVerifiedUserIdAsync failed");
 			}
 			var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
 			var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
@@ -451,7 +490,7 @@ namespace GStore.Controllers
 			// Generate the token and send it
 			if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
 			{
-				return View("Error");
+				return HttpBadRequest("SendCode SignInManager.SendTwoFactorCodeAsync failed. Provider: " + model.SelectedProvider);
 			}
 
 			GStoreDb.LogSecurityEvent_VerificationCodeSent(HttpContext, RouteData, model.ReturnUrl, model.SelectedProvider, null, this);
@@ -498,7 +537,7 @@ namespace GStore.Controllers
 		{
 			if (User.Identity.IsAuthenticated)
 			{
-				return RedirectToAction("Index", "Manage");
+				return RedirectToAction("Index", "Profile");
 			}
 
 			if (ModelState.IsValid)
@@ -554,12 +593,12 @@ namespace GStore.Controllers
 			// Send an email with this link
 			string code = await UserManager.GenerateEmailConfirmationTokenAsync(userId);
 			var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, code = code }, protocol: Request.Url.Scheme);
-				string messageHtml = "Thank you for registering at " + Request.Url.Host + "!<br/><br/>"
-						+ "<a href=\"" + callbackUrl + "\">Please click this link to confirm your email address</a>"
-							+ "<br/><br/>" + Properties.Settings.Default.IdentitySendGridMailFromName + " - " + Properties.Settings.Default.IdentitySendGridMailFromEmail
-							+ Server.HtmlEncode(CurrentStoreFront.OutgoingMessageSignature()).Replace("\n", " \n<br/>");
 
-			await UserManager.SendEmailAsync(userId, "Confirm your account for " + CurrentStoreFront.Name, messageHtml);
+			StoreFront storeFront = CurrentStoreFrontOrNull;
+			string subject = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
+			string messageHtml = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
+
+			await UserManager.SendEmailAsync(userId, "Confirm your account for " + CurrentStoreFrontOrThrow.Name, messageHtml);
 		}
 
 

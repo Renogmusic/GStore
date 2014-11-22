@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using GStore.Models.Extensions;
 
 namespace GStore.Models
 {
 	[Table("Pages")]
-	public class Page : BaseClasses.ClientLiveRecord
+	public class Page : BaseClasses.StoreFrontLiveRecord 
 	{
+		[Key]
 		[Editable(false)]
 		public int PageId { get; set; }
 
-		public int StoreFrontId { get; set; }
-		[ForeignKey("StoreFrontId")]
-		public virtual StoreFront StoreFront { get; set; }
-
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		public int PageTemplateId { get; set; }
 		[ForeignKey("PageTemplateId")]
 		public virtual PageTemplate PageTemplate { get; set; }
@@ -26,6 +26,8 @@ namespace GStore.Models
 
 		//todo: add url to routes
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 4)]
+		[MaxLength(250)]
 		public string Url { get; set; }
 
 		public bool Public { get; set; }
@@ -39,9 +41,5 @@ namespace GStore.Models
 
 		public virtual ICollection<PageSection> Sections { get; set; }
 
-		public bool SectionsAllSpecified()
-		{
-			return false;
-		}
 	}
 }

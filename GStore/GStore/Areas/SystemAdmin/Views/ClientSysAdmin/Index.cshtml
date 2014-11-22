@@ -1,0 +1,105 @@
+﻿@model IEnumerable<GStore.Models.Client>
+<h2>Client Index</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.ClientId)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.Name)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.Folder)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.EnablePageViewLog)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.EnableNewUserRegisteredBroadcast)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.IsPending)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UseSendGridEmail)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UseTwilioSms)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.CreatedBy.UserId)
+		</th>
+		<th class="small">
+			@Html.DisplayNameFor(model => model.UpdatedBy.UserId)
+		</th>
+		<th class="small"></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+		<td>
+			@Html.DisplayFor(modelItem => item.ClientId)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.Name)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.Folder)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.EnablePageViewLog)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.EnableNewUserRegisteredBroadcast)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.IsPending)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.UseSendGridEmail)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.UseTwilioSms)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
+		</td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreatedBy.UserId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ClientId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ClientId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ClientId })
+        </td>
+    </tr>
+}
+
+</table>

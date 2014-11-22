@@ -4,78 +4,84 @@
 @using GStore.Models.Extensions;
 <!-- NavBar Catalog Menu-->
 @{
-	if (Model.StoreFront.NavBarCatalogMaxLevels > 6)
+	int navBarCatalogMaxLevels = 6;
+	if (Model.StoreFront != null)
+	{
+		navBarCatalogMaxLevels = Model.StoreFront.NavBarCatalogMaxLevels;
+	}
+
+	if (navBarCatalogMaxLevels > 6)
 	{
 		//this code item only iterates up to 6 levels
-		Model.StoreFront.NavBarCatalogMaxLevels = 6;
+		navBarCatalogMaxLevels = 6;
 	}
-	if (Model.StoreFront.NavBarCatalogMaxLevels > 0)
+	if (navBarCatalogMaxLevels > 0)
 	{
 		foreach (TreeNode<ProductCategory> level1Category in Model.CategoryTree)
 		{
 			//Level 1 (root)
-			bool level1HasChildMenuItems  = level1Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
-			@Html.CatalogMenuItemStart(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+			bool level1HasChildMenuItems  = level1Category.HasChildMenuItems(navBarCatalogMaxLevels);
+			@Html.CatalogMenuItemStart(level1Category, 1, navBarCatalogMaxLevels)
 			if (level1HasChildMenuItems)
 			{
-				@Html.CatalogMenuChildContainerStart(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+				@Html.CatalogMenuChildContainerStart(level1Category, 1, navBarCatalogMaxLevels)
 				foreach (TreeNode<ProductCategory> level2Category in level1Category.ChildNodes)
 				{
 					//Level 2
-					bool level2HasChildMenuItems = level2Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
-					@Html.CatalogMenuItemStart(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+					bool level2HasChildMenuItems = level2Category.HasChildMenuItems(navBarCatalogMaxLevels);
+					@Html.CatalogMenuItemStart(level2Category, 2, navBarCatalogMaxLevels)
 					if (level2HasChildMenuItems) 
 					{
-						@Html.CatalogMenuChildContainerStart(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+						@Html.CatalogMenuChildContainerStart(level2Category, 2, navBarCatalogMaxLevels)
 						foreach (TreeNode<ProductCategory> level3Category in level2Category.ChildNodes)
 						{
 							//Level 3
-							bool level3HasChildMenuItems = level3Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
-							@Html.CatalogMenuItemStart(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+							bool level3HasChildMenuItems = level3Category.HasChildMenuItems(navBarCatalogMaxLevels);
+							@Html.CatalogMenuItemStart(level3Category, 3, navBarCatalogMaxLevels)
 							if (level3HasChildMenuItems)
 							{
-								@Html.CatalogMenuChildContainerStart(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+								@Html.CatalogMenuChildContainerStart(level3Category, 3, navBarCatalogMaxLevels)
 								foreach (TreeNode<ProductCategory> level4Category in level3Category.ChildNodes)
 								{
 									//Level 4
-									bool level4HasChildMenuItems = level4Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
-									@Html.CatalogMenuItemStart(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+									bool level4HasChildMenuItems = level4Category.HasChildMenuItems(navBarCatalogMaxLevels);
+									@Html.CatalogMenuItemStart(level4Category, 4, navBarCatalogMaxLevels)
 									if (level4HasChildMenuItems)
 									{
-										@Html.CatalogMenuChildContainerStart(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+										@Html.CatalogMenuChildContainerStart(level4Category, 4, navBarCatalogMaxLevels)
 										foreach (TreeNode<ProductCategory> level5Category in level4Category.ChildNodes)
 										{
 											//Level 5
-											bool level5HasChildMenuItems = level5Category.HasChildMenuItems(Model.StoreFront.NavBarCatalogMaxLevels);
-											@Html.CatalogMenuItemStart(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+											bool level5HasChildMenuItems = level5Category.HasChildMenuItems(navBarCatalogMaxLevels);
+											@Html.CatalogMenuItemStart(level5Category, 5, navBarCatalogMaxLevels)
 											if (level5HasChildMenuItems)
 											{
-												@Html.CatalogMenuChildContainerStart(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+												@Html.CatalogMenuChildContainerStart(level5Category, 5, navBarCatalogMaxLevels)
 												foreach (TreeNode<ProductCategory> level6Category in level5Category.ChildNodes)
 												{
 													//Level 6
-													@Html.CatalogMenuItemStart(level6Category, 6, Model.StoreFront.NavBarCatalogMaxLevels)
-													@Html.CatalogMenuItemEnd(level6Category, 6, Model.StoreFront.NavBarCatalogMaxLevels)
+													@Html.CatalogMenuItemStart(level6Category, 6, navBarCatalogMaxLevels)
+													@Html.CatalogMenuItemEnd(level6Category, 6, navBarCatalogMaxLevels)
 												}
-												@Html.CatalogMenuChildContainerEnd(level1Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+												@Html.CatalogMenuChildContainerEnd(level1Category, 5, navBarCatalogMaxLevels)
 											}
-											@Html.CatalogMenuItemEnd(level5Category, 5, Model.StoreFront.NavBarCatalogMaxLevels)
+											@Html.CatalogMenuItemEnd(level5Category, 5, navBarCatalogMaxLevels)
 										}
-										@Html.CatalogMenuChildContainerEnd(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+										@Html.CatalogMenuChildContainerEnd(level4Category, 4, navBarCatalogMaxLevels)
 									}
-									@Html.CatalogMenuItemEnd(level4Category, 4, Model.StoreFront.NavBarCatalogMaxLevels)
+									@Html.CatalogMenuItemEnd(level4Category, 4, navBarCatalogMaxLevels)
 								}
-								@Html.CatalogMenuChildContainerEnd(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+								@Html.CatalogMenuChildContainerEnd(level3Category, 3, navBarCatalogMaxLevels)
 							}
-							@Html.CatalogMenuItemEnd(level3Category, 3, Model.StoreFront.NavBarCatalogMaxLevels)
+							@Html.CatalogMenuItemEnd(level3Category, 3, navBarCatalogMaxLevels)
 						}
-						@Html.CatalogMenuChildContainerEnd(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+						@Html.CatalogMenuChildContainerEnd(level2Category, 2, navBarCatalogMaxLevels)
 					}
-					@Html.CatalogMenuItemEnd(level2Category, 2, Model.StoreFront.NavBarCatalogMaxLevels)
+					@Html.CatalogMenuItemEnd(level2Category, 2, navBarCatalogMaxLevels)
 				}
-				@Html.CatalogMenuChildContainerEnd(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+				@Html.CatalogMenuChildContainerEnd(level1Category, 1, navBarCatalogMaxLevels)
 			}
-			@Html.CatalogMenuItemEnd(level1Category, 1, Model.StoreFront.NavBarCatalogMaxLevels)
+			@Html.CatalogMenuItemEnd(level1Category, 1, navBarCatalogMaxLevels)
 		}
 	}
 }

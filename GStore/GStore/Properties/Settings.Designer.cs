@@ -25,57 +25,12 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AppFriendlyExceptionHandling {
-            get {
-                return ((bool)(this["AppFriendlyExceptionHandling"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AppUseFileNotFoundImage {
-            get {
-                return ((bool)(this["AppUseFileNotFoundImage"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\mssqllocaldb;Initial Catalog=GStore;Integrated Security=Tru" +
             "e;MultipleActiveResultSets=True;Application Name=EntityFramework")]
         public string GStoreDB {
             get {
                 return ((string)(this["GStoreDB"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("EntityFrameworkCodeFirstProvider")]
-        public string RepositoryProvider {
-            get {
-                return ((string)(this["RepositoryProvider"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool InitializeEFCodeFirstMigrateLatest {
-            get {
-                return ((bool)(this["InitializeEFCodeFirstMigrateLatest"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool InitializeEFCodeFirstDropCreate {
-            get {
-                return ((bool)(this["InitializeEFCodeFirstDropCreate"]));
             }
         }
         
@@ -112,6 +67,222 @@ namespace GStore.Properties {
         public bool AppEnablePageViewLog {
             get {
                 return ((bool)(this["AppEnablePageViewLog"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppUseFriendlyErrorPages {
+            get {
+                return ((bool)(this["AppUseFriendlyErrorPages"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppUseFileNotFoundImage {
+            get {
+                return ((bool)(this["AppUseFileNotFoundImage"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogSystemEventsToDb {
+            get {
+                return ((bool)(this["AppLogSystemEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogSystemEventsToFile {
+            get {
+                return ((bool)(this["AppLogSystemEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogSecurityEventsToDb {
+            get {
+                return ((bool)(this["AppLogSecurityEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogSecurityEventsToFile {
+            get {
+                return ((bool)(this["AppLogSecurityEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogBadRequestEventsToDb {
+            get {
+                return ((bool)(this["AppLogBadRequestEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogBadRequestEventsToFile {
+            get {
+                return ((bool)(this["AppLogBadRequestEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogFileNotFoundEventsToDb {
+            get {
+                return ((bool)(this["AppLogFileNotFoundEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogFileNotFoundEventsToFile {
+            get {
+                return ((bool)(this["AppLogFileNotFoundEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogPageViewEventsToDb {
+            get {
+                return ((bool)(this["AppLogPageViewEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogPageViewEventsToFile {
+            get {
+                return ((bool)(this["AppLogPageViewEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogUserActionEventsToDb {
+            get {
+                return ((bool)(this["AppLogUserActionEventsToDb"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogUserActionEventsToFile {
+            get {
+                return ((bool)(this["AppLogUserActionEventsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppLogLogExceptionsToFile {
+            get {
+                return ((bool)(this["AppLogLogExceptionsToFile"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Slate")]
+        public string SystemAdminThemeFolderName {
+            get {
+                return ((string)(this["SystemAdminThemeFolderName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppEnableBindingAutoMapToFirstStoreFront {
+            get {
+                return ((bool)(this["AppEnableBindingAutoMapToFirstStoreFront"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Bootstrap")]
+        public string AppDefaultLayoutName {
+            get {
+                return ((string)(this["AppDefaultLayoutName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppEnableBindingAutoMapCatchAll {
+            get {
+                return ((bool)(this["AppEnableBindingAutoMapCatchAll"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppEnableAutomaticHomePageCreation {
+            get {
+                return ((bool)(this["AppEnableAutomaticHomePageCreation"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Welcome")]
+        public string AppDefaultLayoutViewName {
+            get {
+                return ((string)(this["AppDefaultLayoutViewName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("EntityFrameworkCodeFirstProvider")]
+        public string RepositoryProvider {
+            get {
+                return ((string)(this["RepositoryProvider"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool InitializeEFCodeFirstMigrateLatest {
+            get {
+                return ((bool)(this["InitializeEFCodeFirstMigrateLatest"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool InitializeEFCodeFirstDropCreate {
+            get {
+                return ((bool)(this["InitializeEFCodeFirstDropCreate"]));
             }
         }
         

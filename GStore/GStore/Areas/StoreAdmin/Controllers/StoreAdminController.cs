@@ -1,5 +1,6 @@
 ﻿using GStore.Areas.StoreAdmin.Models.ViewModels;
 using GStore.Controllers.BaseClass;
+using GStore.Identity;
 using GStore.Models;
 using GStore.Models.Extensions;
 using System;
@@ -10,15 +11,12 @@ using System.Web.Mvc;
 
 namespace GStore.Areas.StoreAdmin.Controllers
 {
-	[UserHasAnyAdminPermission]
-    public class StoreAdminController : BaseClasses.AdminBaseController
+	public class StoreAdminController : BaseClasses.StoreAdminBaseController
     {
-        // GET: StoreAdmin/Home
+		[AuthorizeGStoreAction(GStoreAction.Admin_StoreAdminArea)]
         public ActionResult Index()
         {
-			AdminHomeViewModel model = new AdminHomeViewModel(GStoreDb, CurrentStoreFront, CurrentUserProfile);
-            return View(model);
+			return View("Index", this.StoreAdminViewModel);
         }
-    }
-
+	}
 }

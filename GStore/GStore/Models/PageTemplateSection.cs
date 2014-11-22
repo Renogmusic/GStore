@@ -12,11 +12,14 @@ namespace GStore.Models
 	{
 		public int PageTemplateSectionId { get; set; }
 
+		[Index("UniqueRecord", IsUnique = true, Order = 1)]
 		public int PageTemplateId { get; set; }
 		[ForeignKey("PageTemplateId")]
 		public virtual PageTemplate PageTemplate { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 2)]
+		[MaxLength(100)]
 		public string Name { get; set; }
 
 		public int Order { get; set; }
@@ -24,6 +27,8 @@ namespace GStore.Models
 		[DataType(DataType.MultilineText)]
 		[Required]
 		public string Description { get; set; }
+
+		public bool IsRequired { get; set; }
 
 		public virtual ICollection<PageSection> PageSections { get; set; }
 	}

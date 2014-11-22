@@ -1,0 +1,52 @@
+﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.StoreAdminViewModel
+@using GStore.Identity
+@using GStore.Models.Extensions
+@using GStore.AppHtmlHelpers
+<div class="row">
+	<div class="col-sm-12">
+		<h1>Configuration Manager</h1>
+	</div>
+	@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View))
+	{
+		<div class="col-xs-12 bg-info">
+			<h1>Client Configuration</h1>
+		</div>
+		<div class="col-xs-6 col-sm-5 text-right">
+			@Html.ActionLink("Client", "ClientView")
+			<br/>
+			Applies to all store fronts
+		</div>
+		<div class="col-xs-6 col-sm-7 text-left">
+			@Html.ActionLink("View/Edit Client Configuration", "ClientView")
+		</div>
+
+	}
+	@{int counter=0;}
+	@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
+	{
+		<div class="col-xs-12 bg-primary">
+			<h1>Store Front Configuration</h1>
+		</div>
+		GStore.Models.StoreFront currentStoreFront = Html.CurrentStoreFront(true);
+		foreach (GStore.Models.StoreFront storeFront in currentStoreFront.Client.StoreFronts.AsQueryable().WhereIsActive())
+		{
+			if (storeFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
+			{
+				counter++;
+						<div class="col-xs-6 col-sm-5 text-right">
+							@Html.ActionLink(storeFront.Name + " [" + storeFront.StoreFrontId + "]", "StoreFrontView", new { id = storeFront.StoreFrontId })
+						</div>
+						<div class="col-xs-6 col-sm-7 text-left">
+							@Html.ActionLink("View/Edit Configuration", "StoreFrontView", new { id = storeFront.StoreFrontId })
+						</div>
+			}
+		}
+		if (counter == 0)
+		{
+			<div class="col-xs-12">
+				<h2>You do not have access to any store fronts.</h2>
+			</div>
+
+		}
+	}
+</div>

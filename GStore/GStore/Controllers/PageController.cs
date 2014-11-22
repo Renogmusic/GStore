@@ -1,4 +1,6 @@
 ﻿using GStore.Models;
+using GStore.Models.Extensions;
+using GStore.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +11,6 @@ namespace GStore.Controllers
 {
     public class PageController : BaseClass.PageBaseController
     {
-        public ActionResult Index()
-        {
-			string rawUrl = Request.RawUrl;
-			string viewName = base.CurrentPage.PageTemplate.ViewName;
-			return View(viewName, "_Layout_" + base.CurrentPage.PageTemplate.LayoutName, base.CurrentPage);
-        }
 
     }
 }

@@ -16,18 +16,5 @@ namespace GStore.Models.BaseClasses
 		public DateTime StartDateTimeUtc { get; set; }
 		public DateTime EndDateTimeUtc { get; set; }
 		public bool IsPending { get; set; }
-
-		public bool IsActiveDirect()
-		{
-			return IsActiveDirect(DateTime.UtcNow);
-		}
-		public bool IsActiveDirect(DateTime dateTime)
-		{
-			if (!IsPending && (StartDateTimeUtc < dateTime) && ( EndDateTimeUtc > dateTime))
-			{
-				return true;
-			}
-			return false;
-		}
 	}
 }

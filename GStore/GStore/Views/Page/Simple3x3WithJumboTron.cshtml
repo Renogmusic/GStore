@@ -1,0 +1,76 @@
+﻿@model GStore.Models.ViewModels.PageViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Models;
+@using GStore.Models.Extensions;
+@{
+	GStore.Models.Page page = Model.Page;
+	bool editMode = Model.EditMode;
+}
+@if (editMode)
+{
+	<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+	<hr />
+	<div class="row">
+		<div class="col-xs-12">
+			@Html.ActionLink("View Live Page (ctrl-click for new window)", "Display", "Page")
+		</div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="col-xs-12">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		</div>
+	</div>
+	<hr />
+}
+
+
+<div class="row">
+	<div class="jumbotron">
+		@Html.DisplayPageSection("Jumbotron", 1)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row1Col1", 2)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row1Col2", 3)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row1Col3", 4)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row2Col1", 5)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row2Col2", 6)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row2Col3", 7)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col1", 8)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col2", 9)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col3", 10)
+	</div>
+</div>
+
+@if (Model.ShowEditPageLink)
+{
+	<hr />
+	<div class="row">
+		<div class="col-xs-12">
+			@Html.ActionLink("Edit this Page", "Edit", "Page")
+		</div>
+	</div>
+	<hr />
+}

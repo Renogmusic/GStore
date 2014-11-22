@@ -13,6 +13,8 @@ namespace GStore.Models
 		public int PageTemplateId { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[MaxLength(100)]
 		public string Name { get; set; }
 
 		[Required]
@@ -29,7 +31,7 @@ namespace GStore.Models
 		public string LayoutName { get; set; }
 
 
-		public ICollection<PageTemplateSection> Sections { get; set; }
+		public virtual ICollection<PageTemplateSection> Sections { get; set; }
 
 	}
 }

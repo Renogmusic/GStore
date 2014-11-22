@@ -15,7 +15,7 @@ namespace GStore.Identity
 	/// <summary>
 	/// Formerly called ApplicationUser by startup template
 	/// </summary>
-	public class AspNetIdentityUser : Microsoft.AspNet.Identity.EntityFramework.IdentityUser<string, AspNetIdentityUserLogin, AspNetIdentityUserRole, AspNetIdentityUserClaim>
+	public partial class AspNetIdentityUser : Microsoft.AspNet.Identity.EntityFramework.IdentityUser<string, AspNetIdentityUserLogin, AspNetIdentityUserRole, AspNetIdentityUserClaim>
 	{
 		public AspNetIdentityUser()
 		{
@@ -55,20 +55,21 @@ namespace GStore.Identity
 		}
 	}
 
-	public class AspNetIdentityRole : Microsoft.AspNet.Identity.EntityFramework.IdentityRole<string, AspNetIdentityUserRole>
+	public partial class AspNetIdentityRole : Microsoft.AspNet.Identity.EntityFramework.IdentityRole<string, AspNetIdentityUserRole>
 	{
 		public AspNetIdentityRole()
 		{
-			base.Id = Guid.NewGuid().ToString();
+			this.Id = Guid.NewGuid().ToString();
 		}
 		public AspNetIdentityRole(string roleName)
 		{
 			this.Id = roleName;
 			this.Name = roleName;
 		}
+
 	}
 
-	public class AspNetIdentityUserLogin : Microsoft.AspNet.Identity.EntityFramework.IdentityUserLogin<string>
+	public partial class AspNetIdentityUserLogin : Microsoft.AspNet.Identity.EntityFramework.IdentityUserLogin<string>
 	{
 		public AspNetIdentityUserLogin()
 		{
@@ -81,7 +82,7 @@ namespace GStore.Identity
 		}
 	}
 
-	public class AspNetIdentityUserRole : Microsoft.AspNet.Identity.EntityFramework.IdentityUserRole<string>
+	public partial class AspNetIdentityUserRole : Microsoft.AspNet.Identity.EntityFramework.IdentityUserRole<string>
 	{
 		public AspNetIdentityUserRole()
 		{
@@ -100,23 +101,17 @@ namespace GStore.Identity
 
 	}
 
-	public class AspNetIdentityUserClaim : Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>
+	public partial class AspNetIdentityUserClaim : Microsoft.AspNet.Identity.EntityFramework.IdentityUserClaim<string>
 	{
 		public AspNetIdentityUserClaim()
 		{
 		}
-		public AspNetIdentityUserClaim(string userId, string claimType, string claimValue)
-		{
-			base.ClaimType = claimType;
-			base.ClaimValue = claimValue;
-			base.UserId = userId;
-		}
 	}
 
-	public class AspNetIdentityContext : Microsoft.AspNet.Identity.EntityFramework.IdentityDbContext<AspNetIdentityUser, AspNetIdentityRole, string, AspNetIdentityUserLogin, AspNetIdentityUserRole, AspNetIdentityUserClaim>
+	public partial class AspNetIdentityContext : Microsoft.AspNet.Identity.EntityFramework.IdentityDbContext<AspNetIdentityUser, AspNetIdentityRole, string, AspNetIdentityUserLogin, AspNetIdentityUserRole, AspNetIdentityUserClaim>
 	{
 		public AspNetIdentityContext()
-			: base(Properties.Settings.Default.AspNetIdentityNameOrConnectionString)
+			: base(Properties.Settings.Current.AspNetIdentityNameOrConnectionString)
 		{
 		}
 
@@ -359,8 +354,5 @@ namespace GStore.Identity
 
 			return user.Logins;
 		}
-
-
-
 	}
 }

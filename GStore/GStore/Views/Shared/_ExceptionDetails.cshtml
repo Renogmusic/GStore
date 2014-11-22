@@ -1,0 +1,48 @@
+﻿@model System.Exception
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+@if (Model != null)
+{
+	@:Exception: <strong>@(Model.Message)</strong><br />
+	if (Model is HttpException)
+	{
+		HttpException httpEx = Model as HttpException;
+		@:<pre>HTTP Exception Code @httpEx.GetHttpCode() Message: @httpEx.Message</pre>
+	}
+
+	<strong>Source: @Model.Source</strong><br />
+	if (Model.TargetSite != null)
+	{
+		@:Method: <strong>@Model.TargetSite.Name </strong><br />
+		@:Target Site: <strong>@Model.TargetSite.DeclaringType.FullName</strong><br />
+		@:Target Site Info: <strong>@Model.TargetSite.ToString()</strong><br />
+	}
+	<pre>Exception.ToString: @Model.ToString()</pre>
+	<pre>Stack Trace: @Model.StackTrace</pre>
+
+	if (Model is HttpException)
+	{
+		HttpException httpExDetails = Model as HttpException;
+		string htmlError = httpExDetails.GetHtmlErrorMessage();
+		if (!string.IsNullOrEmpty(htmlError) && htmlError.Contains("<body bgcolor=\"white\">"))
+		{
+			//cut up to body tag
+			htmlError = htmlError.Substring(htmlError.IndexOf("<body bgcolor=\"white\">"));
+			htmlError = htmlError.Replace("<body bgcolor=\"white\">", "<div style=\"background-color: white; color black;\">");
+			htmlError = htmlError.Replace("</body>", string.Empty);
+			htmlError = htmlError.Replace("</html>", string.Empty);
+			htmlError += "</div>";
+		}
+		if (!string.IsNullOrEmpty(htmlError))
+		{
+			<div style="background-color: white">
+				<pre>HTML Error</pre>
+				<hr />
+				@Html.Raw(htmlError)
+				<hr />
+			</div>
+		}
+	}
+}
+

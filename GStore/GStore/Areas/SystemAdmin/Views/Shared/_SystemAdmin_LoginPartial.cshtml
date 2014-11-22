@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNet.Identity
+@using GStore.Identity
+@using GStore.Models
+@using GStore.Models.Extensions
+@{
+	using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+	{
+		@Html.AntiForgeryToken()
+
+	<ul class="nav navbar-nav navbar-right">
+		<li>
+			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
+				<small>( @User.Identity.GetUserName() )</small>
+			</a>
+		</li>
+		<li class="AdminMenuItemLevel2">
+			@Html.ActionLink("Store Admin", "Index", "StoreAdmin", new { Area = "StoreAdmin" }, null)
+		</li>
+		<li class="AdminMenuItemLevel2">
+			<a href="~/">Back to Site</a>
+		</li>
+		<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+	</ul>
+	}
+}
+

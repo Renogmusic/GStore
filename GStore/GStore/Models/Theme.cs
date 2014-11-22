@@ -10,13 +10,17 @@ namespace GStore.Models
 		public int ThemeId { get; set; }
 		
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[MaxLength(100)]
 		public string Name { get; set; }
 
 		[Required]
-		public string Description { get; set; }
+		[Index(IsUnique = true)]
+		[MaxLength(100)]
+		public string FolderName { get; set; }
 
 		[Required]
-		public string FolderName { get; set; }
+		public string Description { get; set; }
 
 		[Required]
 		public int Order { get; set; }

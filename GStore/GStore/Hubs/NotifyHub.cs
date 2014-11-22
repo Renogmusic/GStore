@@ -87,8 +87,8 @@ namespace GStore.Hubs
 
 			if (base.Context.User != null && base.Context.User.Identity != null && base.Context.User.Identity.IsAuthenticated)
 			{
-				Data.IGstoreDb ctx = Data.RepositoryFactory.StoreFrontRepository(this.Context.Request.GetHttpContext(), false);
-				Models.UserProfile profile = Models.Extensions.GStoreDBExtensions.GetCurrentUserProfile(ctx, true);
+				Data.IGstoreDb ctx = Data.RepositoryFactory.StoreFrontRepository(this.Context.Request.GetHttpContext());
+				Models.UserProfile profile = Models.Extensions.UserProfileExtensions.GetCurrentUserProfile(ctx, true, true);
 				userName = profile.FullName;
 			}
 			else

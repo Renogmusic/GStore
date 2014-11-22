@@ -1,0 +1,123 @@
+﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.ClientConfigViewModel
+<div>
+    <h4>Client Configuration View</h4>
+    <hr />
+    <dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EnablePageViewLog)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EnablePageViewLog)
+		</dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EnableNewUserRegisteredBroadcast)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EnableNewUserRegisteredBroadcast)
+        </dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UseSendGridEmail)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UseSendGridEmail)
+		</dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SendGridMailAccount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SendGridMailAccount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SendGridMailFromEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SendGridMailFromEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SendGridMailFromName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SendGridMailFromName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SendGridMailPassword)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SendGridMailPassword)
+        </dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UseTwilioSms)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UseTwilioSms)
+		</dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwilioFromPhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TwilioFromPhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwilioSid)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TwilioSid)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwilioSmsFromEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TwilioSmsFromEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwilioSmsFromName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TwilioSmsFromName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TwilioToken)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TwilioToken)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "ClientEdit") &nbsp;|&nbsp;
+	@Html.ActionLink("Back to Configuration Manager", "Manager") &nbsp;|&nbsp;
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</p>

@@ -1,0 +1,94 @@
+﻿@model GStore.Models.ViewModels.ProfileViewModel
+@using Microsoft.AspNet.Identity.EntityFramework
+@using GStore.Data
+@using System.Collections.Generic
+
+@{
+	ViewBag.Title = "Manage Your Account";
+	int messageCount = Model.UserProfile.Notifications.Count();
+	int unreadCount = Model.UserProfile.Notifications.Count(msg => !msg.Read);
+}
+
+<h2>@User.Identity.Name <small> - @ViewBag.Title.</small></h2>
+<style>
+	#profileHome .header {
+		text-align: right;
+		padding: 15px;
+	}
+
+	#profileHome .data {
+		text-align: left;
+		padding: 15px;
+	}
+	#notificationButtonLink{
+		width: 50%;
+	}
+</style>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div id="profileHome" class="row">
+	<div class="header col-sm-offset-2 col-sm-2">
+		Your Messages:
+	</div>
+	<div class="data col-sm-5">
+		<a id="notificationButtonLink" href="@Url.Action("Index", "Notifications")" class="btn btn-info btn-block">
+			My Messages <hr />@unreadCount New Message@(unreadCount == 1 ? "" : "s")<br /> @messageCount Total
+		</a>
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Notifications:
+	</div>
+	<div class="data col-sm-5">
+		[@Html.ActionLink("Manage My Notifications", "Notifications", null, new { @class = "" })]
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Password:
+	</div>
+	<div class="data col-sm-5">
+		[
+		@if (Model.HasPassword)
+		{
+			@Html.ActionLink("Change your password", "ChangePassword")
+		}
+		else
+		{
+			@Html.ActionLink("Create", "SetPassword")
+		}
+		]
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Email:
+	</div>
+	<div class="data col-sm-5">
+		@Model.UserProfile.Email
+		&nbsp;-&nbsp;
+		@if (Model.EmailConfirmed)
+		{
+			<span class="text-info">[Verified]</span>
+		}
+		else
+		{
+			<span class="text-danger">[Not Verified]</span>
+			@:&nbsp;-&nbsp; [@Html.ActionLink("Click here to Verify Your Email Address", "ConfirmEmail", null, new { @class = "" })]
+			}
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Phone Number:
+	</div>
+	<div class="data col-sm-5">
+		@(Model.PhoneNumber ?? "None")
+		&nbsp;-&nbsp;[
+		@if (Model.PhoneNumber != null)
+		{
+			@Html.ActionLink("Change", "AddPhoneNumber")
+			@: &nbsp;|&nbsp;
+			@Html.ActionLink("Remove", "RemovePhoneNumber")
+		}
+		else
+		{
+			@Html.ActionLink("Add", "AddPhoneNumber")
+		}
+		]
+	</div>
+</div>
+

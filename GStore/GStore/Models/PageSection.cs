@@ -5,18 +5,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GStore.Models
 {
 	[Table("PageSections")]
-	public class PageSection : BaseClasses.ClientLiveRecord
+	public class PageSection : BaseClasses.StoreFrontLiveRecord
 	{
 		[Editable(false)]
 		public int PageSectionId { get; set; }
 
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		public int PageId { get; set; }
 		[ForeignKey("PageId")]
 		public virtual Page Page { get; set; }
 
+		[Index("UniqueRecord", IsUnique = true, Order = 4)]
 		public int PageTemplateSectionId { get; set; }
 		[ForeignKey("PageTemplateSectionId")]
 		public virtual PageTemplateSection PageTemplateSection { get; set; }
+
+		public int Order { get; set; }
 
 		public bool HasPlainText { get; set; }
 		[System.Web.Mvc.AllowHtml]

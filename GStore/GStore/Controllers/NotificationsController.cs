@@ -14,12 +14,19 @@ namespace GStore.Controllers
 	[Authorize]
 	public class NotificationsController : BaseClass.BaseController
     {
+		protected override string LayoutName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.NotificationsLayoutName;
+			}
+		}
 
 		// GET: Notifications
 		public ActionResult Index()
 		{
-			UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
-			List<Notification> notifications = GStoreDb.Notifications.Where(n => n.UserProfileId == userProfile.UserProfileId).OrderByDescending(n => n.CreateDateTimeUtc).ToList();
+			UserProfile userProfile = CurrentUserProfileOrThrow;
+			List<Notification> notifications = GStoreDb.Notifications.Where(n => n.ToUserProfileId == userProfile.UserProfileId).OrderByDescending(n => n.CreateDateTimeUtc).ToList();
 			return View(notifications);
 		}
 
@@ -39,11 +46,11 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				userProfile = GStoreDb.GetCurrentUserProfile();
+				userProfile = CurrentUserProfileOrThrow;
 			}
 			ViewData["SelectedUserProfileId"] = userProfile.UserProfileId;
 
-			List<Models.Notification> notifications = GStoreDb.Notifications.Where(n => n.UserProfileId == userProfile.UserProfileId).OrderByDescending(n => n.CreateDateTimeUtc).ToList();
+			List<Models.Notification> notifications = GStoreDb.Notifications.Where(n => n.ToUserProfileId == userProfile.UserProfileId).OrderByDescending(n => n.CreateDateTimeUtc).ToList();
 			return View(notifications);
 		}
 
@@ -52,10 +59,10 @@ namespace GStore.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+				return HttpBadRequest("Notification id is null");
+			}
 
-			UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
+			UserProfile userProfile = CurrentUserProfileOrThrow;
 
 			Notification notification = null;
 			if (User.IsInRole("SystemAdmin"))
@@ -64,7 +71,7 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				notification = GStoreDb.Notifications.Where(n => n.UserProfileId == userProfile.UserProfileId && n.NotificationId == id).SingleOrDefault();
+				notification = GStoreDb.Notifications.Where(n => n.ToUserProfileId == userProfile.UserProfileId && n.NotificationId == id).SingleOrDefault();
 			}
 
 			if (notification == null)
@@ -72,7 +79,7 @@ namespace GStore.Controllers
 				return HttpNotFound();
 			}
 
-			if ((notification != null) && (!notification.Read) && (notification.UserProfileId == userProfile.UserProfileId))
+			if ((notification != null) && (!notification.Read) && (notification.ToUserProfileId == userProfile.UserProfileId))
 			{
 				//mark as read
 				notification.Read = true;
@@ -87,10 +94,10 @@ namespace GStore.Controllers
 		{
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return HttpBadRequest("Notification id is null");
 			}
 
-			UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
+			UserProfile userProfile = CurrentUserProfileOrThrow;
 
 			Notification notification = null;
 			if (User.IsInRole("SystemAdmin"))
@@ -99,7 +106,7 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				notification = GStoreDb.Notifications.Where(n => (n.UserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
+				notification = GStoreDb.Notifications.Where(n => (n.ToUserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
 			}
 
 			if (notification == null)
@@ -120,9 +127,21 @@ namespace GStore.Controllers
 
 
         // GET: Notifications/Create
-        public ActionResult Create()
-        {
+		public ActionResult Create()
+		{
+			ViewBag.Importance = ImportanceItems();
+			ViewBag.ToUserProfileId = AllowedToProfiles();
+			return View();
+		}
 
+		protected SelectList ImportanceItems()
+		{
+			string[] importanceItems = { "Low", "Normal", "High" };
+			return new SelectList(importanceItems, "Normal");
+		}
+
+		protected SelectList AllowedToProfiles()
+		{
 			SelectList profiles = null;
 			if (User.IsInRole("SystemAdmin"))
 			{
@@ -140,28 +159,20 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				int currentUserProfileId = GStoreDb.GetCurrentUserProfile().UserProfileId;
+				int currentUserProfileId = CurrentUserProfileOrThrow.UserProfileId;
 				profiles = new SelectList(GStoreDb.UserProfiles.Where(prof => prof.UserProfileId != currentUserProfileId && prof.AllowUsersToSendSiteMessages == true).OrderBy(prof => prof.Email), "UserProfileId", "FullName");
 			}
-
-			string[] importanceItems = {"Low", "Normal", "High" };
-
-			SelectList importance = new SelectList(importanceItems, "Normal");
-			ViewBag.Importance = importance;
-
-			ViewBag.UserProfileId = profiles;
-            return View();
-        }
+			return profiles;
+		}
 
         // POST: Notifications/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-		public ActionResult Create([Bind(Include = "UserProfileId,Subject,Importance,Message")] Models.Notification notification, [Bind(Include="Order,Url,LinkText")] Models.NotificationLink[] links)
+		public ActionResult Create(Models.ViewModels.NotificationCreateViewModel data)
         {
-
-			UserProfile target = GStoreDb.UserProfiles.SingleOrDefault(prof => prof.UserProfileId == notification.UserProfileId);
+			UserProfile target = GStoreDb.UserProfiles.SingleOrDefault(prof => prof.UserProfileId == data.ToUserProfileId);
 			if (target == null)
 			{
 				ModelState.AddModelError("", "Target recipient is not found. Please email the system administrator if you think this is an error.");
@@ -173,69 +184,135 @@ namespace GStore.Controllers
 					ModelState.AddModelError("", "You are not authorized to send a message to the selected user. Please email the system administrator if you think this is an error.");
 				}
 			}
-
-			if (ModelState.IsValid)
-            {
-				UserProfile sender = GStoreDb.GetCurrentUserProfile();
-				notification.FromUserProfileId = sender.UserProfileId;
-				notification.From = sender.FullName;
-				notification.To = target.FullName;
-				notification.UrlHost = Request.Url.Host;
-				if (!Request.Url.IsDefaultPort)
-				{
-					notification.UrlHost += ":" + Request.Url.Port;
-				}
-
-				notification.BaseUrl = Url.Action("Details", "Notifications", new { id = "" });
-
-				int linkCount = 0;
-				List<NotificationLink> linkCollection = new List<NotificationLink>();
-				foreach (NotificationLink link in links.Where(l => !(string.IsNullOrWhiteSpace(l.Url) && !string.IsNullOrWhiteSpace(l.LinkText))))
-				{
-					linkCount++;
-					link.Notification = notification;
-					if (link.Url.StartsWith("/") || link.Url.StartsWith("~/"))
-					{
-						link.IsExternal = false;
-					}
-					else
-					{
-						link.IsExternal = true;
-					}
-					linkCollection.Add(link);
-				}
-				if (linkCount != 0)
-				{
-					notification.NotificationLinks = linkCollection;
-				}
-				GStoreDb.Notifications.Add(notification);
-				GStoreDb.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-			SelectList profiles = null;
-			if (User.IsInRole("SystemAdmin"))
+			if (!ModelState.IsValid)
 			{
-				var query = from profile in GStoreDb.UserProfiles.All()
-							orderby profile.Email
-							select new SelectListItem
-							{
-								Value = profile.UserProfileId.ToString()
-								,
-								Text = profile.FullName + " <" + profile.Email + "> " + (profile.AllowUsersToSendSiteMessages ? "(public)" : "(private)")
-							};
-
-				//todo: consider adding security admin and welcome people on top;
-				profiles = new SelectList(query.ToList(), "Value", "Text");
-			}
-			else
-			{
-				int currentUserProfileId = GStoreDb.GetCurrentUserProfile().UserProfileId;
-				profiles = new SelectList(GStoreDb.UserProfiles.Where(prof => prof.UserProfileId != currentUserProfileId && prof.AllowUsersToSendSiteMessages == true).OrderBy(prof => prof.Email), "UserProfileId", "FullName");
+				ViewBag.Importance = ImportanceItems();
+				ViewBag.ToUserProfileId = AllowedToProfiles();
+				return View(data);
 			}
 
-			ViewBag.UserProfileId = profiles;
-            return View(notification);
+			Notification notification = GStoreDb.Notifications.Create();
+			UserProfile sender = CurrentUserProfileOrThrow;
+			notification.FromUserProfileId = sender.UserProfileId;
+			notification.From = sender.FullName;
+			notification.To = target.FullName;
+			notification.Subject = data.Subject;
+			notification.ToUserProfileId = data.ToUserProfileId;
+			notification.Importance = data.Importance;
+			notification.Message = data.Message;
+			notification.UrlHost = Request.Url.Host;
+			notification.Client = CurrentClientOrThrow;
+			notification.StoreFront = CurrentStoreFrontOrThrow;
+			if (!Request.Url.IsDefaultPort)
+			{
+				notification.UrlHost += ":" + Request.Url.Port;
+			}
+
+			notification.BaseUrl = Url.Action("Details", "Notifications", new { id = "" });
+
+			List<NotificationLink> linkCollection = new List<NotificationLink>();
+			if (!string.IsNullOrWhiteSpace(data.Link1Url))
+			{
+				if (string.IsNullOrWhiteSpace(data.Link1Text))
+				{
+					data.Link1Text = data.Link1Url;
+				}
+				NotificationLink newLink1 = GStoreDb.NotificationLinks.Create();
+				newLink1.Notification = notification;
+				newLink1.Order = 1;
+				newLink1.LinkText = data.Link1Text;
+				newLink1.Url = data.Link1Url;
+				newLink1.Client = CurrentClientOrThrow;
+				newLink1.StoreFront = CurrentStoreFrontOrThrow;
+				if (data.Link1Url.StartsWith("/") || data.Link1Url.StartsWith("~/"))
+				{
+					newLink1.IsExternal = false;
+				}
+				else
+				{
+					newLink1.IsExternal = true;
+				}
+				linkCollection.Add(newLink1);
+			}
+			if (!string.IsNullOrWhiteSpace(data.Link2Url))
+			{
+				if (string.IsNullOrWhiteSpace(data.Link2Text))
+				{
+					data.Link2Text = data.Link2Url;
+				}
+				NotificationLink newLink2 = GStoreDb.NotificationLinks.Create();
+				newLink2.Notification = notification;
+				newLink2.Order = 2;
+				newLink2.LinkText = data.Link2Text;
+				newLink2.Url = data.Link2Url;
+				newLink2.Client = CurrentClientOrThrow;
+				newLink2.StoreFront = CurrentStoreFrontOrThrow;
+				if (data.Link2Url.StartsWith("/") || data.Link2Url.StartsWith("~/"))
+				{
+					newLink2.IsExternal = false;
+				}
+				else
+				{
+					newLink2.IsExternal = true;
+				}
+				linkCollection.Add(newLink2);
+			}
+			if (!string.IsNullOrWhiteSpace(data.Link3Url))
+			{
+				if (string.IsNullOrWhiteSpace(data.Link3Text))
+				{
+					data.Link3Text = data.Link3Url;
+				}
+				NotificationLink newLink3 = GStoreDb.NotificationLinks.Create();
+				newLink3.Notification = notification;
+				newLink3.Order = 3;
+				newLink3.LinkText = data.Link3Text;
+				newLink3.Url = data.Link3Url;
+				newLink3.Client = CurrentClientOrThrow;
+				newLink3.StoreFront = CurrentStoreFrontOrThrow;
+				if (data.Link3Url.StartsWith("/") || data.Link3Url.StartsWith("~/"))
+				{
+					newLink3.IsExternal = false;
+				}
+				else
+				{
+					newLink3.IsExternal = true;
+				}
+				linkCollection.Add(newLink3);
+			}
+			if (!string.IsNullOrWhiteSpace(data.Link4Url))
+			{
+				if (string.IsNullOrWhiteSpace(data.Link4Text))
+				{
+					data.Link4Text = data.Link4Url;
+				}
+				NotificationLink newLink4 = GStoreDb.NotificationLinks.Create();
+				newLink4.Notification = notification;
+				newLink4.Order = 4;
+				newLink4.LinkText = data.Link4Text;
+				newLink4.Url = data.Link4Url;
+				newLink4.Client = CurrentClientOrThrow;
+				newLink4.StoreFront = CurrentStoreFrontOrThrow;
+				if (data.Link4Url.StartsWith("/") || data.Link4Url.StartsWith("~/"))
+				{
+					newLink4.IsExternal = false;
+				}
+				else
+				{
+					newLink4.IsExternal = true;
+				}
+				linkCollection.Add(newLink4);
+			}
+
+
+			if (linkCollection.Count != 0)
+			{
+				notification.NotificationLinks = linkCollection;
+			}
+
+			GStoreDb.Notifications.Add(notification);
+			GStoreDb.SaveChanges();
+			return RedirectToAction("Index");
         }
 
         // GET: Notifications/Edit/5
@@ -244,8 +321,8 @@ namespace GStore.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+				return HttpBadRequest("Notification id is null");
+			}
 
 			Notification notification = null;
 			if (User.IsInRole("SystemAdmin"))
@@ -254,8 +331,8 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
-				notification = GStoreDb.Notifications.Where(n => (n.UserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
+				UserProfile userProfile = CurrentUserProfileOrThrow;
+				notification = GStoreDb.Notifications.Where(n => (n.ToUserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
 			}
 
 			if (notification == null)
@@ -263,30 +340,39 @@ namespace GStore.Controllers
                 return HttpNotFound();
             }
 
-			SelectList profiles = null;
+            ViewBag.ToUserProfileId = AllowedToProfiles();
+            return View(notification);
+        }
+
+		public ActionResult Reply(int? id)
+		{
+			if (id == null)
+			{
+				return HttpBadRequest("Notification id is null");
+			}
+
+			Notification notification = null;
 			if (User.IsInRole("SystemAdmin"))
 			{
-				var query = from profile in GStoreDb.UserProfiles.All()
-							orderby profile.Email
-							select new SelectListItem
-							{
-								Value = profile.UserProfileId.ToString()
-								,
-								Text = profile.FullName + " <" + profile.Email + "> " + (profile.AllowUsersToSendSiteMessages ? "(public)" : "(private)")
-							};
-
-				//todo: consider adding security admin and welcome people on top;
-				profiles = new SelectList(query.ToList(), "Value", "Text");
+				notification = GStoreDb.Notifications.SingleOrDefault(n => n.NotificationId == id);
 			}
 			else
 			{
-				int currentUserProfileId = GStoreDb.GetCurrentUserProfile().UserProfileId;
-				profiles = new SelectList(GStoreDb.UserProfiles.Where(prof => prof.UserProfileId != currentUserProfileId && prof.AllowUsersToSendSiteMessages == true).OrderBy(prof => prof.Email), "UserProfileId", "FullName");
+				UserProfile userProfile = CurrentUserProfileOrThrow;
+				notification = GStoreDb.Notifications.Where(n => (n.ToUserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
 			}
 
-            ViewBag.UserProfileId = profiles;
-            return View(notification);
-        }
+			if (notification == null)
+			{
+				return HttpNotFound();
+			}
+
+			Models.ViewModels.NotificationCreateViewModel viewModel = new Models.ViewModels.NotificationCreateViewModel();
+			viewModel.StartReply(notification);
+			ViewBag.ToUserProfileId = AllowedToProfiles();
+			ViewBag.Importance = ImportanceItems();
+			return View("Create", viewModel);
+		}
 
         // POST: Notifications/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -298,7 +384,7 @@ namespace GStore.Controllers
 		{
             if (ModelState.IsValid)
             {
-				GStoreDb.Notifications.Update(notification);
+				notification = GStoreDb.Notifications.Update(notification);
 				foreach (NotificationLink link in notification.NotificationLinks)
 				{
 					GStoreDb.NotificationLinks.Update(link);
@@ -307,28 +393,7 @@ namespace GStore.Controllers
                 return RedirectToAction("Index");
             }
 
-			SelectList profiles = null;
-			if (User.IsInRole("SystemAdmin"))
-			{
-				var query = from profile in GStoreDb.UserProfiles.All()
-							orderby profile.Email
-							select new SelectListItem
-							{
-								Value = profile.UserProfileId.ToString()
-								,
-								Text = profile.FullName + " <" + profile.Email + "> " + (profile.AllowUsersToSendSiteMessages ? "(public)" : "(private)")
-							};
-
-				//todo: consider adding security admin and welcome people on top;
-				profiles = new SelectList(query.ToList(), "Value", "Text");
-			}
-			else
-			{
-				int currentUserProfileId = GStoreDb.GetCurrentUserProfile().UserProfileId;
-				profiles = new SelectList(GStoreDb.UserProfiles.Where(prof => prof.UserProfileId != currentUserProfileId && prof.AllowUsersToSendSiteMessages == true).OrderBy(prof => prof.Email), "UserProfileId", "FullName");
-			}
-
-			ViewBag.UserProfileId = profiles;
+			ViewBag.ToUserProfileId = AllowedToProfiles();
             return View(notification);
         }
 
@@ -337,7 +402,7 @@ namespace GStore.Controllers
         {
 			if (id == null)
 			{
-				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+				return HttpBadRequest("Notification id is null");
 			}
 
 			Notification notification = null;
@@ -347,8 +412,8 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
-				notification = GStoreDb.Notifications.Where(n => (n.UserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
+				UserProfile userProfile = CurrentUserProfileOrThrow;
+				notification = GStoreDb.Notifications.Where(n => (n.ToUserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
 			}
 
             if (notification == null)
@@ -370,8 +435,8 @@ namespace GStore.Controllers
 			}
 			else
 			{
-				UserProfile userProfile = GStoreDb.GetCurrentUserProfile();
-				notification = GStoreDb.Notifications.Where(n => (n.UserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
+				UserProfile userProfile = CurrentUserProfileOrThrow;
+				notification = GStoreDb.Notifications.Where(n => (n.ToUserProfileId == userProfile.UserProfileId) && (n.NotificationId == id)).SingleOrDefault();
 			}
 
 			GStoreDb.Notifications.Delete(notification);

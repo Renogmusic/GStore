@@ -13,6 +13,8 @@ namespace GStore.Models
 		public int ProductCategoryId { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
+		[MaxLength(250)]
 		public string Name { get; set; }
 
 		[Required]
@@ -41,9 +43,5 @@ namespace GStore.Models
 
 		public virtual ICollection<Product> Products { get; set; }
 
-		public string ImageUrl()
-		{
-			return "/Images/Categories/" + this.ImageName;
-		}
 	}
 }

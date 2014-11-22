@@ -43,7 +43,7 @@
 		{
 			@:<div class="CategoryListItem col-sm-@(Model.StoreFront.CatalogCategoryColSm) col-md-@(Model.StoreFront.CatalogCategoryColMd) col-lg-@(Model.StoreFront.CatalogCategoryColLg)">
 			string url = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
-			string imageUrl = childCategory.Entity.ImageUrl();
+			string imageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath);
 
 			@:<a class="CategoryListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" title="@(Html.AttributeEncode(childCategory.Entity.Name))" /></a>
 			@:<br />

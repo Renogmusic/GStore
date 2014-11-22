@@ -6,17 +6,12 @@ using System.Web;
 
 namespace GStore.Models.BaseClasses
 {
-	public abstract class ClientRecord: AuditFieldsAllRequired
+	public abstract class ClientRecord : AuditFieldsAllRequired
 	{
-		public int ClientId { get; set; }
-
 		[ForeignKey("ClientId")]
 		public virtual Client Client { get; set; }
-
-		public string ClientVirtualDirectoryToMap()
-		{
-			return "/Content/Clients/" + HttpUtility.UrlEncode(this.Client.Folder);
-		}
+		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		public int ClientId { get; set; }
 
 	}
 }

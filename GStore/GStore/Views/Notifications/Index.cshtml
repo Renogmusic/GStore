@@ -1,8 +1,8 @@
-﻿@model IEnumerable<GStore.Data.Notification>
+﻿@model IEnumerable<GStore.Models.Notification>
 @using GStore.AppHtmlHelpers;
 @{
 	ViewBag.Title = "My Messages";
-	int unread = Model.Count(msg => msg.Read == false);
+	int unread = Model.AsQueryable().Count(msg => msg.Read == false);
 }
 <style>
 	.readEven {
@@ -27,8 +27,8 @@
 			int selectedUserProfileId = (ViewData["SelectedUserProfileId"] == null ? 0 : (int)ViewData["SelectedUserProfileId"]);
 			
 			List<SelectListItem> users = new List<SelectListItem>();
-			GStore.Data.GStoreDbContext ctx = new GStore.Data.GStoreDbContext(User);
-			var query = from profile in ctx.UserProfiles
+			GStore.Data.IGstoreDb ctx = Html.GStoreDb();
+			var query = from profile in ctx.UserProfiles.All()
 						orderby profile.Email
 						select new SelectListItem { Value = profile.UserProfileId.ToString()
 							, Text = profile.Email + " <" + profile.FullName + "> " + (profile.AllowUsersToSendSiteMessages ? "(public)": "(private)")
@@ -126,4 +126,4 @@
 	</table>
 }
 <hr />
-<p>@Html.ActionLink("Back to My Profile", "Index", "Manage")</p>
+<p>@Html.ActionLink("Back to My Profile", "Index", "Profile")</p>

@@ -10,6 +10,8 @@ namespace GStore.Models
 		public int ProductId { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
+		[MaxLength(250)]
 		public string Name { get; set; }
 
 		[Required]
@@ -32,11 +34,6 @@ namespace GStore.Models
 		//showifoutofstock
 		//silentoutofstock
 		//discontinued
-
-		public string ImageUrl()
-		{
-			return "/Images/Categories/" + this.ImageName;
-		}
 
 	}
 }

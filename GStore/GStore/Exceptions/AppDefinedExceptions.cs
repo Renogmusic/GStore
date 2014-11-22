@@ -7,6 +7,29 @@ using System.Text;
 namespace GStore.Exceptions
 {
 	[Serializable]
+	public class DatabaseErrorException : ApplicationException
+	{
+		public DatabaseErrorException() { }
+		public DatabaseErrorException(string message, Exception innerException)
+			: base(message, innerException) { }
+
+		protected DatabaseErrorException(
+		  System.Runtime.Serialization.SerializationInfo info,
+		  System.Runtime.Serialization.StreamingContext context)
+			: base(info, context) { }
+	}
+
+	[Serializable]
+	public class DynamicPageInactiveException : DynamicPageNotFoundException
+	{
+		public DynamicPageInactiveException() { }
+		public DynamicPageInactiveException(string message, string url, StoreFront storeFront)
+			: base(message, url, storeFront)
+		{
+		}
+	}
+
+	[Serializable]
 	public class DynamicPageNotFoundException : ApplicationException
 	{
 		public DynamicPageNotFoundException() { }
@@ -20,27 +43,23 @@ namespace GStore.Exceptions
 		public string Url { get; protected set; }
 		public StoreFront StoreFront { get; protected set; }
 
-		protected DynamicPageNotFoundException(
-		  System.Runtime.Serialization.SerializationInfo info,
-		  System.Runtime.Serialization.StreamingContext context)
-			: base(info, context) { }
-	}
-
-	[Serializable]
-	public class DynamicPageInactiveException : ApplicationException
-	{
-		public DynamicPageInactiveException() { }
-		public DynamicPageInactiveException(string message, string url, StoreFront storeFront)
-			: base(message)
+		public bool IsHomePage
 		{
-			this.Url = url;
-			this.StoreFront = storeFront;
+			get
+			{
+				if (string.IsNullOrEmpty(Url))
+				{
+					return true;
+				}
+				if (Url.Trim(' ', '/', '\\').Length == 0)
+				{
+					return true;
+				}
+				return false;
+			}
 		}
 
-		public string Url { get; protected set; }
-		public StoreFront StoreFront { get; protected set; }
-
-		protected DynamicPageInactiveException(
+		protected DynamicPageNotFoundException(
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }
@@ -75,7 +94,7 @@ namespace GStore.Exceptions
 			this.StoreFront = storeFront;
 		}
 
-		public StoreFront StoreFront { get; protected set;}
+		public StoreFront StoreFront { get; protected set; }
 		public Uri Uri { get; protected set; }
 
 		protected StoreFrontInactiveException(

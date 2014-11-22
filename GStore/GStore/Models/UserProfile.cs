@@ -16,12 +16,15 @@ namespace GStore.Models
 		/// PK (counter) UserProfile.UserProfileId
 		/// </summary>
 		[Editable(false)]
+		[Key]
 		public int UserProfileId { get; set; }
 
 		/// <summary>
 		/// UserId (string) from Identity
 		/// </summary>
 		[Editable(false)]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
+		[MaxLength(255)]
 		public string UserId { get; set; }
 
 		/// <summary>
@@ -30,6 +33,8 @@ namespace GStore.Models
 		[Display(Name = "User Name")]
 		[Editable(false)]
 		[Required]
+		[Index(IsUnique=true)]
+		[MaxLength(255)]
 		public string UserName { get; set; }
 
 		/// <summary>
@@ -37,11 +42,17 @@ namespace GStore.Models
 		/// </summary>
 		[Editable(false)]
 		[Required]
+		[Index(IsUnique = true)]
+		[MaxLength(255)]
 		public string Email { get; set; }
 
 		public int? StoreFrontId { get; set; }
 		[ForeignKey("StoreFrontId")]
 		public virtual StoreFront StoreFront { get; set; }
+
+		public int? ClientId { get; set; }
+		[ForeignKey("ClientId")]
+		public virtual Client Client { get; set; }
 
 
 		public bool Active { get; set; }
@@ -154,67 +165,15 @@ namespace GStore.Models
 		/// </summary>
 		public virtual ICollection<Notification> Notifications { get; set; }
 
+		/// <summary>
+		/// Notifications sent from the user user
+		/// </summary>
+		public virtual ICollection<Notification> NotificationsSent { get; set; }
+
 		public virtual ICollection<ClientUserRole> ClientUserRoles { get; set; }
-		public virtual ICollection<StoreFrontUserRole> StoreFrontUserRoles { get; set; }
 
 		public virtual ICollection<StoreFront> WelcomeStoreFronts { get; set; }
 		public virtual ICollection<StoreFront> AccountAdminStoreFronts { get; set; }
 		public virtual ICollection<StoreFront> RegisteredNotifyStoreFronts { get; set; }
-	}
-
-	public static class UserProfileExtensions
-	{
-		/// <summary>
-		/// Checks if the user is in the ASP.Net Identity User Role "System Admin"
-		/// </summary>
-		/// <param name="profile"></param>
-		/// <param name="roleName"></param>
-		/// <returns></returns>
-		public static bool AspNetIdentityUserIsInRoleSystemAdmin(this UserProfile profile)
-		{
-			return profile.AspNetIdentityUser().IsInRole("SystemAdmin");
-		}
-
-		/// <summary>
-		/// Checks if the user is in a specific ASP.Net Identity User Role; i.e. "SystemAdmin"
-		/// </summary>
-		/// <param name="profile"></param>
-		/// <param name="roleName"></param>
-		/// <returns></returns>
-		public static bool AspNetIdentityUserIsInRole(this UserProfile profile, string roleName)
-		{
-			return profile.AspNetIdentityUser().IsInRole(roleName);
-		}
-
-		public static Identity.AspNetIdentityUser AspNetIdentityUser(this UserProfile profile)
-		{
-			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
-			return identityCtx.AspNetIdentityUser(profile);
-		}
-
-		public static List<Identity.AspNetIdentityRole> AspNetIdentityRoles(this UserProfile profile)
-		{
-			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
-			return identityCtx.AspNetIdentityRoles(profile);
-		}
-
-		public static ICollection<Identity.AspNetIdentityUserRole> AspNetIdentityUserRoles(this UserProfile profile)
-		{
-			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
-			return identityCtx.AspNetIdentityUserRoles(profile);
-		}
-
-		public static ICollection<Identity.AspNetIdentityUserClaim> AspNetIdentityUserClaims(this UserProfile profile)
-		{
-			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
-			return identityCtx.AspNetIdentityUserClaims(profile);
-		}
-
-		public static ICollection<Identity.AspNetIdentityUserLogin> AspNetIdentityUserLogins(this UserProfile profile)
-		{
-			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
-			return identityCtx.AspNetIdentityUserLogins(profile);
-		}
-
 	}
 }

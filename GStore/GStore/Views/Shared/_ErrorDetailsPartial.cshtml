@@ -1,0 +1,31 @@
+﻿@model GStore.Exceptions.GStoreErrorInfo
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+<div class="text-left">
+	<h1>GStore System Admin Error Details</h1>
+	<hr />
+	@if (Model == null)
+	{
+		@:Unknown error (no error in model for view)
+	}
+	else
+	{
+		<h3>Error Details</h3>
+		@:RouteData Source: <strong>@(Model.RouteDataSource)</strong><br />
+		@:Url: <strong>@(Model.Url)</strong><br />
+		@:RawUrl:<strong>@(Model.RawUrl)</strong><br />
+		@:IPAddress:<strong>@(Model.IPAddress)</strong><br/>
+		if (Model.Exception != null)
+		{
+			Exception ex = Model.Exception;
+			do
+			{
+				//run partial for inner exceptions down to the end
+				@Html.Partial("_ExceptionDetails", ex)
+				@:<hr /><hr />
+				ex = ex.InnerException;
+			} while (ex != null);
+		}
+	}
+</div>

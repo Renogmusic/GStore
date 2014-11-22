@@ -12,7 +12,7 @@ namespace GStore.Data.ListProvider
 	/// Generic wrapper for GStore List objects as data sources for empty DB and testing repository pattern
 	/// </summary>
 	/// <typeparam name="TEntity"></typeparam>
-	public class GenericGStoreListSourceRepository<TEntity> : IGStoreRepository<TEntity>  where TEntity : class, new()
+	public class GenericGStoreListSourceRepository<TEntity> : IGStoreRepository<TEntity> where TEntity : Models.BaseClasses.GStoreEntity, new()
 	{
 		/// <summary>
 		/// list for simplified mocks
@@ -40,6 +40,11 @@ namespace GStore.Data.ListProvider
 		public virtual TEntity Create()
 		{
 			return new TEntity();
+		}
+
+		public virtual TEntity Create(TEntity valuesToCopy)
+		{
+			return valuesToCopy;
 		}
 
 		public virtual List<TEntity> ListData()
@@ -96,12 +101,7 @@ namespace GStore.Data.ListProvider
 			return entity;
 		}
 
-		public virtual void Delete(TEntity entity)
-		{
-			_list.Remove(entity);
-		}
-
-		public virtual void DeleteById(int id, bool throwErrorIfNotFound = false)
+		public virtual bool DeleteById(int id, bool throwErrorIfNotFound = false)
 		{
 			TEntity entity = FindById(id);
 			if (entity == null)
@@ -110,31 +110,44 @@ namespace GStore.Data.ListProvider
 				{
 					throw new ApplicationException("Could not find entity by its key value, id: " + id + " entity: " + entity.GetType().Name);
 				}
-				return;
+				return false;
 			}
 			_list.Remove(entity);
+			return true;
 		}
 
-		public virtual void Update(TEntity entity)
+		public virtual bool Delete(TEntity entity, bool throwErrorIfNotFound = true)
 		{
-			_list.Remove(entity);
-			_list.Add(entity);
+			if (_list.Contains(entity))
+			{
+				_list.Remove(entity);
+				return true;
+			}
+			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 
-		private void SetKeyFieldValue(TEntity entity, int id)
+		public virtual TEntity Update(TEntity entity)
+		{
+			TEntity existingEntity = this.FindById(GetKeyFieldValue(entity));
+			_list.Remove(existingEntity);
+			_list.Add(entity);
+			return entity;
+		}
+
+		public void SetKeyFieldValue(TEntity entity, int id)
 		{
 			string keyField = KeyFieldPropertyName(entity);
 			entity.GetType().GetProperty(keyField).SetValue(entity, id);
 		}
 
-		private int GetKeyFieldValue(TEntity entity)
+		public int GetKeyFieldValue(TEntity entity)
 		{
 			string keyField = KeyFieldPropertyName(entity);
 			object keyFieldValue = entity.GetType().GetProperty(keyField).GetValue(entity);
 			return (int)keyFieldValue;
 		}
 
-		private string KeyFieldPropertyName(TEntity entity)
+		public string KeyFieldPropertyName(TEntity entity)
 		{
 			Type type = entity.GetType();
 			string entityName = type.Name.ToLower();

@@ -2,6 +2,7 @@
 @using GStore.Controllers
 @using GStore.Controllers.BaseClass
 @using GStore.Models
+@using GStore.Models.ViewModels
 @using GStore.Models.Extensions
 <!DOCTYPE html>
 <html>
@@ -9,40 +10,46 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	@{
-		GStore.Controllers.PageController pageController = null;
-		GStore.Models.StoreFront storeFront = null;
-		GStore.Models.Client client = null;
-		GStore.Models.Page page = null;
+		GStore.Models.StoreFront storeFront = Html.CurrentStoreFront(false);
+		GStore.Models.Client client = Html.CurrentClient(false);
+		GStore.Models.Page page = Html.CurrentPage(false);
+
 		string title = string.Empty;
+		UserProfile userProfile = Html.CurrentUserProfile(false);
 
-		if (this.ViewContext.Controller is BaseController)
+		title = (storeFront == null ? "GStore" : storeFront.Name);
+
+		if (page != null && !string.IsNullOrWhiteSpace(page.PageTitle))
 		{
-			BaseController baseController = this.ViewContext.Controller as BaseController;
-			storeFront = baseController.CurrentStoreFront;
-			client = baseController.CurrentClient;
-			title = storeFront.Name;
+			title = page.PageTitle + " - " + title;
 		}
 
-		if (this.ViewContext.Controller is PageController)
-		{
-			pageController = this.ViewContext.Controller as PageController;
-			page = pageController.CurrentPage;
-			if (!string.IsNullOrWhiteSpace(page.PageTitle))
-			{
-				title = page.PageTitle + " - " + title;
-			}
-		}
-
-		if (ViewBag.Title != null && (!string.IsNullOrWhiteSpace(ViewBag.Title)))
+		if (ViewBag.Title != null && !string.IsNullOrWhiteSpace(ViewBag.Title))
 		{
 			title = ViewBag.Title + " - " + title;
 		}
 
+		string metaApplicationName = "GStore Store Front";
+		string metaApplicationTileColor = "880088";
+		string metaDescription = "GStore Store Front";
+		string metaKeywords = "GStore Store Front";
+		string themeFolderName = GStore.Properties.Settings.Current.SystemAdminThemeFolderName;
+		if (storeFront != null)
+		{
+			metaApplicationName = storeFront.MetaApplicationName;
+			metaApplicationTileColor = storeFront.MetaApplicationTileColor;
+			metaDescription = storeFront.MetaDescription;
+			metaKeywords = storeFront.MetaKeywords;
+			themeFolderName = storeFront.Theme.FolderName;
+		}
+
+		MenuViewModel menuViewModel = new MenuViewModel(storeFront, userProfile);
+
 	}
 	<title>@title</title>
 
-	<meta name="application-name" content="@(storeFront.MetaApplicationName)" />
-	<meta name="msapplication-TileColor" content="#@(storeFront.MetaApplicationTileColor)" />
+	<meta name="application-name" content="@(metaApplicationName)" />
+	<meta name="msapplication-TileColor" content="#@(metaApplicationTileColor)" />
 	<meta name="msapplication-square70x70logo" content="~/Images/Logo/tiny.png" />
 	<meta name="msapplication-square150x150logo" content="~/Images/Logo/square.png" />
 	<meta name="msapplication-wide310x150logo" content="~/Images/Logo/wide.png" />
@@ -50,16 +57,17 @@
 
 	<link rel="shortcut icon" href="~/Images/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="~/Images/favicon.ico" type="image/x-icon">
-	<meta name="description" content="@(storeFront.MetaDescription)" />
-	<meta name="keywords" content="@(storeFront.MetaKeywords)" />
+	<meta name="description" content="@(metaDescription)" />
+	<meta name="keywords" content="@(metaKeywords)" />
 	<link rel="apple-touch-icon" href="~/Images/Logo/Logo.png" />
 	<link rel="apple-touch-startup-image" href="~/Images/Logo/Logo.png" />
 
 	<script>
-	var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFront));
 	</script>
 
-	@Styles.Render("~/Themes/" + storeFront.Theme.FolderName + "/Bootstrap.css")
+	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.css")
 	@Styles.Render("~/Styles/GStoreApp.css")
 	@Styles.Render("~/Styles/Styles.css")
 
@@ -71,32 +79,21 @@
 	<script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
 	<script src="~/signalr/hubs"></script>
 	@Scripts.Render("~/Js/GStoreApp.js")
+	@Scripts.Render("~/Js/Scripts.js")
 </head>
 <body>
 	@if (page != null)
 	{
 		@Html.Raw(page.BodyTopScriptTag)
 	}
-	@Html.Partial("_NavbarPartial", new GStore.Models.ViewModels.MenuViewModel(storeFront, storeFront.CategoryTreeWhereActive(), storeFront.NavBarTreeWhereActive(User.Identity.IsAuthenticated)))
+	@Html.Partial("_NavbarPartial", menuViewModel)
 	<div class="container body-content">
 		<!-- top alert container for dynamic alerts-->
 		<div id="usermessagecontainer" style="padding-top: 2em"></div>
 		@RenderBody()
 		<hr />
 		<div id="usermessagebottomcontainer"></div>
-		<footer>
-			<div class="row">
-				<div class="col-sm-4 text-center">
-					&copy; RenoGMusic <a href="mailto:renogmusic@yahoo.com" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">renogmusic@yahoo.com</a>
-				</div>
-				<div class="col-sm-4 text-center">
-					@Html.ActionLink("Register to get site updates and cool stuff!", "Register", "Account")
-				</div>
-				<div class="col-sm-4 text-center">
-					<span id="ActiveUsers"> - </span>
-				</div>
-			</div>
-		</footer>
+		@Html.Partial("_FooterPartial", menuViewModel)
 	</div>
 
 	@RenderSection("scripts", required: false)

@@ -80,11 +80,21 @@
 	}
 }
 
+@media (min-width: 1900px)
+{
+	.body-content
+	{
+		width: 1900px;
+	}
+	.container
+	{
+		width: 1900px;
+	}
+}
 .block
 {
 	display: block;
 }
-
 
 .CategoryListImage {
 	display: block;

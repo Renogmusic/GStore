@@ -1,0 +1,291 @@
+﻿@model GStore.Models.StoreFront
+<h2>Confirm StoreFront Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>StoreFront</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AccountAdmin.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AccountAdmin.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Client.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RegisteredNotify.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RegisteredNotify.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Theme.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Theme.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedBy.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedBy.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WelcomePerson.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WelcomePerson.UserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PublicUrl)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PublicUrl)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MetaApplicationName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MetaApplicationName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MetaApplicationTileColor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MetaApplicationTileColor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MetaDescription)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MetaDescription)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MetaKeywords)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MetaKeywords)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Folder)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Folder)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NavBarCatalogMaxLevels)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogPageInitialLevels)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogPageInitialLevels)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NavBarItemsMaxLevels)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NavBarItemsMaxLevels)
+        </dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLayoutName)
+		</dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProfileLayoutName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProfileLayoutName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NotificationsLayoutName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NotificationsLayoutName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogLayoutName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogLayoutName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogCategoryColSm)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogCategoryColSm)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogCategoryColMd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogCategoryColMd)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogCategoryColLg)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogCategoryColLg)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogProductColSm)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogProductColSm)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogProductColMd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogProductColMd)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CatalogProductColLg)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CatalogProductColLg)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AdminLayoutName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AdminLayoutName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsPending)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsPending)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreateDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdateDateTimeUtc)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

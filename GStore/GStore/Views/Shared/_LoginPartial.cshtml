@@ -1,21 +1,33 @@
-﻿@using Microsoft.AspNet.Identity
+﻿@model GStore.Models.ViewModels.MenuViewModel
+@using Microsoft.AspNet.Identity
+@using GStore.Identity
+@using GStore.Models
+@using GStore.Models.Extensions
 @if (Request.IsAuthenticated)
 {
+	
 	using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
 	{
 		@Html.AntiForgeryToken()
 
 		<ul class="nav navbar-nav navbar-right">
 			<li>
-				<a href="@Url.Action("Index", "Manage")" title="My Account">
-					My Account <small>( @User.Identity.GetUserName() )</small>
+				<a href="@Url.Action("Index", "Profile")" title="My Account">
+					<small>( @User.Identity.GetUserName() )</small>
 				</a>
 			</li>
-			@if (User.IsInRole("StoreAdmin") || User.IsInRole("SystemAdmin"))
+			@if (Model.ShowStoreAdminLink)
 			{
-			//if user can admin stores, show store admin menu
+				//if user has store admin permissions, show store admin link
 				<li>
 					@Html.ActionLink("Store Admin", "Index", "StoreAdmin", new { Area = "StoreAdmin" }, htmlAttributes: new { title = "Store Admin" })
+				</li>
+			}
+			@if (Model.ShowSystemAdminLink)
+			{
+				//if user has system admin permission, show system admin link
+				<li>
+					@Html.ActionLink("System Admin", "Index", "SystemAdmin", new { Area = "SystemAdmin" }, htmlAttributes: new { title = "System Admin" })
 				</li>
 			}
 			<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>

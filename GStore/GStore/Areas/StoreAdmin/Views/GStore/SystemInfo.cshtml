@@ -1,0 +1,295 @@
+﻿@using System.Reflection
+@using GStore.AppHtmlHelpers
+@using GStore.Areas.StoreAdmin.Controllers.BaseClasses
+@using GStore.Models
+@using GStore.Models.Extensions
+@{
+	Assembly assembly = typeof(GStore.Models.StoreFront).Assembly;
+
+	StoreFront currentStoreFront = Html.CurrentStoreFront(true);
+	Client currentClient = Html.CurrentClient(true);
+	UserProfile currentUserProfile = Html.CurrentUserProfile(true);
+	StoreBinding currentStoreBinding = null;
+	try
+	{
+		currentStoreBinding = Html.GetCurrentStoreBinding(false);
+	}
+	catch
+	{
+	}
+}
+<style>
+	#SystemInfo {
+	}
+
+		#SystemInfo .header {
+			text-align: right;
+			min-width: 20%;
+			padding: 10px;
+		}
+
+		#SystemInfo .data {
+			text-align: left;
+			padding: 10px;
+		}
+</style>
+<div class="row" style="padding-top: 1em;">
+	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
+		<h2>System Information</h2>
+		<strong>
+			You are using GStore Version @Html.GStoreVersionNumber()<br />
+			Build @Html.GStoreVersionDateString()
+		</strong>
+		<hr />
+		<table id="SystemInfo" class="table-hover table-bordered table-striped">
+			<tr>
+				<td class="header">
+					Assembly Full Name:
+				</td>
+				<td class="data">
+					<strong>@assembly.FullName </strong>
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Assembly Version:
+				</td>
+				<td class="data">
+					<strong>@assembly.GetName().Version.ToString() </strong>
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					DLL Location:
+				</td>
+				<td class="data">
+					<strong>@assembly.Location </strong>
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					DLL File Date:
+				</td>
+				<td class="data">
+					@try
+					{
+						@System.IO.File.GetLastWriteTimeUtc(assembly.Location).ToLocalTime()
+					}
+					catch (Exception)
+					{
+					}
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					MachineName:
+				</td>
+				<td class="data">
+					@Environment.MachineName.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					ProcessorCount:
+				</td>
+				<td class="data">
+					@Environment.ProcessorCount.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					WorkingSet:
+				</td>
+				<td class="data">
+					@Environment.WorkingSet.ToByteString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Is Fully Trusted:
+				</td>
+				<td class="data">
+					@assembly.IsFullyTrusted
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Image Runtime Version:
+				</td>
+				<td class="data">
+					@assembly.ImageRuntimeVersion
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Is64BitOperatingSystem:
+				</td>
+				<td class="data">
+					@Environment.Is64BitOperatingSystem.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Is64BitProcess:
+				</td>
+				<td class="data">
+					@Environment.Is64BitProcess.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					OSVersion:
+				</td>
+				<td class="data">
+					@Environment.OSVersion.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Runtime Version:
+				</td>
+				<td class="data">
+					@Environment.Version.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Web Server Directory:
+				</td>
+				<td class="data">
+					@Environment.CurrentDirectory.ToString()
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Current Store Front:
+				</td>
+				<td class="data">
+					[@(currentStoreFront.StoreFrontId)] - '@(currentStoreFront.Name)'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Current Client:
+				</td>
+				<td class="data">
+					[@(currentClient.ClientId)] - '@(currentClient.Name)'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Current UserProfile:
+				</td>
+				<td class="data">
+					[@(currentUserProfile.UserProfileId)] - '@(currentUserProfile.FullName)' &lt;@(currentUserProfile.Email)&gt;
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Current StoreBinding:
+				</td>
+				<td class="data">
+					@if (currentStoreBinding == null)
+					{
+						@:Current Store Binding is null.
+					}
+					else
+					{
+						@:[@(currentStoreBinding.StoreBindingId)]
+						@: - HostName: '@(currentStoreBinding.HostName)'
+						@: - RootPath: '@(currentStoreBinding.RootPath)'
+						@: - Port: @(currentStoreBinding.Port.ToString())
+					}
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Binding Host:
+				</td>
+				<td class="data">
+					'@(Request.BindingHostName())'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Binding Path:
+				</td>
+				<td class="data">
+					'@(Request.BindingRootPath())'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Binding Port:
+				</td>
+				<td class="data">
+					@(Request.BindingPort())
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Request AppPath:
+				</td>
+				<td class="data">
+					'@(Request.ApplicationPath)'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Request Url:
+				</td>
+				<td class="data">
+					'@(Request.Url.ToString())'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Request RawUrl:
+				</td>
+				<td class="data">
+					'@(Request.RawUrl)'
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Request Encrypted:
+				</td>
+				<td class="data">
+					@(Request.IsSecureConnection.ToString())
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Remote IP Address:
+				</td>
+				<td class="data">
+					@Request.UserHostAddress
+				</td>
+			</tr>
+			<tr>
+				<td class="header">
+					Remote User Agent:
+				</td>
+				<td class="data">
+					'@(Request.UserAgent)'
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-sm-5 col-lg-4">
+		<h2>About Me</h2>
+		<p>I started GStore as a programming project to make selling online easy, cost effective, and bring modern technology to the cost-conscious store owner.</p>
+		<p>I hope this software of mine brings you lots of sales, no headaches, and success online.</p>
+		<p>I would love to hear from you whether you are a merchant interesting in selling your products online, or a developer looking for a eCommerce storefront framework to build cutting edge applications.</p>
+		<p><strong>~Reno G~</strong></p>
+		<p>Click here for my personal web site: <a href="http://www.renog.info">http://www.renog.info</a></p>
+		<p>or <a href="mailto:renogmusic@yahoo.com">Email me at renogmusic@yahoo.com</a></p>
+		<p>
+			Follow my work in progress on GitHub<br />
+			<a href="http://www.github.com/renogmusic">http://www.github.com/renogmusic</a>
+		</p>
+		<img src="~/Content/Server/Images/Logo/Logo.jpg" />
+		<br /><br />
+		&copy;GStore <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a>
+	</div>
+</div>

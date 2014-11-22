@@ -6,19 +6,29 @@
 $(document).ready
 (function ()
 {
+	if (googleAnalyticsWebPropertyId == null)
+	{
+		return;
+	}
 	if (userName == null)
 	{
-		ga('create', 'UA-55665207-1', 'auto');
+		ga('create', googleAnalyticsWebPropertyId, 'auto');
 	}
 	else
 	{
-		ga('create', 'UA-55665207-1', { 'userId': userName });
+		ga('create', googleAnalyticsWebPropertyId, { 'userId': userName });
 	}
+	ga('require', 'displayfeatures');
+	ga('require', 'linkid', 'linkid.js');
 	ga('send', 'pageview');
 });
 
 function GaEvent(category, action, label) {
 	{
+		if (googleAnalyticsWebPropertyId == null)
+		{
+			return;
+		}
 		ga('send', 'event', category, action, label);
 	}
 }

@@ -1,0 +1,69 @@
+﻿@model GStore.Exceptions.GStoreErrorInfo
+@using GStore.AppHtmlHelpers;
+@using GStore.Models;
+@using GStore.Models.Extensions;
+
+<div class="text-left">
+	<h1>GStore System Admin Error Details</h1>
+	<hr />
+	@if (Model == null)
+	{
+		@:Unknown error (no error model for view)
+	}
+	else
+	{
+		@:<h3>Error Details</h3>
+		@:Exception: <strong>@(Model.Exception == null ? "null" : Model.Exception.Message)</strong>
+		<br />
+		@:RouteData Source:
+		<strong>
+			@(Model.RouteDataSource)
+		</strong>
+		<br />
+		@:IPAddress:
+		<strong>@(Model.IPAddress)</strong>
+		if (Model.Exception != null)
+		{
+			if (Model.Exception is HttpException)
+			{
+				HttpException httpEx = Model.Exception as HttpException;
+				@:<pre>HTTP Exception Code @httpEx.GetHttpCode() Message: @httpEx.Message</pre>
+			}
+
+			<strong>Source: @Model.Exception.Source</strong><br />
+			if (Model.Exception.TargetSite != null)
+			{
+				@:Method: <strong>@Model.Exception.TargetSite.Name </strong><br />
+				@:Target Site: <strong>@Model.Exception.TargetSite.DeclaringType.FullName</strong><br />
+				@:Target Site Info: <strong>@Model.Exception.TargetSite.ToString()</strong><br />
+			}
+			<pre>Exception.ToString: @Model.Exception.ToString()</pre>
+			<pre>Stack Trace: @Model.Exception.StackTrace</pre>
+
+			if (Model.Exception is HttpException)
+			{
+				HttpException httpExDetails = Model.Exception as HttpException;
+				string htmlError = httpExDetails.GetHtmlErrorMessage();
+				if (!string.IsNullOrEmpty(htmlError) && htmlError.Contains("<body bgcolor=\"white\">"))
+				{
+					//cut up to body tag
+					htmlError = htmlError.Substring(htmlError.IndexOf("<body bgcolor=\"white\">"));
+					htmlError = htmlError.Replace("<body bgcolor=\"white\">", "<div style=\"background-color: white; color black;\">");
+					htmlError = htmlError.Replace("</body>", string.Empty);
+					htmlError = htmlError.Replace("</html>", string.Empty);
+					htmlError += "</div>";
+				}
+				if (!string.IsNullOrEmpty(htmlError))
+				{
+					<div style="background-color: white">
+						<pre>HTML Error</pre>
+						<hr />
+						@Html.Raw(htmlError)
+						<hr />
+					</div>
+				}
+			}
+		}
+	}
+</div>
+

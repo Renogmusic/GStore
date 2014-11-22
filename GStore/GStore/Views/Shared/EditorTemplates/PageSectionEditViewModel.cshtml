@@ -1,0 +1,79 @@
+﻿@model GStore.Models.ViewModels.PageSectionEditViewModel
+@using (Html.BeginForm())
+{
+	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
+	MvcHtmlString prefix = new MvcHtmlString("viewModel.");
+	<script>
+	function ShowRawHtml_@(Model.Index)() {
+		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "true";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = false;
+	}
+
+	function ShowPlainText_@(Model.Index)() {
+		document.getElementById("HasPlainText_@(Model.Index)").value = "true";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = false;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
+	}
+
+	@if (Model.HasRawHtml)
+	{
+		@:$(document).ready(function () {
+								@:	ShowRawHtml_@(Model.Index)();
+								@:
+		@:			});
+	}
+	else
+	{
+	@:$(document).ready(function () {
+		@:	ShowPlainText_@(Model.Index)();
+		@:
+	@:});
+	}
+
+	</script>
+	@Html.AntiForgeryToken()
+	<div class="form-horizontal">
+		<h4>Section: <strong>@Model.SectionName [@Model.PageTemplateSectionId]</strong></h4>
+
+		<hr />
+		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+		<input type="hidden" name="@(prefix)PageId" value="@Model.PageId" />
+		<input type="hidden" name="@(prefix)PageTemplateSectionId" value="@Model.PageTemplateSectionId" />
+		<input type="hidden" name="@(prefix)SectionName" value="@Model.SectionName" />
+		<input type="hidden" name="@(prefix)PageSectionId" value="@Model.PageSectionId" />
+		<input type="hidden" name="@(prefix)Order" value="@Model.Order" />
+		<input type="hidden" name="@(prefix)IsPending" value="@Model.IsPending.ToString()" />
+		<input type="hidden" name="@(prefix)StartDateTimeUtc" value="@Model.StartDateTimeUtc" />
+		<input type="hidden" name="@(prefix)EndDateTimeUtc" value="@Model.EndDateTimeUtc" />
+		<input id="HasPlainText_@(Model.Index)" type="hidden" name="@(prefix)HasPlainText" value="@Model.HasPlainText.ToString()" />
+		<input id="HasRawHtml_@(Model.Index)"   type="hidden" name="@(prefix)HasRawHtml"   value="@Model.HasRawHtml.ToString()" />
+
+		<hr />
+		<input type="radio" name="selectedFormat" value="PlainText" @(Model.HasPlainText ? "checked=\"checked\"" : string.Empty) onclick="ShowPlainText_@(Model.Index)();" />
+		Text &nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="radio" name="selectedFormat" value="RawHtml"   @(Model.HasRawHtml ? "checked=\"checked\"" : string.Empty) onclick="ShowRawHtml_@(Model.Index)();" />
+		HTML
+		<hr />
+		<div id="PlainTextEditor_@(Model.Index)" class="form-group">
+			<div class="col-md-12">
+				<textarea id="PlainText_@(Model.Index)" class="form-control" name="@(prefix)PlainText" rows="4" cols="20">@Model.PlainText</textarea>
+			</div>
+		</div>
+		<div id="RawHtmlEditor_@(Model.Index)" class="form-group">
+			<div class="col-md-12">
+				<textarea id="RawHtml_@(Model.Index)" class="form-control" name="@(prefix)RawHtml" rows="4" cols="20">@Model.RawHtml</textarea>
+				<script>CKEDITOR.replace('RawHtml_@(Model.Index)');</script>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10">
+				<input type="submit" value="Save" class="btn btn-success" />
+			</div>
+		</div>
+	</div>
+}

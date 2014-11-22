@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 namespace GStore.Models
 {
 	[Table("SystemEvents")]
@@ -10,6 +11,10 @@ namespace GStore.Models
 
 		[Required]
 		public string LevelText { get; set; }
+
+		public string ExceptionMessage { get; set; }
+		public string BaseExceptionMessage { get; set; }
+		public string BaseExceptionToString { get; set; }
 	}
 
 	[Table("SecurityEvents")]
@@ -65,6 +70,7 @@ namespace GStore.Models
 		Error = 3000,
 		CriticalError = 4000,
 		ApplicationException = 9000,
+		InvalidOperationException = 9100,
 		UnknownException = 9999
 	}
 
@@ -73,6 +79,7 @@ namespace GStore.Models
 		LoginSuccess = 100,
 		LoginFailure = 200,
 		LoginNeedsVerification = 220,
+		LogOff = 230,
 		VerificationCodeSent = 250,
 		VerificationCodeSuccess = 270,
 		VerificationCodeFailedBadCode = 280,

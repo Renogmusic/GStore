@@ -5,7 +5,7 @@ using Microsoft.Owin.Security;
 
 namespace GStore.Models.ViewModels
 {
-	public class ManageViewModel
+	public class ProfileViewModel
 	{
 		public bool HasPassword { get; set; }
 		public IList<UserLoginInfo> Logins { get; set; }
@@ -17,7 +17,7 @@ namespace GStore.Models.ViewModels
 		public UserProfile UserProfile { get; set; }
 	}
 
-	public class ManageLoginsViewModel
+	public class ProfileLoginsViewModel
 	{
 		public IList<UserLoginInfo> CurrentLogins { get; set; }
 		public IList<AuthenticationDescription> OtherLogins { get; set; }

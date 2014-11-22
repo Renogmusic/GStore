@@ -8,8 +8,16 @@ namespace GStore.Models
 	[Table("Notifications")]
 	public class Notification : BaseClasses.StoreFrontRecord
 	{
+		[Key]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		public int NotificationId { get; set; }
-		public int UserProfileId { get; set; }
+
+		[ForeignKey("ToUserProfileId")]
+		public virtual UserProfile ToUserProfile { get; set; }
+		public int ToUserProfileId { get; set; }
+
+		[ForeignKey("FromUserProfileId")]
+		public virtual UserProfile FromUserProfile { get; set; }
 		public int FromUserProfileId { get; set; }
 
 		[Required]
@@ -39,15 +47,11 @@ namespace GStore.Models
 		[Required]
 		public string BaseUrl { get; set; }
 
-		public virtual UserProfile UserProfile { get; set; }
-
 		/// <summary>
 		/// Notifications table data for user
 		/// </summary>
 		[Display(Name="Links")]
 		public virtual ICollection<NotificationLink> NotificationLinks { get; set; }
 
-
 	}
-
 }

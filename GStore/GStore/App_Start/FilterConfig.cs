@@ -9,11 +9,12 @@ namespace GStore
 	{
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
 		{
-			filters.Add(new PageLogger());
-			if (Properties.Settings.Default.AppEnablePageViewLog)
+			filters.Add(new HandleErrorAttribute());
+			if (Properties.Settings.Current.AppEnablePageViewLog)
 			{
-				filters.Add(new HandleErrorAttribute());
+				filters.Add(new PageLogger());
 			}
+
 		}
 	}
 
@@ -25,14 +26,38 @@ namespace GStore
 		/// <param name="context"></param>
 		public override void OnResultExecuting(ResultExecutingContext context)
 		{
+			if (!Properties.Settings.Current.AppEnablePageViewLog)
+			{
+				base.OnResultExecuting(context);
+				return;
+			}
+
 			if (context.Controller is BaseController)
 			{
 				BaseController controller = (BaseController)context.Controller;
+				if (!controller.LogActionsAsPageViews)
+				{
+					base.OnResultExecuting(context);
+					return;
+				}
 
-				if (Properties.Settings.Default.AppEnablePageViewLog && controller.CurrentClient.EnablePageViewLog)
+				Models.Client client = controller.CurrentClientOrThrow;
+				bool enablePageViewLog = true;
+				if (client != null)
+				{
+					enablePageViewLog = client.EnablePageViewLog;
+				}
+
+				if (enablePageViewLog)
 				{
 					//log page view
-					controller.GStoreDb.LogPageViewEvent(context);
+					Data.IGstoreDb db = controller.GStoreDb;
+					if (db == null)
+					{
+						db = Data.RepositoryFactory.SystemWideRepository(context.HttpContext.User);
+					}
+
+					db.LogPageViewEvent(context);
 				}
 			}
 

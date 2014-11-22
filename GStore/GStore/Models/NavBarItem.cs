@@ -10,6 +10,8 @@ namespace GStore.Models
 		public int NavBarItemId { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
+		[MaxLength(100)]
 		public string Name { get; set; }
 
 		public int Order { get; set; }
@@ -23,6 +25,12 @@ namespace GStore.Models
 		public string Controller { get; set; }
 		public string Area { get; set; }
 		public int? ActionIdParam { get; set; }
+
+		public bool IsPage { get; set; }
+
+		[ForeignKey("PageId")]
+		public virtual Page Page { get; set; }
+		public int? PageId { get; set; }
 
 		public bool IsLocalHRef { get; set; }
 		public string LocalHRef { get; set; }

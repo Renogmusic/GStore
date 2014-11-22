@@ -1,0 +1,116 @@
+﻿@using System.Reflection
+@using GStore.AppHtmlHelpers
+@using GStore.Areas.SystemAdmin.Controllers.BaseClasses
+@using GStore.Models
+@using GStore.Models.Extensions
+@using System.Reflection
+
+@{
+	Assembly assembly = typeof(GStore.Models.StoreFront).Assembly;
+
+	StoreFront currentStoreFront = Html.CurrentStoreFront(false);
+	Client currentClient = Html.CurrentClient(false);
+	UserProfile currentUserProfile = Html.CurrentUserProfile(true);
+	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
+}
+<style>
+	#SystemInfo {
+	}
+
+		#SystemInfo .header {
+			text-align: right;
+			min-width: 20%;
+			padding: 10px;
+		}
+
+		#SystemInfo .data {
+			text-align: left;
+			padding: 10px;
+		}
+</style>
+<div class="row" style="padding-top: 1em;">
+	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
+		<h2>System Settings</h2>
+		<strong>
+			You are using GStore Version @Html.GStoreVersionNumber()<br />
+			Build @Html.GStoreVersionDateString()
+			<br /><br /><a href="#HowItWorks">How it works</a>
+		</strong>
+		<hr />
+		<table id="SystemInfo" class="table-hover table-bordered table-striped">
+			@{
+				GStore.Properties.CurrentSettings settings = GStore.Properties.Settings.Current;
+				PropertyInfo[] props = GStore.Properties.Settings.Current.GetType().GetProperties();
+				foreach (PropertyInfo prop in props)
+				{
+					<tr>
+						<td class="header">
+							@(prop.Name):
+						</td>
+						<td class="data">
+							<strong>
+								@(prop.GetValue(settings).ToString())
+							</strong>
+						</td>
+					</tr>
+				}
+			}
+		</table>
+
+		<a name="HowItWorks"></a>
+		<hr />
+		<p>
+			<strong>How to read application settings from code</strong><br />
+			To read GStore settings in code, use the strongly typed functions under GStore.Properties.Settings.Current
+			<br />Example: GStore.Properties.Settings.Current.AppEnableEmail
+		</p>
+		<p>
+			<strong>How GStore determines which setting to use</strong><br />
+			The Settings.Current object checks settings from 3 locations to allow overrides in web.config, Azure environment variables, and default settings in the Application Properties -&gt; Settings tab. The order settings are checked is as follows:
+		</p>
+		<ol class="text-left">
+			<li>
+				Environment Variable in the operating system with the prefix APPSETTING_ (this is how Azure sets up application settings)
+				<br /><strong>Notes:</strong> Only used for Azure and web hosts that use environment variables.
+				<br /><strong>Example How to Set:</strong> In Azure portal, add application setting for "AppEnableEmail" (no quotes) with value "true" (no quotes)
+				<br /><strong>Internal Read:</strong> string value = System.Environment.GetEnvironmentVariable("APPSETTING_" + "AppEnableEmail"))
+				<br /><br />
+			</li>
+			<li>
+				Web.Config AppSettings section
+				<br /><strong>Notes:</strong> Not recommended. This is only in place because a lot of developers are familiar with it.
+				<br /><strong>Example How To Set:</strong> (in web.config file, add the following under &lt;appSettings&gt;<br /> &lt;add key=&quot;AppEnableEmail&quot; value=&quot;true&quot; /&gt;
+				<br /><strong>Internal Read:</strong> string value = System.Web.Configuration.WebConfigurationManager.AppSettings.Get("AppEnableEmail");
+				<br /><br />
+			</li>
+			<li>
+				Properties.Default.Settings as edited on the project Settings tab
+				<br /><strong>Notes:</strong> Prefered mechanism to set app settings. Simple UI in Project Properties in Visual Studio.
+				<br /><strong>Example How To Set:</strong> Open GStore project in Visual Studio, Double-click "Properties" under project name, select the "Settings" tab.<br />
+				Change setting on the right column, (for example AppEnableEmail) and save project.
+				<br /><strong>Internal Read:</strong> value = GStore.Properties.Settings.Default.AppEnableEmail
+				<br /><br />
+			</li>
+		</ol>
+
+		<a href="#">Back to Top</a>
+
+
+	</div>
+	<div class="col-sm-5 col-lg-4">
+		<h2>About Me</h2>
+		<p>I started GStore as a programming project to make selling online easy, cost effective, and bring modern technology to the cost-conscious store owner.</p>
+		<p>I hope this software of mine brings you lots of sales, no headaches, and success online.</p>
+		<p>I would love to hear from you whether you are a merchant interesting in selling your products online, or a developer looking for a eCommerce storefront framework to build cutting edge applications.</p>
+		<p><strong>~Reno G~</strong></p>
+		<p>Click here for my personal web site: <a href="http://www.renog.info">http://www.renog.info</a></p>
+		<p>or <a href="mailto:renogmusic@yahoo.com">Email me at renogmusic@yahoo.com</a></p>
+		<p>
+			Follow my work in progress on GitHub<br />
+			<a href="http://www.github.com/renogmusic">http://www.github.com/renogmusic</a>
+		</p>
+		<img src="~/Content/Server/Images/Logo/Logo.jpg" />
+		<br /><br />
+		&copy;GStore <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a>
+	</div>
+</div>

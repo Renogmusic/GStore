@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GStore", "GStore\GStore.csproj", "{FB3B7EC5-87AF-4CFF-BD20-B42AA5581FBA}"
 EndProject
@@ -30,6 +30,14 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Docs", "http://localhost:64
 		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5DDD05AE-5DDB-4E95-8433-5A54349B9F62}"
+	ProjectSection(SolutionItems) = preProject
+		WE-Palette.css = WE-Palette.css
+		WebEssentials-Settings.json = WebEssentials-Settings.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenogPlay", "..\RenogPlay\RenogPlay\RenogPlay.csproj", "{F025C827-77A6-45D1-B9DD-90FF31B06F5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,9 +48,14 @@ Global
 		{FB3B7EC5-87AF-4CFF-BD20-B42AA5581FBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB3B7EC5-87AF-4CFF-BD20-B42AA5581FBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB3B7EC5-87AF-4CFF-BD20-B42AA5581FBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB3B7EC5-87AF-4CFF-BD20-B42AA5581FBA}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{285EDBE6-9D8F-468F-9D6A-BEF1F195D2E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{285EDBE6-9D8F-468F-9D6A-BEF1F195D2E6}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{285EDBE6-9D8F-468F-9D6A-BEF1F195D2E6}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{F025C827-77A6-45D1-B9DD-90FF31B06F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F025C827-77A6-45D1-B9DD-90FF31B06F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F025C827-77A6-45D1-B9DD-90FF31B06F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F025C827-77A6-45D1-B9DD-90FF31B06F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F025C827-77A6-45D1-B9DD-90FF31B06F5B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

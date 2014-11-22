@@ -1,0 +1,233 @@
+﻿@using GStore.AppHtmlHelpers
+@using GStore.Models
+@using GStore.Models.Extensions
+@using GStore.Areas.SystemAdmin.Controllers
+
+@{
+	StoreFront currentStoreFront = Html.CurrentStoreFront(false);
+	Client currentClient = Html.CurrentClient(false);
+	UserProfile currentUserProfile = Html.CurrentUserProfile(false);
+	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
+	GStore.Data.IGstoreDb gstoreDb = GStore.Data.RepositoryFactory.SystemWideRepository(currentUserProfile.UserName);
+}
+<div class="jumbotron">
+	<h2>GStore System Admin Dashboard</h2>
+</div>
+<hr />
+<div class="row">
+	<div class="col-sm-3 text-left">
+		<div class="row">
+			<div class="col-xs-12 btn btn-info">
+				<h4>Main Records Active/Total</h4>
+			</div>
+			<div class="col-xs-8">
+				Clients:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Clients.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.Clients.All().Count()
+			</div>
+			<div class="col-xs-8">
+				StoreFronts:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.StoreFronts.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.StoreFronts.All().Count()
+			</div>
+			<div class="col-xs-8">
+				StoreBindings:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.StoreBindings.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.StoreBindings.All().Count()
+			</div>
+			<div class="col-xs-8">
+				UserProfiles:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.UserProfiles.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.UserProfiles.All().Count()
+			</div>
+			<div class="col-xs-8">
+				Pages:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Pages.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.Pages.All().Count()
+			</div>
+			<div class="col-xs-8">
+				ProductCategories:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ProductCategories.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.ProductCategories.All().Count()
+			</div>
+			<div class="col-xs-8">
+				Products:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Products.All().WhereIsActive().Count()
+				&nbsp;/&nbsp;
+				@gstoreDb.Products.All().Count()
+			</div>
+			<div class="col-xs-12"><hr /></div>
+			<div class="col-xs-12 btn btn-info">
+				<h4>Log Tables</h4>
+			</div>
+			<div class="col-xs-8">
+				BadRequests:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.BadRequests.All().Count()
+			</div>
+			<div class="col-xs-8">
+				FileNotFoundLogs:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.FileNotFoundLogs.All().Count()
+			</div>
+			<div class="col-xs-8">
+				PageViewEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageViewEvents.All().Count()
+			</div>
+			<div class="col-xs-8">
+				SecurityEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.SecurityEvents.All().Count()
+			</div>
+			<div class="col-xs-8">
+				SystemEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.SystemEvents.All().Count()
+			</div>
+			<div class="col-xs-8">
+				UserActionEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.UserActionEvents.All().Count()
+			</div>
+			<div class="col-xs-12"><hr /></div>
+			<div class="col-xs-12 btn btn-info">
+				<h4>Other Active/Total</h4>
+			</div>
+			<div class="col-xs-8">
+				Notifications:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Notifications.All().Count()
+			</div>
+			<div class="col-xs-8">
+				NotificationLinks:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.NotificationLinks.All().Count()
+			</div>
+			<div class="col-xs-8">
+				ClientRoles:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientRoles.All().Count()
+			</div>
+			<div class="col-xs-8">
+				ClientRoleActions:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientRoleActions.All().Count()
+			</div>
+			<div class="col-xs-8">
+				ClientUserRoles:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientUserRoles.All().Count()
+			</div>
+			<div class="col-xs-8">
+				NavBarItems:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.NavBarItems.All().Count()
+			</div>
+			<div class="col-xs-8">
+				PageSections:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageSections.All().Count()
+			</div>
+			<div class="col-xs-8">
+				PageTemplates:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageTemplates.All().Count()
+			</div>
+			<div class="col-xs-8">
+				PageTemplateSections:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageTemplateSections.All().Count()
+			</div>
+			<div class="col-xs-8">
+				Themes:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Themes.All().Count()
+				<br/><br />
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-offset-1 col-sm-8 text-left">
+		@{
+			if (currentStoreFront == null)
+			{
+				@:Current Store Front is null.<br />
+			}
+			else
+			{
+				@:Current Store Front: '@(currentStoreFront.Name)' [@(currentStoreFront.StoreFrontId)]<br />
+			}
+			if (currentClient == null)
+			{
+				@:Current Client is null.<br />
+			}
+			else
+			{
+				@:Current Client: '@(currentClient.Name)' [@(currentClient.ClientId)]<br />
+			}
+			if (currentUserProfile == null)
+			{
+				@:Current User Profile is null.<br />
+			}
+			else
+			{
+				@:Current UserProfile: '@(currentUserProfile.FullName)' &lt;@(currentUserProfile.Email)&gt; [@(currentUserProfile.UserProfileId)]<br />
+			}
+			if (currentStoreBinding == null)
+			{
+				@:Current Store Binding is null.<br />
+			}
+			else
+			{
+				@:Current StoreBinding: [@(currentStoreBinding.StoreBindingId)]
+				@: - HostName: '@(currentStoreBinding.HostName)'
+				@: - RootPath: '@(currentStoreBinding.RootPath)'
+				@: - Port: '@(currentStoreBinding.Port)'<br/>
+			}
+			@:Current BindingHostName: '@(Request.BindingHostName())'<br />
+			@:Current BindingRootPath: '@(Request.BindingRootPath())'<br />
+			@:Current BindingPort: '@(Request.BindingPort())'<br />
+			@:Remote IP Address: @Request.UserHostAddress<br/>
+
+
+}
+	</div>
+</div>
+<hr />
+

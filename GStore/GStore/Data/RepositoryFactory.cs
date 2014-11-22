@@ -22,7 +22,7 @@ namespace GStore.Data
 		/// <param name="httpContext"></param>
 		/// <param name="throwErrorIfStoreFrontNotFound"></param>
 		/// <returns></returns>
-		public static IGstoreDb StoreFrontRepository(HttpContextBase httpContext, bool throwErrorIfStoreFrontNotFound, bool throwErrorIfUserProfileNotFound = true)
+		public static IGstoreDb StoreFrontRepository(HttpContextBase httpContext)
 		{
 			if (httpContext == null)
 			{
@@ -32,11 +32,6 @@ namespace GStore.Data
 
 			IGstoreDb db = NewRepository(userName);
 
-			//calling GetCurrentStoreFront automatically adds CachedStoreFront property to db context
-			Models.StoreFront storeFront = db.GetCurrentStoreFront(httpContext.Request, throwErrorIfStoreFrontNotFound);
-			//calling GetCurrentUser automatically adds CachedUserProfile property to db context
-			
-			Models.UserProfile currentUser = db.GetCurrentUserProfile(throwErrorIfUserProfileNotFound);
 			return db;
 		}
 
@@ -91,7 +86,7 @@ namespace GStore.Data
 		/// <returns></returns>
 		public static RepositoryProviderEnum RepositoryProvider()
 		{
-			switch (GStore.Properties.Settings.Default.RepositoryProvider.ToLower())
+			switch (GStore.Properties.Settings.Current.RepositoryProvider.ToLower())
 			{
 				case "entityframeworkcodefirstprovider":
 				case "entityframeworkcodefirst":

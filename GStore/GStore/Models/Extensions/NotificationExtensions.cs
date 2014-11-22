@@ -9,80 +9,87 @@ namespace GStore.Models.Extensions
 {
 	public static class NotificationExtensions
 	{
-		public static void ProcessEmailAndSmsNotifications(this IGstoreDb db, Models.Notification notification, bool runEmailNotifications, bool runSmsNotifications)
+		public static string FullNotificationLinkUrl(this NotificationLink link, string urlHostForLocal)
 		{
-			Models.UserProfile profileTo = notification.UserProfile;
-			if (profileTo == null)
+			if (link.IsExternal)
 			{
-				throw new ApplicationException("Profile not found for new notification! UserProfileId: " + notification.UserProfileId + " FromUserProfileId: " + notification.FromUserProfileId);
-			}
-			Identity.AspNetIdentityUser aspNetUserTo = profileTo.AspNetIdentityUser();
-			if (aspNetUserTo == null)
-			{
-				throw new ApplicationException("AspNetUser not found for new notification! UserProfileId: " + notification.UserProfileId + " FromUserProfileId: " + notification.FromUserProfileId);
+				return link.NotificationLinkUrl();
 			}
 
-			if (runEmailNotifications && profileTo.SendSiteMessagesToEmail && aspNetUserTo.EmailConfirmed)
-			{
-				string emailTo = profileTo.Email;
-				string emailToName = profileTo.FullName;
-				string emailSubject = "Msg from " + notification.From + " at GStore - " + notification.Subject;
-				string url = "http://" + notification.UrlHost.Trim() + notification.BaseUrl.Trim() + "/" + notification.NotificationId.ToString().Trim();
-				string emailTextBody = "There is a new site message for you at GStore!"
-					+ "\n\n-From " + notification.From
-					+ "\n-Subject: " + notification.Subject
-					+ "\n-Priority: " + notification.Importance
-					+ "\n-Sent: " + notification.CreateDateTimeUtc.ToLocalTime().ToString()
-					+ "\n\n-Link: " + url
-					+ "\n\nMessage: \n" + notification.Message;
-
-				string emailHtmlBody = System.Web.HttpUtility.HtmlEncode(emailTextBody).Replace("\n", "<br/>\n");
-
-				emailHtmlBody += "<hr/><a href=\"" + url + "\">Click here to view this message on " + System.Web.HttpUtility.HtmlEncode(notification.UrlHost) + "</a><hr/>";
-
-				int linkCounter = 0;
-				foreach (NotificationLink link in notification.NotificationLinks)
-				{
-					linkCounter++;
-					emailHtmlBody += link.FullNotificationLinkTag(linkCounter, notification.UrlHost) + "<br/>";
-				}
-
-				AppHtmlHelpers.AppHtmlHelper.SendEmail(notification.Client, emailTo, emailToName, emailSubject, emailTextBody, emailHtmlBody, notification.UrlHost);
-
-				IGstoreDb ctxEmail = db.NewContext();
-				UserProfile profileUpdateEmailSent = ctxEmail.UserProfiles.FindById(profileTo.UserProfileId);
-				profileUpdateEmailSent.LastSiteMessageSentToEmailDateTimeUtc = DateTime.UtcNow;
-				ctxEmail.SaveChangesDirect();
-			}
-
-			if (runSmsNotifications && profileTo.SendSiteMessagesToSms && aspNetUserTo.PhoneNumberConfirmed)
-			{
-				string phoneTo = aspNetUserTo.PhoneNumber;
-				string urlHostSms = notification.UrlHost;
-				string textBody = "Msg from " + notification.From + " at GStore!"
-					+ "\n\n-From " + notification.From
-					+ "\n-Subject: " + notification.Subject
-					+ "\n-Priority: " + notification.Importance
-					+ "\n-Sent: " + notification.CreateDateTimeUtc.ToLocalTime().ToString()
-					+ "\n\n-Link: http://" + notification.UrlHost.Trim() + notification.BaseUrl.Trim() + "/" + notification.NotificationId.ToString().Trim()
-					+ "\n\nMessage: \n" + (notification.Message.Length < 1200 ? notification.Message : notification.Message.Substring(0, 1200) + "...<more>");
-
-				int linkCounter = 0;
-				foreach (NotificationLink link in notification.NotificationLinks)
-				{
-					linkCounter++;
-					textBody += "\n-Link " + linkCounter + ": " + link.FullNotificationLinkUrl(notification.UrlHost);
-				}
-
-
-				AppHtmlHelpers.AppHtmlHelper.SendSms(notification.Client, phoneTo, textBody, urlHostSms);
-
-				IGstoreDb ctxSmsUpdate = db.NewContext();
-				UserProfile profileUpdateEmailSent = ctxSmsUpdate.UserProfiles.FindById(profileTo.UserProfileId);
-				profileUpdateEmailSent.LastSiteMessageSentToEmailDateTimeUtc = DateTime.UtcNow;
-				ctxSmsUpdate.SaveChangesDirect();
-			}
+			return "http://" + urlHostForLocal + link.NotificationLinkUrl();
 		}
 
+		public static string FullNotificationLinkTag(this NotificationLink link, int counter, string urlHostForLocal)
+		{
+			string returnHtml = string.Empty;
+			string url = link.NotificationLinkUrl();
+
+			if (!link.IsExternal)
+			{
+				url = "http://" + urlHostForLocal + url;
+			}
+
+			returnHtml = "Link " + HttpUtility.HtmlEncode(counter) + ": "
+				+ "<a target=\"_blank\""
+				+ " href=\"" + HttpUtility.HtmlAttributeEncode(url) + "\""
+				+ " title=\"Go to " + HttpUtility.HtmlAttributeEncode(url) + "\""
+				+ ">"
+				+ HttpUtility.HtmlEncode(link.LinkText) + " (Url: " + HttpUtility.HtmlEncode(url) + ")"
+				+ "</a>";
+
+			return returnHtml;
+
+		}
+
+		public static string NotificationLinkUrl(this NotificationLink link)
+		{
+			string url = link.Url;
+
+			//enforce url rules
+			if (link.IsExternal)
+			{
+				if (url.StartsWith("http://") || url.StartsWith("mailto:"))
+				{
+					//link start is good
+				}
+				else
+				{
+					url = "http://" + url;
+				}
+			}
+			else
+			{
+				string appRoot = HttpContext.Current.Request.ApplicationPath;
+				if (url.StartsWith("/") || url.StartsWith("~/"))
+				{
+					//starts with slash add root virtual path
+					url = appRoot + url.TrimStart('~').TrimStart('/');
+				}
+				else
+				{
+					url = appRoot + url;
+				}
+			}
+
+			return url;
+
+		}
+
+		public static string NotificationLinkTag(this NotificationLink link, int counter)
+		{
+			string returnHtml = string.Empty;
+			string url = link.NotificationLinkUrl();
+
+			returnHtml = "Link " + HttpUtility.HtmlEncode(counter) + ": "
+				+ "<a target=\"_blank\""
+				+ " href=\"" + HttpUtility.HtmlAttributeEncode(url) + "\""
+				+ " title=\"Go to " + HttpUtility.HtmlAttributeEncode(url) + "\""
+				+ ">"
+				+ HttpUtility.HtmlEncode(link.LinkText) + " (Url: " + HttpUtility.HtmlEncode(url) + ")"
+				+ "</a>";
+
+			return returnHtml;
+
+		}
 	}
 }

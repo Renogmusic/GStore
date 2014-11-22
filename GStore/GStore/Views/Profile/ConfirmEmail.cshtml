@@ -1,0 +1,12 @@
+﻿@model GStore.Models.UserProfile
+@{
+	ViewBag.Title = "Confirm Your Email address";
+}
+
+<div>
+	<h3>
+		Please check your email for @Model.Email and click the link to confirm your email address.<br />
+	</h3>
+		
+	@Html.ActionLink("Click here to view your account info.", "Index", "Profile")
+</div>
