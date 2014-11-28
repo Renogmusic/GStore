@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -16,9 +16,22 @@ namespace GStore.Areas.SystemAdmin.Controllers
 	{
 
 		// GET: SystemAdmin/StoreFrontSysAdmin
-		public ActionResult Index()
+		public ActionResult Index(int? id, string SortBy, bool? SortAscending)
 		{
-			return View(GStoreDb.StoreFronts.All().ToList());
+			ViewBag.ClientFilterList = ClientFilterList(id);
+
+			IQueryable<StoreFront> query = null;
+			if (id.HasValue)
+			{
+				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == id.Value);
+			}
+			else
+			{
+				query = GStoreDb.StoreFronts.All();
+			}
+
+			IOrderedQueryable<StoreFront> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			return View(queryOrdered.ToList());
 		}
 
 		// GET: SystemAdmin/StoreFrontSysAdmin/Details/5
@@ -33,6 +46,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+
 			return View(storeFront);
 		}
 
@@ -42,6 +56,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.NotFoundPageList = NotFoundPageList();
+			ViewBag.StoreErrorPageList = StoreErrorPageList();
 
 			StoreFront model = GStoreDb.StoreFronts.Create();
 			model.SetDefaultsForNew(clientId);
@@ -88,6 +104,9 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.NotFoundPageList = NotFoundPageList();
+			ViewBag.StoreErrorPageList = StoreErrorPageList();
+
 			return View(storeFront);
 		}
 
@@ -103,9 +122,13 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.NotFoundPageList = NotFoundPageList();
+			ViewBag.StoreErrorPageList = StoreErrorPageList();
+
 			return View(storeFront);
 		}
 
@@ -166,7 +189,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.NotFoundPageList = NotFoundPageList();
+			ViewBag.StoreErrorPageList = StoreErrorPageList();
+
 			return View(storeFront);
+		}
+
+		public ActionResult Activate(int id)
+		{
+			this.ActivateStoreFrontOnly(id);
+			if (Request.UrlReferrer != null)
+			{
+				return Redirect(Request.UrlReferrer.ToString());
+
+			}
+			return RedirectToAction("Index");
 		}
 
 		// GET: SystemAdmin/StoreFrontSysAdmin/Delete/5
@@ -223,7 +260,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		protected SelectList ClientList()
 		{
-			var query = GStoreDb.Clients.All().OrderBy(c => c.ClientId);
+			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
 			IQueryable<SelectListItem> items = query.Select(c => new SelectListItem
 			{
 				Value = c.ClientId.ToString(),
@@ -232,9 +269,91 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			return new SelectList(items, "Value", "Text");
 		}
 
+		protected SelectList ClientFilterList(int? id)
+		{
+			int filterId = 0;
+			if (id.HasValue)
+			{
+				filterId = id.Value;
+			}
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem()
+			{
+				Value = string.Empty,
+				Text = (!id.HasValue ? "[SELECTED] " : string.Empty) + "All",
+				Selected = !id.HasValue
+			});
+
+			var query = GStoreDb.Clients.All().OrderBy(c=> c.Order).ThenBy(c => c.ClientId);
+			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
+			{
+				Value = c.ClientId.ToString(),
+				Text = (c.ClientId == filterId ? "[SELECTED] ": string.Empty) + c.Name + " [" + c.ClientId + "]",
+				Selected = (c.ClientId == filterId )
+			});
+			items.AddRange(clients);
+			return new SelectList(items, "Value", "Text");
+		}
+
+		protected SelectList StoreErrorPageList()
+		{
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Error Page)";
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+
+			if (CurrentStoreFrontOrNull == null)
+			{
+				return new SelectList(list, "Value", "Text");
+			}
+
+			var query = CurrentStoreFrontOrNull.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
+			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
+			{
+				Value = pg.PageId.ToString(),
+				Text = pg.Name + " [" + pg.PageId + "]"
+			});
+
+			if (items.Count() > 0)
+			{
+				list.AddRange(items);
+			}
+
+			return new SelectList(list, "Value", "Text");
+		}
+
+		protected SelectList NotFoundPageList()
+		{
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Not Found Page)";
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+			
+			if (CurrentStoreFrontOrNull == null)
+			{
+				return new SelectList(list, "Value", "Text");
+			}
+
+			var query = CurrentStoreFrontOrNull.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
+			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
+			{
+				Value = pg.PageId.ToString(),
+				Text = pg.Name + " [" + pg.PageId + "]"
+			});
+
+			if (items.Count() > 0)
+			{
+				list.AddRange(items);
+			}
+
+			return new SelectList(list, "Value", "Text");
+		}
+
 		protected SelectList ThemeList()
 		{
-			var query = GStoreDb.Themes.All().OrderBy(t => t.ThemeId);
+			var query = GStoreDb.Themes.All().OrderBy(t => t.Order).ThenBy(t => t.ThemeId);
 			IQueryable<SelectListItem> items = query.Select(t => new SelectListItem
 			{
 				Value = t.ThemeId.ToString(),
@@ -255,12 +374,14 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				query = query.Where(p => !p.StoreFrontId.HasValue || p.StoreFrontId.Value == storeFrontId);
 			}
-			query = query.OrderBy(prof => prof.UserName);
+			query = query.OrderBy(p => p.Order).ThenBy(p => p.UserProfileId).ThenBy(p => p.UserName);
 
 			IQueryable<SelectListItem> items = query.Select(p => new SelectListItem
 			{
 				Value = p.UserProfileId.ToString(),
-				Text = p.FullName + " <" + p.Email + "> " + (p.StoreFrontId.HasValue ? "Store: " + p.StoreFrontId : " No Store")
+				Text = p.FullName + " <" + p.Email + ">" 
+				+ (p.StoreFrontId.HasValue ? " - Store '" + p.StoreFront.Name + "' [" + p.StoreFrontId + "]": " (no store)")
+				+ (p.ClientId.HasValue ? " - Client '" + p.Client.Name + "' [" + p.ClientId + "]" : " (no client)")
 			});
 
 			return new SelectList(items, "Value", "Text");

@@ -1,16 +1,16 @@
 ﻿@using GStore.AppHtmlHelpers;
 @using GStore.Models;
-@using GStore.Models.Extensions;
+@using GStore.Data;
 <!-- System Admin Menu -->
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
 			<a href="@(Url.Action("Index", "SystemAdmin"))" class="navbar-brand">
-				GStore System Admin &nbsp;
-				<img id="TinyLogo" class="TinyLogo"
-					 src="~/Content/Server/Images/Logo/menu.png"
+				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
+					 src="~/Content/Server/Images/Logo/NavBarTinyLogo.png"
 					 alt="GStore System Admin"
 					 title="GStore System Admin" />
+				GStore System Admin
 			</a>
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>

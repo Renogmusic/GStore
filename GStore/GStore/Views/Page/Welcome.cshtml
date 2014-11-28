@@ -1,61 +1,26 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
-
 @using GStore.AppHtmlHelpers
 @using GStore.Models;
-@using GStore.Models.Extensions;
-
-@{
-	GStore.Models.Page page = Model.Page;
-}
+@using GStore.Data;
 @if (Model.EditMode)
 {
-	<script src="~/Scripts/CKEditor/ckeditor.js"></script>
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ActionLink("View Live Page (ctrl-click for new window)", "Display", "Page")
-		</div>
-	</div>
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-		</div>
-	</div>
-	<hr />
+	@Html.Partial("_EditModeTopPartial", Model)
 }
-	<h1 class="text-danger">Welcome to your new Store front!</h1>
-	Page [@page.PageId]: @page.Name
-	<br />
-	StoreFront [@page.StoreFront.StoreFrontId]: @page.StoreFront.Name
-	<br />
-	Client [@page.Client.ClientId]: @page.Client.Name
-	<br />
-	Account Admin [@page.StoreFront.AccountAdmin.UserProfileId]: @page.StoreFront.AccountAdmin.FullName &lt; @page.StoreFront.AccountAdmin.Email &gt;
-	<br />
-	Registered Notify [@page.StoreFront.RegisteredNotify.UserProfileId]: @page.StoreFront.RegisteredNotify.FullName &lt; @page.StoreFront.RegisteredNotify.Email &gt;
-	<br />
-	Welcome Messages From [@page.StoreFront.WelcomePerson.UserProfileId]: @page.StoreFront.WelcomePerson.FullName &lt; @page.StoreFront.WelcomePerson.Email &gt;
-	<br/>
-<br />
-	GStore.Properties.Settings.AppEnableEmail
-@GStore.Properties.Settings.Current.AppEnableEmail
-<br />
-	GStore.Properties.Settings.AppEnableSMS
-@GStore.Properties.Settings.Current.AppEnableSMS
-<br />
-	GStore.Properties.Settings.AppDefaultLayoutName
-	@GStore.Properties.Settings.Current.AppDefaultLayoutName
-<br/>
-
-
-@if (Model.ShowEditPageLink)
+else if (Model.ShowEditPageLink)
 {
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ActionLink("Edit this Page", "Edit", "Page")
-		</div>
-	</div>
-	<hr />
+	@Html.Partial("_EditLinkTopPartial", Model)
+}
+	<h1 class="text-danger">Welcome to GStore!</h1>
+	<h2>@Html.CurrentStoreFront(true).Name</h2>
+<h3>Log in and customize your site with our GStore builder tools.</h3>
+<a href="http://www.gstore.renog.info/Contact">Click here to contact us about GStore</a>
+@Html.DisplayPageSection("Jumbotron", 1)
+
+@if (Model.EditMode)
+{
+	@Html.Partial("_EditModeBottomPartial", Model)
+}
+else if (Model.ShowEditPageLink)
+{
+	@Html.Partial("_EditLinkBottomPartial", Model)
 }

@@ -2,7 +2,7 @@
 @using GStore.AppHtmlHelpers
 @using GStore.Areas.SystemAdmin.Controllers.BaseClasses
 @using GStore.Models
-@using GStore.Models.Extensions
+@using GStore.Data
 @using System.Reflection
 
 @{
@@ -30,11 +30,11 @@
 </style>
 <div class="row" style="padding-top: 1em;">
 	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
-		<h2>System Settings</h2>
+		<h2>Application Settings</h2>
 		<strong>
 			You are using GStore Version @Html.GStoreVersionNumber()<br />
 			Build @Html.GStoreVersionDateString()
-			<br /><br /><a href="#HowItWorks">How it works</a>
+			<br /><br /><a href="#HowItWorks">Click here for how to set these settings</a>
 		</strong>
 		<hr />
 		<table id="SystemInfo" class="table-hover table-bordered table-striped">
@@ -98,19 +98,6 @@
 
 	</div>
 	<div class="col-sm-5 col-lg-4">
-		<h2>About Me</h2>
-		<p>I started GStore as a programming project to make selling online easy, cost effective, and bring modern technology to the cost-conscious store owner.</p>
-		<p>I hope this software of mine brings you lots of sales, no headaches, and success online.</p>
-		<p>I would love to hear from you whether you are a merchant interesting in selling your products online, or a developer looking for a eCommerce storefront framework to build cutting edge applications.</p>
-		<p><strong>~Reno G~</strong></p>
-		<p>Click here for my personal web site: <a href="http://www.renog.info">http://www.renog.info</a></p>
-		<p>or <a href="mailto:renogmusic@yahoo.com">Email me at renogmusic@yahoo.com</a></p>
-		<p>
-			Follow my work in progress on GitHub<br />
-			<a href="http://www.github.com/renogmusic">http://www.github.com/renogmusic</a>
-		</p>
-		<img src="~/Content/Server/Images/Logo/Logo.jpg" />
-		<br /><br />
-		&copy;GStore <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a>
+		@Html.Partial("_AboutGStorePartial")
 	</div>
 </div>

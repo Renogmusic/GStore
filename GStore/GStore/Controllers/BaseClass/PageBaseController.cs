@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Models.ViewModels;
 using GStore.Models;
 using GStore.Identity;
@@ -50,27 +50,28 @@ namespace GStore.Controllers.BaseClass
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
-		public virtual ActionResult Edit(PageSectionEditViewModel viewModel)
+		public virtual PartialViewResult UpdateSectionAjax(PageSectionEditViewModel viewModel)
 		{
-			string rawUrl = Request.RawUrl;
-
 			if (ModelState.IsValid)
 			{
-				if (viewModel.PageSectionId == null)
+				if (viewModel.PageSectionId.HasValue)
 				{
-					//create page section
-					PageSection newSection = GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					AddUserMessage("Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
 				}
 				else
 				{
-					//update existing section
-					PageSection updatedSection = GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					AddUserMessage("Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
 				}
 			}
-
-			return Edit();
+			else
+			{
+				AddUserMessage("Error", "There was an error with your entry. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+			}
+			
+			return PartialView("_SectionEditPartial", viewModel);
 		}
-
 
 		public Models.Page CurrentPageOrNull
 		{
@@ -134,6 +135,18 @@ namespace GStore.Controllers.BaseClass
 						System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
 						System.Diagnostics.Trace.Unindent();
 						throw dbEx;
+					}
+					catch (Exceptions.StoreFrontInactiveException exSFI)
+					{
+						//storefront is inactive
+						System.Diagnostics.Trace.WriteLine("--StoreFrontInactive in CurrentPage: " + exSFI.Message);
+						throw exSFI;
+					}
+					catch (Exceptions.NoMatchingBindingException exNMB)
+					{
+						//no store found
+						System.Diagnostics.Trace.WriteLine("--StoreFrontInactive in CurrentPage: " + exNMB.Message);
+						throw exNMB;
 					}
 					catch (Exception ex)
 					{

@@ -7,7 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 
 namespace GStore.Controllers
 {

@@ -1,12 +1,24 @@
 ﻿@model GStore.Exceptions.GStoreErrorInfo
+@using GStore.AppHtmlHelpers
+@using GStore.Models
 @{
-	string title = "Error " + Model.ErrorCode + " - GStore Not Found";
+	string title = "Unknown Store";
 	ViewBag.Title = title;
+	StoreFront storeFront = Html.CurrentStoreFront(false);
 }
+
 <h1 class="text-danger">@title</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
-<h2 class="text-danger">If you need assistance with this error, email me at <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a></h2>
-<p>@title</p>
+<h1>
+	Sorry, this store at @Html.ViewContext.RequestContext.HttpContext.Request.Url.Host is not set up yet.
+</h1>
+<h2>
+	Please try again later, or contact the web site owner.
+</h2>
+<h3>
+	If this is your web site and you wish to activate this site, contact us at<br />
+	<a href="http://www.gstore.renog.info/contact">http://www.gstore.renog.info/contact</a>
+</h3>
+
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
 	@Html.Partial("_ErrorDetailsPartial", Model)

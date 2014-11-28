@@ -1,20 +1,36 @@
-﻿@model GStore.Models.ViewModels.MenuViewModel
-@using GStore.AppHtmlHelpers;
+﻿@using GStore.AppHtmlHelpers;
+@using GStore.Models;
 <footer>
 	<div class="row">
 		<div class="col-sm-4 text-center">
-			<a href="@Url.Action("About", "GStore")" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">
+			<a id="PoweredByGStoreLink" href="@Url.Action("About", "GStore")" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">
 				Powered by GStore
-				<img src="~/Content/Server/Images/Logo/menu.png" />
+				<img id="PoweredByGStoreLogo" src="~/Content/Server/Images/Logo/NavBarTinyLogo.png" />
 			</a>
-			
+
 		</div>
 		<div class="col-sm-4 text-center">
-			&nbsp;
+			@{
+				StoreFront storeFront = Html.CurrentStoreFront(false);
+				if (storeFront != null)
+				{
+					@Html.Raw(storeFront.HtmlFooter)
+				}
+				else
+				{
+					@:<a href="http://www.gstore.renog.info">GStore Home Page</a>
+				}
+			}
+
 		</div>
 		<div class="col-sm-4 text-center">
 			<span id="ActiveUsers"> - </span>
 		</div>
 	</div>
 </footer>
+
+
+
+
+
 

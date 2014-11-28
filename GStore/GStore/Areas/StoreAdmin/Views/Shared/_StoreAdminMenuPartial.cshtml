@@ -1,17 +1,17 @@
 ﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.StoreAdminViewModel
 @using GStore.AppHtmlHelpers;
 @using GStore.Models;
-@using GStore.Models.Extensions;
+@using GStore.Data;
 <!-- Store Admin Menu -->
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
 			<a href="@(Url.Action("Index", "StoreAdmin"))" class="navbar-brand">
-				@(Html.Encode(Model.StoreFront.Name)) - Admin &nbsp;
-				<img id="TinyLogo" class="TinyLogo"
-					 src="~/Images/Logo/menu.png"
+				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
+					 src="~/Images/Logo/NavBarTinyLogo.png"
 					 alt="@(Html.AttributeEncode(Model.StoreFront.Name))"
 					 title="@(Html.AttributeEncode(Model.StoreFront.Name))" />
+				@(Html.Encode(Model.StoreFront.Name)) - Admin
 			</a>
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>

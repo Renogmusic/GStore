@@ -32,37 +32,37 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogSystemEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogSecurityEventsToDb" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogSecurityEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogBadRequestEventsToDb" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogBadRequestEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogFileNotFoundEventsToDb" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogFileNotFoundEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogPageViewEventsToDb" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogPageViewEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogUserActionEventsToDb" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppLogUserActionEventsToFile" Type="System.Boolean" Scope="Application">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AppLogLogExceptionsToFile" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
@@ -82,7 +82,7 @@
     <Setting Name="AppEnableAutomaticHomePageCreation" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="AppDefaultLayoutViewName" Type="System.String" Scope="Application">
+    <Setting Name="AppDefaultPageTemplateViewName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Welcome</Value>
     </Setting>
     <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
@@ -122,6 +122,12 @@
       <Value Profile="(Default)">Sent From GStore Security Admin admin@domain.com</Value>
     </Setting>
     <Setting Name="IdentityEnableTwoFactorAuth" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppEnableStoresVirtualFolders" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AppSeedSampleProducts" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

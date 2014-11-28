@@ -1,11 +1,23 @@
 ﻿@model GStore.Models.ViewModels.RegisterViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Models
+@using GStore.Models.ViewModels
 @{
-	ViewBag.Title = "Register";
+	StoreFront storeFront = Html.CurrentStoreFront(false);
+	if (storeFront == null)
+	{
+		ViewBag.Title = "Register for GStore";
+	}
+	else
+	{
+		ViewBag.Title = storeFront.NavBarRegisterLinkText + " for " + storeFront.Name;
+	}
 }
-
+<h2>@ViewBag.Title.</h2>
 @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
+
 	<h4>Please register to get site updates and full access to the site.</h4>
 	<hr />
 	@Html.ValidationSummary("", new { @class = "text-danger" })
@@ -39,14 +51,18 @@
 	<div class="form-group">
 		@Html.LabelFor(m => m.NotifyOfSiteUpdates, new { @class = "col-md-2 control-label" })
 		<div class="col-md-10">
-			@Html.EditorFor(m => m.NotifyOfSiteUpdates, new { @class = "form-control" })
+			<div class="checkbox">
+				@Html.CheckBoxFor(m => m.NotifyOfSiteUpdates, new { @class = "form-control" })
+			</div>
 		</div>
 	</div>
 
 	<div class="form-group">
 		@Html.LabelFor(m => m.SendMeMoreInfo, new { @class = "col-md-2 control-label" })
 		<div class="col-md-10">
-			@Html.EditorFor(m => m.SendMeMoreInfo, new { @class = "form-control" })
+			<div class="checkbox">
+				@Html.CheckBoxFor(m => m.SendMeMoreInfo, new { @class = "form-control" })
+			</div>
 		</div>
 	</div>
 
@@ -57,18 +73,26 @@
 		</div>
 	</div>
 
-	<div class="form-group">
+	<div class="form-group text-left">
 		<div class="col-md-offset-2 col-md-10">
-			<input type="submit" class="btn btn-primary" value="Register" />
+			@{
+				string linkText = "Register";
+				if (storeFront != null)
+				{
+					linkText = storeFront.NavBarRegisterLinkText;
+				}
+
+			}
+			<input type="submit" class="btn btn-primary" value="@linkText" />
 		</div>
 	</div>
 }
 
 @section Scripts {
 	@Scripts.Render("~/bundles/jqueryval")
-<script type="text/javascript">
-	$(document).ready(function () {
-		$('input:text:first').focus();
-	})
-</script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('input:text:first').focus();
+		})
+	</script>
 }

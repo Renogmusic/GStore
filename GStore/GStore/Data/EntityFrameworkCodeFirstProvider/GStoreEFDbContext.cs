@@ -10,7 +10,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 	using System.Security.Principal;
 	using System.Collections.Generic;
 	using GStore.Models;
-	using GStore.Models.Extensions;
+	using GStore.Data;
 	using System.Data.Entity.ModelConfiguration.Conventions;
 
 	public partial class GStoreEFDbContext : DbContext, IGstoreDb
@@ -132,7 +132,20 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		#endregion
 
 
-		public string UserName { get; set; }
+		public string UserName 
+		{ 
+			get
+			{
+				return _userName;
+			}
+			set
+			{
+				_userName = value;
+				_cachedUserProfile = null;
+			}
+		}
+		protected string _userName = string.Empty;
+
 		public Models.StoreFront CachedStoreFront { get; set; }
 
 		private UserProfile _cachedUserProfile = null;
@@ -214,14 +227,14 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 					if (updateAuditableRecords && (item.State == EntityState.Added || item.State == EntityState.Modified) && item.Entity is Models.BaseClasses.AuditFieldsAllRequired)
 					{
 						Models.BaseClasses.AuditFieldsAllRequired record = item.Entity as Models.BaseClasses.AuditFieldsAllRequired;
-						UserProfile userProfile = this.CachedUserProfile;
+						UserProfile userProfile = this.GetCurrentUserProfile(true,true);
 						record.UpdateAuditFields(userProfile);
 					}
 
 					if (updateAuditableRecords && (item.State == EntityState.Added || item.State == EntityState.Modified) && item.Entity is Models.BaseClasses.AuditFieldsUserProfileOptional)
 					{
 						Models.BaseClasses.AuditFieldsUserProfileOptional recordOptional = item.Entity as Models.BaseClasses.AuditFieldsUserProfileOptional;
-						UserProfile userProfileOptional = this.CachedUserProfile;
+						UserProfile userProfileOptional = this.GetCurrentUserProfile(false, false);
 						recordOptional.UpdateAuditFields(userProfileOptional);
 					}
 
@@ -281,6 +294,13 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						{
 							errorDetails += "\n\t\tError in " + dbValError.PropertyName + ": " + dbValError.ErrorMessage;
 						}
+
+						foreach (string propName in valError.Entry.CurrentValues.PropertyNames)
+						{
+							object fieldObjectValue = valError.Entry.CurrentValues[propName];
+							string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
+							errorDetails += "\n\t\t" + propName + " = " + fieldValue;
+						}
 					}
 				}
 				errorDetails += " \n BaseException: " + ex.GetBaseException().ToString();
@@ -330,7 +350,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			{
 				foreach (Notification item in notificationsToProcess)
 				{
-					Models.Extensions.StoreFrontExtensions.ProcessEmailAndSmsNotifications(this, item, runEmailNotifications, runSmsNotifications);
+					Data.StoreFrontExtensions.ProcessEmailAndSmsNotifications(this, item, runEmailNotifications, runSmsNotifications);
 				}
 			}
 
@@ -338,7 +358,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			{
 				foreach (StoreFront item in storeFrontsToRecalculate)
 				{
-					Models.Extensions.StoreFrontExtensions.RecalculateProductCategoryActiveCount(this, item);
+					Data.StoreFrontExtensions.RecalculateProductCategoryActiveCount(this, item);
 				}
 			}
 

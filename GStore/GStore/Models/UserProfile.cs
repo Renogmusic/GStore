@@ -54,6 +54,7 @@ namespace GStore.Models
 		[ForeignKey("ClientId")]
 		public virtual Client Client { get; set; }
 
+		public int Order { get; set; }
 
 		public bool Active { get; set; }
 

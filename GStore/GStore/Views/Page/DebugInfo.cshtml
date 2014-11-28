@@ -1,0 +1,44 @@
+﻿@model GStore.Models.ViewModels.PageViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Models;
+@using GStore.Data;
+@if (Model.EditMode)
+{
+	@Html.Partial("_EditModeTopPartial", Model)
+}
+else if (Model.ShowEditPageLink)
+{
+	@Html.Partial("_EditLinkTopPartial", Model)
+}
+	<h1 class="text-danger">Welcome to your new store front at GStore!</h1>
+	<h2>@Html.CurrentStoreFront(true).Name</h2>
+	Page [@Model.Page.PageId]: @Model.Page.Name
+	<br />
+	StoreFront [@Model.Page.StoreFront.StoreFrontId]: @Model.Page.StoreFront.Name
+	<br />
+	Client [@Model.Page.Client.ClientId]: @Model.Page.Client.Name
+	<br />
+	Account Admin [@Model.Page.StoreFront.AccountAdmin.UserProfileId]: @Model.Page.StoreFront.AccountAdmin.FullName &lt; @Model.Page.StoreFront.AccountAdmin.Email &gt;
+	<br />
+	Registered Notify [@Model.Page.StoreFront.RegisteredNotify.UserProfileId]: @Model.Page.StoreFront.RegisteredNotify.FullName &lt; @Model.Page.StoreFront.RegisteredNotify.Email &gt;
+	<br />
+	Welcome Messages From [@Model.Page.StoreFront.WelcomePerson.UserProfileId]: @Model.Page.StoreFront.WelcomePerson.FullName &lt; @Model.Page.StoreFront.WelcomePerson.Email &gt;
+	<br/>
+<br />
+	GStore.Properties.Settings.AppEnableEmail
+@GStore.Properties.Settings.Current.AppEnableEmail
+<br />
+	GStore.Properties.Settings.AppEnableSMS
+@GStore.Properties.Settings.Current.AppEnableSMS
+<br />
+	GStore.Properties.Settings.AppDefaultLayoutName
+	@GStore.Properties.Settings.Current.AppDefaultLayoutName
+<br/>
+@if (Model.EditMode)
+{
+	@Html.Partial("_EditModeBottomPartial", Model)
+}
+else if (Model.ShowEditPageLink)
+{
+	@Html.Partial("_EditLinkBottomPartial", Model)
+}

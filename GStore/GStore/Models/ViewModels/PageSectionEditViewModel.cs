@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Identity;
 using System.Web.Mvc;
 
@@ -34,6 +34,7 @@ namespace GStore.Models.ViewModels
 			if (pageSection != null)
 			{
 				this.PageSectionId = pageSection.PageSectionId;
+				this.HasNothing = pageSection.HasNothing;
 				this.HasPlainText = pageSection.HasPlainText;
 				this.HasRawHtml = pageSection.HasRawHtml;
 				this.Order = pageSection.Order;
@@ -52,6 +53,7 @@ namespace GStore.Models.ViewModels
 			this.PageSectionId = null;
 			this.HasPlainText = false;
 			this.HasRawHtml = false;
+			this.HasNothing = true;
 			this.Order = 100;
 			this.Index = 0;
 			this.PlainText = string.Empty;
@@ -77,6 +79,9 @@ namespace GStore.Models.ViewModels
 		[Key]
 		[Editable(false)]
 		public int? PageSectionId { get; set; }
+
+		[Display(Name="Empty")]
+		public bool HasNothing { get; set; }
 
 		[Display(Name="Use Text")]
 		public bool HasPlainText { get; set; }

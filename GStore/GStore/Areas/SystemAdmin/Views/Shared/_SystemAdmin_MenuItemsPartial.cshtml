@@ -1,6 +1,9 @@
-﻿@using GStore.AppHtmlHelpers;
+﻿@using GStore.AppHtmlHelpers
+@using GStore.Models
+@using GStore.Data
 <!-- System Admin Dropdown Menus -->
 <ul class="nav navbar-nav">
+
 	<!-- Clients Menu Item -->
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Clients">Clients<span class="caret"></span></a>
@@ -14,6 +17,7 @@
 			</li>
 		</ul>
 	</li>
+
 	<!-- storeFronts Menu Item -->
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="StoreFronts">StoreFronts<span class="caret"></span></a>
@@ -27,44 +31,22 @@
 			</li>
 		</ul>
 	</li>
+
 	<!-- Bindings Commands Menu Item -->
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Bindings">Bindings<span class="caret"></span></a>
 		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Auto-Map Binding for Current url", "X", "SystemAdmin")
-			</li>
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Auto-Map Binding for Catch-All", "X", "SystemAdmin")
-			</li>
-		</ul>
-	</li>
-
-	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Activation">Activation<span class="caret"></span></a>
-		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Activate Current Client", "X", "SystemAdmin")
-			</li>
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Activate Current StoreFront", "X", "SystemAdmin")
-			</li>
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Activate All StoreFronts for Current Client", "X", "SystemAdmin")
+				@Html.ActionLink("Bindings Manager", "Index", "BindingsSysAdmin")
 			</li>
 			<li class="nav-divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Deactivate Current Client (will disable all of their storefronts)", "X", "SystemAdmin")
-			</li>
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Deactivate Current StoreFront", "X", "SystemAdmin")
-			</li>
-			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("TEST Deactivate All StoreFronts for Current Client", "X", "SystemAdmin")
+				@Html.ActionLink("Create new Binding", "Create", "BindingsSysAdmin")
 			</li>
 		</ul>
 	</li>
 
+	<!-- Help Menu -->
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Help">Help<span class="caret"></span></a>
 		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">

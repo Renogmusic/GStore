@@ -3,7 +3,7 @@
 @using GStore.Controllers.BaseClass
 @using GStore.Models
 @using GStore.Models.ViewModels
-@using GStore.Models.Extensions
+@using GStore.Data
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,7 +43,8 @@
 			themeFolderName = storeFront.Theme.FolderName;
 		}
 
-		MenuViewModel menuViewModel = new MenuViewModel(storeFront, userProfile);
+		
+		MenuViewModel menuViewModel = Html.MenuViewModel(storeFront, userProfile);
 
 	}
 	<title>@title</title>
@@ -67,7 +68,7 @@
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFront));
 	</script>
 
-	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.css")
+	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.min.css")
 	@Styles.Render("~/Styles/GStoreApp.css")
 	@Styles.Render("~/Styles/Styles.css")
 
@@ -93,7 +94,7 @@
 		@RenderBody()
 		<hr />
 		<div id="usermessagebottomcontainer"></div>
-		@Html.Partial("_FooterPartial", menuViewModel)
+		@Html.Partial("_FooterPartial")
 	</div>
 
 	@RenderSection("scripts", required: false)

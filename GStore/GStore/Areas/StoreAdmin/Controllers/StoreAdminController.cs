@@ -2,7 +2,7 @@
 using GStore.Controllers.BaseClass;
 using GStore.Identity;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

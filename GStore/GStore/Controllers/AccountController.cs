@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Collections.Generic;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Models.ViewModels;
 
 namespace GStore.Controllers
@@ -196,6 +196,7 @@ namespace GStore.Controllers
 					newProfile.SignupNotes = model.SignupNotes;
 					newProfile.NotifyAllWhenLoggedOn = true;
 					newProfile.Active = true;
+					newProfile.Order = 1000;
 					newProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 					newProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 					newProfile.StoreFrontId = CurrentStoreFrontOrThrow.StoreFrontId;
@@ -374,8 +375,8 @@ namespace GStore.Controllers
 				var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
 				StoreFront storeFront = CurrentStoreFrontOrNull;
-				string subject = Models.Extensions.StoreFrontExtensions.ForgotPasswordSubject(storeFront, callbackUrl, Request.Url);
-				string messageHtml = Models.Extensions.StoreFrontExtensions.ForgotPasswordMessageHtml(storeFront, callbackUrl, Request.Url);
+				string subject = Data.StoreFrontExtensions.ForgotPasswordSubject(storeFront, callbackUrl, Request.Url);
+				string messageHtml = Data.StoreFrontExtensions.ForgotPasswordMessageHtml(storeFront, callbackUrl, Request.Url);
 
 				await UserManager.SendEmailAsync(user.Id, subject, messageHtml);
 				return RedirectToAction("ForgotPasswordConfirmation", "Account");
@@ -595,8 +596,8 @@ namespace GStore.Controllers
 			var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, code = code }, protocol: Request.Url.Scheme);
 
 			StoreFront storeFront = CurrentStoreFrontOrNull;
-			string subject = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
-			string messageHtml = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
+			string subject = Data.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
+			string messageHtml = Data.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
 
 			await UserManager.SendEmailAsync(userId, "Confirm your account for " + CurrentStoreFrontOrThrow.Name, messageHtml);
 		}

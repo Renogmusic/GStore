@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -16,9 +16,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
     {
 
 		// GET: SystemAdmin/ClientSysAdmin
-        public ActionResult Index()
+        public ActionResult Index(string SortBy, bool? SortAscending)
         {
-            return View(GStoreDb.Clients.All().ToList());
+			IQueryable<Client> query = GStoreDb.Clients.All();
+			IOrderedQueryable<Client> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			return View(queryOrdered.ToList());
         }
 
         // GET: SystemAdmin/ClientSysAdmin/Details/5
@@ -148,6 +150,17 @@ namespace GStore.Areas.SystemAdmin.Controllers
             }
             return View(client);
         }
+
+		public ActionResult Activate(int id)
+		{
+			this.ActivateClientOnly(id);
+			if (Request.UrlReferrer != null)
+			{
+				return Redirect(Request.UrlReferrer.ToString());
+
+			}
+			return RedirectToAction("Index");
+		}
 
         // GET: SystemAdmin/ClientSysAdmin/Delete/5
         public ActionResult Delete(int? id)

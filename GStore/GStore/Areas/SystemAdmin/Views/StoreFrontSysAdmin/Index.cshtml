@@ -1,99 +1,187 @@
 ﻿@model IEnumerable<GStore.Models.StoreFront>
-<h2>StoreFront Index</h2>
+@using GStore.AppHtmlHelpers
+@using GStore.Models
+@using GStore.Data
+<style>
+	table th
+	{
+		text-align: center;
+	}
+	table td
+	{
+		text-align: center;
+	}
+</style>
+<h2 class="jumbotron SysAdminIndexPageTitle col-md-12">Store Front Manager</h2>
 <p>
-    @Html.ActionLink("Create New", "Create")
+	@{
+		bool isfiltered = false;
+		using (Html.BeginForm("Index", "StoreFrontSysAdmin", FormMethod.Post, new { name = "clientfilterform", style = "display: inline" }))
+		{
+			IEnumerable<SelectListItem> clientFilterList = ViewBag.ClientFilterList;
+			var selectedItem = clientFilterList.Where(l => l.Selected).FirstOrDefault();
+			if (selectedItem == null || string.IsNullOrEmpty(selectedItem.Value))
+			{
+				isfiltered = true;
+			}
+			@Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+			@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			@:Client Filter:
+			@Html.DropDownList("id", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['clientfilterform'].submit();", style = "display: inline;" })
+		}
+		<hr />
+	}
 </p>
-<table class="table">
-    <tr>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.Client.ClientId)
-		</th>
-		<th class="small">
-			Client Name
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.StoreFrontId)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.Name)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.Folder)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.PublicUrl)
-		</th>
-        <th class="small">
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UpdatedBy)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.IsPending)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
-		</th>
-		<th class="small"></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-		<td>
-			@Html.DisplayFor(modelItem => item.Client.ClientId)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.Client.Name)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.StoreFrontId)
-		</td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Folder)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PublicUrl)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UpdatedBy.UserName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsPending)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.StartDateTimeUtc)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.StoreFrontId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.StoreFrontId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.StoreFrontId })
-        </td>
-    </tr>
+@if (Model.Count() == 0)
+{
+	if (isfiltered)
+	{
+		<h2 class="text-info">No Store Fronts found for the selected client.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Clear Filter", "Index", new { id = string.Empty }, null)</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Store Front", "Create", null, new { @class="btn btn-info"})</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Client", "Create", "ClientSysAdmin", null, new { @class = "btn btn-info" })</h3>
+	}
+	else
+	{
+		<h2 class="text-info">No Store Fronts in database.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Store Front", "Create", null, new { @class = "btn btn-info" })</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Client", "Create", "ClientSysAdmin", null, new { @class = "btn btn-info" })</h3>
+	}
 }
+else
+{
+	<table class="table table-hover table-striped">
+		<tr>
+			<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.ClientId, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.Client, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLink("Client Status", "Index", "ClientStatus")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.StoreFrontId, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.Name, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.PublicUrl, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.Folder, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLink("Status", "Index", "Status")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.IsPending, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
+			</th>
+			<th class="small"></th>
+		</tr>
 
-</table>
+		@foreach (var item in Model)
+		{
+			bool clientIsActive = item.Client.IsActiveDirect();
+			bool storeFrontIsActive = item.IsActiveDirect();
+			bool isAllActive = clientIsActive && storeFrontIsActive;
+			string rowClass = (isAllActive ? "" : "text-warning");
+			<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.StoreFrontId }))');">
+				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.StoreFrontId }, new { @class = "btn-sm btn-success" })
+				</td>
+
+				<td>
+					@Html.DisplayFor(modelItem => item.Client.ClientId)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Client.Name)
+				</td>
+				<td>
+					@if (clientIsActive)
+					{
+						<span class="text-success">Active</span>
+					}
+					else
+					{
+						<span class="text-warning"><strong>Inactive</strong></span>
+						<br />
+						@Html.ActionLink("Activate Client", "Activate", "ClientSysAdmin", new { id = item.ClientId }, new { @class = "btn btn-sm btn-warning" });
+					}
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.StoreFrontId)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.PublicUrl)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Folder)
+				</td>
+				<td>
+					@if (storeFrontIsActive)
+					{
+						<span class="text-success">Active</span>
+					}
+					else
+					{
+						<span class="text-warning"><strong>Inactive</strong></span>
+						<br />
+						@Html.ActionLink("Activate StoreFront", "Activate", new { id = item.StoreFrontId }, new { @class = "btn btn-sm btn-warning" });
+					}
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.IsPending)
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserName)</small>
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
+				</td>
+				<td>
+					<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserName)</small>
+				</td>
+				<td>
+					<span style="white-space: nowrap">
+						@Html.ActionLink("Edit", "Edit", new { id = item.StoreFrontId }, new { @class = "btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "Delete", new { id = item.StoreFrontId }, new { @class = "btn-sm btn-danger" })
+					</span>
+				</td>
+			</tr>
+		}
+	</table>
+}

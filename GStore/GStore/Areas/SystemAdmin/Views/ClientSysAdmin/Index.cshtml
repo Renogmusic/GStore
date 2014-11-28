@@ -1,105 +1,154 @@
 ﻿@model IEnumerable<GStore.Models.Client>
-<h2>Client Index</h2>
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+<style>
+	table th {
+		text-align: center;
+	}
+
+	table td {
+		text-align: center;
+	}
+</style>
+<h2 class="jumbotron SysAdminIndexPageTitle col-md-12">Client Manager</h2>
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
 </p>
-<table class="table">
-    <tr>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.ClientId)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.Name)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.Folder)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.EnablePageViewLog)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.EnableNewUserRegisteredBroadcast)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.IsPending)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UseSendGridEmail)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UseTwilioSms)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.CreatedBy.UserId)
-		</th>
-		<th class="small">
-			@Html.DisplayNameFor(model => model.UpdatedBy.UserId)
-		</th>
-		<th class="small"></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-		<td>
-			@Html.DisplayFor(modelItem => item.ClientId)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.Name)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.Folder)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.EnablePageViewLog)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.EnableNewUserRegisteredBroadcast)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.IsPending)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.UseSendGridEmail)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.UseTwilioSms)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
-		</td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedBy.UserId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ClientId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ClientId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ClientId })
-        </td>
-    </tr>
+@if (Model.Count() == 0)
+{
+	<p>
+		There are no clients found in the database.
+		<br/>
+		@Html.ActionLink("Click here to Create a New Client", "Create", null, new { @class = "btn btn-info" })
+	</p>
 }
+else
+{
 
-</table>
+	<table class="table table-hover table-striped">
+		<tr>
+			<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.ClientId, "Index")
+			</th>
+			<th class="small text-left">
+				@Html.ActionSortLinkFor(model => model.Name, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLink("Status", "Index", "Status")
+			</th>
+			<th class="small text-left">
+				@Html.ActionSortLinkFor(model => model.Folder, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.EnablePageViewLog, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.EnableNewUserRegisteredBroadcast, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.IsPending, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UseSendGridEmail, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UseTwilioSms, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
+			</th>
+			<th class="small">
+				@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
+			</th>
+			<th class="small"></th>
+		</tr>
+
+	@foreach (var item in Model)
+	{
+		bool clientIsActive = item.IsActiveDirect();
+		bool isAllActive = clientIsActive;
+		string rowClass = (isAllActive ? "" : "text-warning");
+
+		<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details",new { @id = item.ClientId}))');">
+			<td>
+				@Html.ActionLink("Details", "Details", new { id = item.ClientId }, new { @class = "btn-sm btn-success" })
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.ClientId)
+			</td>
+			<td class="text-left">
+				@Html.DisplayFor(modelItem => item.Name)
+			</td>
+			<td>
+				@if (clientIsActive)
+				{
+					<span class="text-success">Active</span>
+				}
+				else
+				{
+					<span class="text-warning"><strong>Inactive</strong></span>
+					<br />
+					@Html.ActionLink("Activate Client", "Activate", new { id = item.ClientId }, new { @class = "btn btn-sm btn-warning" });
+				}
+			</td>
+			<td class="text-left">
+				@Html.DisplayFor(modelItem => item.Folder)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.EnablePageViewLog)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.EnableNewUserRegisteredBroadcast)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.IsPending)
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.UseSendGridEmail)
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.UseTwilioSms)
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserId)</small>
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
+			</td>
+			<td>
+				<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)</small>
+			</td>
+			<td>
+				<span style="white-space: nowrap">
+					@Html.ActionLink("Edit", "Edit", new { id = item.ClientId }, new { @class = "btn-sm btn-warning" })
+					@Html.ActionLink("Delete", "Delete", new { id = item.ClientId }, new { @class = "btn-sm btn-danger" })
+				</span>
+			</td>
+		</tr>
+	}
+
+	</table>
+}

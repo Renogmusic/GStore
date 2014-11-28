@@ -1,7 +1,7 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
 @using GStore.AppHtmlHelpers;
 @using GStore.Models;
-@using GStore.Models.Extensions;
+@using GStore.Data;
 @{
 	string storeFrontName = "GStore";
 	if (Model.StoreFront != null)
@@ -15,11 +15,9 @@
 	<div class="container">
 		<div class="navbar-header">
 			<a href="~/" class="navbar-brand">
-				@(Html.Encode(storeFrontName))&nbsp;
-				<img id="TinyLogo" class="TinyLogo"
-					 src="~/Images/Logo/menu.png"
-					 alt="@(Html.AttributeEncode(storeFrontName))"
-					 title="@(Html.AttributeEncode(storeFrontName))" />
+				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
+					 src="~/Images/Logo/NavBarTinyLogo.png" alt="@(Html.AttributeEncode(storeFrontName))" title="@(Html.AttributeEncode(storeFrontName))" />
+				@(Html.Encode(storeFrontName))
 			</a>
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>
@@ -32,6 +30,7 @@
 			<ul class="nav navbar-nav">
 				@Html.Partial("_NavBarCatalogPartial", Model)
 				@Html.Partial("_NavBarMenuPartial", Model)
+				<li>@(Html.ActionLink("About GStore", "About", "GStore"))</li>
 			</ul>
 			@Html.Partial("_LoginPartial")
 		</div>

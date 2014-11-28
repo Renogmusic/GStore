@@ -1,8 +1,9 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
 @using Microsoft.AspNet.Identity
 @using GStore.Identity
+@using GStore.AppHtmlHelpers
 @using GStore.Models
-@using GStore.Models.Extensions
+@using GStore.Data
 @if (Request.IsAuthenticated)
 {
 	
@@ -37,7 +38,26 @@
 else
 {
 	<ul class="nav navbar-nav navbar-right">
-		<li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+		@{
+			if (Model.StoreFront != null)
+			{
+				if (Model.StoreFront.NavBarShowRegisterLink)
+				{
+					string signupLinkText = Model.StoreFront.NavBarRegisterLinkText;
+					if (string.IsNullOrEmpty(signupLinkText))
+					{
+						signupLinkText = "Sign-Up";
+					}
+					<li>@Html.ActionLink(signupLinkText, "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>	
+				}
+				
+			}
+			else
+			{
+				<li><a href="#"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+			}
+		}
+
 		<li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
 	</ul>
 }

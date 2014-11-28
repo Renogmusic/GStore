@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Identity;
 
 namespace GStore.Models.ViewModels

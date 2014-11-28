@@ -12,6 +12,7 @@ namespace GStore.Models
 		[Key]
 		[Editable(false)]
 		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[Display(Name = "Client Id")]
 		public int ClientId { get; set; }
 
 		[Required]
@@ -24,38 +25,31 @@ namespace GStore.Models
 		[MaxLength(100)]
 		public string Folder { get; set; }
 
-		[Display(Name="Pending")]
-		public bool IsPending { get; set; }
+		public int Order { get; set; }
 
-		[Display(Name = "Page View Log")]
+		[Display(Name = "Log Page Views")]
 		public bool EnablePageViewLog { get; set; }
 
-		[Display(Name = "New User Boadcast")]
+		[Display(Name = "Broadcast New Users")]
 		public bool EnableNewUserRegisteredBroadcast { get; set; }
 
-		[Display(Name = "Start Date UTC")]
-		public DateTime StartDateTimeUtc { get; set; }
-
-		[Display(Name = "End Date UTC")]
-		public DateTime EndDateTimeUtc { get; set; }
-
-		[Display(Name = "Send Grid EMail")]
+		[Display(Name = "Use SG EMail")]
 		public bool UseSendGridEmail { get; set; }
 
-		[Display(Name = "Send Grid Account")]
+		[Display(Name = "SG Account")]
 		public string SendGridMailAccount { get; set; }
 
 		[DataType(DataType.Password)]
-		[Display(Name = "Send Grid Password")]
+		[Display(Name = "SG Password")]
 		public string SendGridMailPassword { get; set; }
 
-		[Display(Name = "Send Grid From")]
+		[Display(Name = "SG From Email")]
 		public string SendGridMailFromEmail { get; set; }
 
-		[Display(Name = "Send Grid Name")]
+		[Display(Name = "SG From Name")]
 		public string SendGridMailFromName { get; set; }
 
-		[Display(Name = "Use Twilio Sms")]
+		[Display(Name = "Use Sms")]
 		public bool UseTwilioSms { get; set; }
 
 		[Display(Name = "Twilio Sid")]
@@ -74,8 +68,19 @@ namespace GStore.Models
 		[Display(Name = "Twilio From Email")]
 		public string TwilioSmsFromEmail { get; set; }
 
+		[Display(Name = "Is Pending")]
+		public bool IsPending { get; set; }
+
+		[Display(Name = "Start Date")]
+		public DateTime StartDateTimeUtc { get; set; }
+
+		[Display(Name = "End Date")]
+		public DateTime EndDateTimeUtc { get; set; }
+
+		[Display(Name = "Store Fronts")]
 		public virtual ICollection<StoreFront> StoreFronts { get; set; }
 
+		[Display(Name = "Client Roles")]
 		public virtual ICollection<ClientRole> ClientRoles { get; set; }
 
 	}

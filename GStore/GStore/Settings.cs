@@ -279,15 +279,31 @@
             }
         }
         
-        public string AppDefaultLayoutViewName
+        public string AppDefaultPageTemplateViewName
 		{
             get
 			{
-                return EnvironmentOrAppSettingString("AppDefaultLayoutViewName") ?? _projectSettings.AppDefaultLayoutViewName;
+				return EnvironmentOrAppSettingString("AppDefaultPageTemplateViewName") ?? _projectSettings.AppDefaultPageTemplateViewName;
             }
         }
         
-        public string RepositoryProvider
+		public bool AppEnableStoresVirtualFolders
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppEnableStoresVirtualFolders") ?? _projectSettings.AppEnableStoresVirtualFolders;
+			}
+		}
+
+		public bool AppSeedSampleProducts
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppSeedSampleProducts") ?? _projectSettings.AppSeedSampleProducts;
+			}
+		}
+
+		public string RepositoryProvider
 		{
             get
 			{
@@ -390,5 +406,6 @@
                 return EnvironmentOrAppSettingBool("IdentityEnableTwoFactorAuth") ?? _projectSettings.IdentityEnableTwoFactorAuth;
             }
         }
-    }
+
+	}
 }

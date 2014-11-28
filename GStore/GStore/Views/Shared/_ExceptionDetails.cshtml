@@ -1,7 +1,7 @@
 ﻿@model System.Exception
 @using GStore.AppHtmlHelpers;
 @using GStore.Models;
-@using GStore.Models.Extensions;
+@using GStore.Data;
 @if (Model != null)
 {
 	@:Exception: <strong>@(Model.Message)</strong><br />
@@ -14,9 +14,9 @@
 	<strong>Source: @Model.Source</strong><br />
 	if (Model.TargetSite != null)
 	{
-		@:Method: <strong>@Model.TargetSite.Name </strong><br />
-		@:Target Site: <strong>@Model.TargetSite.DeclaringType.FullName</strong><br />
-		@:Target Site Info: <strong>@Model.TargetSite.ToString()</strong><br />
+		@:Method: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.Name)</strong><br />
+		@:Target Site: <strong>@((Model.TargetSite != null) && (Model.TargetSite.DeclaringType != null) ? Model.TargetSite.DeclaringType.FullName : "(null)")</strong><br />
+		@:Target Site Info: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.ToString())</strong><br />
 	}
 	<pre>Exception.ToString: @Model.ToString()</pre>
 	<pre>Stack Trace: @Model.StackTrace</pre>

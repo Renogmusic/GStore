@@ -1,0 +1,228 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using GStore.Data.EntityFrameworkCodeFirstProvider;
+using GStore.Models;
+using GStore.Data;
+
+namespace GStore.Areas.SystemAdmin.Controllers
+{
+	public class BindingsSysAdminController : BaseClasses.SystemAdminBaseController
+	{
+
+		public ActionResult Index(int? id, string SortBy, bool? SortAscending)
+		{
+			ViewBag.ClientFilterList = ClientFilterList(id);
+
+			IQueryable<StoreBinding> query = null;
+			if (id.HasValue)
+			{
+				query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == id.Value);
+			}
+			else
+			{
+				query = GStoreDb.StoreBindings.All();
+			}
+
+			IOrderedQueryable<StoreBinding> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			return View(queryOrdered.ToList());
+		}
+
+		public ActionResult Details(int? id)
+		{
+			if (id == null)
+			{
+				return HttpBadRequest("Store Binding Id is null");
+			}
+			StoreBinding storeBinding = GStoreDb.StoreBindings.FindById(id.Value);
+			if (storeBinding == null)
+			{
+				return HttpNotFound();
+			}
+			return View(storeBinding);
+		}
+
+		public ActionResult Create(int? clientId, int? storeFrontId)
+		{
+			ViewBag.ClientList = ClientList();
+			ViewBag.StoreFrontList = StoreFrontList();
+
+			StoreBinding model = GStoreDb.StoreBindings.Create();
+			model.SetDefaultsForNew(Request, clientId, storeFrontId);
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Create(StoreBinding storeBinding)
+		{
+			if (ModelState.IsValid)
+			{
+				storeBinding = GStoreDb.StoreBindings.Create(storeBinding);
+				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
+				storeBinding = GStoreDb.StoreBindings.Add(storeBinding);
+				GStoreDb.SaveChanges();
+				return RedirectToAction("Index");
+			}
+			int? clientId = null;
+			if (storeBinding.ClientId != default(int))
+			{
+				clientId = storeBinding.ClientId;
+			}
+
+			int? storeFrontId = null;
+			if (storeBinding.StoreFrontId != default(int))
+			{
+				storeFrontId = storeBinding.StoreFrontId;
+			}
+
+			ViewBag.ClientList = ClientList();
+			ViewBag.StoreFrontList = StoreFrontList();
+
+			return View(storeBinding);
+		}
+
+		public ActionResult Edit(int? id)
+		{
+			if (id == null)
+			{
+				return HttpBadRequest("Store Binding Id is null");
+			}
+			StoreBinding storeBinding = GStoreDb.StoreBindings.FindById(id.Value);
+			if (storeBinding == null)
+			{
+				return HttpNotFound();
+			}
+			ViewBag.ClientList = ClientList();
+			ViewBag.StoreFrontList = StoreFrontList();
+
+			return View(storeBinding);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Edit(StoreBinding storeBinding)
+		{
+			if (ModelState.IsValid)
+			{
+				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
+				storeBinding = GStoreDb.StoreBindings.Update(storeBinding);
+				GStoreDb.SaveChanges();
+				return RedirectToAction("Index");
+			}
+			ViewBag.ClientList = ClientList();
+			ViewBag.StoreFrontList = StoreFrontList();
+
+			return View(storeBinding);
+		}
+
+		public ActionResult Activate(int id)
+		{
+			this.ActivateStoreBindingOnly(id);
+			if (Request.UrlReferrer != null)
+			{
+				return Redirect(Request.UrlReferrer.ToString());
+
+			}
+			return RedirectToAction("Index");
+		}
+
+		public ActionResult Delete(int? id)
+		{
+			if (id == null)
+			{
+				return HttpBadRequest("Store Binding Id is null");
+			}
+			Data.IGstoreDb db = GStoreDb;
+			StoreBinding storeBinding = db.StoreBindings.FindById(id.Value);
+			if (storeBinding == null)
+			{
+				return HttpNotFound();
+			}
+			return View(storeBinding);
+		}
+
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public ActionResult DeleteConfirmed(int id)
+		{
+			try
+			{
+				StoreBinding target = GStoreDb.StoreBindings.FindById(id);
+				string storeFrontName = target.StoreFront.Name;
+
+				if (target == null)
+				{
+					//storeBinding not found, already deleted? overpost?
+					throw new ApplicationException("Error deleting Store Binding. Store Binding not found. It may have been deleted by another user. StoreBindingId: " + id);
+				}
+				bool deleted = GStoreDb.StoreBindings.DeleteById(id);
+				GStoreDb.SaveChanges();
+				if (deleted)
+				{
+					AddUserMessage("Store Binding Deleted", "Store Binding for Store Front '" + storeFrontName + "' Binding [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
+				}
+			}
+			catch (Exception ex)
+			{
+
+				throw new ApplicationException("Error deleting StoreBinding.  See inner exception for errors.  Related child tables may still have data to be deleted. StoreBindingId: " + id, ex);
+			}
+			return RedirectToAction("Index");
+		}
+
+		protected SelectList ClientList()
+		{
+			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
+			IQueryable<SelectListItem> items = query.Select(c => new SelectListItem
+			{
+				Value = c.ClientId.ToString(),
+				Text = c.Name + " [" + c.ClientId + "]"
+			});
+			return new SelectList(items, "Value", "Text");
+		}
+
+		protected SelectList StoreFrontList()
+		{
+			var query = GStoreDb.StoreFronts.All().OrderBy(sf => sf.Client.Order).ThenBy(sf => sf.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
+			IQueryable<SelectListItem> items = query.Select(sf => new SelectListItem
+			{
+				Value =  sf.StoreFrontId.ToString(),
+				Text = sf.Client.Name + " - " + sf.Name + " [" + sf.StoreFrontId + "]"
+			});
+			return new SelectList(items, "Value", "Text");
+		}
+
+		protected SelectList ClientFilterList(int? id)
+		{
+			int filterId = 0;
+			if (id.HasValue)
+			{
+				filterId = id.Value;
+			}
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem()
+			{
+				Value = string.Empty,
+				Text = (!id.HasValue ? "[SELECTED] " : string.Empty) + "All",
+				Selected = !id.HasValue
+			});
+
+			var query = GStoreDb.Clients.All().OrderBy(c=> c.Order).ThenBy(c => c.ClientId);
+			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
+			{
+				Value = c.ClientId.ToString(),
+				Text = (c.ClientId == filterId ? "[SELECTED] ": string.Empty) + c.Name + " [" + c.ClientId + "]",
+				Selected = (c.ClientId == filterId )
+			});
+			items.AddRange(clients);
+			return new SelectList(items, "Value", "Text");
+		}
+
+	}
+}

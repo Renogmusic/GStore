@@ -66,12 +66,13 @@ function AddUserMessage(title, msg, type) {
 
 	var dateTimeString = DateToString(new Date());
 
+	
 	var htmlMsg = "\u003cdiv class=\"alert alert-"
 		+ type
 		+ "\"\u003e\r\n    \u003ca class=\"close\" data-dismiss=\"alert\"\u003e\u0026times;\u003c/a\u003e\r\n    \u003cstrong\u003e"
 		+ title
 		+ "\u003c/strong\u003e "
-		+ msg + " " + dateTimeString
+		+ msg.replace(/\n/g, "<br/>\n") + " " + dateTimeString
 		+ "\r\n\u003c/div\u003e\r\n";
 
 	var userMessageContainer = document.getElementById("usermessagecontainer");
@@ -91,14 +92,14 @@ function AddUserMessageBottom(title, msg, type) {
 		type = "info";
 	}
 
-	var dateTimeString = DateToString(Date());
+	var dateTimeString = DateToString(new Date());
 
 	var htmlMsg = "\u003cdiv class=\"alert alert-"
 		+ type
 		+ "\"\u003e\r\n    \u003ca class=\"close\" data-dismiss=\"alert\"\u003e\u0026times;\u003c/a\u003e\r\n    \u003cstrong\u003e"
 		+ title
 		+ "\u003c/strong\u003e "
-		+ msg + dateTimeString
+		+ msg.replace(/\n/g, "<br/>\n") + " " + dateTimeString
 		+ "\r\n\u003c/div\u003e\r\n";
 
 	var userMessageBottomContainer = document.getElementById("usermessagebottomcontainer");
@@ -195,8 +196,16 @@ $(document).ready(function () {
 	})
 });
 
-function htmlEncode(value) {
+function htmlEncodeNewLine(value) {
 	var encodedValue = $('<div />').text(value).html();
-	return encodedValue;
+	return encodedValue.replace(/\n/g, "<br/>\n");
 }
 
+function htmlEncode(value) {
+	var encodedValue = $('<div />').text(value).html();
+	return encodedValue.replace(/\n/g, "<br/>\n");
+}
+
+function GoToUrl(url) {
+	document.location.href = url;
+}

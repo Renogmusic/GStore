@@ -99,7 +99,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogSystemEventsToFile {
             get {
                 return ((bool)(this["AppLogSystemEventsToFile"]));
@@ -117,7 +117,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogSecurityEventsToFile {
             get {
                 return ((bool)(this["AppLogSecurityEventsToFile"]));
@@ -135,7 +135,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogBadRequestEventsToFile {
             get {
                 return ((bool)(this["AppLogBadRequestEventsToFile"]));
@@ -153,7 +153,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogFileNotFoundEventsToFile {
             get {
                 return ((bool)(this["AppLogFileNotFoundEventsToFile"]));
@@ -171,7 +171,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogPageViewEventsToFile {
             get {
                 return ((bool)(this["AppLogPageViewEventsToFile"]));
@@ -189,7 +189,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AppLogUserActionEventsToFile {
             get {
                 return ((bool)(this["AppLogUserActionEventsToFile"]));
@@ -253,9 +253,9 @@ namespace GStore.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Welcome")]
-        public string AppDefaultLayoutViewName {
+        public string AppDefaultPageTemplateViewName {
             get {
-                return ((string)(this["AppDefaultLayoutViewName"]));
+                return ((string)(this["AppDefaultPageTemplateViewName"]));
             }
         }
         
@@ -373,6 +373,24 @@ namespace GStore.Properties {
         public bool IdentityEnableTwoFactorAuth {
             get {
                 return ((bool)(this["IdentityEnableTwoFactorAuth"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppEnableStoresVirtualFolders {
+            get {
+                return ((bool)(this["AppEnableStoresVirtualFolders"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppSeedSampleProducts {
+            get {
+                return ((bool)(this["AppSeedSampleProducts"]));
             }
         }
     }

@@ -14,7 +14,6 @@
     <RootNamespace>GStore</RootNamespace>
     <AssemblyName>GStore</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
@@ -35,8 +34,9 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <MvcBuildViews>true</MvcBuildViews>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>
     </DefineConstants>
@@ -278,6 +278,9 @@
     <Compile Include="Areas\StoreAdmin\StoreAdminAreaRegistration.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BaseClasses\SystemAdminBaseController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\SysAdminActivationExtensions.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\SysAdminSortExtensions.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\StoreFrontSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\SystemAdminController.cs" />
@@ -288,9 +291,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controllers\BaseClass\PageBaseController.cs" />
-    <Compile Include="Controllers\BaseClass\PermissionAttributes.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Controllers\CatalogController.cs" />
     <Compile Include="Controllers\GStoreController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -298,6 +298,7 @@
     <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Controllers\StoreFrontFileController.cs" />
     <Compile Include="Data\EntityFrameworkCodeFirstProvider\GStoreEFDbContextModelBuilder.cs" />
+    <Compile Include="Data\Extensions\NewStoreFrontExtensions.cs" />
     <Compile Include="Identity\AuthorizeGStoreAction.cs" />
     <Compile Include="Identity\GStoreAction.cs" />
     <Compile Include="Identity\UNUSED_GStoreClaims.cs">
@@ -309,17 +310,17 @@
     <Compile Include="Identity\GStoreAuthorizationExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\Extensions\BaseClassExtensions.cs" />
-    <Compile Include="Models\Extensions\ClientExtensions.cs" />
-    <Compile Include="Models\Extensions\PageExtensions.cs" />
-    <Compile Include="Models\Extensions\UserProfileExtensions.cs" />
+    <Compile Include="Data\Extensions\BaseClassExtensions.cs" />
+    <Compile Include="Data\Extensions\ClientExtensions.cs" />
+    <Compile Include="Data\Extensions\PageExtensions.cs" />
+    <Compile Include="Data\Extensions\UserProfileExtensions.cs" />
     <Compile Include="Models\ViewModels\CatalogViewModel.cs" />
     <Compile Include="Models\ClientUserRole.cs" />
-    <Compile Include="Models\Extensions\TreeExtensions.cs" />
-    <Compile Include="Models\Extensions\NotificationExtensions.cs" />
+    <Compile Include="Data\Extensions\TreeExtensions.cs" />
+    <Compile Include="Data\Extensions\NotificationExtensions.cs" />
     <Compile Include="Data\ListProvider\ListContext.cs" />
     <Compile Include="Data\ListProvider\GenericGStoreListSource.cs" />
-    <Compile Include="Data\SeedDataExtensions.cs" />
+    <Compile Include="Data\Extensions\SeedDataExtensions.cs" />
     <Compile Include="Data\Interfaces.cs" />
     <Compile Include="Data\EntityFrameworkCodeFirstProvider\GenericGStoreEFEntity.cs" />
     <Compile Include="Data\RepositoryFactory.cs" />
@@ -333,17 +334,17 @@
     <Compile Include="Models\BaseClasses\StoreFrontLiveRecord.cs" />
     <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
     <Compile Include="Exceptions\AppDefinedExceptions.cs" />
-    <Compile Include="Models\Extensions\StoreFrontExtensions.cs" />
-    <Compile Include="Models\Extensions\WhereIsActiveExtensions.cs" />
+    <Compile Include="Data\Extensions\StoreFrontExtensions.cs" />
+    <Compile Include="Data\Extensions\WhereIsActiveExtensions.cs" />
     <Compile Include="Models\ViewModels\PageSectionEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PageViewModel.cs" />
     <Compile Include="Models\ViewModels\MenuViewModel.cs" />
     <Compile Include="Models\NavBarItem.cs" />
     <Compile Include="Models\ProductCategory.cs" />
-    <Compile Include="Models\Extensions\EventLogExtensionscs.cs">
+    <Compile Include="Data\Extensions\EventLogExtensionscs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\Extensions\GStoreDBExtensions.cs">
+    <Compile Include="Data\Extensions\GStoreDBExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Identity\AspNetEFIdentityExtensions.cs" />
@@ -394,50 +395,36 @@
     <Content Include="Content\Archive\bootstrap-theme.min.css" />
     <Content Include="Content\Archive\bootstrap.css" />
     <Content Include="Content\Archive\bootstrap.min.css" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_AppError.html" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_BadRequest.html" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_HttpError.html" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_NotFound.html" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_InvalidOperation.html" />
-    <Content Include="Content\Clients\StarterClient\ErrorPages\Error_UnknownError.html" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Clients\StarterClient\Images\Logo\NavBarTinyLogo.png" />
     <Content Include="Content\Clients\StarterClient\Images\Logo\large.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\Logo.jpg" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\Logo.png" />
     <Content Include="Content\Clients\StarterClient\Images\Logo\square.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\menu.png" />
     <Content Include="Content\Clients\StarterClient\Images\Logo\tiny.png" />
     <Content Include="Content\Clients\StarterClient\Images\Logo\wide.png" />
     <Content Include="Content\Clients\StarterClient\Scripts\Scripts.js" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_AppError.html" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_BadRequest.html" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_HttpError.html" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_NotFound.html" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_InvalidOperation.html" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\Error_UnknownError.html" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\NavBarTinyLogo.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\large.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\Logo.jpg" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\Logo.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\menu.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\square.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\tiny.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\wide.png" />
     <Content Include="Content\Clients\StarterClient\Images\NotFound.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\NotFound.png" />
     <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Scripts\Scripts.js" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Styles\Styles.css" />
     <Content Include="Content\Clients\StarterClient\Styles\Styles.css" />
+    <Content Include="Content\Server\ErrorPages\Error_AppError.html" />
+    <Content Include="Content\Server\ErrorPages\Error_BadRequest.html" />
     <Content Include="Content\Server\ErrorPages\Error_GStoreInactive.html" />
     <Content Include="Content\Server\ErrorPages\Error_GStoreNotFound.html" />
-    <Content Include="Content\Server\ErrorPages\Error_InvalidOperation.html" />
-    <Content Include="Content\Server\ErrorPages\Error_UnknownError.html" />
-    <Content Include="Content\Server\ErrorPages\Error_AppError.html" />
     <Content Include="Content\Server\ErrorPages\Error_HttpError.html" />
-    <Content Include="Content\Server\ErrorPages\Error_BadRequest.html" />
-    <Content Include="Content\Server\Images\Logo\large.png" />
-    <Content Include="Content\Server\Images\Logo\Logo.jpg" />
+    <Content Include="Content\Server\ErrorPages\Error_InvalidOperation.html" />
     <Content Include="Content\Server\ErrorPages\Error_NotFound.html" />
+    <Content Include="Content\Server\ErrorPages\Error_UnknownError.html" />
+    <Content Include="Content\Server\Images\Logo\large.png" />
     <Content Include="Content\Archive\base\accordion.css" />
     <Content Include="Content\Archive\base\all.css" />
     <Content Include="Content\Archive\base\autocomplete.css" />
@@ -471,54 +458,14 @@
     <Content Include="Content\Archive\base\tabs.css" />
     <Content Include="Content\Archive\base\theme.css" />
     <Content Include="Content\Archive\base\tooltip.css" />
-    <Content Include="Content\Server\Images\Logo\Logo.png" />
-    <Content Include="Content\Server\Images\Logo\menu.png" />
+    <Content Include="Content\Server\Images\Logo\NavBarTinyLogo.png" />
+    <Content Include="Content\Server\Images\Logo\Original-Logo.png" />
     <Content Include="Content\Server\Images\NotFound.png" />
     <Content Include="Content\Server\Images\Logo\square.png" />
     <Content Include="Content\Server\Images\Logo\tiny.png" />
     <Content Include="Content\Server\Images\Logo\wide.png" />
     <Content Include="Content\Server\Scripts\Scripts.js" />
     <Content Include="Content\Server\Styles\Styles.css" />
-    <Content Include="Content\Server\Themes\Cerulean\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Cerulean\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Cosmo\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Cosmo\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Cyborg\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Cyborg\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Darkly\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Darkly\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Darkly\variables.css">
-      <DependentUpon>variables.less</DependentUpon>
-    </Content>
-    <Content Include="Content\Server\Themes\Darkly\variables.min.css">
-      <DependentUpon>variables.css</DependentUpon>
-    </Content>
-    <Content Include="Content\Server\Themes\Flatly\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Flatly\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Journal\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Journal\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Lumen\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Lumen\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Original\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Original\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Paper\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Paper\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Readable\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Readable\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Sandstone\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Sandstone\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Simplex\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Simplex\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Slate\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Slate\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Spacelab\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Spacelab\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Superhero\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Superhero\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\United\bootstrap.css" />
-    <Content Include="Content\Server\Themes\United\bootstrap.min.css" />
-    <Content Include="Content\Server\Themes\Yeti\bootstrap.css" />
-    <Content Include="Content\Server\Themes\Yeti\bootstrap.min.css" />
     <Content Include="Content\Server\Images\favicon.ico" />
     <Content Include="Content\Archive\themes\base\accordion.css" />
     <Content Include="Content\Archive\themes\base\all.css" />
@@ -553,49 +500,34 @@
     <Content Include="Content\Archive\themes\base\tabs.css" />
     <Content Include="Content\Archive\themes\base\theme.css" />
     <Content Include="Content\Archive\themes\base\tooltip.css" />
+    <Content Include="Content\Server\Themes\Cerulean\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Cosmo\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Cyborg\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Darkly\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Flatly\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Journal\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Lumen\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Original\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Original\original.bootstrap-theme.min.css" />
+    <Content Include="Content\Server\Themes\Original\original.bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Paper\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Readable\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Sandstone\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Simplex\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Slate\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Spacelab\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Superhero\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\United\bootstrap.min.css" />
+    <Content Include="Content\Server\Themes\Yeti\bootstrap.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Server\Styles\GStoreApp.css" />
-    <Content Include="Content\Server\Themes\Darkly\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Darkly\variables.less" />
-    <Content Include="Content\Server\Themes\Darkly\variables.css.map">
-      <DependentUpon>variables.css</DependentUpon>
-    </Content>
     <Content Include="Models\UserProfile.cd" />
     <Content Include="Areas\StoreAdmin\Views\web.config" />
     <Content Include="Areas\StoreAdmin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\StoreAdmin\Index.cshtml" />
-    <Content Include="Content\Server\Themes\Cerulean\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Cerulean\variables.less" />
-    <Content Include="Content\Server\Themes\Cosmo\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Cosmo\variables.less" />
-    <Content Include="Content\Server\Themes\Cyborg\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Cyborg\variables.less" />
-    <Content Include="Content\Server\Themes\Flatly\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Flatly\variables.less" />
-    <Content Include="Content\Server\Themes\Journal\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Journal\variables.less" />
-    <Content Include="Content\Server\Themes\Lumen\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Lumen\variables.less" />
-    <Content Include="Content\Server\Themes\Paper\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Paper\variables.less" />
-    <Content Include="Content\Server\Themes\Readable\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Readable\variables.less" />
-    <Content Include="Content\Server\Themes\Sandstone\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Sandstone\variables.less" />
-    <Content Include="Content\Server\Themes\Simplex\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Simplex\variables.less" />
-    <Content Include="Content\Server\Themes\Slate\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Slate\variables.less" />
-    <Content Include="Content\Server\Themes\Spacelab\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Spacelab\variables.less" />
-    <Content Include="Content\Server\Themes\Superhero\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Superhero\variables.less" />
-    <Content Include="Content\Server\Themes\United\bootswatch.less" />
-    <Content Include="Content\Server\Themes\United\variables.less" />
-    <Content Include="Content\Server\Themes\Yeti\bootswatch.less" />
-    <Content Include="Content\Server\Themes\Yeti\variables.less" />
     <Content Include="Models\BaseClasses\AuditFieldsAllRequired.cd" />
     <Content Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cd" />
     <Content Include="Models\BaseClasses\EventLogBase.cd" />
@@ -675,24 +607,6 @@
     <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Delete.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Create.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Manager.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_UnknownError.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_NotFound.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_InvalidOperation.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_HttpError.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_GStoreNotFound.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_GStoreInactive.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_BadRequest.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\Error_AppError.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\_ErrorDetailsPartial.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_UnknownError.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_NotFound.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_InvalidOperation.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_HttpError.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_GStoreNotFound.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_GStoreInactive.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_BadRequest.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\Error_AppError.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\_ErrorDetailsPartial.cshtml" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.eot" />
@@ -722,15 +636,25 @@
     <Content Include="Areas\SystemAdmin\Views\GStore\About.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\GStore\About.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\GStore\SystemInfo.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\_FooterPartial.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\_FooterPartial.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\GStore\Settings.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Index.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Delete.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\CKEditor\CHANGES.md" />
     <Content Include="Scripts\CKEditor\LICENSE.md" />
     <Content Include="Scripts\CKEditor\plugins\imagebrowser\README.rst" />
@@ -747,8 +671,6 @@
     <Content Include="ReadMe.txt" />
     <Content Include="Robots.txt" />
     <Content Include="Content\Server\Scripts\GStoreApp.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\CKEditor\adapters\jquery.js" />
     <Content Include="Scripts\CKEditor\build-config.js" />
     <Content Include="Scripts\CKEditor\ckeditor.js" />
@@ -1141,7 +1063,16 @@
     <Content Include="Views\Shared\_FooterPartial.cshtml" />
     <Content Include="Views\Shared\_ExceptionDetails.cshtml" />
     <Content Include="Views\Page\Simple3x3WithJumboTron.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\PageSectionEditViewModel.cshtml" />
+    <Content Include="Views\Shared\_AboutGStorePartial.cshtml" />
+    <Content Include="Views\Shared\_AboutMePartial.cshtml" />
+    <Content Include="Views\Shared\_SystemInformationPartial.cshtml" />
+    <Content Include="Views\Page\_EditLinkTopPartial.cshtml" />
+    <Content Include="Views\Page\_EditModeTopPartial.cshtml" />
+    <Content Include="Views\Page\_EditLinkBottomPartial.cshtml" />
+    <Content Include="Views\Page\_EditModeBottomPartial.cshtml" />
+    <Content Include="Views\Page\DebugInfo.cshtml" />
+    <Content Include="Views\Page\EditorTemplates\PageSectionEditViewModel.cshtml" />
+    <Content Include="Views\Page\_SectionEditPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1150,18 +1081,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\EventLog\BadRequests\" />
-    <Folder Include="App_Data\EventLog\FileNotFoundLogs\" />
-    <Folder Include="App_Data\EventLog\LogExceptions\" />
-    <Folder Include="App_Data\EventLog\PageViewEvents\" />
-    <Folder Include="App_Data\EventLog\SecurityEvents\" />
-    <Folder Include="App_Data\EventLog\SystemEvents\" />
-    <Folder Include="App_Data\EventLog\UserActionEvents\" />
-    <Folder Include="Areas\SystemAdmin\Models\" />
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\Clients\StarterClient\ErrorPages\" />
     <Folder Include="Content\Clients\StarterClient\Images\Categories\" />
     <Folder Include="Content\Clients\StarterClient\Images\Products\" />
+    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Categories\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Products\" />
+    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Styles\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1174,7 +1101,7 @@
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
-    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+    <AspNetCompiler VirtualPath="/" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <ProjectExtensions>
     <VisualStudio>

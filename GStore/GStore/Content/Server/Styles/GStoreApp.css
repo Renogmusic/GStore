@@ -1,55 +1,104 @@
-﻿#TinyLogo {
-	height: 40px;
-	width: 40px;
+﻿#NavBarTinyLogo {
+	height: 42px;
+	width: 42px;
+	display: inline-block;
+	vertical-align: text-top;
+	padding: -10px 0 0 0;
+	margin: -10px 0 0 0;
 }
-.navbar-brand
-{
+
+/*.navbar-brand {
 	float: none;
+}*/
+
+#PoweredByGStoreLink {
+}
+
+#PoweredByGStoreLogo {
+	padding-bottom: 0.5em;
+}
+
+#SystemInfo {
+}
+
+	#SystemInfo .header {
+		text-align: right;
+		min-width: 20%;
+		padding: 10px;
+	}
+
+	#SystemInfo .data {
+		text-align: left;
+		padding: 10px;
+	}
+
+@media (min-width: 768px) {
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		width: auto;
+	}
 }
 
 @media (max-width: 767px) {
-	.CategoryTopNavItem{
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.CategoryTopNavItem {
 		display: block;
 		text-align: center;
 	}
+
 	.block-xs {
 		display: block;
 	}
+
 	.text-left-xs {
 		text-align: left;
 	}
+
 	.text-right-xs {
 		text-align: right;
 	}
+
 	.text-center-xs {
 		text-align: center;
 	}
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-	.CategoryTopNavItem{
+	.CategoryTopNavItem {
 		display: block;
 		text-align: center;
 	}
+
 	.block-sm {
 		display: block;
 	}
+
 	.text-left-sm {
 		text-align: left;
 	}
+
 	.text-right-sm {
 		text-align: right;
 	}
+
 	.text-center-sm {
 		text-align: center;
 	}
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
-	.CategoryTopNavItem{
+	.CategoryTopNavItem {
 		display: block;
 		text-align: center;
 	}
+
 	.block-md {
 		display: block;
 	}
@@ -57,9 +106,11 @@
 	.text-left-md {
 		text-align: left;
 	}
+
 	.text-right-md {
 		text-align: right;
 	}
+
 	.text-center-md {
 		text-align: center;
 	}
@@ -69,30 +120,31 @@
 	.block-lg {
 		display: block;
 	}
+
 	.text-left-lg {
 		text-align: left;
 	}
+
 	.text-right-lg {
 		text-align: right;
 	}
+
 	.text-center-lg {
 		text-align: center;
 	}
 }
 
-@media (min-width: 1900px)
-{
-	.body-content
-	{
+@media (min-width: 1900px) {
+	.body-content {
 		width: 1900px;
 	}
-	.container
-	{
+
+	.container {
 		width: 1900px;
 	}
 }
-.block
-{
+
+.block {
 	display: block;
 }
 
@@ -126,13 +178,6 @@ body {
 	padding-top: 3em;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-	white-space: normal;
-}
-
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
@@ -140,6 +185,80 @@ textarea {
 	max-width: 700px;
 }
 
-.dl-horizontal {
-	padding-left: 10px;
+@media (max-width: 767px)
+{
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		white-space: normal;
+	}
+
+	.dl-horizontal dd
+	{
+		white-space: normal;
+		padding-bottom: 2em;
+		font-weight: bold;
+	}
+}
+@media (min-width: 768px)
+{
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		text-align: right;
+		width: 45%;
+		display: inline-block;
+	}
+	.dl-horizontal dd
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		padding-bottom: 2em;
+		font-weight: bold;
+		text-align: left;
+		width: 53%;
+		display: inline-block;
+	}
+}
+
+.SysAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminEditPageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDetailsPageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDeletePageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminCreatePageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
 }

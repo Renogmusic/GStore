@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Net;
 using GStore.Data;
-using GStore.Models.Extensions;
 using GStore.Models;
 using GStore.AppHtmlHelpers;
 using GStore.Exceptions;

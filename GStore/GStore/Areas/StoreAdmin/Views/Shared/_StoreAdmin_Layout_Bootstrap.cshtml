@@ -1,6 +1,5 @@
 ﻿@using GStore.AppHtmlHelpers
 @using GStore.Areas.StoreAdmin.Controllers.BaseClasses
-@using GStore.Areas.StoreAdmin.Models.ViewModels
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,7 +43,7 @@
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFront));
 	</script>
 
-	@Styles.Render("~/Themes/" + storeFront.Theme.FolderName + "/Bootstrap.css")
+	@Styles.Render("~/Themes/" + storeFront.Theme.FolderName + "/Bootstrap.min.css")
 	@Styles.Render("~/Styles/GStoreApp.css")
 	@Styles.Render("~/Styles/Styles.css")
 

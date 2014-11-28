@@ -7,7 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Models.ViewModels;
 
 namespace GStore.Controllers
@@ -132,7 +132,7 @@ namespace GStore.Controllers
 			{
 
 				StoreFront storeFront = CurrentStoreFrontOrNull;
-				string messageBody = Models.Extensions.StoreFrontExtensions.AddPhoneNumberMessage(storeFront, code, Request.Url);
+				string messageBody = Data.StoreFrontExtensions.AddPhoneNumberMessage(storeFront, code, Request.Url);
 
 				var message = new IdentityMessage
 				{
@@ -410,8 +410,8 @@ namespace GStore.Controllers
 			var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, code = code }, protocol: Request.Url.Scheme);
 
 			StoreFront storeFront = CurrentStoreFrontOrNull;
-			string subject = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
-			string messageHtml = Models.Extensions.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
+			string subject = Data.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
+			string messageHtml = Data.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
 
 			await UserManager.SendEmailAsync(userId, subject, messageHtml);
 		}

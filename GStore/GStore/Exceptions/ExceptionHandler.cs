@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Routing;
-using GStore.Models.Extensions;
+using GStore.Data;
 using System.ComponentModel;
 
 namespace GStore.Exceptions

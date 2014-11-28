@@ -22,12 +22,16 @@ namespace GStore.Models
 
 		public int Order { get; set; }
 
+		public bool HasNothing { get; set; }
+
 		public bool HasPlainText { get; set; }
+		
 		[System.Web.Mvc.AllowHtml]
 		[UIHint("PlainText")]
 		public string PlainText { get; set; }
 
 		public bool HasRawHtml { get; set; }
+		
 		[System.Web.Mvc.AllowHtml]
 		[UIHint("RawHtml")]
 		public string RawHtml { get; set; }

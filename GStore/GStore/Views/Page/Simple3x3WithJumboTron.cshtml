@@ -1,30 +1,15 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
 @using GStore.AppHtmlHelpers
 @using GStore.Models;
-@using GStore.Models.Extensions;
-@{
-	GStore.Models.Page page = Model.Page;
-	bool editMode = Model.EditMode;
-}
-@if (editMode)
+@using GStore.Data;
+@if (Model.EditMode)
 {
-	<script src="~/Scripts/CKEditor/ckeditor.js"></script>
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ActionLink("View Live Page (ctrl-click for new window)", "Display", "Page")
-		</div>
-	</div>
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-		</div>
-	</div>
-	<hr />
+	@Html.Partial("_EditModeTopPartial", Model)
 }
-
-
+else if (Model.ShowEditPageLink)
+{
+	@Html.Partial("_EditLinkTopPartial", Model)
+}
 <div class="row">
 	<div class="jumbotron">
 		@Html.DisplayPageSection("Jumbotron", 1)
@@ -63,14 +48,11 @@
 		@Html.DisplayPageSection("Row3Col3", 10)
 	</div>
 </div>
-
-@if (Model.ShowEditPageLink)
+@if (Model.EditMode)
 {
-	<hr />
-	<div class="row">
-		<div class="col-xs-12">
-			@Html.ActionLink("Edit this Page", "Edit", "Page")
-		</div>
-	</div>
-	<hr />
+	@Html.Partial("_EditModeBottomPartial", Model)
+}
+else if (Model.ShowEditPageLink)
+{
+	@Html.Partial("_EditLinkBottomPartial", Model)
 }

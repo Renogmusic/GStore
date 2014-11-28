@@ -1,21 +1,17 @@
-﻿using System;
+﻿using GStore.Data;
+using GStore.Identity;
+using GStore.Models;
+using GStore.Models.ViewModels;
+using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using GStore;
-using GStore.Models;
-using GStore.Models.Extensions;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
-using GStore.Models.ViewModels;
-using GStore.Identity;
 
 namespace GStore.AppHtmlHelpers
 {
@@ -156,17 +152,6 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
-		public static MvcHtmlString ActionSortLink<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action)
-		{
-
-			ModelMetadata metaData = htmlHelper.MetaModel(expression);
-			string displayName = htmlHelper.DisplayNameFor(expression).ToString();
-			string modelPropertyName = metaData.PropertyName;
-
-			return htmlHelper.ActionSortLink(displayName, action, modelPropertyName);
-
-		}
-
 		public static bool UserHasPermission(this HtmlHelper htmlHelper, Identity.GStoreAction action)
 		{
 			return htmlHelper.CurrentStoreFront(false).Authorization_IsAuthorized(htmlHelper.CurrentUserProfile(false), action);
@@ -204,15 +189,71 @@ namespace GStore.AppHtmlHelpers
 			return true;
 		}
 
-		public static MvcHtmlString ActionSortLink<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action)
+		/// <summary>
+		/// Creates a sort link that runs an action
+		/// internally uses Request["SortBy"] and Request["SortAscending"]
+		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TProperty"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionSortLinkFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action)
 		{
-			ModelMetadata metaData = htmlHelper.MetaModel(expression);
-			string displayName = htmlHelper.DisplayNameFor(expression).ToString();
-			string modelPropertyName = metaData.PropertyName;
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TProperty>(expression, new ViewDataDictionary<TModel>());
+			string expressionText = ExpressionHelper.GetExpressionText(expression);
+			string displayName = metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
 
-			return htmlHelper.ActionSortLink(displayName, action, modelPropertyName);
+			string[] dotValues = expressionText.Split('.');
+			if (dotValues.Count() > 1)
+			{
+				string firstItem = dotValues[0];
+				displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+			}
+
+			return htmlHelper.ActionSortLink(displayName, action, expressionText);
 		}
 
+		/// <summary>
+		/// Creates a sort link that runs an action
+		/// internally uses Request["SortBy"] and Request["SortAscending"]
+		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionSortLinkFor<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action)
+		{
+
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TValue>(expression, new ViewDataDictionary<TModel>());
+			string expressionText = ExpressionHelper.GetExpressionText(expression);
+			string displayName = metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
+
+			string[] dotValues = expressionText.Split('.');
+			if (dotValues.Count() > 1)
+			{
+				string firstItem = dotValues[0];
+				displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+			}
+
+			return htmlHelper.ActionSortLink(displayName, action, expressionText);
+		}
+
+		/// <summary>
+		/// Creates a sort link that runs an action
+		/// internally uses Request["SortBy"] and Request["SortAscending"]
+		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
+		/// </summary>
+		/// <param name="helper"></param>
+		/// <param name="linkText"></param>
+		/// <param name="action"></param>
+		/// <param name="sortField"></param>
+		/// <returns></returns>
 		public static MvcHtmlString ActionSortLink(this HtmlHelper helper, string linkText, string action, string sortField)
 		{
 
@@ -222,7 +263,7 @@ namespace GStore.AppHtmlHelpers
 			bool linkWillSortUp = true;
 			bool? currentSortUp = null;
 
-			if (string.IsNullOrEmpty(request["sortBy"]) || request["sortBy"].ToLower() != sortField.ToLower())
+			if (string.IsNullOrEmpty(request["SortBy"]) || request["SortBy"].ToLower() != sortField.ToLower())
 			{
 				//fresh sort
 				//this field is not part of the sort
@@ -233,7 +274,7 @@ namespace GStore.AppHtmlHelpers
 
 				currentFieldIsSorted = true;
 				//no ascending specified, ascending is implied
-				if (string.IsNullOrEmpty(request["ascending"]) || request["ascending"].ToLower() == "true")
+				if (string.IsNullOrEmpty(request["SortAscending"]) || request["SortAscending"].ToLower() == "true")
 				{
 					currentSortUp = true;
 					//re-sorting, reverse order
@@ -247,20 +288,23 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			string sortClue = string.Empty;
+			string title = "Sort by " + linkText;
 			if (currentFieldIsSorted)
 			{
 				if (currentSortUp.HasValue && currentSortUp.Value)
 				{
 					sortClue = " ↑";
+					title += " Descending";
 				}
 				else
 				{
 					sortClue = " ↓";
+					title += " Ascending";
 				}
 
 			}
 
-			MvcHtmlString returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "**" : ""), action, new { sortBy = sortField, ascending = linkWillSortUp });
+			MvcHtmlString returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
 			if (!string.IsNullOrEmpty(sortClue))
 			{
 				returnValue = new MvcHtmlString(returnValue.ToHtmlString() + helper.Encode(sortClue));
@@ -283,25 +327,20 @@ namespace GStore.AppHtmlHelpers
 			{
 				return new MvcHtmlString("");
 			}
-			//get user messages ad remove them from the queue
+			//get user messages and remove them from the queue
 			List<UserMessage> userMessages = (List<UserMessage>)tempData["UserMessages"];
 			if (userMessages.Count == 0)
 			{
 				return new MvcHtmlString("");
 			}
 
-			returnValue.AppendLine("<script>");
 			returnValue.AppendLine("<!-- User Messages -->");
+			returnValue.AppendLine("<script>");
 			foreach (UserMessage userMessage in userMessages)
 			{
 				returnValue.AppendLine("AddUserMessage(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
 			}
 			returnValue.AppendLine("</script>");
-
-
-			//AddBottomAlert();
-
-
 
 			return new MvcHtmlString(returnValue.ToString());
 		}
@@ -316,18 +355,18 @@ namespace GStore.AppHtmlHelpers
 			{
 				return new MvcHtmlString("");
 			}
-			//get user messages ad remove them from the queue
+			//get user messages and remove them from the queue
 			List<UserMessage> userMessagesBottom = (List<UserMessage>)tempData["UserMessagesBottom"];
 			if (userMessagesBottom.Count == 0)
 			{
 				return new MvcHtmlString("");
 			}
 
-			returnValue.AppendLine("<script>");
 			returnValue.AppendLine("<!-- User Messages Bottom -->");
+			returnValue.AppendLine("<script>");
 			foreach (UserMessage userMessage in userMessagesBottom)
 			{
-				returnValue.AppendLine("AddBottomAlert(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
+				returnValue.AppendLine("AddUserMessageBottom(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
 			}
 			returnValue.AppendLine("</script>");
 
@@ -661,7 +700,7 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
-		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
@@ -704,7 +743,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html.ToString());
 		}
 
-		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
+		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
@@ -752,7 +791,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html.ToString());
 		}
 
-		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
 			string html = Tab(3 + level * 2) + "</li>\n";
 			if (category.Entity.UseDividerAfterOnMenu && level != 1)
@@ -762,7 +801,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
+		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
 		{
 			string html = Tab(3 + level * 2) + "</li>\n";
 			if (navBarItem.Entity.UseDividerAfterOnMenu && level != 1)
@@ -772,7 +811,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static MvcHtmlString CatalogMenuChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
 			string html = string.Empty;
 			if (level == 1)
@@ -787,7 +826,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static MvcHtmlString NavBarItemChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		public static MvcHtmlString NavBarItemChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
 		{
 			string html = string.Empty;
 			if (level == 1)
@@ -802,7 +841,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static MvcHtmlString CatalogMenuChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
 			string html = string.Empty;
 			if (level == 1)
@@ -817,7 +856,7 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static MvcHtmlString NavBarItemChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, Models.Extensions.TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
+		public static MvcHtmlString NavBarItemChildContainerEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
 		{
 			string html = string.Empty;
 			if (level == 1)
@@ -834,23 +873,6 @@ namespace GStore.AppHtmlHelpers
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
 		{
-			if (navBarItem.IsPage)
-			{
-
-				string url = navBarItem.Page.Url.Trim('~').Trim('/');
-				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
-				string appRoot = HttpContext.Current.Request.ApplicationPath.Trim('/').ToLower();
-				if (appRoot.Length == 0)
-				{
-					return "/" + url;
-				}
-				else if (currentRawUrl.StartsWith(appRoot))
-				{
-					return "/" + appRoot + "/" + url;
-				}
-				return "/" + url;
-
-			}
 			if (navBarItem.IsAction)
 			{
 				if (!string.IsNullOrEmpty(navBarItem.Area))
@@ -859,21 +881,26 @@ namespace GStore.AppHtmlHelpers
 				}
 				return urlHelper.Action(navBarItem.Action, navBarItem.Controller);
 			}
+			else if (navBarItem.IsPage)
+			{
+				string url = navBarItem.Page.Url.Trim('~').Trim('/');
+				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+				string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
+				if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
+				{
+					url = appRoot + "/" + url;
+				}
+				string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
+				if (!string.IsNullOrEmpty(urlStoreName))
+				{
+					url = "Stores/" + urlStoreName + "/" + url;
+				}
+
+				return "/" + url;
+			}
 			else if (navBarItem.IsLocalHRef)
 			{
-				string url = navBarItem.LocalHRef.Trim('~').Trim('/');
-				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
-				string appRoot = HttpContext.Current.Request.ApplicationPath.Trim('/').ToLower();
-				if (appRoot.Length == 0)
-				{
-					return "/" + url;
-				}
-				else if (currentRawUrl.StartsWith(appRoot))
-				{
-					return "/" + appRoot + "/" + url;
-				}
-				return "/" + url;
-
+				return urlHelper.GStoreLocalUrl(navBarItem.LocalHRef);
 			}
 			else if (navBarItem.IsRemoteHRef)
 			{
@@ -988,6 +1015,50 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
 		}
 
+		public static MvcHtmlString GStoreLocalLink(this HtmlHelper htmlHelper, string linkText, string localUrl)
+		{
+			return htmlHelper.GStoreLocalLink(linkText, localUrl, null);
+		}
+
+		public static MvcHtmlString GStoreLocalLink(this HtmlHelper htmlHelper, string linkText, string localUrl, string htmlAttributes)
+		{
+			string url = htmlHelper.UrlHelper().GStoreLocalUrl(localUrl);
+			if (string.IsNullOrEmpty(htmlAttributes))
+			{
+				htmlAttributes = string.Empty;
+			}
+			else
+			{
+				htmlAttributes = " " + htmlAttributes;
+			}
+
+			string html = "<a href=\"" + url + "\"" + htmlAttributes + ">" + HttpUtility.HtmlEncode(linkText) + "</a>";
+			return new MvcHtmlString(html);
+		}
+
+		/// <summary>
+		/// Converts a local url like "/foo" into a local url using app path and /stores/storename if necessary
+		/// </summary>
+		/// <param name="url"></param>
+		/// <returns></returns>
+		public static string GStoreLocalUrl(this UrlHelper urlHelper, string localUrl)
+		{
+			string url = localUrl.Trim('~').Trim('/');
+			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
+			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
+			{
+				url = appRoot + "/" + url;
+			}
+			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
+			if (!string.IsNullOrEmpty(urlStoreName))
+			{
+				url = "Stores/" + urlStoreName + "/" + url;
+			}
+
+			return "/" + url;
+		}
+
 		/// <summary>
 		/// Returns a string representing the number of bytes, kb, mb, gb, tb
 		/// </summary>
@@ -1024,6 +1095,15 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
+		/// <summary>
+		/// Displays a dynamic page section
+		/// sectionName is the PageTemplateSections.Name
+		/// Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="sectionName">sectionName is the PageTemplateSections.Name</param>
+		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
+		/// <returns></returns>
 		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index)
 		{
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
@@ -1033,15 +1113,14 @@ namespace GStore.AppHtmlHelpers
 			}
 			Page page = pageViewModel.Page;
 			PageTemplate pageTemplate = page.PageTemplate;
-			if (pageTemplate.Sections == null || pageTemplate.Sections.Count == 0)
-			{
-				throw new ApplicationException("No sections found in Page Template [" + pageTemplate.PageTemplateId + "] '" + pageTemplate.Name + "' Make sure to define sections in PageTemplateSections. Add a record for PageTemplateSection.Name: '" + sectionName + "'");
-			}
 
 			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+
 			if (pageTemplateSection == null)
 			{
-				throw new ApplicationException("Page Template section not found in Page Template [" + pageTemplate.PageTemplateId + "] '" + pageTemplate.Name + "' Add a record for PageTemplateSection.Name: '" + sectionName + "'");
+				System.Diagnostics.Trace.WriteLine("--Auto-creating page template section. Template: " + pageTemplate.Name + " [" + pageTemplate.PageTemplateId + "] Section Name: " + sectionName);
+				IGstoreDb db = htmlHelper.GStoreDb();
+				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, false, sectionName + " section", db.SeedAutoMapUserBestGuess());
 			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
@@ -1067,7 +1146,11 @@ namespace GStore.AppHtmlHelpers
 			string value = string.Empty;
 			if (pageSection != null)
 			{
-				if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
+				if (pageSection.HasNothing)
+				{
+					value = string.Empty;
+				}
+				else if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
 				{
 					value = pageSection.RawHtml;
 				}
@@ -1100,6 +1183,11 @@ namespace GStore.AppHtmlHelpers
 
 			return htmlHelper.EditorFor(model => viewModel);
 
+		}
+
+		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFront storeFront, UserProfile userProfile)
+		{
+			return new MenuViewModel(storeFront, userProfile);
 		}
 
 	}

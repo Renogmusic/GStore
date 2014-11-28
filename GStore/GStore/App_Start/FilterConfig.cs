@@ -1,7 +1,7 @@
 ﻿using GStore.Controllers.BaseClass;
 using System.Web;
 using System.Web.Mvc;
-using GStore.Models.Extensions;
+using GStore.Data;
 
 namespace GStore
 {
@@ -41,7 +41,7 @@ namespace GStore
 					return;
 				}
 
-				Models.Client client = controller.CurrentClientOrThrow;
+				Models.Client client = controller.CurrentClientOrNull;
 				bool enablePageViewLog = true;
 				if (client != null)
 				{

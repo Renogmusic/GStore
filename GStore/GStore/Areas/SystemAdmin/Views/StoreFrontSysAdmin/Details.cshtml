@@ -1,150 +1,147 @@
 ﻿@model GStore.Models.StoreFront
-<div>
-    <h4>StoreFront View</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.AccountAdmin.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.AccountAdmin.UserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Client.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Client.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedBy.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedBy.UserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.RegisteredNotify.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.RegisteredNotify.UserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Theme.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Theme.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdatedBy.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.UpdatedBy.UserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.WelcomePerson.UserId)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.WelcomePerson.UserId)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.PublicUrl)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PublicUrl)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.MetaApplicationName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.MetaApplicationName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.MetaApplicationTileColor)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.MetaApplicationTileColor)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.MetaDescription)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.MetaDescription)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.MetaKeywords)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.MetaKeywords)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Folder)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Folder)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NavBarCatalogMaxLevels)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogPageInitialLevels)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CatalogPageInitialLevels)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.NavBarItemsMaxLevels)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NavBarItemsMaxLevels)
-        </dd>
-
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-success">Store Front Details: <br />'@(Model.Name)' [@(Model.StoreFrontId)]</h2>
+</div>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.StoreFrontId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.StoreFrontId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
+<div class="row">
+	<dl class="dl-horizontal">
 		<dt>
-			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
+			@Html.DisplayNameFor(model => model.Name)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.PublicUrl)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.PublicUrl)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Folder)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Folder)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.HtmlFooter)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.HtmlFooter)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaApplicationName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaApplicationName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaApplicationTileColor)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaApplicationTileColor)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaDescription)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaDescription)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaKeywords)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaKeywords)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountLoginShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountLoginRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginRegisterLinkText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarRegisterLinkText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarCatalogMaxLevels)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogPageInitialLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogPageInitialLevels)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarItemsMaxLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarItemsMaxLevels)
 		</dd>
 
 		<dt>
@@ -155,129 +152,229 @@
 			@Html.DisplayFor(model => model.AccountLayoutName)
 		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.ProfileLayoutName)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ProfileLayoutName)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.NotificationsLayoutName)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.ProfileLayoutName)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.NotificationsLayoutName)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.ProfileLayoutName)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogLayoutName)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.NotificationsLayoutName)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogLayoutName)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.NotificationsLayoutName)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogCategoryColSm)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogLayoutName)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogCategoryColSm)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogLayoutName)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogCategoryColMd)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.AdminLayoutName)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogCategoryColMd)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.AdminLayoutName)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogCategoryColLg)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogCategoryColSm)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogCategoryColLg)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColSm)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogProductColSm)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogCategoryColMd)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogProductColSm)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColMd)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogProductColMd)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogCategoryColLg)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogProductColMd)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColLg)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CatalogProductColLg)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogProductColSm)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CatalogProductColLg)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColSm)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.AdminLayoutName)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogProductColMd)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.AdminLayoutName)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColMd)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.StartDateTimeUtc)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogProductColLg)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.StartDateTimeUtc)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColLg)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.EndDateTimeUtc)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.EnableGoogleAnalytics)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.EndDateTimeUtc)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.EnableGoogleAnalytics)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.IsPending)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.GoogleAnalyticsWebPropertyId)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.IsPending)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.GoogleAnalyticsWebPropertyId)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.CreateDateTimeUtc)
-        </dt>
+		<dt>
+			@Html.DisplayNameFor(model => model.Theme.Name)
+		</dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.CreateDateTimeUtc)
-        </dd>
+		<dd>
+			@Html.DisplayFor(model => model.Theme.Name)
+		</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.UpdateDateTimeUtc)
-        </dd>
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
 
-    </dl>
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountAdmin.UserId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountAdmin.UserId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy.UserId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy.UserId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.RegisteredNotify.UserId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.RegisteredNotify.UserId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy.UserId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy.UserId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.WelcomePerson.UserId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.WelcomePerson.UserId)
+		</dd>
+
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Client.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ClientId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Client.ClientId)
+		</dd>
+
+	</dl>
 </div>
+<hr/>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.StoreFrontId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.StoreFrontId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.StoreFrontId }) |
-    @Html.ActionLink("Back to List", "Index")
+	@Html.ActionLink("Back to List", "Index")
 </p>

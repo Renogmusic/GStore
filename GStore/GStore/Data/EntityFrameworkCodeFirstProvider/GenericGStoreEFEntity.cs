@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 
 namespace GStore.Data.EntityFrameworkCodeFirstProvider
 {
@@ -131,7 +131,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				proxy = entity.CopyValuesToEntity(proxyOriginalValues);
 			}
 			_context.Entry<TEntity>(proxy).State = EntityState.Modified;
-			
+
 			return proxy;
 		}
 
@@ -204,7 +204,16 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		public string KeyFieldPropertyName(TEntity entity)
 		{
-			Type type = entity.GetType();
+			Type type = null;
+			if (entity.IsProxy())
+			{
+				type = entity.GetPocoType();
+			}
+			else
+			{
+				type = entity.GetType();
+			}
+
 			string entityName = type.Name.ToLower();
 			foreach (System.Reflection.PropertyInfo prop in type.GetProperties())
 			{

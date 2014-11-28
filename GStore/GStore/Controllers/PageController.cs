@@ -1,5 +1,5 @@
 ﻿using GStore.Models;
-using GStore.Models.Extensions;
+using GStore.Data;
 using GStore.Models.ViewModels;
 using System;
 using System.Collections.Generic;

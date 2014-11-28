@@ -1,0 +1,16 @@
+﻿@model GStore.Models.ViewModels.PageViewModel
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+<hr />
+<div class="row">
+	<div class="col-xs-12">
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	</div>
+</div>
+<hr />
+<div class="row">
+	<div class="col-xs-12">
+		@Html.ActionLink("View Live Page (shift-click for new window)", "Display", "Page")
+	</div>
+</div>
+<hr />
+
