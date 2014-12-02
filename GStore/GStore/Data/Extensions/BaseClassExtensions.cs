@@ -47,11 +47,11 @@ namespace GStore.Data
 			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + HttpUtility.UrlEncode(record.StoreFront.Folder);
 		}
 
-		public static bool IsActiveDirect(this StoreFrontLiveRecord record)
+		public static bool IsActiveDirect(this ClientLiveRecord record)
 		{
 			return record.IsActiveDirect(DateTime.UtcNow);
 		}
-		public static bool IsActiveDirect(this StoreFrontLiveRecord record, DateTime dateTime)
+		public static bool IsActiveDirect(this ClientLiveRecord record, DateTime dateTime)
 		{
 			if (!record.IsPending && (record.StartDateTimeUtc < dateTime) && (record.EndDateTimeUtc > dateTime))
 			{
@@ -116,7 +116,6 @@ namespace GStore.Data
 			{
 				throw new ArgumentNullException("copyFrom");
 			}
-
 
 			return CopyEntityValues(copyFrom, copyTo);
 		}

@@ -1,0 +1,29 @@
+﻿@model GStore.Models.StoreBinding
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no store binding)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Store Binding";
+	
+	<span class="@className">
+		Store Binding [@(Model.StoreBindingId)]
+		@(inactiveText)
+		 @(Html.DisplayNameFor(model => model.HostName)) '@(Html.DisplayFor(model => model.HostName))'
+		 @(Html.DisplayNameFor(model => model.Port)) '@(Html.DisplayFor(model => model.Port))'
+		 @(Html.DisplayNameFor(model => model.RootPath)) '@(Html.DisplayFor(model => model.RootPath))'
+		 @(Html.DisplayNameFor(model => model.UseUrlStoreName)) '@(Html.DisplayFor(model => model.UseUrlStoreName))'
+		 @(Html.DisplayNameFor(model => model.UrlStoreName)) '@(Html.DisplayFor(model => model.UrlStoreName))'
+	</span>
+	@: &nbsp;
+	@(Html.ActionLink(linkText, "Details", "StoreFrontSysAdmin", new { id = Model.StoreBindingId }, new { @class = viewLinkClass }))
+
+	@: - @(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront))
+}

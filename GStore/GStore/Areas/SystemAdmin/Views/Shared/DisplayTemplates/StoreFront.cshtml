@@ -1,0 +1,22 @@
+﻿@model GStore.Models.StoreFront
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no store front)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Store Front";
+	
+	<span class="@className">
+		'@(Model.Name)' [@(Model.StoreFrontId)]@(inactiveText)
+	</span>
+	@: &nbsp;@(Html.ActionLink(linkText, "Details", "StoreFrontSysAdmin", new { id = Model.StoreFrontId }, new { @class = viewLinkClass }))
+	@: &nbsp; - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client))
+}
+

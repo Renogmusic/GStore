@@ -58,10 +58,11 @@
 
 	<link rel="shortcut icon" href="~/Images/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="~/Images/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="~/Images/Logo/square.png" />
+	<link rel="apple-touch-startup-image" href="~/Images/Logo/square.png" />
+
 	<meta name="description" content="@(metaDescription)" />
 	<meta name="keywords" content="@(metaKeywords)" />
-	<link rel="apple-touch-icon" href="~/Images/Logo/Logo.png" />
-	<link rel="apple-touch-startup-image" href="~/Images/Logo/Logo.png" />
 
 	<script>
 		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));

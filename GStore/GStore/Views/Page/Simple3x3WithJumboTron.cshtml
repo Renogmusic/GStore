@@ -12,40 +12,40 @@ else if (Model.ShowEditPageLink)
 }
 <div class="row">
 	<div class="jumbotron">
-		@Html.DisplayPageSection("Jumbotron", 1)
+		@Html.DisplayPageSection("Jumbotron", 1, string.Empty)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col1", 2)
+		@Html.DisplayPageSection("Row1Col1", 2, string.Empty)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col2", 3)
+		@Html.DisplayPageSection("Row1Col2", 3, string.Empty)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col3", 4)
-	</div>
-</div>
-<div class="row">
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col1", 5)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col2", 6)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col3", 7)
+		@Html.DisplayPageSection("Row1Col3", 4, string.Empty)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col1", 8)
+		@Html.DisplayPageSection("Row2Col1", 5, string.Empty)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col2", 9)
+		@Html.DisplayPageSection("Row2Col2", 6, string.Empty)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col3", 10)
+		@Html.DisplayPageSection("Row2Col3", 7, string.Empty)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col1", 8, string.Empty)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col2", 9, string.Empty)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col3", 10, string.Empty)
 	</div>
 </div>
 @if (Model.EditMode)

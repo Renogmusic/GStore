@@ -368,7 +368,7 @@ namespace GStore.Data
 			}
 			storeFront.Name = "New Store Front " + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 			storeFront.Folder = storeFront.Name;
-			storeFront.IsPending = true;
+			storeFront.IsPending = false;
 			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeFront.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			storeFront.MetaApplicationName = storeFront.Name;
@@ -408,16 +408,16 @@ namespace GStore.Data
 			storeBinding.RootPath = request.BindingRootPath();
 			storeBinding.UrlStoreName = request.BindingUrlStoreName();
 			storeBinding.UseUrlStoreName = !string.IsNullOrEmpty(storeBinding.UrlStoreName);
+			storeBinding.IsPending = false;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 		}
 
-		public static void HandleNewUserRegisteredNotifications(this StoreFront storeFront, Data.IGstoreDb db, HttpRequestBase request, UserProfile newProfile, string notificationBaseUrl)
+		public static void HandleNewUserRegisteredNotifications(this StoreFront storeFront, Data.IGstoreDb db, HttpRequestBase request, UserProfile newProfile, string notificationBaseUrl, bool sendUserWelcome, bool sendRegisteredNotify)
 		{
 			UserProfile welcomeUserProfile = storeFront.WelcomePerson;
 			//HttpRequestBase request = controller.Request;
-			db = db.NewContext(newProfile.UserName);
-
+			
 			Notification notification = db.Notifications.Create();
 			notification.StoreFront = storeFront;
 			notification.Client = storeFront.Client;
@@ -531,7 +531,6 @@ namespace GStore.Data
 				return;
 			}
 
-			db = db.NewContext();
 			UserProfile accountAdmin = storeFront.AccountAdmin;
 
 			Notification notification = db.Notifications.Create();
@@ -812,15 +811,15 @@ namespace GStore.Data
 			return messageBody;
 		}
 
-		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, bool isRequired, string description, UserProfile userProfile)
+		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, string description, string defaultRawHtmlValue, UserProfile userProfile)
 		{
 			db.UserName = userProfile.UserName;
 			PageTemplateSection newSection = db.PageTemplateSections.Create();
 			newSection.PageTemplateId = pageTemplateId;
 			newSection.Name = sectionName;
 			newSection.Order = order;
+			newSection.DefaultRawHtmlValue = defaultRawHtmlValue;
 			newSection.Description = description;
-			newSection.IsRequired = isRequired;
 			db.PageTemplateSections.Add(newSection);
 			db.SaveChanges();
 			return newSection;
@@ -844,6 +843,7 @@ namespace GStore.Data
 			newRecord.SetDefaults(userProfile);
 			newRecord.ClientId = storeFront.ClientId;
 			newRecord.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			newRecord.UseDefaultFromTemplate = viewModel.UseDefaultFromTemplate;
 			newRecord.HasNothing = viewModel.HasNothing;
 			newRecord.HasPlainText = viewModel.HasPlainText;
 			newRecord.HasRawHtml = viewModel.HasRawHtml;
@@ -867,13 +867,14 @@ namespace GStore.Data
 		{
 			//find existing record, update it
 			PageSection pageSection = storeFront.Pages.Single(p => p.PageId == viewModel.PageId)
-				.Sections.OrderBy(s => s.Order).ThenBy(s => s.PageSectionId).FirstOrDefault();
+				.Sections.Where(ps => ps.PageSectionId == viewModel.PageSectionId).OrderBy(s => s.Order).ThenBy(s => s.PageSectionId).FirstOrDefault();
 			if (pageSection == null)
 			{
 				throw new ApplicationException("Page section not found in storefront page sections. PageId: " + viewModel.PageId + " PageSectionId: " + viewModel.PageSectionId + " PageTemplateSectionId: " + viewModel.PageTemplateSectionId);
 			}
 
 			pageSection.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			pageSection.UseDefaultFromTemplate = viewModel.UseDefaultFromTemplate;
 			pageSection.HasPlainText = viewModel.HasPlainText;
 			pageSection.HasRawHtml = viewModel.HasRawHtml;
 			pageSection.HasNothing = viewModel.HasNothing;

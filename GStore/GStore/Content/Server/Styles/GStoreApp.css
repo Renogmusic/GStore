@@ -262,3 +262,33 @@ textarea {
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
 }
+
+.StoreAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminEditPageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminDetailsPageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminDeletePageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminCreatePageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}

@@ -10,7 +10,7 @@ namespace GStore.Models.ViewModels
 {
 	public class PageViewModel
 	{
-		public PageViewModel(Page page, bool showEditPageLink, bool editMode)
+		public PageViewModel(Page page, bool showEditPageLink, bool editMode, bool autoPost)
 		{
 			if (page == null)
 			{
@@ -19,13 +19,20 @@ namespace GStore.Models.ViewModels
 
 			this.Page = page;
 			this.EditMode = editMode;
+			this.AutoPost = autoPost;
 			this.ShowEditPageLink = showEditPageLink;
 		}
 
-		public bool EditMode { get; set; }
-
 		public Page Page { get; set; }
 
+		[Display(Name = "Edit Mode")]
+		public bool EditMode { get; set; }
+
+		[Display(Name = "User Can Edit")]
 		public bool ShowEditPageLink { get; set; }
+
+		[Display(Name = "Auto-Post")]
+		public bool AutoPost { get; set; }
+
 	}
 }

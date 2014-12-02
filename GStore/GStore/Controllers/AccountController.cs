@@ -195,7 +195,7 @@ namespace GStore.Controllers
 					newProfile.SendMoreInfoToEmail = model.SendMeMoreInfo;
 					newProfile.SignupNotes = model.SignupNotes;
 					newProfile.NotifyAllWhenLoggedOn = true;
-					newProfile.Active = true;
+					newProfile.IsPending = false;
 					newProfile.Order = 1000;
 					newProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 					newProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -206,7 +206,7 @@ namespace GStore.Controllers
 
 					ctx.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
-					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl);
+					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl, true, true);
 
 					if (Properties.Settings.Current.IdentityEnableNewUserRegisteredBroadcast && CurrentClientOrThrow.EnableNewUserRegisteredBroadcast)
 					{

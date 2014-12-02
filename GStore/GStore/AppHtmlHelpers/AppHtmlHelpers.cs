@@ -200,17 +200,24 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="expression"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLinkFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action)
+		public static MvcHtmlString ActionSortLinkFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool useShortName = true)
 		{
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TProperty>(expression, new ViewDataDictionary<TModel>());
 			string expressionText = ExpressionHelper.GetExpressionText(expression);
-			string displayName = metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
+			string displayName = (useShortName ? metadata.ShortDisplayName : null) ?? metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
 
 			string[] dotValues = expressionText.Split('.');
 			if (dotValues.Count() > 1)
 			{
 				string firstItem = dotValues[0];
-				displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				if (useShortName)
+				{
+					displayName = htmlHelper.DisplayShortName(firstItem).ToHtmlString() + " " + displayName;
+				}
+				else
+				{
+					displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				}
 			}
 
 			return htmlHelper.ActionSortLink(displayName, action, expressionText);
@@ -227,18 +234,25 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="expression"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLinkFor<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action)
+		public static MvcHtmlString ActionSortLinkFor<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action, bool useShortName = true)
 		{
 
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TValue>(expression, new ViewDataDictionary<TModel>());
 			string expressionText = ExpressionHelper.GetExpressionText(expression);
-			string displayName = metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
+			string displayName = (useShortName ? metadata.ShortDisplayName : null) ?? metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
 
 			string[] dotValues = expressionText.Split('.');
 			if (dotValues.Count() > 1)
 			{
 				string firstItem = dotValues[0];
-				displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				if (useShortName)
+				{
+					displayName = htmlHelper.DisplayShortName(firstItem).ToHtmlString() + " " + displayName;
+				}
+				else
+				{
+					displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				}
 			}
 
 			return htmlHelper.ActionSortLink(displayName, action, expressionText);
@@ -312,6 +326,60 @@ namespace GStore.AppHtmlHelpers
 
 			return returnValue;
 		}
+
+		public static MvcHtmlString DisplayShortNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string name = metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName;
+			return new MvcHtmlString(htmlHelper.Encode(name));
+		}
+
+		public static MvcHtmlString DisplayShortName(this HtmlHelper htmlHelper, string expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromStringExpression(expression, htmlHelper.ViewData);
+			string name = metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName;
+			return new MvcHtmlString(htmlHelper.Encode(name));
+		}
+
+		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, null, null);
+		}
+
+		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, null, typedHtmlAttributes);
+		}
+
+		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string labelText, object htmlAttributes)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, labelText, typedHtmlAttributes);
+		}
+
+		internal static MvcHtmlString ShortLabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string labelText = null, IDictionary<string, object> htmlAttributes = null)
+        {
+            string resolvedLabelText = labelText ?? metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
+            if (String.IsNullOrEmpty(resolvedLabelText))
+            {
+                return MvcHtmlString.Empty;
+            }
+
+            TagBuilder tag = new TagBuilder("label");
+            tag.Attributes.Add("for", TagBuilder.CreateSanitizedId(html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)));
+            tag.SetInnerText(resolvedLabelText);
+            tag.MergeAttributes(htmlAttributes, replaceExisting: true);
+            return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
+        }
 
 		/// <summary>
 		/// Renders alerts from viewbag and tempdata if any exist (messages to user)
@@ -629,15 +697,30 @@ namespace GStore.AppHtmlHelpers
 			return metadata;
 		}
 
-		public static void SendEmail(Client client, string toEmail, string toName, string subject, string textBody, string htmlBody, string urlHost)
+		/// <summary>
+		/// Sends an email and adds client signature to the end of it
+		/// </summary>
+		/// <param name="client"></param>
+		/// <param name="toEmail"></param>
+		/// <param name="toName"></param>
+		/// <param name="subject"></param>
+		/// <param name="textBody"></param>
+		/// <param name="htmlBody"></param>
+		/// <param name="urlHost"></param>
+		public static bool SendEmail(Client client, string toEmail, string toName, string subject, string textBody, string htmlBody, string urlHost)
 		{
 			if (!Properties.Settings.Current.AppEnableEmail)
 			{
-				return;
+				return false;
+			}
+
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
 			}
 			if (!client.UseSendGridEmail)
 			{
-				return;
+				return false;
 			}
 
 			string mailFromEmail = client.SendGridMailFromEmail;
@@ -664,17 +747,30 @@ namespace GStore.AppHtmlHelpers
 			// Create a Web transport for sending email.
 			SendGrid.Web transportWeb = new SendGrid.Web(credentials);
 			transportWeb.Deliver(myMessage);
+
+			return true;
 		}
 
-		public static void SendSms(Client client, string toPhoneNumber, string textBody, string urlHost)
+		/// <summary>
+		/// Sends a SMS text message and adds client signature to the end
+		/// </summary>
+		/// <param name="client"></param>
+		/// <param name="toPhoneNumber"></param>
+		/// <param name="textBody"></param>
+		/// <param name="urlHost"></param>
+		public static bool SendSms(Client client, string toPhoneNumber, string textBody, string urlHost)
 		{
 			if (!Properties.Settings.Current.AppEnableSMS)
 			{
-				return;
+				return false;
+			}
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
 			}
 			if (!client.UseTwilioSms)
 			{
-				return;
+				return false;
 			}
 
 
@@ -697,6 +793,7 @@ namespace GStore.AppHtmlHelpers
 
 			// Status is one of Queued, Sending, Sent, Failed or null if the number is not valid
 			Trace.TraceInformation(result.Status);
+			return true;
 
 		}
 
@@ -1000,6 +1097,33 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
+		/// <summary>
+		/// Renders hidden fields for CreatedBy_UserProfileId, UpdatedBy_UserProfileId, CreateDateTimeUtc, UpdateDateTimeUtc
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HiddenAuditFieldsOptional<TModel>(this HtmlHelper<TModel> htmlHelper) where TModel : Models.BaseClasses.AuditFieldsUserProfileOptional
+		{
+			if (!(htmlHelper.ViewContext.Controller is Controllers.BaseClass.BaseController))
+			{
+				throw new ApplicationException("htmlHelper.ViewContext.Controller must inherit from base controller for this method: HiddenAuditFields<AuditFieldsAllRequired>");
+			}
+			UserProfile profile = htmlHelper.CurrentUserProfile(true);
+			int? createdByUserProfileId = profile.UserProfileId;
+			DateTime createDateTimeUtc = DateTime.UtcNow;
+			if (htmlHelper.ViewData.Model != null)
+			{
+				createdByUserProfileId = htmlHelper.ViewData.Model.CreatedBy_UserProfileId;
+				createDateTimeUtc = htmlHelper.ViewData.Model.CreateDateTimeUtc;
+			}
+
+			return new MvcHtmlString(htmlHelper.Hidden("CreatedBy_UserProfileId", createdByUserProfileId).ToHtmlString()
+				+ htmlHelper.Hidden("CreateDateTimeUtc", createDateTimeUtc).ToHtmlString()
+				+ htmlHelper.Hidden("UpdatedBy_UserProfileId", profile.UserProfileId).ToHtmlString()
+				+ htmlHelper.Hidden("UpdateDateTimeUtc", DateTime.UtcNow).ToHtmlString());
+
+		}
+
 		public static UrlHelper UrlHelper(this HtmlHelper htmlHelper)
 		{
 			return new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
@@ -1104,7 +1228,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="sectionName">sectionName is the PageTemplateSections.Name</param>
 		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
 		/// <returns></returns>
-		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index)
+		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string defaultRawHtmlValue)
 		{
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
 			if (pageViewModel.Page == null)
@@ -1120,7 +1244,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				System.Diagnostics.Trace.WriteLine("--Auto-creating page template section. Template: " + pageTemplate.Name + " [" + pageTemplate.PageTemplateId + "] Section Name: " + sectionName);
 				IGstoreDb db = htmlHelper.GStoreDb();
-				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, false, sectionName + " section", db.SeedAutoMapUserBestGuess());
+				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, sectionName + " section", defaultRawHtmlValue, db.SeedAutoMapUserBestGuess());
 			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
@@ -1132,7 +1256,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				return pageTemplateSection.HtmlDisplay(pageSection, htmlHelper);
 			}
-			return pageTemplateSection.Editor(page, pageSection, index, htmlHelper);
+			return pageTemplateSection.Editor(page, pageSection, index, htmlHelper.ViewData.Model.AutoPost, htmlHelper);
 
 		}
 
@@ -1144,7 +1268,7 @@ namespace GStore.AppHtmlHelpers
 		public static MvcHtmlString HtmlDisplay<TModel>(this PageTemplateSection pageTemplateSection, PageSection pageSection, HtmlHelper<TModel> htmlHelper)
 		{
 			string value = string.Empty;
-			if (pageSection != null)
+			if (pageSection != null && !pageSection.UseDefaultFromTemplate)
 			{
 				if (pageSection.HasNothing)
 				{
@@ -1152,17 +1276,21 @@ namespace GStore.AppHtmlHelpers
 				}
 				else if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
 				{
-					value = pageSection.RawHtml;
+					value = htmlHelper.ReplaceVariables(pageSection.RawHtml, string.Empty);
 				}
 				else if (pageSection.HasPlainText && !string.IsNullOrEmpty(pageSection.PlainText))
 				{
-					value = HttpUtility.HtmlEncode(pageSection.PlainText).Replace("\n", "<br/>\n");
+					value = HttpUtility.HtmlEncode(htmlHelper.ReplaceVariables(pageSection.PlainText, string.Empty)).Replace("\n", "<br/>\n");
 				}
+			}
+			else
+			{
+				value = htmlHelper.ReplaceVariables(pageTemplateSection.DefaultRawHtmlValue ?? string.Empty, string.Empty);
 			}
 			return new MvcHtmlString(value);
 		}
 
-		public static MvcHtmlString Editor<TModel>(this PageTemplateSection pageTemplateSection, Page page, PageSection pageSection, int index, HtmlHelper<TModel> htmlHelper) where TModel : PageViewModel
+		public static MvcHtmlString Editor<TModel>(this PageTemplateSection pageTemplateSection, Page page, PageSection pageSection, int index, bool autoSubmit, HtmlHelper<TModel> htmlHelper) where TModel : PageViewModel
 		{
 
 			string value = string.Empty;
@@ -1179,15 +1307,93 @@ namespace GStore.AppHtmlHelpers
 				}
 			}
 
-			Models.ViewModels.PageSectionEditViewModel viewModel = new Models.ViewModels.PageSectionEditViewModel(pageTemplateSection, page, pageSection, index);
+			Models.ViewModels.PageSectionEditViewModel viewModel = new Models.ViewModels.PageSectionEditViewModel(pageTemplateSection, page, pageSection, index, autoSubmit);
 
 			return htmlHelper.EditorFor(model => viewModel);
 
 		}
 
+		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue)
+		{
+			if (nullValue == null)
+			{
+				throw new ArgumentNullException("nullValue");
+			}
+
+			Client client = htmlHelper.CurrentClient(false);
+			StoreFront storeFront = htmlHelper.CurrentStoreFront(false);
+			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
+
+			string clientNullValue = null;
+			if (client == null)
+			{
+				clientNullValue = nullValue;
+			}
+
+			text = text.Replace("::client.name::", clientNullValue ?? client.Name)
+				.Replace("::client.clientid::", clientNullValue ?? client.ClientId.ToString())
+				.Replace("::client.sendgridmailfromemail::", clientNullValue ?? client.SendGridMailFromEmail)
+				.Replace("::client.sendgridmailfromname::", clientNullValue ?? client.SendGridMailFromName)
+				.Replace("::client.twiliofromphone::", clientNullValue ?? client.TwilioFromPhone)
+				.Replace("::client.twiliosmsfromemail::", clientNullValue ?? client.TwilioSmsFromEmail)
+				.Replace("::client.twiliosmsfromname::", clientNullValue ?? client.TwilioSmsFromName);
+			
+			string storeFrontNullValue = null;
+			if (storeFront == null)
+			{
+				storeFrontNullValue = nullValue;
+			}
+			text = text.Replace("::storefront.name::", storeFrontNullValue ?? storeFront.Name)
+				.Replace("::storefront.clientid::", storeFrontNullValue ?? storeFront.StoreFrontId.ToString())
+				.Replace("::storefront.accountadmin.fullname::", storeFrontNullValue ?? storeFront.AccountAdmin.FullName)
+				.Replace("::storefront.accountadmin.email::", storeFrontNullValue ?? storeFront.AccountAdmin.Email)
+				.Replace("::storefront.registerednotify.fullname::", storeFrontNullValue ?? storeFront.RegisteredNotify.FullName)
+				.Replace("::storefront.registerednotify.email::", storeFrontNullValue ?? storeFront.RegisteredNotify.Email)
+				.Replace("::storefront.welcomeperson.fullname::", storeFrontNullValue ?? storeFront.WelcomePerson.FullName)
+				.Replace("::storefront.welcomeperson.email::", storeFrontNullValue ?? storeFront.WelcomePerson.Email)
+				.Replace("::storefront.publicurl::", storeFrontNullValue ?? storeFront.PublicUrl)
+				.Replace("::storefront.htmlfooter::", storeFrontNullValue ?? storeFront.HtmlFooter);
+
+			string userProfileNullValue = null;
+			if (userProfile == null)
+			{
+				userProfileNullValue = nullValue;
+			}
+			text = text.Replace("::userprofile.email::", userProfileNullValue ?? userProfile.Email)
+				.Replace("::userprofile.fullname::", userProfileNullValue ?? userProfile.FullName)
+				.Replace("::userprofile.username::", userProfileNullValue ?? userProfile.UserName)
+				.Replace("::userprofile.UserProfileId::", userProfileNullValue ?? userProfile.UserProfileId.ToString());
+
+			DateTime today = DateTime.Today;
+			return text.Replace("::date::", today.ToString())
+				.Replace("::shortdate::", today.ToShortDateString().ToString())
+				.Replace("::shorttime::", DateTime.Now.ToShortTimeString())
+				.Replace("::dayofweek::", today.DayOfWeek.ToString())
+				.Replace("::monthname::", today.ToString("MMMM"))
+				.Replace("::dayofmonth::", today.Day.ToString())
+				.Replace("::year::", today.ToString("YYYY"));
+		}
+
 		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFront storeFront, UserProfile userProfile)
 		{
 			return new MenuViewModel(storeFront, userProfile);
+		}
+
+		public static MvcHtmlString LogFolderFileCount(this HtmlHelper htmlHelper, string logfolder)
+		{
+			string virtualPath = logfolder;
+			string folderPath = htmlHelper.ViewContext.HttpContext.Server.MapPath(logfolder);
+
+			if (!System.IO.Directory.Exists(folderPath))
+			{
+				return new MvcHtmlString("folder does not exist");
+			}
+
+			string[] files = System.IO.Directory.GetFiles(folderPath);
+
+			int fileCount = files.Count();
+
+			return new MvcHtmlString(fileCount.ToString("N0") + " file" + (fileCount == 1 ? string.Empty : "s"));
 		}
 
 	}

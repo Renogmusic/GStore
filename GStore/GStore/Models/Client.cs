@@ -33,23 +33,23 @@ namespace GStore.Models
 		[Display(Name = "Broadcast New Users")]
 		public bool EnableNewUserRegisteredBroadcast { get; set; }
 
-		[Display(Name = "Use SG EMail")]
+		[Display(Name = "Use SendGrid Email", ShortName = "Use SG EMail")]
 		public bool UseSendGridEmail { get; set; }
 
-		[Display(Name = "SG Account")]
+		[Display(Name="SendGrid Account", ShortName = "SG Account")]
 		public string SendGridMailAccount { get; set; }
 
 		[DataType(DataType.Password)]
-		[Display(Name = "SG Password")]
+		[Display(Name = "SendGrid Password", ShortName = "SG Password")]
 		public string SendGridMailPassword { get; set; }
 
-		[Display(Name = "SG From Email")]
+		[Display(Name = "SendGrid From Email", ShortName = "SG From Email")]
 		public string SendGridMailFromEmail { get; set; }
 
-		[Display(Name = "SG From Name")]
+		[Display(Name = "SendGrid From Name", ShortName = "SG From Name")]
 		public string SendGridMailFromName { get; set; }
 
-		[Display(Name = "Use Sms")]
+		[Display(Name = "Use Twilio SMS Service", ShortName = "Use Sms")]
 		public bool UseTwilioSms { get; set; }
 
 		[Display(Name = "Twilio Sid")]

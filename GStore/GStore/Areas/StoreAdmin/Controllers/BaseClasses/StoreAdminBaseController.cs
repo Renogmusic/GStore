@@ -1,4 +1,4 @@
-﻿using GStore.Areas.StoreAdmin.Models.ViewModels;
+﻿using GStore.Areas.StoreAdmin.ViewModels;
 using GStore.Controllers.BaseClass;
 using GStore.Data;
 using GStore.Models;
@@ -31,11 +31,11 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 			}
 		}
 
-		public GStore.Areas.StoreAdmin.Models.ViewModels.StoreAdminViewModel StoreAdminViewModel
+		public GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel StoreAdminViewModel
 		{
 			get
 			{
-				return new GStore.Areas.StoreAdmin.Models.ViewModels.StoreAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+				return new GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 			}
 		}
 

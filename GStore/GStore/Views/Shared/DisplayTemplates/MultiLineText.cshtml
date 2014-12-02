@@ -1,2 +1,2 @@
 ﻿@model string
-@Html.Raw(Html.Encode(Model.ToString()).Replace("\n", "<br />\n"))
+@Html.Raw((Html.Encode(Model ?? string.Empty).ToString()).Replace("\n", "<br />\n"))

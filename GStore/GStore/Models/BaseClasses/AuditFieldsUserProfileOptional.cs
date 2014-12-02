@@ -29,6 +29,7 @@ namespace GStore.Models.BaseClasses
 		[Editable(false)]
 		[Display(Name = "Created By Id")]
 		public int? CreatedBy_UserProfileId { get; set; }
+
 		[Display(Name = "Created By")]
 		[ForeignKey("CreatedBy_UserProfileId")]
 		[System.Xml.Serialization.XmlIgnore]

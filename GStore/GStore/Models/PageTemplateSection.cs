@@ -10,11 +10,16 @@ namespace GStore.Models
 	[Table("PageTemplateSections")]
 	public class PageTemplateSection : BaseClasses.AuditFieldsAllRequired
 	{
+		[Key]
+		[Display(Name = "Page Template Section Id")]
 		public int PageTemplateSectionId { get; set; }
 
 		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[Display(Name = "Page Template Id")]
 		public int PageTemplateId { get; set; }
+
 		[ForeignKey("PageTemplateId")]
+		[Display(Name = "Page Template")]
 		public virtual PageTemplate PageTemplate { get; set; }
 
 		[Required]
@@ -28,8 +33,10 @@ namespace GStore.Models
 		[Required]
 		public string Description { get; set; }
 
-		public bool IsRequired { get; set; }
+		[Display(Name="Default Raw Html Value")]
+		public string DefaultRawHtmlValue { get; set; }
 
+		[Display(Name="Page Sections")]
 		public virtual ICollection<PageSection> PageSections { get; set; }
 	}
 }

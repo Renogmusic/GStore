@@ -28,7 +28,7 @@ namespace GStore.Data
 		{
 			client.Name = "New Client " + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 			client.Folder = client.Name;
-			client.IsPending = true;
+			client.IsPending = false;
 			client.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			client.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			client.EnableNewUserRegisteredBroadcast = true;
@@ -37,19 +37,33 @@ namespace GStore.Data
 			client.UseTwilioSms = false;
 		}
 
-		public static bool IsActiveDirect(this Models.BaseClasses.ClientLiveRecord record)
+		public static void SetDefaultsForNew(this ValueList valueList, int? clientId)
 		{
-			return record.IsActiveDirect(DateTime.UtcNow);
-		}
-		public static bool IsActiveDirect(this Models.BaseClasses.ClientLiveRecord record, DateTime dateTime)
-		{
-			if (!record.IsPending && (record.StartDateTimeUtc < dateTime) && (record.EndDateTimeUtc > dateTime))
+			valueList.AllowDelete = true;
+			valueList.AllowEdit = true;
+			valueList.IsMultiSelect = true;
+			if (clientId.HasValue)
 			{
-				return true;
+				valueList.ClientId = clientId.Value;
 			}
-			return false;
+			valueList.IsPending = false;
+			valueList.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			valueList.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
+		public static void SetDefaultsForNew(this ValueListItem valueListItem, ValueList valueList)
+		{
+			if (valueList != null)
+			{
+				valueListItem.ValueList = valueList;
+				valueListItem.ValueListId = valueList.ValueListId;
+				valueListItem.ClientId = valueList.ClientId;
+			}
+
+			valueListItem.IsPending = false;
+			valueListItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			valueListItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+		}
 
 	}
 }

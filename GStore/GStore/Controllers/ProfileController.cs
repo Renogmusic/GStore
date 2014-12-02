@@ -65,16 +65,74 @@ namespace GStore.Controllers
 			var model = new ProfileViewModel
 			{
 				HasPassword = HasPassword(),
-				PhoneNumber = await UserManager.GetPhoneNumberAsync(User.Identity.GetUserId()),
+				PhoneNumber = aspUser.PhoneNumber,
 				TwoFactor = await UserManager.GetTwoFactorEnabledAsync(User.Identity.GetUserId()),
 				Logins = await UserManager.GetLoginsAsync(User.Identity.GetUserId()),
 				BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(User.Identity.GetUserId()),
 				EmailConfirmed = aspUser.EmailConfirmed,
+				PhoneNumberConfirmed = aspUser.PhoneNumberConfirmed,
 				AspNetIdentityUser = aspUser,
 				UserProfile = profile
 			};
 			return View(model);
 		}
+
+
+		public ActionResult SendTestEmail()
+		{
+			UserProfile profile = CurrentUserProfileOrThrow;
+			if (!profile.AspNetIdentityUser().EmailConfirmed)
+			{
+				AddUserMessage("Test Email not sent", "You must confirm your email address before you can receive email.", AppHtmlHelpers.UserMessageType.Warning);
+				return RedirectToAction("Index");
+			}
+
+			Client client = CurrentClientOrThrow;
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+
+
+			string subject = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
+			string textBody = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
+			string htmlBody = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
+ 
+			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendEmail(client, profile.Email, profile.FullName, subject, textBody, htmlBody, Request.Url.Host);
+			if (result)
+			{
+				AddUserMessage("Test Email Sent!", "Test Email was sent to '" + profile.Email + "'.", AppHtmlHelpers.UserMessageType.Success);
+			}
+			else
+			{
+				AddUserMessage("Test Email not sent", "Test Email was NOT sent. This store does not have Email send activated.", AppHtmlHelpers.UserMessageType.Warning);
+			}
+			return RedirectToAction("Index");
+		}
+
+		public ActionResult SendTestSms()
+		{
+			UserProfile profile = CurrentUserProfileOrThrow;
+			if (!profile.AspNetIdentityUser().PhoneNumberConfirmed)
+			{
+				AddUserMessage("Test Text Message not sent", "You must confirm your phone number before you can receive SMS text messages.", AppHtmlHelpers.UserMessageType.Warning);
+				return RedirectToAction("Index");
+			}
+
+			Client client = CurrentClientOrThrow;
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+
+			string textBody = "Test Text Message from " + storeFront.Name + " - " + Request.BindingHostName();
+
+			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendSms(client, profile.AspNetIdentityUser().PhoneNumber, textBody, Request.Url.Host);
+			if (result)
+			{
+				AddUserMessage("Test Text Message Sent!", "Test SMS Text Message was sent to '" + profile.AspNetIdentityUser().PhoneNumber + "'.", AppHtmlHelpers.UserMessageType.Success);
+			}
+			else
+			{
+				AddUserMessage("Test Text Message Not Sent!", "Test Text Message was NOT sent. This store does not have SMS Text send activated.", AppHtmlHelpers.UserMessageType.Warning);
+			}
+			return RedirectToAction("Index");
+		}
+
 
 		//
 		// GET: /Profile/RemoveLogin
@@ -391,8 +449,10 @@ namespace GStore.Controllers
 			profile.NotifyAllWhenLoggedOn = model.NotifyAllWhenLoggedOn;
 			profile.NotifyOfSiteUpdatesToEmail = model.NotifyOfSiteUpdatesToEmail;
 			profile.SendSiteMessagesToEmail = model.SendSiteMessagesToEmail;
+			profile.SendSiteMessagesToSms = model.SendSiteMessagesToSms;
 			profile.SubscribeToNewsletterEmail = model.SubscribeToNewsletterEmail;
 
+			GStoreDb.UserProfiles.Update(profile);
 			GStoreDb.SaveChanges();
 
 			return RedirectToAction("Index");

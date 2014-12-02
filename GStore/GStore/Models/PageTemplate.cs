@@ -25,11 +25,12 @@ namespace GStore.Models
 		public string Description { get; set; }
 
 		[Required]
+		[Display(Name = "View Name")]
 		public string ViewName { get; set; }
 
 		[Required]
+		[Display(Name="Layout Name")]
 		public string LayoutName { get; set; }
-
 
 		public virtual ICollection<PageTemplateSection> Sections { get; set; }
 

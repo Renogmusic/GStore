@@ -89,6 +89,11 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		public virtual DbSet<UserProfile> UserProfilesTable { get; set; }
 		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreEFEntity<Models.UserProfile>(this); } }
 
+		public virtual DbSet<ValueList> ValueListsTable { get; set; }
+		public IGStoreRepository<Models.ValueList> ValueLists { get { return new GenericGStoreEFEntity<Models.ValueList>(this); } }
+
+		public virtual DbSet<ValueListItem> ValueListItemsTable { get; set; }
+		public IGStoreRepository<Models.ValueListItem> ValueListItems { get { return new GenericGStoreEFEntity<Models.ValueListItem>(this); } }
 
 		#endregion
 
@@ -366,9 +371,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		}
 
-		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.Models.ViewModels.ClientConfigViewModel> ClientConfigViewModels { get; set; }
-
-		public System.Data.Entity.DbSet<GStore.Models.ViewModels.PageSectionEditViewModel> PageSectionEditViewModels { get; set; }
+		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigViewModel> StoreFrontConfigViewModels { get; set; }
 
 	}
 }

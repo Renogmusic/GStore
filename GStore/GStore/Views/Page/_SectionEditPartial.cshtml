@@ -4,89 +4,155 @@
 	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
 	MvcHtmlString prefix = new MvcHtmlString("viewModel.");
 }
-	<script>
-		function ShowNothing_@(Model.Index)() {
-			document.getElementById("HasNothing_@(Model.Index)").value = "true";
+<script>
+	function ShowNothing_@(Model.Index)() {
+		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
 
-			document.getElementById("HasPlainText_@(Model.Index)").value = "false";
-			document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
+		document.getElementById("HasNothing_@(Model.Index)").value = "true";
 
-			document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
-			document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
-		}
+		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
 
-		function ShowRawHtml_@(Model.Index)()
-		{
-			document.getElementById("HasNothing_@(Model.Index)").value = "false";
-
-			document.getElementById("HasPlainText_@(Model.Index)").value = "false";
-			document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
-
-			document.getElementById("HasRawHtml_@(Model.Index)").value = "true";
-			document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = false;
-		}
-
-		function ShowPlainText_@(Model.Index)()
-		{
-			document.getElementById("HasNothing_@(Model.Index)").value = "false";
-
-			document.getElementById("HasPlainText_@(Model.Index)").value = "true";
-			document.getElementById("PlainTextEditor_@(Model.Index)").hidden = false;
-
-			document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
-			document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
-		}
-
-	@if (Model.HasNothing)
-	{
-		@:$(document).ready(function () {
-		@:	ShowNothing_@(Model.Index)();
-		@:});
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
 	}
+
+	function ShowDefault_@(Model.Index)() {
+		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "true";
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = false;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasNothing_@(Model.Index)").value = "false";
+
+		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
+	}
+
+
+	function ShowRawHtml_@(Model.Index)() {
+		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasNothing_@(Model.Index)").value = "false";
+
+		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "true";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = false;
+	}
+
+	function ShowPlainText_@(Model.Index)() {
+		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasNothing_@(Model.Index)").value = "false";
+
+		document.getElementById("HasPlainText_@(Model.Index)").value = "true";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = false;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "false";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
+	}
+
+	function AutoSubmitForm_@(Model.Index)() {
+		@if (Model.AutoSubmit)
+		{
+			@:document.getElementById("IsAutoPosted_@(Model.Index)").value = "true";
+			@:$('#SectionEditForm_@(Model.Index)').trigger('submit');
+		}
+	}
+
+
+	@if (Model.UseDefaultFromTemplate)
+	{
+		@:$(document).ready(function () { ShowDefault_@(Model.Index)(); });
+						}
+	else if (Model.HasNothing)
+	{
+		@:$(document).ready(function () { ShowNothing_@(Model.Index)(); });
+						}
 	else if (Model.HasRawHtml)
 	{
-		@:$(document).ready(function () {
-		@:	ShowRawHtml_@(Model.Index)();
-		@:});
-	}
+		@:$(document).ready(function () { ShowRawHtml_@(Model.Index)(); });
+						}
 	else
 	{
-		@:$(document).ready(function () {
-		@:	ShowPlainText_@(Model.Index)();
-		@:});
-	}
+		@:$(document).ready(function () { ShowPlainText_@(Model.Index)(); });
+						}
 
-	</script>
-	@Html.AntiForgeryToken()
+</script>
+@Html.AntiForgeryToken()
 
 <div class="form-horizontal text-center">
 	<h4 class="bg-info">
 		Section: <strong>@Model.SectionName [@Model.PageTemplateSectionId]</strong>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input id="formatHasNothing_(@Model.Index)" type="radio" name="selectedFormat" value="Nothing" @(Model.HasNothing ? "checked=\"checked\"" : string.Empty) onclick="ShowNothing_@(Model.Index)();" />
+		<input id="formatDefault_(@Model.Index)" type="radio" name="selectedFormat" value="Default" @(Model.UseDefaultFromTemplate ? "checked=\"checked\"" : string.Empty) onchange="ShowDefault_@(Model.Index)();AutoSubmitForm_@(Model.Index)();" />
+		<label for="formatDefault_(@Model.Index)"><small>Default</small></label>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input id="formatHasNothing_(@Model.Index)" type="radio" name="selectedFormat" value="Nothing" @(Model.HasNothing ? "checked=\"checked\"" : string.Empty) onchange="ShowNothing_@(Model.Index)();AutoSubmitForm_@(Model.Index)();" />
 		<label for="formatHasNothing_(@Model.Index)"><small>Blank</small></label>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input id="formatHasText_@(Model.Index)" type="radio" name="selectedFormat" value="PlainText" @(Model.HasPlainText ? "checked=\"checked\"" : string.Empty) onclick="ShowPlainText_@(Model.Index)();" />
+		<input id="formatHasText_@(Model.Index)" type="radio" name="selectedFormat" value="PlainText" @(Model.HasPlainText ? "checked=\"checked\"" : string.Empty) onchange="ShowPlainText_@(Model.Index)();AutoSubmitForm_@(Model.Index)();" />
 		<label for="formatHasText_@(Model.Index)"><small>Text</small></label>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input id="formatHasHtml_@(Model.Index)" type="radio" name="selectedFormat" value="RawHtml" @(Model.HasRawHtml ? "checked=\"checked\"" : string.Empty) onclick="ShowRawHtml_@(Model.Index)();" />
+		<input id="formatHasHtml_@(Model.Index)" type="radio" name="selectedFormat" value="RawHtml" @(Model.HasRawHtml ? "checked=\"checked\"" : string.Empty) onchange="ShowRawHtml_@(Model.Index)();AutoSubmitForm_@(Model.Index)();" />
 		<label for="formatHasHtml_@(Model.Index)"><small>HTML</small></label>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" value="Save" class="btn btn-success btn-sm" accesskey="S" /> <small>@(DateTime.Now.ToString())</small>
+		<input type="submit" value="Save" class="btn btn-success btn-sm" accesskey="S" />
+		@*<small>@DateTime.Now.ToString()</small>*@
+		@if (Model.PageSectionId == null)
+		{
+			@:<small>(default)</small>
+		}
+		else
+		{
+			<small>
+				[@Model.PageSectionId]
+				Saved @(Model.UpdateDateTimeUtc)
+				@if (Model.UpdatedBy == null)
+				{
+					@:By (unknown)
+				}
+				else
+				{
+					@:By @(Model.UpdatedBy.Email)
+				}
+			</small>
+		}
 	</h4>
-	@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	<input type="hidden" name="@(prefix)Index" value="@Model.Index" />
 	<input type="hidden" name="@(prefix)PageId" value="@Model.PageId" />
 	<input type="hidden" name="@(prefix)PageTemplateSectionId" value="@Model.PageTemplateSectionId" />
 	<input type="hidden" name="@(prefix)SectionName" value="@Model.SectionName" />
+	<input type="hidden" name="@(prefix)AutoSubmit" value="@Model.AutoSubmit.ToString()" />
 	<input type="hidden" name="@(prefix)PageSectionId" value="@Model.PageSectionId" />
 	<input type="hidden" name="@(prefix)Order" value="@Model.Order" />
 	<input type="hidden" name="@(prefix)IsPending" value="@Model.IsPending.ToString()" />
 	<input type="hidden" name="@(prefix)StartDateTimeUtc" value="@Model.StartDateTimeUtc" />
 	<input type="hidden" name="@(prefix)EndDateTimeUtc" value="@Model.EndDateTimeUtc" />
-	<input id="HasNothing_@(Model.Index)"   type="hidden" name="@(prefix)HasNothing"   value="@Model.HasNothing.ToString()" />
+	<input id="IsAutoPosted_@(Model.Index)" type="hidden" name="@(prefix)IsAutoPosted" value="false" />
+	<input id="UseDefaultFromTemplate_@(Model.Index)" type="hidden" name="@(prefix)UseDefaultFromTemplate" value="@Model.UseDefaultFromTemplate.ToString()" />
+	<input id="HasNothing_@(Model.Index)" type="hidden" name="@(prefix)HasNothing" value="@Model.HasNothing.ToString()" />
 	<input id="HasPlainText_@(Model.Index)" type="hidden" name="@(prefix)HasPlainText" value="@Model.HasPlainText.ToString()" />
-	<input id="HasRawHtml_@(Model.Index)"   type="hidden" name="@(prefix)HasRawHtml"   value="@Model.HasRawHtml.ToString()" />
+	<input id="HasRawHtml_@(Model.Index)" type="hidden" name="@(prefix)HasRawHtml" value="@Model.HasRawHtml.ToString()" />
 	<hr />
+	<div id="DefaultViewRaw_@(Model.Index)">
+		@Html.Raw((Model.DefaultRawHtmlValue ?? string.Empty).Replace("\n", "<br/>\n"))
+	</div>
+	<div id="DefaultViewPreview_@(Model.Index)">
+		@Html.Raw(Html.ReplaceVariables(Model.DefaultRawHtmlValue ?? string.Empty, string.Empty).Replace("\n", "<br/>\n"))
+	</div>
 	<div id="PlainTextEditor_@(Model.Index)" class="form-group" style="background-color: gray">
 		<div class="col-md-12">
 			<textarea id="PlainText_@(Model.Index)" class="form-control" name="@(prefix)PlainText" rows="6" cols="40" style="min-width: 100%">@Model.PlainText</textarea>

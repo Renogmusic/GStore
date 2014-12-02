@@ -9,8 +9,12 @@
 	UserProfile currentUserProfile = Html.CurrentUserProfile(false);
 	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
 	GStore.Data.IGstoreDb gstoreDb = GStore.Data.RepositoryFactory.SystemWideRepository(currentUserProfile.UserName);
+
+	SelectList storeFrontFilterList = ViewBag.StoreFrontFilterList as SelectList;
+	IEnumerable<SelectListItem> clientFilterList = ViewBag.ClientFilterList;
+
 }
-<div class="jumbotron">
+<div class="jumbotron SysAdminIndexPageTitle col-md-12">
 	<h2>GStore System Admin Dashboard</h2>
 </div>
 <hr />
@@ -18,168 +22,321 @@
 	<div class="col-sm-3 text-left">
 		<div class="row">
 			<div class="col-xs-12 btn btn-info">
-				<h4>Main Records Active/Total</h4>
+				Client Filter
+			</div>
+			<div class="col-xs-12">
+				@{
+					bool showAll = false;
+					int? filterClientId = null;
+					using (Html.BeginForm("Index", "SystemAdmin", FormMethod.Post, new { name = "clientfilterform", style = "display: inline" }))
+					{
+						if (clientFilterList != null)
+						{
+							var selectedItem = clientFilterList.Where(l => l.Selected).FirstOrDefault();
+							if (selectedItem == null || string.IsNullOrEmpty(selectedItem.Value) || selectedItem.Value == "0")
+							{
+
+							}
+							else
+							{
+								filterClientId = int.Parse(selectedItem.Value);
+								if (filterClientId.Value == -1)
+								{
+									showAll = true;
+									filterClientId = null;
+								}
+							}
+							@Html.DropDownList("clientId", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['clientfilterform'].submit();", style = "display: inline;" })
+						}
+					}
+				}
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-xs-12 btn btn-info">
+				Main Records &nbsp;-&nbsp; Active / Total
 			</div>
 			<div class="col-xs-8">
 				Clients:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Clients.All().WhereIsActive().Count()
+				@gstoreDb.Clients.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.Clients.All().Count()
+				@gstoreDb.Clients.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				StoreFronts:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.StoreFronts.All().WhereIsActive().Count()
+				@gstoreDb.StoreFronts.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.StoreFronts.All().Count()
+				@gstoreDb.StoreFronts.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				StoreBindings:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.StoreBindings.All().WhereIsActive().Count()
+				@gstoreDb.StoreBindings.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.StoreBindings.All().Count()
+				@gstoreDb.StoreBindings.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				UserProfiles:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.UserProfiles.All().WhereIsActive().Count()
+				@gstoreDb.UserProfiles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.UserProfiles.All().Count()
-			</div>
-			<div class="col-xs-8">
-				Pages:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.Pages.All().WhereIsActive().Count()
-				&nbsp;/&nbsp;
-				@gstoreDb.Pages.All().Count()
+				@gstoreDb.UserProfiles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				ProductCategories:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.ProductCategories.All().WhereIsActive().Count()
+				@gstoreDb.ProductCategories.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.ProductCategories.All().Count()
+				@gstoreDb.ProductCategories.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				Products:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Products.All().WhereIsActive().Count()
+				@gstoreDb.Products.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.Products.All().Count()
-			</div>
-			<div class="col-xs-12"><hr /></div>
-			<div class="col-xs-12 btn btn-info">
-				<h4>Log Tables</h4>
+				@gstoreDb.Products.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
-				BadRequests:
+				Pages:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.BadRequests.All().Count()
-			</div>
-			<div class="col-xs-8">
-				FileNotFoundLogs:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.FileNotFoundLogs.All().Count()
-			</div>
-			<div class="col-xs-8">
-				PageViewEvents:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.PageViewEvents.All().Count()
-			</div>
-			<div class="col-xs-8">
-				SecurityEvents:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.SecurityEvents.All().Count()
-			</div>
-			<div class="col-xs-8">
-				SystemEvents:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.SystemEvents.All().Count()
-			</div>
-			<div class="col-xs-8">
-				UserActionEvents:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.UserActionEvents.All().Count()
-			</div>
-			<div class="col-xs-12"><hr /></div>
-			<div class="col-xs-12 btn btn-info">
-				<h4>Other Active/Total</h4>
-			</div>
-			<div class="col-xs-8">
-				Notifications:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.Notifications.All().Count()
-			</div>
-			<div class="col-xs-8">
-				NotificationLinks:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.NotificationLinks.All().Count()
-			</div>
-			<div class="col-xs-8">
-				ClientRoles:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.ClientRoles.All().Count()
-			</div>
-			<div class="col-xs-8">
-				ClientRoleActions:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.ClientRoleActions.All().Count()
-			</div>
-			<div class="col-xs-8">
-				ClientUserRoles:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.ClientUserRoles.All().Count()
-			</div>
-			<div class="col-xs-8">
-				NavBarItems:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.NavBarItems.All().Count()
+				@gstoreDb.Pages.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.Pages.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				PageSections:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.PageSections.All().Count()
+				@gstoreDb.PageSections.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.PageSections.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-12"><hr /></div>
+
+<div class="col-xs-12 btn btn-info">
+	Client Data Tables &nbsp;-&nbsp; Active / Total
+</div>
+			<div class="col-xs-8">
+				Notifications:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Notifications.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				NotificationLinks:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.NotificationLinks.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				ClientRoles:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientRoles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.ClientRoles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				ClientRoleActions:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientRoleActions.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.ClientRoleActions.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				ClientUserRoles:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.ClientUserRoles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.ClientUserRoles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				NavBarItems:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.NavBarItems.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.NavBarItems.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-12"><hr /></div>
+
+			<div class="col-xs-12 btn btn-info">
+				Log Tables
+			</div>
+			<div class="col-xs-8">
+				BadRequests:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.BadRequests.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				FileNotFoundLogs:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.FileNotFoundLogs.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				PageViewEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageViewEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				SecurityEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.SecurityEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				SystemEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.SystemEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				UserActionEvents:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.UserActionEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-12"><hr /></div>
+			<div class="col-xs-12 btn btn-info">
+				System Tables
 			</div>
 			<div class="col-xs-8">
 				PageTemplates:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.PageTemplates.All().Count()
+				@gstoreDb.PageTemplates.All().Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				PageTemplateSections:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.PageTemplateSections.All().Count()
+				@gstoreDb.PageTemplateSections.All().Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				Themes:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Themes.All().Count()
-				<br/><br />
+				@gstoreDb.Themes.All().Count().ToString("N0")
+			</div>
+			<div class="col-xs-12">
+				<hr/>
+			</div>
+
+<div class="col-xs-12 btn btn-info">
+	System Log Files
+</div>
+			<div class="col-xs-8">
+				Log Exception Files:
+				@if (GStore.Properties.Settings.Current.AppLogLogExceptionsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_LogExceptions))
+			</div>
+			<div class="col-xs-8">
+				Bad Request Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogBadRequestEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_BadRequests))
+			</div>
+			<div class="col-xs-8">
+				File Not Found Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogFileNotFoundEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_FileNotFoundLogs))
+			</div>
+			<div class="col-xs-8">
+				Page View Event Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogPageViewEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_PageViewEvents))
+			</div>
+			<div class="col-xs-8">
+				Security Event Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogSecurityEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_SecurityEvents))
+			</div>
+			<div class="col-xs-8">
+				System Event Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogSystemEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_SystemEvents))
+			</div>
+			<div class="col-xs-8">
+				User Action Event Log Files:
+				@if (GStore.Properties.Settings.Current.AppLogUserActionEventsToFile)
+				{
+					@:Enabled
+				}
+				else
+				{
+					@:DISABLED
+				}
+			</div>
+			<div class="col-xs-4">
+				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_UserActionEvents))
 			</div>
 		</div>
 	</div>
@@ -218,16 +375,141 @@
 				@:Current StoreBinding: [@(currentStoreBinding.StoreBindingId)]
 				@: - HostName: '@(currentStoreBinding.HostName)'
 				@: - RootPath: '@(currentStoreBinding.RootPath)'
-				@: - Port: '@(currentStoreBinding.Port)'<br/>
+				@: - Port: '@(currentStoreBinding.Port)'<br />
 			}
 			@:Current BindingHostName: '@(Request.BindingHostName())'<br />
 			@:Current BindingRootPath: '@(Request.BindingRootPath())'<br />
 			@:Current BindingPort: '@(Request.BindingPort())'<br />
-			@:Remote IP Address: @Request.UserHostAddress<br/>
+			@:Remote IP Address: @Request.UserHostAddress<br />
 
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		}
 	</div>
 </div>
-<hr />
 

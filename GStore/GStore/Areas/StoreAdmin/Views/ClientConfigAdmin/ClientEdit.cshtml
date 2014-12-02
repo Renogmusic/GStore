@@ -1,143 +1,155 @@
-﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.ClientConfigViewModel
+﻿@model GStore.Areas.StoreAdmin.ViewModels.ClientConfigViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Identity
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Client Configuration Edit</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.ClientId)
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron StoreAdminEditPageTitle col-md-offset-2 col-md-10 text-warning text-left">Edit Client Configuration<br />'@(Model.Name)' [@(Model.ClientId)]</h2>
+	</div>
+
+	<div class="form-horizontal">
+		<div class="col-md-offset-2 col-md-10 text-left">
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+			@Html.HiddenFor(model => model.ClientId)
+		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-offset-2 col-md-10 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "ClientView", null, new { @class = "btn btn-default" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
 				@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
 				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.EnablePageViewLog, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.EnablePageViewLog)
-                    @Html.ValidationMessageFor(model => model.EnablePageViewLog, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
 		<div class="form-group">
-			@Html.LabelFor(model => model.EnableNewUserRegisteredBroadcast, htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.Client.EnablePageViewLog, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
-				<div class="checkbox">
-					@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast)
-					@Html.ValidationMessageFor(model => model.EnableNewUserRegisteredBroadcast, "", new { @class = "text-danger" })
-				</div>
+				@Html.EditorFor(model => model.EnablePageViewLog, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.EnablePageViewLog, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.UseSendGridEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.Client.EnableNewUserRegisteredBroadcast, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
-				<div class="checkbox">
-					@Html.EditorFor(model => model.UseSendGridEmail)
-					@Html.ValidationMessageFor(model => model.UseSendGridEmail, "", new { @class = "text-danger" })
-				</div>
+				@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.EnableNewUserRegisteredBroadcast, "", new { @class = "text-danger" })
 			</div>
 		</div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SendGridMailAccount, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SendGridMailAccount, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SendGridMailAccount, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SendGridMailFromEmail, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SendGridMailFromEmail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SendGridMailFromEmail, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SendGridMailFromName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SendGridMailFromName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SendGridMailFromName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SendGridMailPassword, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SendGridMailPassword, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SendGridMailPassword, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.UseTwilioSms, htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.Client.UseSendGridEmail, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
-				<div class="checkbox">
-					@Html.EditorFor(model => model.UseTwilioSms)
-					@Html.ValidationMessageFor(model => model.UseTwilioSms, "", new { @class = "text-danger" })
-				</div>
+				@Html.EditorFor(model => model.UseSendGridEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UseSendGridEmail, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TwilioFromPhone, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TwilioFromPhone, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TwilioFromPhone, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.SendGridMailAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.SendGridMailAccount, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendGridMailAccount, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TwilioSid, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TwilioSid, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TwilioSid, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.SendGridMailFromEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.SendGridMailFromEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendGridMailFromEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TwilioSmsFromEmail, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TwilioSmsFromEmail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TwilioSmsFromEmail, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.SendGridMailFromName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.SendGridMailFromName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendGridMailFromName, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TwilioSmsFromName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TwilioSmsFromName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TwilioSmsFromName, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.SendGridMailPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.SendGridMailPassword, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendGridMailPassword, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TwilioToken, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TwilioToken, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TwilioToken, "", new { @class = "text-danger" })
-            </div>
-        </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.UseTwilioSms, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.UseTwilioSms, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UseTwilioSms, "", new { @class = "text-danger" })
+			</div>
+		</div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.TwilioFromPhone, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.TwilioFromPhone, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.TwilioFromPhone, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.TwilioSid, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.TwilioSid, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.TwilioSid, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.TwilioSmsFromEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.TwilioSmsFromEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.TwilioSmsFromEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.TwilioSmsFromName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.TwilioSmsFromName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.TwilioSmsFromName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client.TwilioToken, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.TwilioToken, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.TwilioToken, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "ClientView", null, new { @class = "btn btn-default" })
+			</div>
+		</div>
+
+	</div>
 }
-
+<hr />
 <div>
-	@Html.ActionLink("Back to Configuration Manager", "Manager") &nbsp;|&nbsp;
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+	}
 	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
 </div>

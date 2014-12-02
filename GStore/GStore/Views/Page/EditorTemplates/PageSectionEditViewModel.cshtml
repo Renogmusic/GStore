@@ -3,14 +3,14 @@
 	AjaxOptions options = new AjaxOptions();
 	options.AllowCache = false;
 	options.HttpMethod = "Post";
+	options.UpdateTargetId = "PageSectionUpdateTargetId_" + Model.Index;
 	options.InsertionMode = InsertionMode.Replace;
 	options.LoadingElementId = "LoadingElementId_" + Model.Index;
 	options.OnBegin = "OnBegin_" + Model.Index;
 	options.OnComplete = "OnComplete_" + Model.Index;
 	options.OnFailure = "OnFailure_" + Model.Index;
 	options.OnSuccess = "OnSuccess_" + Model.Index;
-	options.UpdateTargetId = "PageSectionUpdateTargetId_" + Model.Index;
-	options.LoadingElementDuration = 1000;
+	options.LoadingElementDuration = 500;
 }
 <script>
 	function OnBegin_@(Model.Index)() {
@@ -30,7 +30,7 @@
 <div id="LoadingElementId_@(Model.Index)" style="background-color: green; display:none">
 	<strong>Saving....</strong>
 </div>
-@using (Ajax.BeginForm("UpdateSectionAjax", "Page", options))
+@using (Ajax.BeginForm("UpdateSectionAjax", "Page", options, new { id = "SectionEditForm_" + Model.Index, name = "SectionEditForm_" + Model.Index }))
 {
 	<div id="PageSectionUpdateTargetId_@(Model.Index)">
 		@Html.Partial("_SectionEditPartial", Model)

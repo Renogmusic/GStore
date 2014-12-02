@@ -1,52 +1,65 @@
-﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.StoreAdminViewModel
-@using GStore.Identity
-@using GStore.Data
+﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel
 @using GStore.AppHtmlHelpers
+@using GStore.Data
+@using GStore.Identity
 <div class="row">
-	<div class="col-sm-12">
-		<h1>Configuration Manager</h1>
-	</div>
-	@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View))
-	{
-		<div class="col-xs-12 bg-info">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-success">Client Configuration Manager</h2>
+</div>
+@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View))
+{
+	<div class="row">
+		<div class="col-xs-12 bg-info table-bordered">
 			<h1>Client Configuration</h1>
+			<p>Applies to all Store Fronts</p>
 		</div>
+	</div>
+	<div class="row">
 		<div class="col-xs-6 col-sm-5 text-right">
 			@Html.ActionLink("Client", "ClientView")
-			<br/>
-			Applies to all store fronts
 		</div>
 		<div class="col-xs-6 col-sm-7 text-left">
 			@Html.ActionLink("View/Edit Client Configuration", "ClientView")
 		</div>
-
-	}
-	@{int counter=0;}
-	@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
-	{
-		<div class="col-xs-12 bg-primary">
+	</div>
+	<div class="row">
+		<div class="col-xs-12">&nbsp;<br />&nbsp;</div>
+	</div>
+}
+@{int counter = 0;}
+@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
+{
+	<div class="row">
+		<div class="col-xs-12 bg-info table-bordered">
 			<h1>Store Front Configuration</h1>
 		</div>
-		GStore.Models.StoreFront currentStoreFront = Html.CurrentStoreFront(true);
-		foreach (GStore.Models.StoreFront storeFront in currentStoreFront.Client.StoreFronts.AsQueryable().WhereIsActive())
+	</div>
+
+	GStore.Models.StoreFront currentStoreFront = Html.CurrentStoreFront(true);
+	foreach (GStore.Models.StoreFront storeFront in currentStoreFront.Client.StoreFronts.AsQueryable().WhereIsActive().ApplySort(null, null, null))
+	{
+		if (storeFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
 		{
-			if (storeFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
-			{
-				counter++;
-						<div class="col-xs-6 col-sm-5 text-right">
-							@Html.ActionLink(storeFront.Name + " [" + storeFront.StoreFrontId + "]", "StoreFrontView", new { id = storeFront.StoreFrontId })
-						</div>
-						<div class="col-xs-6 col-sm-7 text-left">
-							@Html.ActionLink("View/Edit Configuration", "StoreFrontView", new { id = storeFront.StoreFrontId })
-						</div>
-			}
+			counter++;
+			<div class="row">
+				<div class="col-xs-6 col-sm-5 text-right">
+					@Html.ActionLink(storeFront.Name + " [" + storeFront.StoreFrontId + "]", "StoreFrontView", new { id = storeFront.StoreFrontId })
+				</div>
+				<div class="col-xs-6 col-sm-7 text-left">
+					@Html.ActionLink("View/Edit Configuration", "StoreFrontView", new { id = storeFront.StoreFrontId })
+				</div>
+			</div>
 		}
-		if (counter == 0)
-		{
+	}
+	if (counter == 0)
+	{
+		<div class="row">
 			<div class="col-xs-12">
 				<h2>You do not have access to any store fronts.</h2>
 			</div>
-
-		}
+		</div>
 	}
+}
+<hr />
+<div>
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
 </div>

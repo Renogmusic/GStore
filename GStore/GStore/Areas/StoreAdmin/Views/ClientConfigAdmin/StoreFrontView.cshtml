@@ -1,3 +1,312 @@
-﻿@model GStore.Areas.StoreAdmin.Models.ViewModels.StoreFrontConfigViewModel
-<h2>StoreFront Configuration View Coming Soon</h2>
+﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+@using GStore.Identity
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-success">Store Front Details: <br />@(Model.Name) [@(Model.StoreFrontId)]</h2>
+</div>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId }, new { @class = "btn btn-warning" })
+		}
+	</div>
+</div>
+<hr />
+<div>
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.Name)
+		</dt>
 
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.PublicUrl)
+		</dt>
+
+		<dd>
+			<a target="_blank" href="@(Html.Raw(Model.PublicUrl))">@Html.Encode(Model.PublicUrl)</a> (opens in new window)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.Theme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.Theme.Name) [@(Model.ThemeId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.EnableGoogleAnalytics)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EnableGoogleAnalytics)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.GoogleAnalyticsWebPropertyId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.GoogleAnalyticsWebPropertyId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NavBarShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NavBarRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarRegisterLinkText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.AccountLoginShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.AccountLoginRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginRegisterLinkText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.HtmlFooter)
+		</dt>
+
+		<dd>
+			@Html.Raw(Model.HtmlFooter)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.MetaApplicationName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaApplicationName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.MetaApplicationTileColor)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaApplicationTileColor)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.MetaDescription)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaDescription)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.MetaKeywords)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaKeywords)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NavBarItemsMaxLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarItemsMaxLevels)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NavBarCatalogMaxLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarCatalogMaxLevels)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogPageInitialLevels)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogPageInitialLevels)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogCategoryColLg)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColLg)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogCategoryColMd)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColMd)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogCategoryColSm)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogCategoryColSm)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogProductColLg)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColLg)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogProductColMd)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColMd)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogProductColSm)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogProductColSm)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.AccountAdmin)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.AccountAdmin.FullName) &lt;@Html.DisplayFor(model => model.StoreFront.AccountAdmin.Email)&gt; [@(Model.AccountAdmin_UserProfileId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.RegisteredNotify_UserProfileId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.RegisteredNotify.FullName) &lt;@Html.DisplayFor(model => model.StoreFront.RegisteredNotify.Email)&gt; [@(Model.RegisteredNotify_UserProfileId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.WelcomePerson_UserProfileId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.WelcomePerson.FullName) &lt;@Html.DisplayFor(model => model.StoreFront.WelcomePerson.Email)&gt; [@(Model.WelcomePerson_UserProfileId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NotFoundErrorPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.NotFoundErrorPage.PageTitle) [@Html.DisplayFor(model => model.NotFoundError_PageId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.StoreErrorPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront.StoreErrorPage.PageTitle) [@Html.DisplayFor(model => model.StoreError_PageId)]
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.DefaultNewPageLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.AdminLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AdminLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.AccountLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.CatalogLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CatalogLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.NotificationsLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NotificationsLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront.ProfileLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ProfileLayoutName)
+		</dd>
+
+	</dl>
+</div>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId }, new { @class = "btn btn-warning" })
+		}
+	</div>
+</div>
+<hr />
+<div>
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+	}
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</div>

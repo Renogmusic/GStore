@@ -1,0 +1,22 @@
+﻿@model GStore.Models.Client
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no client)
+}
+else
+{
+	bool isActive = Model.IsActiveDirect();
+	string className = isActive ? string.Empty : "text-warning";
+	string viewLinkClass = isActive ? "text-success" : "text-warning";
+	string inactiveText = isActive ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActive ? string.Empty : "Inactive ") + "Client";
+	
+	<span class="@className">
+		'@(Model.Name)' [@(Model.ClientId)]@(inactiveText)
+	</span>
+	
+	@:&nbsp; @(Html.ActionLink(linkText, "Details", "ClientSysAdmin", new { id = Model.ClientId }, new { @class = viewLinkClass }))
+
+}
+

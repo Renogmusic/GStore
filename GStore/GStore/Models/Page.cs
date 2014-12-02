@@ -12,11 +12,15 @@ namespace GStore.Models
 	{
 		[Key]
 		[Editable(false)]
+		[Display(Name = "Page Id")]
 		public int PageId { get; set; }
 
 		[Index("UniqueRecord", IsUnique = true, Order = 3)]
+		[Display(Name = "Page Template Id")]
 		public int PageTemplateId { get; set; }
+
 		[ForeignKey("PageTemplateId")]
+		[Display(Name = "Page Template")]
 		public virtual PageTemplate PageTemplate { get; set; }
 
 		[Required]
@@ -32,11 +36,16 @@ namespace GStore.Models
 
 		public bool Public { get; set; }
 
+		[Display(Name = "Meta Tag Description")]
 		public string MetaDescription { get; set; }
 
+		[Display(Name = "Page Title")]
 		public string PageTitle { get; set; }
 
+		[Display(Name = "Body Top Script Tag")]
 		public string BodyTopScriptTag { get; set; }
+
+		[Display(Name = "Body Bottom Script Tag")]
 		public string BodyBottomScriptTag { get; set; }
 
 		public virtual ICollection<PageSection> Sections { get; set; }

@@ -40,7 +40,9 @@
 		<table id="SystemInfo" class="table-hover table-bordered table-striped">
 			@{
 				GStore.Properties.CurrentSettings settings = GStore.Properties.Settings.Current;
-				PropertyInfo[] props = GStore.Properties.Settings.Current.GetType().GetProperties();
+				GStore.Properties.Settings defaultSettings = GStore.Properties.Settings.Default;
+				PropertyInfo[] props = settings.GetType().GetProperties();
+				PropertyInfo[] defaultProperties = defaultSettings.GetType().GetProperties();
 				foreach (PropertyInfo prop in props)
 				{
 					<tr>
@@ -49,7 +51,26 @@
 						</td>
 						<td class="data">
 							<strong>
-								@(prop.GetValue(settings).ToString())
+								@{
+									object currentValue = prop.GetValue(settings).ToString();
+									PropertyInfo defaultProp = defaultProperties.FirstOrDefault(p => p.Name == prop.Name);
+									if (defaultProp == null)
+									{
+										@:<span class="text-danger">Unknown default for '@(prop.Name)'</span>
+									}
+									else
+									{
+										object defaultValue = defaultProp.GetValue(defaultSettings);
+										if (currentValue.ToString() == defaultValue.ToString())
+										{
+											<span class="text-success">@defaultValue.ToString() [default]</span>
+										}
+										else
+										{
+											@:<span class="text-warning">@currentValue.ToString() (default is '@(defaultValue.ToString())')</span>
+										}
+									}
+								}
 							</strong>
 						</td>
 					</tr>

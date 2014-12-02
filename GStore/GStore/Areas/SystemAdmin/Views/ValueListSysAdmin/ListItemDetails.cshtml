@@ -1,0 +1,150 @@
+﻿@model GStore.Models.ValueListItem
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-center text-success">
+		Value List Item Details:
+		<br />'@(Model.Name)' [@(Model.ValueListItemId)]
+	</h2>
+</div>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "ListItemIndex", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "ListItemEdit", new { id = Model.ValueListItemId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "ListItemDelete", new { id = Model.ValueListItemId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
+<div class="row">
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.Client)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Client)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ValueList)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ValueList)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Description)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Description)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsInteger)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsInteger) @Html.DisplayFor(model => model.IntegerValue)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsString)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsString) @Html.DisplayFor(model => model.StringValue)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
+		</dd>
+
+
+	</dl>
+</div>
+<hr />
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "ListItemIndex", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "ListItemEdit", new { id = Model.ValueListItemId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "ListItemDelete", new { id = Model.ValueListItemId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
+<div>
+	@Html.ActionLink("Back to Value List Index", "Index")
+</div>

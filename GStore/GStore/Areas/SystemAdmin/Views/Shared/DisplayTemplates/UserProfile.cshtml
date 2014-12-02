@@ -1,0 +1,28 @@
+﻿@model GStore.Models.UserProfile
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no user profile)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "User Profile";
+
+	<span class="@className">
+		@(Model.UserName) '@(Model.FullName)'@(inactiveText)
+	</span>
+	@:&nbsp; @(Html.ActionLink(linkText, "Details", "UserProfileSysAdmin", new { id = Model.UserProfileId }, new { @class = viewLinkClass }))
+	if (Model.StoreFrontId.HasValue)
+	{
+		@:&nbsp; :&nbsp; @Html.DisplayNameFor(up => up.StoreFront) @Html.DisplayFor(up => up.StoreFront)
+	}
+	else
+	{
+		@:&nbsp; @Html.DisplayFor(up => up.Client)
+	}
+}

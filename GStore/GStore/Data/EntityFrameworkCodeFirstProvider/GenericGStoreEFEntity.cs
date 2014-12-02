@@ -87,6 +87,10 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			{
 				throw new ApplicationException("Record not found to delete. " + typeof(TEntity).Name + " id: " + id);
 			}
+			if (entity == null)
+			{
+				return false;
+			}
 			_dbSet.Remove(entity);
 			return true;
 		}
@@ -98,12 +102,12 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				throw new ArgumentNullException("entity");
 			}
 
-			//note: there may an issue if entity is a POCO; might need to call DeleteById
-			if (_dbSet.Contains(entity))
-			{
-				_dbSet.Remove(entity);
-				return true;
-			}
+			////note: there may an issue if entity is a POCO; might need to call DeleteById
+			//if (_dbSet.Contains(entity))
+			//{
+			//	_dbSet.Remove(entity);
+			//	return true;
+			//}
 			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 

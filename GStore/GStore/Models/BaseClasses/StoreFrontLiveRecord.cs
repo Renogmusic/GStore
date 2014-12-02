@@ -11,16 +11,15 @@ namespace GStore.Models.BaseClasses
 	/// <summary>
 	/// Records with start date/end date and a link to client table and store front table (storefrontid, clientid and nav props)
 	/// </summary>
-	public abstract class StoreFrontLiveRecord : StoreFrontRecord
+	public abstract class StoreFrontLiveRecord : ClientLiveRecord
 	{
-		[Display(Name = "Start Date")]
-		public DateTime StartDateTimeUtc { get; set; }
+		[ForeignKey("StoreFrontId")]
+		[Display(Name = "Store Front")]
+		public virtual StoreFront StoreFront { get; set; }
 
-		[Display(Name = "End Date")]
-		public DateTime EndDateTimeUtc { get; set; }
-
-		[Display(Name = "Is Pending")]
-		public bool IsPending { get; set; }
-
+		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 2)]
+		[Display(Name = "Store Front Id")]
+		public int StoreFrontId { get; set; }
 	}
 }

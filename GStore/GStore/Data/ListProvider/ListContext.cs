@@ -34,7 +34,10 @@ namespace GStore.Data.ListProvider
 		public IGStoreRepository<Models.Theme> Themes { get { return new GenericGStoreListSourceRepository<Models.Theme>(); } }
 		public IGStoreRepository<Models.UserActionEvent> UserActionEvents { get { return new GenericGStoreListSourceRepository<Models.UserActionEvent>(); } }
 		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreListSourceRepository<Models.UserProfile>(); } }
+		public IGStoreRepository<Models.ValueList> ValueLists { get { return new GenericGStoreListSourceRepository<Models.ValueList>(); } }
+		public IGStoreRepository<Models.ValueListItem> ValueListItems { get { return new GenericGStoreListSourceRepository<Models.ValueListItem>(); } }
 	
+
 		public string UserName { get; set; }
 		public Models.StoreFront CachedStoreFront { get; set; }
 

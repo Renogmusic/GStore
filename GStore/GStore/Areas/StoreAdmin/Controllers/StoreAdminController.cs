@@ -1,4 +1,4 @@
-﻿using GStore.Areas.StoreAdmin.Models.ViewModels;
+﻿using GStore.Areas.StoreAdmin.ViewModels;
 using GStore.Controllers.BaseClass;
 using GStore.Identity;
 using GStore.Models;

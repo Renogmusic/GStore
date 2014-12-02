@@ -100,6 +100,8 @@ namespace GStore.Data
 		IGStoreRepository<Models.Theme> Themes { get; }
 		IGStoreRepository<Models.UserActionEvent> UserActionEvents { get; }
 		IGStoreRepository<Models.UserProfile> UserProfiles { get; }
+		IGStoreRepository<Models.ValueList> ValueLists { get; }
+		IGStoreRepository<Models.ValueListItem> ValueListItems { get; }
 	}
 
 	/// <summary>

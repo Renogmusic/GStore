@@ -266,7 +266,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.ThemeId, "ThemeId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.Theme, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("ThemeId", themeList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.ThemeId, "", new { @class = "text-danger" })
@@ -274,7 +274,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.WelcomePerson_UserProfileId, "WelcomePerson_UserProfileId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.WelcomePerson, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("WelcomePerson_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.WelcomePerson_UserProfileId, "", new { @class = "text-danger" })
@@ -282,7 +282,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.AccountAdmin_UserProfileId, "AccountAdmin_UserProfileId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.AccountAdmin, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("AccountAdmin_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.AccountAdmin_UserProfileId, "", new { @class = "text-danger" })
@@ -290,7 +290,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.RegisteredNotify_UserProfileId, "RegisteredNotify_UserProfileId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.RegisteredNotify, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("RegisteredNotify_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.RegisteredNotify_UserProfileId, "", new { @class = "text-danger" })
@@ -298,7 +298,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.NotFoundError_PageId, "NotFoundError_PageId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.NotFoundErrorPage, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("NotFoundError_PageId", notFoundPageList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
@@ -306,7 +306,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.StoreError_PageId, "StoreError_PageId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.StoreErrorPage, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("StoreError_PageId", storeErrorPageList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
@@ -338,7 +338,7 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.ClientId, "ClientId", htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
 				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })

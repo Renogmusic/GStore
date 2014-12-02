@@ -26,14 +26,6 @@
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>
-			@Html.DisplayNameFor(model => model.Client.Name)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.Client.Name)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.Name)
 		</dt>
 
@@ -47,6 +39,14 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.PublicUrl)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Client)
 		</dd>
 
 		<dt>
@@ -71,54 +71,6 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.HtmlFooter)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.AccountAdmin.UserId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.AccountAdmin.UserId)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.CreatedBy.UserId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.CreatedBy.UserId)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.RegisteredNotify.UserId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.RegisteredNotify.UserId)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.Theme.Name)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.Theme.Name)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.UpdatedBy.UserId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.UpdatedBy.UserId)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.WelcomePerson.UserId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.WelcomePerson.UserId)
 		</dd>
 
 		<dt>
@@ -154,6 +106,38 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.AccountLoginShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountLoginRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLoginRegisterLinkText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarShowRegisterLink)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarShowRegisterLink)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NavBarRegisterLinkText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NavBarRegisterLinkText)
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
 		</dt>
 
@@ -178,19 +162,19 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.AccountLayoutName)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.AccountLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
 		</dd>
 
 		<dt>
@@ -215,6 +199,14 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.CatalogLayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AdminLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AdminLayoutName)
 		</dd>
 
 		<dt>
@@ -266,11 +258,75 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.AdminLayoutName)
+			@Html.DisplayNameFor(model => model.EnableGoogleAnalytics)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.AdminLayoutName)
+			@Html.DisplayFor(model => model.EnableGoogleAnalytics)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.GoogleAnalyticsWebPropertyId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.GoogleAnalyticsWebPropertyId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Theme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Theme)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountAdmin)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountAdmin)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.RegisteredNotify)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.RegisteredNotify)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.WelcomePerson)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.WelcomePerson)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreErrorPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreErrorPage)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotFoundErrorPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NotFoundErrorPage)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
 		</dd>
 
 		<dt>
@@ -290,14 +346,6 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.IsPending)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.IsPending)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
 		</dt>
 
@@ -306,11 +354,27 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
 		</dd>
 
 	</dl>

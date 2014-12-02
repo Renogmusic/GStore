@@ -1,0 +1,189 @@
+﻿@model GStore.Models.UserProfile
+@using GStore.AppHtmlHelpers
+@using (Html.BeginForm())
+{
+	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
+	SelectList clientList = ViewBag.ClientList as SelectList;
+	SelectList storeFrontList = ViewBag.StoreFrontList as SelectList;
+
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning text-left">
+			Edit User Profile
+			<br />
+			'@(Model.FullName)' &lt;@(Model.Email)&gt; [@(Model.UserProfileId)]
+		</h2>
+	</div>
+	<div class="row form-group">
+		<div class="col-md-offset-2 col-md-10 text-left">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+	<div class="row form-horizontal">
+		<div class="col-md-offset-2 col-md-10 text-left">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenFor(model => model.UserProfileId)
+			@Html.HiddenAuditFieldsOptional()
+		</div>
+
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.StoreFront, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("StoreFrontId", storeFrontList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.StoreFrontId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+		<div class="form-group">
+			@Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.FullName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SignupNotes, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SignupNotes, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SignupNotes, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendMoreInfoToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendMoreInfoToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendMoreInfoToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.AllowUsersToSendSiteMessages, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.AllowUsersToSendSiteMessages, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.AllowUsersToSendSiteMessages, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.NotifyAllWhenLoggedOn, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.NotifyAllWhenLoggedOn, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.NotifyAllWhenLoggedOn, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.NotifyOfSiteUpdatesToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.NotifyOfSiteUpdatesToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.NotifyOfSiteUpdatesToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SubscribeToNewsletterEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SubscribeToNewsletterEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SubscribeToNewsletterEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendSiteMessagesToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendSiteMessagesToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendSiteMessagesToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendSiteMessagesToSms, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendSiteMessagesToSms, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendSiteMessagesToSms, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
+			</div>
+		</div>
+	</div>
+}
+<hr />
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>

@@ -15,21 +15,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 	public class BindingsSysAdminController : BaseClasses.SystemAdminBaseController
 	{
 
-		public ActionResult Index(int? id, string SortBy, bool? SortAscending)
+		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(id);
+			ViewBag.ClientFilterList = ClientFilterList(clientId);
 
 			IQueryable<StoreBinding> query = null;
-			if (id.HasValue)
+			if (clientId.HasValue)
 			{
-				query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == id.Value);
+				query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == clientId.Value);
 			}
 			else
 			{
 				query = GStoreDb.StoreBindings.All();
 			}
 
-			IOrderedQueryable<StoreBinding> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			IOrderedQueryable<StoreBinding> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
 			return View(queryOrdered.ToList());
 		}
 
@@ -50,7 +50,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		public ActionResult Create(int? clientId, int? storeFrontId)
 		{
 			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList();
+			ViewBag.StoreFrontList = StoreFrontList(clientId);
 
 			StoreBinding model = GStoreDb.StoreBindings.Create();
 			model.SetDefaultsForNew(Request, clientId, storeFrontId);
@@ -82,7 +82,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList();
+			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
 
 			return View(storeBinding);
 		}
@@ -99,7 +99,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList();
+			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
 
 			return View(storeBinding);
 		}
@@ -116,7 +116,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("Index");
 			}
 			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList();
+			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
 
 			return View(storeBinding);
 		}
@@ -174,54 +174,6 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				throw new ApplicationException("Error deleting StoreBinding.  See inner exception for errors.  Related child tables may still have data to be deleted. StoreBindingId: " + id, ex);
 			}
 			return RedirectToAction("Index");
-		}
-
-		protected SelectList ClientList()
-		{
-			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
-			IQueryable<SelectListItem> items = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = c.Name + " [" + c.ClientId + "]"
-			});
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontList()
-		{
-			var query = GStoreDb.StoreFronts.All().OrderBy(sf => sf.Client.Order).ThenBy(sf => sf.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
-			IQueryable<SelectListItem> items = query.Select(sf => new SelectListItem
-			{
-				Value =  sf.StoreFrontId.ToString(),
-				Text = sf.Client.Name + " - " + sf.Name + " [" + sf.StoreFrontId + "]"
-			});
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList ClientFilterList(int? id)
-		{
-			int filterId = 0;
-			if (id.HasValue)
-			{
-				filterId = id.Value;
-			}
-			List<SelectListItem> items = new List<SelectListItem>();
-			items.Add(new SelectListItem()
-			{
-				Value = string.Empty,
-				Text = (!id.HasValue ? "[SELECTED] " : string.Empty) + "All",
-				Selected = !id.HasValue
-			});
-
-			var query = GStoreDb.Clients.All().OrderBy(c=> c.Order).ThenBy(c => c.ClientId);
-			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = (c.ClientId == filterId ? "[SELECTED] ": string.Empty) + c.Name + " [" + c.ClientId + "]",
-				Selected = (c.ClientId == filterId )
-			});
-			items.AddRange(clients);
-			return new SelectList(items, "Value", "Text");
 		}
 
 	}

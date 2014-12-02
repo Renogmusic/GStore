@@ -35,16 +35,22 @@ namespace GStore.Controllers.BaseClass
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
 			bool showPageEditLink = CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrNull, GStoreAction.Pages_Edit);
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false));
 		}
 
 		[HttpGet]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
-		public virtual ActionResult Edit()
+		public virtual ActionResult Edit(bool? AutoPost)
 		{
+			bool autoPost = true;
+			if (AutoPost.HasValue)
+			{
+				autoPost = AutoPost.Value;
+			}
+
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost));
 		}
 
 		[HttpPost]
@@ -52,18 +58,37 @@ namespace GStore.Controllers.BaseClass
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdateSectionAjax(PageSectionEditViewModel viewModel)
 		{
+			bool quietOnSave = false;
+			if (viewModel.IsAutoPosted)
+			{
+				quietOnSave = true;
+			}
+			if (viewModel.Index == 0)
+			{
+				ModelState.AddModelError("Index", "Index cannot be 0");
+			}
 			if (ModelState.IsValid)
 			{
+				PageSection pageSection = null;
 				if (viewModel.PageSectionId.HasValue)
 				{
-					GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-					AddUserMessage("Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
+					pageSection = GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					if (!quietOnSave)
+					{
+						AddUserMessage("Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
+					}
 				}
 				else
 				{
-					GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-					AddUserMessage("Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
+					pageSection = GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					if (!quietOnSave)
+					{
+						AddUserMessage("Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
+					}
 				}
+
+				viewModel = new PageSectionEditViewModel(pageSection.PageTemplateSection, pageSection.Page, pageSection, viewModel.Index, viewModel.AutoSubmit);
+				return PartialView("_SectionEditPartial", viewModel);
 			}
 			else
 			{

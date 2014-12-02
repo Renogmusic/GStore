@@ -19,7 +19,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
         public ActionResult Index(string SortBy, bool? SortAscending)
         {
 			IQueryable<Client> query = GStoreDb.Clients.All();
-			IOrderedQueryable<Client> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			IOrderedQueryable<Client> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
 			return View(queryOrdered.ToList());
         }
 
@@ -67,7 +67,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				try
 				{
-					CreateClientFolders(Server.MapPath(client.ClientVirtualDirectoryToMap()));
+					SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(client.ClientVirtualDirectoryToMap()));
 					AddUserMessage("Client Folders Created", "Client Folders were created as: " + client.ClientVirtualDirectoryToMap(), AppHtmlHelpers.UserMessageType.Success);
 				}
 				catch (Exception ex)
@@ -136,7 +136,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 					{
 						try
 						{
-							CreateClientFolders(newClientFolder);
+							SysAdminActivationExtensions.CreateStoreFrontFolders(newClientFolder);
 							AddUserMessage("Folders Created", "Client folders were created: " + client.ClientVirtualDirectoryToMap(), AppHtmlHelpers.UserMessageType.Info);
 						}
 						catch (Exception ex)
@@ -212,66 +212,5 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
             return RedirectToAction("Index");
         }
-
-		protected void ValidateClientName(Client client)
-		{
-			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Name", "Client name '" + client.Name + "' is already in use. Please choose a new name");
-				bool nameIsDirty = true;
-				while (nameIsDirty)
-				{
-					client.Name = client.Name + "_New";
-					nameIsDirty = GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Name"))
-				{
-					ModelState["Name"].Value = new ValueProviderResult(client.Name, client.Name, null);
-				}
-
-			}
-		}
-
-		protected void ValidateClientFolder(Client client)
-		{
-			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Folder.ToLower() == client.Folder.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Folder", "Client folder name '" + client.Folder + "' is already in use. Please choose a new folder");
-				bool folderIsDirty = true;
-				while (folderIsDirty)
-				{
-					client.Folder = client.Folder + "_New";
-					folderIsDirty = GStoreDb.Clients.Where(c => c.Folder.ToLower() == client.Folder.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Folder"))
-				{
-					ModelState["Folder"].Value = new ValueProviderResult(client.Folder, client.Folder, null);
-				}
-			}
-		}
-
-		private static void CreateClientFolders(string basePath)
-		{
-			CreateFolderIfNotExists(basePath + "\\ErrorPages");
-			CreateFolderIfNotExists(basePath + "\\Fonts");
-			CreateFolderIfNotExists(basePath + "\\Images");
-			CreateFolderIfNotExists(basePath + "\\Scripts");
-			CreateFolderIfNotExists(basePath + "\\StoreFronts");
-			CreateFolderIfNotExists(basePath + "\\Styles");
-		}
-
-		/// <summary>
-		/// Creates a folder if it does not exist
-		/// </summary>
-		/// <param name="folder"></param>
-		private static void CreateFolderIfNotExists(string folderPath)
-		{
-			if (!System.IO.Directory.Exists(folderPath))
-			{
-				System.IO.Directory.CreateDirectory(folderPath);
-				System.Diagnostics.Trace.WriteLine("--File System: Created folder: " + folderPath);
-			}
-		}
-
     }
 }

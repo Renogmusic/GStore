@@ -1,0 +1,17 @@
+﻿@model GStore.Models.StoreFront
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no store front)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	<span class="@className">
+		'@(Model.Name)' [@(Model.StoreFrontId)] @(isActiveDirect ? string.Empty : " [INACTIVE]")
+	</span>
+	@: - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
+}
+

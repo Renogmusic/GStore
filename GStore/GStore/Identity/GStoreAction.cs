@@ -61,6 +61,17 @@ namespace GStore.Identity
 		ClientRole_User_Delete = 6330,
 		ClientRole_User_AssignUsers = 6340,
 
+		ValueList_StoreAdminMenu = 7000,
+		ValueList_Manager = 7100,
+		ValueList_Add = 7210,
+		ValueList_View = 7220,
+		ValueList_Edit = 7230,
+		ValueList_Delete = 7240,
+		ValueList_AddValue = 7310,
+		ValueList_ViewValue = 7320,
+		ValueList_EditValue = 7330,
+		ValueList_DeleteValue = 7340,
+
 		Orders_StoreAdminMenuItem = 8000,
 		Orders_Manager = 8100,
 		Orders_Carts_ViewAbandoned = 8200,

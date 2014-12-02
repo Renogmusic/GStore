@@ -9,7 +9,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
     public class SystemAdminController : BaseClasses.SystemAdminBaseController
     {
         // GET: SystemAdmin/SystemAdmin
-        public ActionResult Index()
+        public ActionResult Index(int? clientId, int? storeFrontId)
         {
 			bool hasErrorMessage = false;
 			Models.StoreFront storeFront = null;
@@ -46,7 +46,10 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Errors found!!", "Errors were found in the system configuration. See bottom of this page for details or <a href=\"#UserMessagesBottom\">click here<a/>", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
-            return View("Index");
+			ViewBag.ClientFilterList = ClientFilterListEx(clientId, true, true, true) ;
+			ViewBag.StoreFrontFilterList = StoreFrontFilterList(clientId, storeFrontId);
+
+			return View("Index");
         }
 
 		public ActionResult ActivateCurrentInactiveStoreFront()

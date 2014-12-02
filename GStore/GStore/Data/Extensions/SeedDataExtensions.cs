@@ -185,7 +185,7 @@ namespace GStore.Data
 			adminProfile.SendSiteMessagesToSms = false;
 			adminProfile.SubscribeToNewsletterEmail = true;
 			adminProfile.UserName = adminUserName;
-			adminProfile.Active = true;
+			adminProfile.IsPending = false;
 			adminProfile.Order = 1;
 			adminProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			adminProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -212,7 +212,7 @@ namespace GStore.Data
 			profile.SendSiteMessagesToSms = false;
 			profile.SubscribeToNewsletterEmail = true;
 			profile.UserName = userName;
-			profile.Active = true;
+			profile.IsPending = true;
 			profile.Order = 100;
 			profile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			profile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);

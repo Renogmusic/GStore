@@ -234,53 +234,28 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
-    <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
-    <Compile Include="Areas\HelpPage\Controllers\HelpController.cs" />
-    <Compile Include="Areas\HelpPage\HelpPageAreaRegistration.cs" />
-    <Compile Include="Areas\HelpPage\HelpPageConfigurationExtensions.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\CollectionModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ComplexTypeModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\DictionaryModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumTypeModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\EnumValueDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\IModelDocumentationProvider.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\KeyValuePairModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelDescriptionGenerator.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameAttribute.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ModelNameHelper.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterAnnotation.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\ParameterDescription.cs" />
-    <Compile Include="Areas\HelpPage\ModelDescriptions\SimpleTypeModelDescription.cs" />
-    <Compile Include="Areas\HelpPage\Models\HelpPageApiModel.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleGenerator.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\HelpPageSampleKey.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\ImageSample.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\InvalidSample.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
-    <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
-    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\BaseClasses\StoreAdminBaseController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\CatalogAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\PageAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ClientRoleAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\OrdersAdminController.cs" />
+    <Compile Include="Areas\StoreAdmin\Controllers\ValueListAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\UserProfileAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ClientConfigAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ReportsAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
-    <Compile Include="Areas\StoreAdmin\Models\ViewModels\ClientConfigViewModel.cs" />
-    <Compile Include="Areas\StoreAdmin\Models\ViewModels\StoreFrontConfigViewModel.cs" />
-    <Compile Include="Areas\StoreAdmin\Models\ViewModels\StoreAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\StoreAdminAreaRegistration.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BaseClasses\SystemAdminBaseController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
-    <Compile Include="Areas\SystemAdmin\Controllers\SysAdminActivationExtensions.cs" />
-    <Compile Include="Areas\SystemAdmin\Controllers\SysAdminSortExtensions.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\ValueListSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\UserProfileSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\Extensions\SysAdminActivationExtensions.cs" />
+    <Compile Include="Data\Extensions\SortExtensions.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\StoreFrontSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\SystemAdminController.cs" />
@@ -314,6 +289,10 @@
     <Compile Include="Data\Extensions\ClientExtensions.cs" />
     <Compile Include="Data\Extensions\PageExtensions.cs" />
     <Compile Include="Data\Extensions\UserProfileExtensions.cs" />
+    <Compile Include="Data\ProductCategoryAttributeDataType.cs" />
+    <Compile Include="Models\ProductCategoryAttribute.cs" />
+    <Compile Include="Models\ValueListItem.cs" />
+    <Compile Include="Models\ValueList.cs" />
     <Compile Include="Models\ViewModels\CatalogViewModel.cs" />
     <Compile Include="Models\ClientUserRole.cs" />
     <Compile Include="Data\Extensions\TreeExtensions.cs" />
@@ -341,7 +320,7 @@
     <Compile Include="Models\ViewModels\MenuViewModel.cs" />
     <Compile Include="Models\NavBarItem.cs" />
     <Compile Include="Models\ProductCategory.cs" />
-    <Compile Include="Data\Extensions\EventLogExtensionscs.cs">
+    <Compile Include="Data\Extensions\EventLogExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Extensions\GStoreDBExtensions.cs">
@@ -390,7 +369,6 @@
     <Compile Include="AppHtmlHelpers\UserMessage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\Archive\bootstrap-theme.css" />
     <Content Include="Content\Archive\bootstrap-theme.min.css" />
     <Content Include="Content\Archive\bootstrap.css" />
@@ -612,26 +590,6 @@
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\Archive\bootstrap-theme.css.map" />
     <Content Include="Content\Archive\bootstrap.css.map" />
-    <Content Include="Areas\HelpPage\Views\Web.config" />
-    <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\ResourceModel.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\Index.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\TextSample.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\SimpleTypeModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Samples.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\Parameters.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ModelDescriptionLink.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\KeyValuePairModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\InvalidSample.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ImageSample.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\HelpPageApiModel.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\EnumTypeModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\DictionaryModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ComplexTypeModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
-    <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
-    <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\GStore\SystemInfo.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\GStore\About.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\GStore\About.cshtml" />
@@ -647,6 +605,42 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Index.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Manager.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Add.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Edit.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\View.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Delete.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\ViewValue.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\EditValue.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\DeleteValue.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\AddValue.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Index.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\StoreFrontNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Client.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\StoreFront.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\StoreBinding.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\UserProfile.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\UserProfileNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\StoreBindingNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Theme.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Page.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueList.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueListNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemIndex.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemCreate.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemEdit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemDetails.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemDelete.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1073,6 +1067,8 @@
     <Content Include="Views\Page\DebugInfo.cshtml" />
     <Content Include="Views\Page\EditorTemplates\PageSectionEditViewModel.cshtml" />
     <Content Include="Views\Page\_SectionEditPartial.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\MultiLineText.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ClientNoLinks.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1100,8 +1096,17 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+  <!--<Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
     <AspNetCompiler VirtualPath="/" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>-->
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <ItemGroup>
+      <!--<ExtraWebConfigs Include="$(BaseIntermediateOutputPath)\**\web.config" />-->
+      <ExtraPackageTmp Include="$([System.IO.Directory]::GetDirectories(&quot;$(BaseIntermediateOutputPath)&quot;, &quot;PackageTmp&quot;, System.IO.SearchOption.AllDirectories))" />
+    </ItemGroup>
+    <Delete Files="@(ExtraWebConfigs)" />
+    <RemoveDir Directories="@(ExtraPackageTmp)" />
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <ProjectExtensions>
     <VisualStudio>

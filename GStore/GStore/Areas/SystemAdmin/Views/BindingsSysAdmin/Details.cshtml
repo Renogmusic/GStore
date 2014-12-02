@@ -17,19 +17,11 @@
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>
-			@Html.DisplayNameFor(model => model.ClientId)
+			@Html.DisplayNameFor(model => model.StoreFront)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.Client.Name) [@Model.ClientId]
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.StoreFrontId)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.StoreFront.Name) [@Model.StoreFrontId]
+			@Html.DisplayFor(model => model.StoreFront)
 		</dd>
 
 		<dt>
@@ -81,6 +73,14 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
 		</dt>
 
@@ -97,14 +97,6 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.IsPending)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.IsPending)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
 		</dt>
 
@@ -113,11 +105,11 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.CreatedBy_UserProfileId)
+			@Html.DisplayNameFor(model => model.CreatedBy)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.CreatedBy.UserId)
+			@Html.DisplayFor(model => model.CreatedBy)
 		</dd>
 
 		<dt>
@@ -129,11 +121,11 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.UpdatedBy_UserProfileId)
+			@Html.DisplayNameFor(model => model.UpdatedBy)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.UpdatedBy.UserId)
+			@Html.DisplayFor(model => model.UpdatedBy)
 		</dd>
 
 

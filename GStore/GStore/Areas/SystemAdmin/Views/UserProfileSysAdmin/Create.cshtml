@@ -1,0 +1,244 @@
+﻿@model GStore.Models.UserProfile
+@using GStore.AppHtmlHelpers
+@using (Html.BeginForm())
+{
+	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
+	SelectList clientList = ViewBag.ClientList as SelectList;
+	SelectList storeFrontList = ViewBag.StoreFrontList as SelectList;
+
+	bool createLoginAndIdentity = false;
+	if (ViewData.ContainsKey("CreateLoginAndIdentity"))
+	{
+		createLoginAndIdentity = (bool)ViewData["CreateLoginAndIdentity"];
+	}
+	string password = string.Empty;
+	{
+		password = (string)ViewData["Password"];
+	}
+
+	bool sendWelcomeMessage = false;
+	if (ViewData.ContainsKey("SendWelcomeMessage"))
+	{
+		sendWelcomeMessage = (bool)ViewData["SendWelcomeMessage"];
+	}
+	bool sendRegisteredNotify = false;
+	if (ViewData.ContainsKey("SendRegisteredNotify"))
+	{
+		sendRegisteredNotify = (bool)ViewData["SendRegisteredNotify"];
+	}
+
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">
+			New User Profile
+		</h2>
+	</div>
+	<div class="row form-horizontal">
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10 text-left">
+				<input type="submit" value="Create" class="btn btn-info" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+			</div>
+		</div>
+
+		<div class="col-md-offset-2 col-md-10 text-left">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenAuditFieldsOptional()
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.ClientId, "ClientId", htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.StoreFrontId, "StoreFrontId", htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("StoreFrontId", storeFrontList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.StoreFrontId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.FullName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SignupNotes, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SignupNotes, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SignupNotes, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendMoreInfoToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendMoreInfoToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendMoreInfoToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.AllowUsersToSendSiteMessages, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.AllowUsersToSendSiteMessages, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.AllowUsersToSendSiteMessages, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.NotifyAllWhenLoggedOn, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.NotifyAllWhenLoggedOn, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.NotifyAllWhenLoggedOn, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.NotifyOfSiteUpdatesToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.NotifyOfSiteUpdatesToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.NotifyOfSiteUpdatesToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SubscribeToNewsletterEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SubscribeToNewsletterEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SubscribeToNewsletterEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendSiteMessagesToEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendSiteMessagesToEmail, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendSiteMessagesToEmail, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SendSiteMessagesToSms, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SendSiteMessagesToSms, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SendSiteMessagesToSms, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="SendWelcomeMessage" class="control-label col-md-2">
+				Send Welcome Notification
+			</label>
+			<div class="col-md-10 text-left">
+				@Html.CheckBox("SendUserWelcome", sendWelcomeMessage, new { @class = "form-control" })
+				<small>Uncheck to not send notification to user's notifications box when user is created</small>
+			</div>
+		</div>
+
+
+		<div class="form-group">
+			<label for="SendRegisteredNotify" class="control-label col-md-2">
+				Send Notification to Registered Notify User for Store
+			</label>
+			<div class="col-md-10 text-left">
+				@Html.CheckBox("SendRegisteredNotify", sendRegisteredNotify, new { @class = "form-control" })
+				<small>Uncheck to not send notification to registered notify person for store</small>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="CreateLoginAndIdentity" class="control-label col-md-2">
+				Create Login and Identity
+			</label>
+			<div class="col-md-10 text-left">
+				@Html.CheckBox("CreateLoginAndIdentity", createLoginAndIdentity, new { @class = "form-control" })
+				<small>Uncheck to not link a login identity</small>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="Password" class="control-label col-md-2">
+				Password
+			</label>
+			<div class="col-md-10 text-left">
+				@Html.TextBox("Password", password, new { @class = "form-control" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10 text-left">
+				<input type="submit" value="Create" class="btn btn-info" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+			</div>
+		</div>
+	</div>
+}

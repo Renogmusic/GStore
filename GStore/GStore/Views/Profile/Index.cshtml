@@ -65,6 +65,7 @@
 		@if (Model.EmailConfirmed)
 		{
 			<span class="text-info">[Verified]</span>
+			@:&nbsp;-&nbsp;@Html.ActionLink("Send a test Email", "SendTestEmail")
 		}
 		else
 		{
@@ -77,18 +78,22 @@
 	</div>
 	<div class="data col-sm-5">
 		@(Model.PhoneNumber ?? "None")
-		&nbsp;-&nbsp;[
+		&nbsp;-&nbsp;
 		@if (Model.PhoneNumber != null)
 		{
-			@Html.ActionLink("Change", "AddPhoneNumber")
+			@:[@Html.ActionLink("Change", "AddPhoneNumber")
 			@: &nbsp;|&nbsp;
 			@Html.ActionLink("Remove", "RemovePhoneNumber")
+			@:]
+			if (Model.PhoneNumberConfirmed)
+			{
+				@:&nbsp;-&nbsp;@Html.ActionLink("Send a test Text Message", "SendTestSms")
+			}
 		}
 		else
 		{
-			@Html.ActionLink("Add", "AddPhoneNumber")
+			@:[@(Html.ActionLink("Add", "AddPhoneNumber"))]
 		}
-		]
 	</div>
 </div>
 

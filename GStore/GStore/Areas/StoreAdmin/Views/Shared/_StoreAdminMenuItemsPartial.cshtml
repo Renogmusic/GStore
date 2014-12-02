@@ -211,6 +211,28 @@
 		</ul>
 	</li>
 }
+@if (Html.UserHasPermission(GStoreAction.ValueList_StoreAdminMenu))
+{
+	<!-- ValueList Menu Item -->
+	<li class="AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Value Lists">Value Lists<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			@if (Html.UserHasPermission(GStoreAction.ValueList_Manager))
+			{
+				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+					@Html.ActionLink("Value List Manager", "Manager", "ValueListAdmin")
+				</li>
+				<li class="nav-divider"></li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.ValueList_Add))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Create a new Value List", "ValueListAdmin", "Create")
+				</li>
+			}
+		</ul>
+	</li>
+}
 @if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreAdminMenuItem))
 {
 	<!-- ClientConfig Menu Item -->
@@ -233,7 +255,7 @@
 	@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
 	{
 			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-				@Html.ActionLink("Storefront Configuration", "StoreFrontView", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
+				@Html.ActionLink("Store Front Configuration", "StoreFrontView", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
 			</li>
 	}
 
@@ -294,6 +316,14 @@
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
 				@Html.ActionLink("About GStore", "About", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time: @DateTime.UtcNow.ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time: @DateTime.UtcNow.ToLocalTime().ToString()
 			</li>
 		</ul>
 	</li>

@@ -134,159 +134,55 @@
                 return EnvironmentOrAppSettingBool("AppUseFileNotFoundImage") ?? _projectSettings.AppUseFileNotFoundImage;
             }
         }
-        
-        public bool AppLogSystemEventsToDb
+
+		public string SystemAdminThemeFolderName
 		{
-            get
+			get
 			{
-                return EnvironmentOrAppSettingBool("AppLogSystemEventsToDb") ?? _projectSettings.AppLogSystemEventsToDb;
-            }
-        }
-        
-        public bool AppLogSystemEventsToFile
+				return EnvironmentOrAppSettingString("SystemAdminThemeFolderName") ?? _projectSettings.SystemAdminThemeFolderName;
+			}
+		}
+
+		public bool AppEnableBindingAutoMapToFirstStoreFront
 		{
-            get
+			get
 			{
-                return EnvironmentOrAppSettingBool("AppLogSystemEventsToFile") ?? _projectSettings.AppLogSystemEventsToFile;
-            }
-        }
-        
-        public bool AppLogSecurityEventsToDb
+				return EnvironmentOrAppSettingBool("AppEnableBindingAutoMapToFirstStoreFront") ?? _projectSettings.AppEnableBindingAutoMapToFirstStoreFront;
+			}
+		}
+
+		public string AppDefaultLayoutName
 		{
-            get
+			get
 			{
-                return EnvironmentOrAppSettingBool("AppLogSecurityEventsToDb") ?? _projectSettings.AppLogSecurityEventsToDb;
-            }
-        }
-        
-        public bool AppLogSecurityEventsToFile
+				return EnvironmentOrAppSettingString("AppDefaultLayoutName") ?? _projectSettings.AppDefaultLayoutName;
+			}
+		}
+
+		public bool AppEnableBindingAutoMapCatchAll
 		{
-            get
+			get
 			{
-                return EnvironmentOrAppSettingBool("AppLogSecurityEventsToFile") ?? _projectSettings.AppLogSecurityEventsToFile;
-            }
-        }
-        
-        public bool AppLogBadRequestEventsToDb
+				return EnvironmentOrAppSettingBool("AppEnableBindingAutoMapCatchAll") ?? _projectSettings.AppEnableBindingAutoMapCatchAll;
+			}
+		}
+
+		public bool AppEnableAutomaticHomePageCreation
 		{
-            get
+			get
 			{
-                return EnvironmentOrAppSettingBool("AppLogBadRequestEventsToDb") ?? _projectSettings.AppLogBadRequestEventsToDb;
-            }
-        }
-        
-        public bool AppLogBadRequestEventsToFile
+				return EnvironmentOrAppSettingBool("AppEnableAutomaticHomePageCreation") ?? _projectSettings.AppEnableAutomaticHomePageCreation;
+			}
+		}
+
+		public string AppDefaultPageTemplateViewName
 		{
-            get
-			{
-				return EnvironmentOrAppSettingBool("AppLogBadRequestEventsToFile") ?? _projectSettings.AppLogBadRequestEventsToFile;
-            }
-        }
-        
-        public bool AppLogFileNotFoundEventsToDb
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppLogFileNotFoundEventsToDb") ?? _projectSettings.AppLogFileNotFoundEventsToDb;
-            }
-        }
-        
-        public bool AppLogFileNotFoundEventsToFile
-		{
-            get
-			{
-				return EnvironmentOrAppSettingBool("AppLogFileNotFoundEventsToFile") ?? _projectSettings.AppLogFileNotFoundEventsToFile;
-            }
-        }
-        
-        public bool AppLogPageViewEventsToDb
-		{
-            get
-			{
-				return EnvironmentOrAppSettingBool("AppLogPageViewEventsToDb") ?? _projectSettings.AppLogPageViewEventsToDb;
-            }
-        }
-        
-        public bool AppLogPageViewEventsToFile
-		{
-            get
-			{
-				return EnvironmentOrAppSettingBool("AppLogPageViewEventsToFile") ?? _projectSettings.AppLogPageViewEventsToFile;
-            }
-        }
-        
-        public bool AppLogUserActionEventsToDb
-		{
-            get
-			{
-				return EnvironmentOrAppSettingBool("AppLogUserActionEventsToDb") ?? _projectSettings.AppLogUserActionEventsToDb;
-            }
-        }
-        
-        public bool AppLogUserActionEventsToFile
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppLogUserActionEventsToFile") ?? _projectSettings.AppLogUserActionEventsToFile;
-            }
-        }
-        
-        public bool AppLogLogExceptionsToFile
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppLogLogExceptionsToFile") ?? _projectSettings.AppLogLogExceptionsToFile;
-            }
-        }
-        
-        public string SystemAdminThemeFolderName
-		{
-            get
-			{
-                return EnvironmentOrAppSettingString("SystemAdminThemeFolderName") ?? _projectSettings.SystemAdminThemeFolderName;
-            }
-        }
-        
-        public bool AppEnableBindingAutoMapToFirstStoreFront
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppEnableBindingAutoMapToFirstStoreFront") ?? _projectSettings.AppEnableBindingAutoMapToFirstStoreFront;
-            }
-        }
-        
-        public string AppDefaultLayoutName
-		{
-            get
-			{
-                return EnvironmentOrAppSettingString("AppDefaultLayoutName") ?? _projectSettings.AppDefaultLayoutName;
-            }
-        }
-        
-        public bool AppEnableBindingAutoMapCatchAll
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppEnableBindingAutoMapCatchAll") ?? _projectSettings.AppEnableBindingAutoMapCatchAll;
-            }
-        }
-        
-        public bool AppEnableAutomaticHomePageCreation
-		{
-            get
-			{
-                return EnvironmentOrAppSettingBool("AppEnableAutomaticHomePageCreation") ?? _projectSettings.AppEnableAutomaticHomePageCreation;
-            }
-        }
-        
-        public string AppDefaultPageTemplateViewName
-		{
-            get
+			get
 			{
 				return EnvironmentOrAppSettingString("AppDefaultPageTemplateViewName") ?? _projectSettings.AppDefaultPageTemplateViewName;
-            }
-        }
-        
+			}
+		}
+
 		public bool AppEnableStoresVirtualFolders
 		{
 			get
@@ -302,6 +198,110 @@
 				return EnvironmentOrAppSettingBool("AppSeedSampleProducts") ?? _projectSettings.AppSeedSampleProducts;
 			}
 		}
+
+		public bool AppLogSystemEventsToDb
+		{
+            get
+			{
+                return EnvironmentOrAppSettingBool("AppLogSystemEventsToDb") ?? _projectSettings.AppLogSystemEventsToDb;
+            }
+        }
+        
+        public bool AppLogSecurityEventsToDb
+		{
+            get
+			{
+                return EnvironmentOrAppSettingBool("AppLogSecurityEventsToDb") ?? _projectSettings.AppLogSecurityEventsToDb;
+            }
+        }
+
+        public bool AppLogBadRequestEventsToDb
+		{
+            get
+			{
+                return EnvironmentOrAppSettingBool("AppLogBadRequestEventsToDb") ?? _projectSettings.AppLogBadRequestEventsToDb;
+            }
+        }
+
+        public bool AppLogFileNotFoundEventsToDb
+		{
+            get
+			{
+                return EnvironmentOrAppSettingBool("AppLogFileNotFoundEventsToDb") ?? _projectSettings.AppLogFileNotFoundEventsToDb;
+            }
+        }
+
+		public bool AppLogPageViewEventsToDb
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogPageViewEventsToDb") ?? _projectSettings.AppLogPageViewEventsToDb;
+			}
+		}
+
+		public bool AppLogUserActionEventsToDb
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogUserActionEventsToDb") ?? _projectSettings.AppLogUserActionEventsToDb;
+			}
+		}
+
+		public bool AppLogLogExceptionsToFile
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogLogExceptionsToFile") ?? _projectSettings.AppLogLogExceptionsToFile;
+			}
+		}
+
+		public bool AppLogSystemEventsToFile
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogSystemEventsToFile") ?? _projectSettings.AppLogSystemEventsToFile;
+			}
+		}
+
+		public bool AppLogSecurityEventsToFile
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogSecurityEventsToFile") ?? _projectSettings.AppLogSecurityEventsToFile;
+			}
+		}
+
+		public bool AppLogBadRequestEventsToFile
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppLogBadRequestEventsToFile") ?? _projectSettings.AppLogBadRequestEventsToFile;
+			}
+		}
+
+		public bool AppLogFileNotFoundEventsToFile
+		{
+            get
+			{
+				return EnvironmentOrAppSettingBool("AppLogFileNotFoundEventsToFile") ?? _projectSettings.AppLogFileNotFoundEventsToFile;
+            }
+        }
+        
+        public bool AppLogPageViewEventsToFile
+		{
+            get
+			{
+				return EnvironmentOrAppSettingBool("AppLogPageViewEventsToFile") ?? _projectSettings.AppLogPageViewEventsToFile;
+            }
+        }
+        
+        public bool AppLogUserActionEventsToFile
+		{
+            get
+			{
+                return EnvironmentOrAppSettingBool("AppLogUserActionEventsToFile") ?? _projectSettings.AppLogUserActionEventsToFile;
+            }
+        }
 
 		public string RepositoryProvider
 		{

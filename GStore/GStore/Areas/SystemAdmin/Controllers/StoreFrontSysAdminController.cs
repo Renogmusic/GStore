@@ -16,21 +16,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 	{
 
 		// GET: SystemAdmin/StoreFrontSysAdmin
-		public ActionResult Index(int? id, string SortBy, bool? SortAscending)
+		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(id);
+			ViewBag.ClientFilterList = ClientFilterList(clientId);
 
 			IQueryable<StoreFront> query = null;
-			if (id.HasValue)
+			if (clientId.HasValue)
 			{
-				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == id.Value);
+				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == clientId.Value);
 			}
 			else
 			{
 				query = GStoreDb.StoreFronts.All();
 			}
 
-			IOrderedQueryable<StoreFront> queryOrdered = this.ApplySort(query, SortBy, SortAscending);
+			IOrderedQueryable<StoreFront> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
 			return View(queryOrdered.ToList());
 		}
 
@@ -56,8 +56,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
-			ViewBag.NotFoundPageList = NotFoundPageList();
-			ViewBag.StoreErrorPageList = StoreErrorPageList();
+			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, null);
+			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, null);
 
 			StoreFront model = GStoreDb.StoreFronts.Create();
 			model.SetDefaultsForNew(clientId);
@@ -85,7 +85,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				//create folders for new Store Front if they don't exist already
 				try
 				{
-					CreateStoreFrontFolders(Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath)));
+					SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath)));
 					AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'", AppHtmlHelpers.UserMessageType.Success);
 				}
 				catch (Exception ex)
@@ -104,8 +104,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
-			ViewBag.NotFoundPageList = NotFoundPageList();
-			ViewBag.StoreErrorPageList = StoreErrorPageList();
+			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, storeFront.StoreFrontId);
+			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, storeFront.StoreFrontId);
 
 			return View(storeFront);
 		}
@@ -126,8 +126,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
-			ViewBag.NotFoundPageList = NotFoundPageList();
-			ViewBag.StoreErrorPageList = StoreErrorPageList();
+			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
+			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
 
 			return View(storeFront);
 		}
@@ -174,7 +174,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 					{
 						try
 						{
-							CreateStoreFrontFolders(newStoreFrontFolder);
+							SysAdminActivationExtensions.CreateStoreFrontFolders(newStoreFrontFolder);
 							AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'", AppHtmlHelpers.UserMessageType.Info);
 						}
 						catch (Exception ex)
@@ -189,8 +189,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
-			ViewBag.NotFoundPageList = NotFoundPageList();
-			ViewBag.StoreErrorPageList = StoreErrorPageList();
+			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
+			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
 
 			return View(storeFront);
 		}
@@ -256,194 +256,6 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				throw new ApplicationException("Error deleting StoreFront.  See inner exception for errors.  Related child tables may still have data to be deleted. StoreFrontId: " + id, ex);
 			}
 			return RedirectToAction("Index");
-		}
-
-		protected SelectList ClientList()
-		{
-			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
-			IQueryable<SelectListItem> items = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = c.Name + " [" + c.ClientId + "]"
-			});
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList ClientFilterList(int? id)
-		{
-			int filterId = 0;
-			if (id.HasValue)
-			{
-				filterId = id.Value;
-			}
-			List<SelectListItem> items = new List<SelectListItem>();
-			items.Add(new SelectListItem()
-			{
-				Value = string.Empty,
-				Text = (!id.HasValue ? "[SELECTED] " : string.Empty) + "All",
-				Selected = !id.HasValue
-			});
-
-			var query = GStoreDb.Clients.All().OrderBy(c=> c.Order).ThenBy(c => c.ClientId);
-			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = (c.ClientId == filterId ? "[SELECTED] ": string.Empty) + c.Name + " [" + c.ClientId + "]",
-				Selected = (c.ClientId == filterId )
-			});
-			items.AddRange(clients);
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList StoreErrorPageList()
-		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Error Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-
-			if (CurrentStoreFrontOrNull == null)
-			{
-				return new SelectList(list, "Value", "Text");
-			}
-
-			var query = CurrentStoreFrontOrNull.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
-			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
-			{
-				Value = pg.PageId.ToString(),
-				Text = pg.Name + " [" + pg.PageId + "]"
-			});
-
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList NotFoundPageList()
-		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Not Found Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-			
-			if (CurrentStoreFrontOrNull == null)
-			{
-				return new SelectList(list, "Value", "Text");
-			}
-
-			var query = CurrentStoreFrontOrNull.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
-			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
-			{
-				Value = pg.PageId.ToString(),
-				Text = pg.Name + " [" + pg.PageId + "]"
-			});
-
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList ThemeList()
-		{
-			var query = GStoreDb.Themes.All().OrderBy(t => t.Order).ThenBy(t => t.ThemeId);
-			IQueryable<SelectListItem> items = query.Select(t => new SelectListItem
-			{
-				Value = t.ThemeId.ToString(),
-				Text = t.Name + " [" + t.ThemeId + "]"
-			});
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList UserProfileList(int? clientId, int? storeFrontId)
-		{
-			var query = GStoreDb.UserProfiles.All();
-
-			if (clientId.HasValue)
-			{
-				query = query.Where(p => !p.ClientId.HasValue || p.ClientId.Value == clientId);
-			}
-			if (storeFrontId.HasValue)
-			{
-				query = query.Where(p => !p.StoreFrontId.HasValue || p.StoreFrontId.Value == storeFrontId);
-			}
-			query = query.OrderBy(p => p.Order).ThenBy(p => p.UserProfileId).ThenBy(p => p.UserName);
-
-			IQueryable<SelectListItem> items = query.Select(p => new SelectListItem
-			{
-				Value = p.UserProfileId.ToString(),
-				Text = p.FullName + " <" + p.Email + ">" 
-				+ (p.StoreFrontId.HasValue ? " - Store '" + p.StoreFront.Name + "' [" + p.StoreFrontId + "]": " (no store)")
-				+ (p.ClientId.HasValue ? " - Client '" + p.Client.Name + "' [" + p.ClientId + "]" : " (no client)")
-			});
-
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected void ValidateStoreFrontName(StoreFront storeFront)
-		{
-			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Name", "Store Front name '" + storeFront.Name + "' is already in use. Please choose a new name");
-				bool nameIsDirty = true;
-				while (nameIsDirty)
-				{
-					storeFront.Name = storeFront.Name + "_New";
-					nameIsDirty = GStoreDb.StoreFronts.Where(sf => sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Name"))
-				{
-					ModelState["Name"].Value = new ValueProviderResult(storeFront.Name, storeFront.Name, null);
-				}
-			}
-		}
-
-		protected void ValidateStoreFrontFolder(StoreFront storeFront)
-		{
-			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Folder.ToLower() == storeFront.Folder.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Folder", "StoreFront Folder name '" + storeFront.Folder + "' is already in use. Please choose a new folder");
-				bool folderIsDirty = true;
-				while (folderIsDirty)
-				{
-					storeFront.Folder = storeFront.Folder + "_New";
-					folderIsDirty = GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Folder.ToLower() == storeFront.Folder.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Folder"))
-				{
-					ModelState["Folder"].Value = new ValueProviderResult(storeFront.Folder, storeFront.Folder, null);
-				}
-			}
-		}
-
-		private static void CreateStoreFrontFolders(string basePath)
-		{
-			CreateFolderIfNotExists(basePath + "\\ErrorPages");
-			CreateFolderIfNotExists(basePath + "\\Fonts");
-			CreateFolderIfNotExists(basePath + "\\Images");
-			CreateFolderIfNotExists(basePath + "\\Scripts");
-			CreateFolderIfNotExists(basePath + "\\StoreFronts");
-			CreateFolderIfNotExists(basePath + "\\Styles");
-		}
-
-		/// <summary>
-		/// Creates a folder if it does not exist
-		/// </summary>
-		/// <param name="folder"></param>
-		private static void CreateFolderIfNotExists(string folderPath)
-		{
-			if (!System.IO.Directory.Exists(folderPath))
-			{
-				System.IO.Directory.CreateDirectory(folderPath);
-				System.Diagnostics.Trace.WriteLine("--File System: Created folder: " + folderPath);
-			}
 		}
 
 	}

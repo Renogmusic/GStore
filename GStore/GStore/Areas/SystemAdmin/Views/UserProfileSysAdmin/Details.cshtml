@@ -1,0 +1,198 @@
+﻿@model GStore.Models.UserProfile
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-success">
+		User Profile Details: <br />'@(Model.FullName)' &lt;@(Model.Email)&gt; [@(Model.UserProfileId)]
+	</h2>
+</div>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.UserProfileId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.UserProfileId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
+<div class="row">
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.UserProfileId)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.UserProfileId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.Client)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFront)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.StoreFront)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UserId)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.UserId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UserName)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.UserName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Email)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.Email)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.FullName)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.FullName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SignupNotes)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SignupNotes)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendMoreInfoToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendMoreInfoToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AllowUsersToSendSiteMessages)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.AllowUsersToSendSiteMessages)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotifyAllWhenLoggedOn)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.NotifyAllWhenLoggedOn)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotifyOfSiteUpdatesToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.NotifyOfSiteUpdatesToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SubscribeToNewsletterEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SubscribeToNewsletterEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendSiteMessagesToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendSiteMessagesToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendSiteMessagesToSms)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendSiteMessagesToSms)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
+		</dd>
+
+	</dl>
+</div>
+<hr/>
+<div class="row">
+	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.UserProfileId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.UserProfileId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+<hr />
+<p>
+	@Html.ActionLink("Back to List", "Index")
+</p>

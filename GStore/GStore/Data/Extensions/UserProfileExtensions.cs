@@ -54,7 +54,7 @@ namespace GStore.Data
 					+ "\n - UserId: " + inactiveProfiles[0].UserId.ToString()
 					+ "\n - UserName: " + inactiveProfiles[0].UserName
 					+ "\n - Email: " + inactiveProfiles[0].Email
-					+ "\n - Active: " + inactiveProfiles[0].Active
+					+ "\n - IsPending: " + inactiveProfiles[0].IsPending
 					+ "\n - StartDateTimeUtc(local): " + inactiveProfiles[0].StartDateTimeUtc.ToLocalTime()
 					+ "\n - EndDateTimeUtc(local): " + inactiveProfiles[0].EndDateTimeUtc.ToLocalTime();
 
@@ -99,16 +99,17 @@ namespace GStore.Data
 				{
 					throw new ApplicationException("Active User Profile not found for UserId: " + aspNetUserId + " \n There appear to be multiple profiles; delete extra active profiles from UserProfiles table or make them inactive.");
 				}
-				if (!results[0].Active)
+				if (results[0].IsPending)
 				{
 					throw new ApplicationException("Active User Profile not found for UserId: " + aspNetUserId + " \n User Profile is inactive. Set Active = true or add a new active profile");
 				}
 
 				throw new ApplicationException("Active User Profile not found for UserId: " + aspNetUserId
 					+ " \n User Profile or client or store front may be inactive"
+					+ " \n Is Pending: " + results[0].IsPending.ToString()
 					+ " \n StartDateTime: " + results[0].StartDateTimeUtc.ToLocalTime()
 					+ " \n StartDateTime: " + results[0].StartDateTimeUtc.ToLocalTime()
-					+ " \n Active flag: " + results[0].Active.ToString());
+					);
 
 			}
 			return userProfile;
@@ -142,20 +143,23 @@ namespace GStore.Data
 				{
 					throw new ApplicationException("Active User Profile not found for email: " + email + " \n There appear to be multiple profiles; delete extra active profiles from UserProfiles table or make them inactive.");
 				}
-				if (!results[0].Active)
+				if (results[0].IsPending)
 				{
 					throw new ApplicationException("Active User Profile not found for email: " + email + " \n User Profile is inactive. Set Active = true or add a new active profile");
 				}
 
 				throw new ApplicationException("Active User Profile not found for email: " + email
 					+ " \n User Profile may be inactive"
+					+ " \n IsPending: " + results[0].IsPending.ToString()
 					+ " \n StartDateTime: " + results[0].StartDateTimeUtc.ToLocalTime()
 					+ " \n StartDateTime: " + results[0].StartDateTimeUtc.ToLocalTime()
-					+ " \n Active flag: " + results[0].Active.ToString());
+					);
 
 			}
 			return userProfile;
 		}
+
+
 
 		/// <summary>
 		/// Checks if the user is in the ASP.Net Identity User Role "System Admin"
@@ -224,5 +228,39 @@ namespace GStore.Data
 			Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
 			return identityCtx.AspNetIdentityUserLogins(userProfile);
 		}
+
+		public static bool IsActiveDirect(this UserProfile record)
+		{
+			return record.IsActiveDirect(DateTime.UtcNow);
+		}
+		public static bool IsActiveDirect(this UserProfile record, DateTime dateTime)
+		{
+			if (!record.IsPending && (record.StartDateTimeUtc < dateTime) && (record.EndDateTimeUtc > dateTime))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static void SetDefaultsForNew(this UserProfile profile, int? clientId, int? storeFrontId)
+		{
+			if (clientId.HasValue)
+			{
+				profile.ClientId = clientId.Value;
+			}
+
+			if (storeFrontId.HasValue)
+			{
+				profile.StoreFrontId = storeFrontId.Value;
+			}
+
+			profile.IsPending = true;
+			profile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			profile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+
+		}
+
+
+
 	}
 }

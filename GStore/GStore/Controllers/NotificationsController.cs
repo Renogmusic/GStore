@@ -312,6 +312,8 @@ namespace GStore.Controllers
 
 			GStoreDb.Notifications.Add(notification);
 			GStoreDb.SaveChanges();
+			AddUserMessage("Message sent!", "Message sent to " + notification.To, AppHtmlHelpers.UserMessageType.Success);
+
 			return RedirectToAction("Index");
         }
 
@@ -441,6 +443,7 @@ namespace GStore.Controllers
 
 			GStoreDb.Notifications.Delete(notification);
 			GStoreDb.SaveChanges();
+			AddUserMessage("Message deleted.", "Message deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
             return RedirectToAction("Index");
         }
     }

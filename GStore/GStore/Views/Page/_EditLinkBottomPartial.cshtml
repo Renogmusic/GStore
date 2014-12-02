@@ -2,7 +2,9 @@
 <hr />
 <div class="row">
 	<div class="col-xs-12">
-		@Html.ActionLink("Edit this Page", "Edit", "Page")
+		@Html.ActionLink("Edit this Page", "Edit", "Page", null, null)
+		&nbsp;&nbsp;-&nbsp;&nbsp;
+		@Html.ActionLink("Edit this Page (manual mode)", "Edit", "Page", new { autopost = false }, null)
 	</div>
 </div>
 <hr />

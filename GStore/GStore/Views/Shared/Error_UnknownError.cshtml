@@ -17,6 +17,7 @@
 <p>@title</p>
 <h2 class="text-danger">If you need assistance with this error, email me at <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a></h2>
 <h3>@Html.GStoreLocalLink("Click here for the " + (storeFront == null ? string.Empty : storeFront.Name + " ") + "home page", "/")</h3>
+<p><small>@DateTime.Now.ToLocalTime()</small></p>
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
 	@Html.Partial("_ErrorDetailsPartial", Model)

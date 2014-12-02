@@ -185,14 +185,6 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.CreatedBy.UserName)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.CreatedBy.UserName)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
 		</dt>
 
@@ -201,11 +193,11 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.UpdatedBy.UserName)
+			@Html.DisplayNameFor(model => model.CreatedBy)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.UpdatedBy.UserName)
+			@Html.DisplayFor(model => model.CreatedBy)
 		</dd>
 
 		<dt>
@@ -214,6 +206,14 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
 		</dd>
 
 	</dl>

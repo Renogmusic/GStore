@@ -16,11 +16,11 @@ namespace GStore.Data
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IQueryable<UserProfile> WhereIsActiveOn(this IQueryable<UserProfile> query, DateTime dateTimeUtc, bool includeInactive = false)
+		public static IQueryable<UserProfile> WhereIsActiveOn(this IQueryable<UserProfile> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			
 			return query.Where(data =>
-				(includeInactive || data.Active)
+				(includePending || !data.IsPending)
 				&& (data.StartDateTimeUtc < dateTimeUtc)
 				&& (data.EndDateTimeUtc > dateTimeUtc)
 				);
@@ -310,5 +310,116 @@ namespace GStore.Data
 				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
 				);
 		}
+
+		public static IEnumerable<ValueListItem> WhereIsActive(this IEnumerable<ValueListItem> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IEnumerable<ValueListItem> WhereIsActiveOn(this IEnumerable<ValueListItem> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.ValueList.IsPending)
+				&& (data.ValueList.StartDateTimeUtc < dateTimeUtc)
+				&& (data.ValueList.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this StoreFront storeFront)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+
+			return storeFront.IsActiveDirect() && storeFront.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this StoreBinding storeBinding)
+		{
+			if (storeBinding == null)
+			{
+				throw new ArgumentNullException("storeBinding");
+			}
+
+			return storeBinding.IsActiveDirect() && storeBinding.StoreFront.IsActiveDirect() && storeBinding.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this UserProfile userProfile)
+		{
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			return userProfile.IsActiveDirect()
+				&& (userProfile.ClientId == null || userProfile.Client.IsActiveDirect())
+				&& (userProfile.StoreFrontId == null || userProfile.StoreFront.IsActiveDirect());
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this ValueList valueList)
+		{
+			if (valueList == null)
+			{
+				throw new ArgumentNullException("valueList");
+			}
+
+			return valueList.IsActiveDirect() && valueList.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this ValueListItem valueListItem)
+		{
+			if (valueListItem == null)
+			{
+				throw new ArgumentNullException("valueListItem");
+			}
+
+			return valueListItem.IsActiveDirect() && valueListItem.ValueList.IsActiveDirect() && valueListItem.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this Page page)
+		{
+			if (page == null)
+			{
+				throw new ArgumentNullException("page");
+			}
+
+			return page.IsActiveDirect() && page.StoreFront.IsActiveDirect() && page.Client.IsActiveDirect();
+		}
+
+
 	}
 }

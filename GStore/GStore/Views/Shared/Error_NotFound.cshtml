@@ -18,6 +18,7 @@
 </h2>
 <p>@title</p>
 <h3>@Html.GStoreLocalLink("Click here for the " + (storeFront == null ? string.Empty : storeFront.Name + " ") + "home page", "/")</h3>
+<p><small>@DateTime.Now.ToLocalTime()</small></p>
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
 	@Html.Partial("_ErrorDetailsPartial", Model)

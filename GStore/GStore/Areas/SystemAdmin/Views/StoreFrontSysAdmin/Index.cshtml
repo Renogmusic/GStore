@@ -27,7 +27,7 @@
 			@Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
 			@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			@:Client Filter:
-			@Html.DropDownList("id", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['clientfilterform'].submit();", style = "display: inline;" })
+			@Html.DropDownList("clientId", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['clientfilterform'].submit();", style = "display: inline;" })
 		}
 		<hr />
 	}

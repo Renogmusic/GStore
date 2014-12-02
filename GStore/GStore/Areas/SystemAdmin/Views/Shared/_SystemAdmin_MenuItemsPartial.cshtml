@@ -23,11 +23,11 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="StoreFronts">StoreFronts<span class="caret"></span></a>
 		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("StoreFront Manager", "Index", "StoreFrontSysAdmin")
+				@Html.ActionLink("Store Front Manager", "Index", "StoreFrontSysAdmin")
 			</li>
 			<li class="nav-divider"></li>
 			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-				@Html.ActionLink("Create a New StoreFront", "Create", "StoreFrontSysAdmin")
+				@Html.ActionLink("Create a New Store Front", "Create", "StoreFrontSysAdmin")
 			</li>
 		</ul>
 	</li>
@@ -42,6 +42,34 @@
 			<li class="nav-divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
 				@Html.ActionLink("Create new Binding", "Create", "BindingsSysAdmin")
+			</li>
+		</ul>
+	</li>
+
+	<!-- Users Commands Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Users">Users<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("User Manager", "Index", "UserProfileSysAdmin")
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new User", "Create", "UserProfileSysAdmin")
+			</li>
+		</ul>
+	</li>
+
+	<!-- Value Lists Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Value Lists">Value Lists<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Value List Manager", "Index", "ValueListSysAdmin")
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Value List", "Create", "ValueListSysAdmin")
 			</li>
 		</ul>
 	</li>
@@ -64,6 +92,14 @@
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
 				@Html.ActionLink("About GStore", "About", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time: @DateTime.UtcNow.ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time: @DateTime.UtcNow.ToLocalTime().ToString()
 			</li>
 		</ul>
 	</li>
