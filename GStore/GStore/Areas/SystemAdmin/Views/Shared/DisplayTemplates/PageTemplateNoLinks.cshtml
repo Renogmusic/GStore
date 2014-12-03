@@ -1,0 +1,18 @@
+﻿@model GStore.Models.PageTemplate
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no Page Template)
+}
+else
+{
+	bool isActive = Model.IsActiveDirect();
+	string className = isActive ? string.Empty : "text-warning";
+	string viewLinkClass = isActive ? "text-success" : "text-warning";
+	string inactiveText = isActive ? string.Empty : " [INACTIVE]";
+
+	<span class="@className">
+		'@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateId))]
+		@(inactiveText)
+	</span>
+}

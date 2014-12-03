@@ -1,31 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GStore.Models.BaseClasses.ClientRecord">
-    <Position X="5.5" Y="5.75" Width="2.5" />
+    <Position X="14.75" Y="6.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAgAAAgAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
-    <Position X="5.5" Y="2" Width="2.25" />
+    <Position X="14.5" Y="3" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAQAEAAAQQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
       <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="GStore.Models.BaseClasses.ClientLiveRecord">
-    <Position X="3.75" Y="8.5" Width="2.5" />
+  <Class Name="GStore.Models.BaseClasses.GStoreEntity">
+    <Position X="14.75" Y="0.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\BaseClasses\ClientLiveRecord.cs</FileName>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.StoreFrontRecord">
-    <Position X="7" Y="8.5" Width="2.75" />
+    <Position X="7.25" Y="8.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAEgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.ClientRole">
+    <Position X="9.5" Y="8.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAgAAgAAAAgAAAAAQAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Models\ClientRole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.ClientRoleAction">
+    <Position X="12" Y="8.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAAAAAAAg=</HashCode>
+      <FileName>Models\ClientRoleAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.ClientUserRole">
+    <Position X="14.5" Y="8.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAQAgAAAAAAhAAAAAAAAAQgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ClientUserRole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.StoreFront">
+    <Position X="17" Y="8.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>QAsAEMIAgCkxAAEwBBQAABQwIIUBIEQQAQEBYCBZBEw=</HashCode>
+      <FileName>Models\StoreFront.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.ValueList">
+    <Position X="20.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABEAAAAAAEAgAAAAAAAAAAQAAAAAAAAAACAQABAAAAA=</HashCode>
+      <FileName>Models\ValueList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.ValueListItem">
+    <Position X="22.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAAAAAAgAgAIAAAAAAQAAAAAAAAgAAAQAQQAAAA=</HashCode>
+      <FileName>Models\ValueListItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9.75" />

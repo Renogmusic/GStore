@@ -21,7 +21,7 @@
 			<a class="btn btn-lg btn-info" href="@(Url.Action("ListItemIndex", new { id = Model.ValueListId }))">
 				View List Items
 				<hr/>
-				Active: @(Model.ValueListItems.WhereIsActive().Count()) / Total: @(Model.ValueListItems.Count())
+				Active: @(Model.ValueListItems.AsQueryable().WhereIsActive().Count()) / Total: @(Model.ValueListItems.Count())
 			</a>
 		</dd>
 		<dt>

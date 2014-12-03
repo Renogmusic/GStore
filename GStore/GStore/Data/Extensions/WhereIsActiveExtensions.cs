@@ -105,6 +105,9 @@ namespace GStore.Data
 				(includePending || !data.IsPending)
 				&& (data.StartDateTimeUtc < dateTimeUtc)
 				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.PageTemplate.IsPending)
+				&& (data.PageTemplate.StartDateTimeUtc < dateTimeUtc)
+				&& (data.PageTemplate.EndDateTimeUtc > dateTimeUtc)
 				&& (includePending || !data.Client.IsPending)
 				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
 				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
@@ -139,15 +142,15 @@ namespace GStore.Data
 		}
 
 		/// <summary>
-		/// IEnumerable query extension to check where ProductCategory, Client, and StoreFront is currently active and not pending or expired
+		/// IQueryable query extension to check where Product, Client, and StoreFront is currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IEnumerable<ProductCategory> WhereIsActive(this IEnumerable<ProductCategory> query)
+		public static IQueryable<Product> WhereIsActive(this IQueryable<Product> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<ProductCategory> WhereIsActiveOn(this IEnumerable<ProductCategory> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<Product> WhereIsActiveOn(this IQueryable<Product> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -163,39 +166,15 @@ namespace GStore.Data
 		}
 
 		/// <summary>
-		/// IEnumerable query extension to check where Product, Client, and StoreFront is currently active and not pending or expired
+		/// IQueryable query extension to check where NavBarItem, Client, and StoreFront is currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IEnumerable<Product> WhereIsActive(this IEnumerable<Product> query)
+		public static IQueryable<NavBarItem> WhereIsActive(this IQueryable<NavBarItem> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<Product> WhereIsActiveOn(this IEnumerable<Product> query, DateTime dateTimeUtc, bool includePending = false)
-		{
-			return query.Where(data =>
-				(includePending || !data.IsPending)
-				&& (data.StartDateTimeUtc < dateTimeUtc)
-				&& (data.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.Client.IsPending)
-				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
-				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.StoreFront.IsPending)
-				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
-				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
-				);
-		}
-
-		/// <summary>
-		/// IEnumerable query extension to check where NavBarItem, Client, and StoreFront is currently active and not pending or expired
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
-		public static IEnumerable<NavBarItem> WhereIsActive(this IEnumerable<NavBarItem> query)
-		{
-			return query.WhereIsActiveOn(DateTime.UtcNow);
-		}
-		public static IEnumerable<NavBarItem> WhereIsActiveOn(this IEnumerable<NavBarItem> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<NavBarItem> WhereIsActiveOn(this IQueryable<NavBarItem> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -220,6 +199,15 @@ namespace GStore.Data
 				(includePending || !data.IsPending)
 				&& (data.StartDateTimeUtc < dateTimeUtc)
 				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.PageTemplateSection.IsPending)
+				&& (data.PageTemplateSection.StartDateTimeUtc < dateTimeUtc)
+				&& (data.PageTemplateSection.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.PageTemplateSection.PageTemplate.IsPending)
+				&& (data.PageTemplateSection.PageTemplate.StartDateTimeUtc < dateTimeUtc)
+				&& (data.PageTemplateSection.PageTemplate.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Client.IsPending)
+				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
 				&& (includePending || !data.Client.IsPending)
 				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
 				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
@@ -234,15 +222,15 @@ namespace GStore.Data
 
 
 		/// <summary>
-		/// IEnumerable query extension to check where ClientRole and Client is currently active and not pending or expired
+		/// IQueryable query extension to check where ClientRole and Client is currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IEnumerable<ClientRole> WhereIsActive(this IEnumerable<ClientRole> query)
+		public static IQueryable<ClientRole> WhereIsActive(this IQueryable<ClientRole> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<ClientRole> WhereIsActiveOn(this IEnumerable<ClientRole> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<ClientRole> WhereIsActiveOn(this IQueryable<ClientRole> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -255,15 +243,15 @@ namespace GStore.Data
 		}
 
 		/// <summary>
-		/// IEnumerable query extension to check where ClientUserRole, ClientRole, and Client is currently active and not pending or expired
+		/// IQueryable query extension to check where ClientUserRole, ClientRole, and Client is currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IEnumerable<ClientUserRole> WhereIsActive(this IEnumerable<ClientUserRole> query)
+		public static IQueryable<ClientUserRole> WhereIsActive(this IQueryable<ClientUserRole> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<ClientUserRole> WhereIsActiveOn(this IEnumerable<ClientUserRole> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<ClientUserRole> WhereIsActiveOn(this IQueryable<ClientUserRole> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -288,15 +276,15 @@ namespace GStore.Data
 		}
 
 		/// <summary>
-		/// IEnumerable query extension to check where ClientRoleAction, ClientRole, and Client is currently active and not pending or expired
+		/// IQueryable query extension to check where ClientRoleAction, ClientRole, and Client is currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IEnumerable<ClientRoleAction> WhereIsActive(this IEnumerable<ClientRoleAction> query)
+		public static IQueryable<ClientRoleAction> WhereIsActive(this IQueryable<ClientRoleAction> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<ClientRoleAction> WhereIsActiveOn(this IEnumerable<ClientRoleAction> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<ClientRoleAction> WhereIsActiveOn(this IQueryable<ClientRoleAction> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -311,11 +299,11 @@ namespace GStore.Data
 				);
 		}
 
-		public static IEnumerable<ValueListItem> WhereIsActive(this IEnumerable<ValueListItem> query)
+		public static IQueryable<ValueListItem> WhereIsActive(this IQueryable<ValueListItem> query)
 		{
 			return query.WhereIsActiveOn(DateTime.UtcNow);
 		}
-		public static IEnumerable<ValueListItem> WhereIsActiveOn(this IEnumerable<ValueListItem> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<ValueListItem> WhereIsActiveOn(this IQueryable<ValueListItem> query, DateTime dateTimeUtc, bool includePending = false)
 		{
 			return query.Where(data =>
 				(includePending || !data.IsPending)
@@ -324,6 +312,49 @@ namespace GStore.Data
 				&& (includePending || !data.ValueList.IsPending)
 				&& (data.ValueList.StartDateTimeUtc < dateTimeUtc)
 				&& (data.ValueList.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+
+		public static IQueryable<PageTemplate> WhereIsActive(this IQueryable<PageTemplate> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<PageTemplate> WhereIsActiveOn(this IQueryable<PageTemplate> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+		public static IQueryable<PageTemplateSection> WhereIsActive(this IQueryable<PageTemplateSection> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<PageTemplateSection> WhereIsActiveOn(this IQueryable<PageTemplateSection> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.PageTemplate.IsPending)
+				&& (data.PageTemplate.StartDateTimeUtc < dateTimeUtc)
+				&& (data.PageTemplate.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+		public static IQueryable<Theme> WhereIsActive(this IQueryable<Theme> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<Theme> WhereIsActiveOn(this IQueryable<Theme> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
 				);
 		}
 
@@ -355,7 +386,7 @@ namespace GStore.Data
 				throw new ArgumentNullException("storeBinding");
 			}
 
-			return storeBinding.IsActiveDirect() && storeBinding.StoreFront.IsActiveDirect() && storeBinding.Client.IsActiveDirect();
+			return storeBinding.IsActiveDirect() && storeBinding.StoreFront.IsActiveBubble();
 		}
 
 		/// <summary>
@@ -373,6 +404,21 @@ namespace GStore.Data
 			return userProfile.IsActiveDirect()
 				&& (userProfile.ClientId == null || userProfile.Client.IsActiveDirect())
 				&& (userProfile.StoreFrontId == null || userProfile.StoreFront.IsActiveDirect());
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this PageTemplateSection pageTemplateSection)
+		{
+			if (pageTemplateSection == null)
+			{
+				throw new ArgumentNullException("pageTemplateSection");
+			}
+
+			return pageTemplateSection.IsActiveDirect() && pageTemplateSection.PageTemplate.IsActiveDirect();
 		}
 
 		/// <summary>
@@ -402,7 +448,7 @@ namespace GStore.Data
 				throw new ArgumentNullException("valueListItem");
 			}
 
-			return valueListItem.IsActiveDirect() && valueListItem.ValueList.IsActiveDirect() && valueListItem.Client.IsActiveDirect();
+			return valueListItem.IsActiveDirect() && valueListItem.ValueList.IsActiveBubble();
 		}
 
 		/// <summary>
@@ -417,7 +463,24 @@ namespace GStore.Data
 				throw new ArgumentNullException("page");
 			}
 
-			return page.IsActiveDirect() && page.StoreFront.IsActiveDirect() && page.Client.IsActiveDirect();
+			return page.IsActiveDirect() && page.PageTemplate.IsActiveDirect() && page.StoreFront.IsActiveBubble();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this PageSection pageSection)
+		{
+			if (pageSection == null)
+			{
+				throw new ArgumentNullException("pageSection");
+			}
+
+			return pageSection.IsActiveDirect() && pageSection.Page.IsActiveBubble()
+				&& pageSection.PageTemplateSection.IsActiveDirect()
+				&& pageSection.StoreFront.IsActiveBubble();
 		}
 
 

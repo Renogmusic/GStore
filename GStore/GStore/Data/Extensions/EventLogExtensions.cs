@@ -18,6 +18,40 @@ namespace GStore.Data
 		public const string GStoreFolder_SystemEvents = "~/App_Data/EventLog/SystemEvents";
 		public const string GStoreFolder_UserActionEvents = "~/App_Data/EventLog/UserActionEvents";
 
+		/// <summary>
+		/// Returns one of the GStoreFolder constant values for a virtual path based on a string name of the constant
+		/// </summary>
+		/// <param name="constantName"></param>
+		/// <returns></returns>
+		public static string GStoreLogConstantNameToPath(string constantName)
+		{
+			if (string.IsNullOrEmpty(constantName))
+			{
+				throw new ArgumentNullException("constantName");
+			}
+
+			switch (constantName.ToLower())
+			{
+				case "gstorefolder_badrequests":
+					return GStoreFolder_BadRequests;
+				case "gstorefolder_filenotfoundlogs":
+					return GStoreFolder_FileNotFoundLogs;
+				case "gstorefolder_logexceptions":
+					return GStoreFolder_LogExceptions;
+				case "gstorefolder_pageviewevents":
+					return GStoreFolder_PageViewEvents;
+				case "gstorefolder_securityevents":
+					return GStoreFolder_SecurityEvents;
+				case "gstorefolder_systemevents":
+					return GStoreFolder_SystemEvents;
+				case "gstorefolder_useractionevents":
+					return GStoreFolder_UserActionEvents;
+
+				default:
+					throw new ApplicationException("Folder constant not found: " + constantName);
+			}
+		}
+
 		public static void LogSecurityEvent_LoginSuccess(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, UserProfile profile, Controllers.BaseClass.BaseController controller)
 		{
 			string message = "Login success for " + profile.UserName
@@ -660,6 +694,10 @@ namespace GStore.Data
 			string siteId = httpContext.ApplicationInstance.Server.MachineName
 				+ ":" + System.Web.Hosting.HostingEnvironment.SiteName
 				+ httpContext.Request.ApplicationPath;
+
+			record.StartDateTimeUtc = DateTime.UtcNow;
+			record.EndDateTimeUtc = DateTime.UtcNow;
+
 
 			if (controller != null)
 			{

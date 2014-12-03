@@ -123,9 +123,9 @@
 			</div>
 			<div class="col-xs-12"><hr /></div>
 
-<div class="col-xs-12 btn btn-info">
-	Client Data Tables &nbsp;-&nbsp; Active / Total
-</div>
+			<div class="col-xs-12 btn btn-info">
+				Client Data Tables &nbsp;-&nbsp; Active / Total
+			</div>
 			<div class="col-xs-8">
 				Notifications:
 			</div>
@@ -213,28 +213,34 @@
 			</div>
 			<div class="col-xs-12"><hr /></div>
 			<div class="col-xs-12 btn btn-info">
-				System Tables
+				System Tables &nbsp;-&nbsp; Active / Total
 			</div>
 			<div class="col-xs-8">
 				PageTemplates:
 			</div>
 			<div class="col-xs-4">
+				@gstoreDb.PageTemplates.All().WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
 				@gstoreDb.PageTemplates.All().Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				PageTemplateSections:
 			</div>
 			<div class="col-xs-4">
+				@gstoreDb.PageTemplateSections.All().WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
 				@gstoreDb.PageTemplateSections.All().Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				Themes:
 			</div>
 			<div class="col-xs-4">
+				@gstoreDb.Themes.All().WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
 				@gstoreDb.Themes.All().Count().ToString("N0")
 			</div>
 			<div class="col-xs-12">
-				<hr/>
+				<hr />
 			</div>
 
 <div class="col-xs-12 btn btn-info">
@@ -248,11 +254,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_LogExceptions))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_LogExceptions" })
 			</div>
 			<div class="col-xs-8">
 				Bad Request Log Files:
@@ -262,11 +270,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_BadRequests))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_BadRequests" })
 			</div>
 			<div class="col-xs-8">
 				File Not Found Log Files:
@@ -276,11 +286,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_FileNotFoundLogs))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_FileNotFoundLogs" })
 			</div>
 			<div class="col-xs-8">
 				Page View Event Log Files:
@@ -290,11 +302,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_PageViewEvents))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_PageViewEvents" })
 			</div>
 			<div class="col-xs-8">
 				Security Event Log Files:
@@ -304,11 +318,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_SecurityEvents))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_SecurityEvents" })
 			</div>
 			<div class="col-xs-8">
 				System Event Log Files:
@@ -318,11 +334,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_SystemEvents))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_SystemEvents" })
 			</div>
 			<div class="col-xs-8">
 				User Action Event Log Files:
@@ -332,11 +350,13 @@
 				}
 				else
 				{
-					@:DISABLED
+					@:(only if db error)
 				}
 			</div>
 			<div class="col-xs-4">
 				@(Html.LogFolderFileCount(EventLogExtensions.GStoreFolder_UserActionEvents))
+				&nbsp;-&nbsp;
+				@Html.ActionLink("Clear", "ClearLogFolder", new { folder = "GStoreFolder_UserActionEvents" })
 			</div>
 		</div>
 	</div>
@@ -381,134 +401,6 @@
 			@:Current BindingRootPath: '@(Request.BindingRootPath())'<br />
 			@:Current BindingPort: '@(Request.BindingPort())'<br />
 			@:Remote IP Address: @Request.UserHostAddress<br />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		}
 	</div>
 </div>

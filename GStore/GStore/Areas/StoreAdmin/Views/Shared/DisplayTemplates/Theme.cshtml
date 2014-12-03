@@ -1,0 +1,10 @@
+﻿@model GStore.Models.Theme
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no theme)
+}
+else
+{
+	@:@(Model.Name) [@(Model.ThemeId)]
+}

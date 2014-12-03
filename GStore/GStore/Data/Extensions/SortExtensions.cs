@@ -1440,6 +1440,207 @@ namespace GStore.Data
 			return orderedQuery;
 		}
 
+		public static IOrderedQueryable<PageTemplate> ApplySort(this IQueryable<PageTemplate> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
+		{
+			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
+			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
+			IOrderedQueryable<PageTemplate> orderedQuery = null;
+			bool defaultSort = false;
+
+			switch (sortBy)
+			{
+				case "name":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Name);
+					}
+					break;
+
+				case "pagetemplateid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.PageTemplateId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.PageTemplateId);
+					}
+					break;
+
+				case "layoutname":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.LayoutName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.LayoutName);
+					}
+					break;
+
+				case "viewname":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ViewName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ViewName);
+					}
+					break;
+
+				case "order":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Order);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Order);
+					}
+					break;
+
+				case "sections":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Sections.Count);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Sections.Count);
+					}
+					break;
+
+				case "status":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+				case "ispending":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.IsPending);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.IsPending);
+					}
+					break;
+
+				case "startdatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.StartDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.StartDateTimeUtc);
+					}
+					break;
+
+				case "enddatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.EndDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.EndDateTimeUtc);
+					}
+					break;
+
+				case "createdatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreateDateTimeUtc);
+					}
+					break;
+
+				case "createdby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreatedBy.UserName);
+					}
+					break;
+
+				case "updatedatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdateDateTimeUtc);
+					}
+					break;
+
+				case "updatedby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdatedBy.UserName);
+					}
+					break;
+
+				case "":
+					//default sort
+					defaultSort = true;
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(p => p.Order)
+							.ThenBy(p => p.PageTemplateId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(p => p.Order)
+							.ThenByDescending(p => p.PageTemplateId);
+					}
+					break;
+
+
+				default:
+					//unknown sort
+					if (controller != null)
+					{
+						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+					}
+					goto case "";
+			}
+
+			if (!defaultSort && sortAscending)
+			{
+				orderedQuery = orderedQuery.ThenBy(p => p.Order)
+					.ThenBy(p => p.PageTemplateId);
+			}
+			else if (!defaultSort && !sortAscending)
+			{
+				orderedQuery = orderedQuery.ThenByDescending(p => p.Order)
+					.ThenByDescending(p => p.PageTemplateId);
+			}
+			return orderedQuery;
+		}
 
 	}
 }

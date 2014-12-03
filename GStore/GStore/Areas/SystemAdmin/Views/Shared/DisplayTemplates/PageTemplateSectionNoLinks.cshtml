@@ -1,0 +1,17 @@
+﻿@model GStore.Models.PageTemplateSection
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no Page Template Section)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	<span class="@className">
+		@(Html.DisplayNameFor(model => model.Name)) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateSectionId))]
+		@(isActiveDirect ? string.Empty : " [INACTIVE]")
+	</span>
+	@: - @(Html.DisplayNameFor(model => model.PageTemplate)) @(Html.DisplayFor(m => m.PageTemplate, "PageTemplateNoLinks"))
+}

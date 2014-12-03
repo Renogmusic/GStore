@@ -178,6 +178,56 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		}
 
+		public static bool ActivatePageTemplate(this BaseClasses.SystemAdminBaseController controller, int pageTemplateId)
+		{
+			PageTemplate pageTemplate = controller.GStoreDb.PageTemplates.FindById(pageTemplateId);
+			if (pageTemplate == null)
+			{
+				controller.AddUserMessage("Activate Page Template Failed!", "Page Template not found by id: " + pageTemplateId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (pageTemplate.IsActiveDirect())
+			{
+				controller.AddUserMessage("Page Template is already active.", "Page Template is already active. id: " + pageTemplateId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			pageTemplate.IsPending = false;
+			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			controller.GStoreDb.PageTemplates.Update(pageTemplate);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Page Template", "Activated Page Template '" + pageTemplate.Name + "' [" + pageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
+		public static bool ActivatePageTemplateSection(this BaseClasses.SystemAdminBaseController controller, int pageTemplateSectionId)
+		{
+			PageTemplateSection pageTemplateSection = controller.GStoreDb.PageTemplateSections.FindById(pageTemplateSectionId);
+			if (pageTemplateSection == null)
+			{
+				controller.AddUserMessage("Activate Page Template Section Failed!", "Page Template Section not found by id: " + pageTemplateSectionId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (pageTemplateSection.IsActiveDirect())
+			{
+				controller.AddUserMessage("Page Template Section is already active.", "Page Template Section is already active. id: " + pageTemplateSectionId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			pageTemplateSection.IsPending = false;
+			pageTemplateSection.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			pageTemplateSection.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			controller.GStoreDb.PageTemplateSections.Update(pageTemplateSection);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Page Template Section", "Activated Page Template Section '" + pageTemplateSection.Name + "' [" + pageTemplateSection.PageTemplateId + "] - Page Template '" + pageTemplateSection.PageTemplate.Name + "' [" + pageTemplateSection.PageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
 		public static bool ActivateValueList(this BaseClasses.SystemAdminBaseController controller, int valueListId)
 		{
 			ValueList valueList = controller.GStoreDb.ValueLists.FindById(valueListId);

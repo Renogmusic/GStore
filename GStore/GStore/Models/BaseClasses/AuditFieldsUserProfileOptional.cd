@@ -1,23 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GStore.Models.BaseClasses.AuditFieldsUserProfileOptional">
-    <Position X="1.75" Y="0.5" Width="2.25" />
+    <Position X="8.5" Y="3.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAQAEAAAQQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
       <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="GStore.Models.BaseClasses.EventLogBase">
-    <Position X="1" Y="4.25" Width="2" />
+  <Class Name="GStore.Models.BaseClasses.GStoreEntity">
+    <Position X="8.75" Y="1.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>gAAQEAAAAwgQAICAhIAAAApBAAAAAAABCQAFIBAAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.EventLogBase">
+    <Position X="6.75" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>gAAAEAAAAwgQAICAhIAAAApBAAAAAAABCQAFIRAAAAA=</HashCode>
       <FileName>Models\BaseClasses\EventLogBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.UserProfile">
-    <Position X="3.75" Y="4.25" Width="3.25" />
+    <Position X="9.5" Y="6.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>SAIBEiAAACBgAJAABAMAAAoQAAAAAQEsAQAACACIIAA=</HashCode>
+      <HashCode>SAMAEiAAgCBgAJAAhEIAAAoQAAAAAAEMAQAACACIIAQ=</HashCode>
       <FileName>Models\UserProfile.cs</FileName>
     </TypeIdentifier>
   </Class>

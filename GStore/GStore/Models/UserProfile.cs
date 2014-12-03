@@ -68,15 +68,6 @@ namespace GStore.Models
 
 		public int Order { get; set; }
 
-		[Display(Name = "Is Pending")]
-		public bool IsPending { get; set; }
-
-		[Display(Name = "Start Date")]
-		public DateTime StartDateTimeUtc { get; set; }
-
-		[Display(Name = "End Date")]
-		public DateTime EndDateTimeUtc { get; set; }
-
 		/// <summary>
 		/// Name as displayed in messages and site logon/logoff
 		/// </summary>

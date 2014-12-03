@@ -25,7 +25,5 @@ namespace GStore.Models
 		[Required]
 		public int Order { get; set; }
 
-		public virtual ICollection<StoreFront> StoreFronts { get; set; }
-
 	}
 }

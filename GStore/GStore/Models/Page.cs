@@ -8,7 +8,7 @@ using GStore.Data;
 namespace GStore.Models
 {
 	[Table("Pages")]
-	public class Page : BaseClasses.StoreFrontLiveRecord 
+	public class Page : BaseClasses.StoreFrontRecord
 	{
 		[Key]
 		[Editable(false)]
@@ -28,6 +28,12 @@ namespace GStore.Models
 
 		public int Order { get; set; }
 
+		[ForeignKey("ThemeId") ]
+		public virtual Theme Theme { get; set;}
+
+		[Display(Name="Theme Id")]
+		public int ThemeId { get; set; }
+
 		//todo: add url to routes
 		[Required]
 		[Index("UniqueRecord", IsUnique = true, Order = 4)]
@@ -38,6 +44,9 @@ namespace GStore.Models
 
 		[Display(Name = "Meta Tag Description")]
 		public string MetaDescription { get; set; }
+
+		[Display(Name = "Meta Tag Keywords")]
+		public string MetaKeywords { get; set; }
 
 		[Display(Name = "Page Title")]
 		public string PageTitle { get; set; }

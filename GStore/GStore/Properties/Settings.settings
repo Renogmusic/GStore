@@ -130,5 +130,8 @@
     <Setting Name="IdentityEnableTwoFactorAuth" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="AppDefaultThemeFolderName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SpaceLab</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

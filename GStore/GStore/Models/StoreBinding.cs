@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GStore.Models
 {
 	[Table("StoreBindings")]
-	public class StoreBinding : BaseClasses.StoreFrontLiveRecord
+	public class StoreBinding : BaseClasses.StoreFrontRecord
 	{
 		[Key]
 		[Index("UniqueRecord", IsUnique = true, Order = 3)]
@@ -23,7 +23,7 @@ namespace GStore.Models
 		[Display(Name = "Root Path")]
 		public string RootPath { get; set; }
 
-		[Display(Name = "Use Url Store Name")]
+		[Display(Name = "Use Url Store Name", ShortName="Use Url Store")]
 		public bool UseUrlStoreName { get; set; }
 
 		[Display(Name = "Url Store Name")]

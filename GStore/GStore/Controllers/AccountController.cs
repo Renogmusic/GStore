@@ -55,6 +55,14 @@ namespace GStore.Controllers
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.AccountTheme.FolderName;
+			}
+		}
+
 		public AspNetIdentityUserManager UserManager
 		{
 			get

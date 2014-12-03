@@ -142,7 +142,7 @@ namespace GStore.AppHtmlHelpers
 
 		public static string LayoutNameToUse(this HtmlHelper htmlHelper)
 		{
-			Controllers.BaseClass.PageBaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.PageBaseController;
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
 			if (controller == null)
 			{
 				return Properties.Settings.Current.AppDefaultLayoutName;
@@ -151,6 +151,19 @@ namespace GStore.AppHtmlHelpers
 			return controller.LayoutNameToUse;
 
 		}
+
+		public static string ThemeFolderName(this HtmlHelper htmlHelper)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				return Properties.Settings.Current.AppDefaultThemeFolderName;
+			}
+
+			return controller.ThemeFolderNameToUse;
+
+		}
+
 
 		public static bool UserHasPermission(this HtmlHelper htmlHelper, Identity.GStoreAction action)
 		{
@@ -1231,9 +1244,31 @@ namespace GStore.AppHtmlHelpers
 		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string defaultRawHtmlValue)
 		{
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
+			if (pageViewModel.ForTemplateSyncOnly)
+			{
+				if (!pageViewModel.PageTemplateIdForSync.HasValue)
+				{
+					throw new ArgumentNullException("PageTemplateIdForSync", "PageTemplateIdForSync must be specified when ForTemplateSyncOnly is true");
+				}
+				int pageTemplateId = pageViewModel.PageTemplateIdForSync.Value;
+				IGstoreDb dbforSync = htmlHelper.GStoreDb();
+				PageTemplate template = dbforSync.PageTemplates.SingleOrDefault(pt => pt.PageTemplateId == pageTemplateId);
+				if (template == null)
+				{
+					throw new ApplicationException("Page Template not found by id: " + pageTemplateId);
+				}
+				PageTemplateSection sectionTest = template.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+				if (sectionTest == null)
+				{
+					sectionTest = dbforSync.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, sectionName + " section", defaultRawHtmlValue, htmlHelper.CurrentUserProfile(true));
+					return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span>");
+				}
+				return new MvcHtmlString("<span class=\"text-success\"><strong>Section OK '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span>");
+			}
+
 			if (pageViewModel.Page == null)
 			{
-				throw new ApplicationException("Page cannot be null");
+				throw new ArgumentNullException("Page", "Page cannot be null except in forSyncOnly");
 			}
 			Page page = pageViewModel.Page;
 			PageTemplate pageTemplate = page.PageTemplate;
@@ -1386,7 +1421,7 @@ namespace GStore.AppHtmlHelpers
 
 			if (!System.IO.Directory.Exists(folderPath))
 			{
-				return new MvcHtmlString("folder does not exist");
+				return new MvcHtmlString("no folder");
 			}
 
 			string[] files = System.IO.Directory.GetFiles(folderPath);

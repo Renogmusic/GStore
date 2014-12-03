@@ -171,18 +171,22 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			{
 				storeFrontToEdit.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
 				storeFrontToEdit.AccountLayoutName = model.AccountLayoutName;
+				storeFrontToEdit.AccountThemeId = model.AccountThemeId;
 				storeFrontToEdit.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
 				storeFrontToEdit.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
 				storeFrontToEdit.AdminLayoutName = model.AdminLayoutName;
+				storeFrontToEdit.AdminThemeId = model.AdminThemeId;
 				storeFrontToEdit.CatalogCategoryColLg = model.CatalogCategoryColLg;
 				storeFrontToEdit.CatalogCategoryColMd = model.CatalogCategoryColMd;
 				storeFrontToEdit.CatalogCategoryColSm = model.CatalogCategoryColSm;
 				storeFrontToEdit.CatalogLayoutName = model.CatalogLayoutName;
+				storeFrontToEdit.CatalogThemeId = model.CatalogThemeId;
 				storeFrontToEdit.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
 				storeFrontToEdit.CatalogProductColLg = model.CatalogProductColLg;
 				storeFrontToEdit.CatalogProductColMd = model.CatalogProductColMd;
 				storeFrontToEdit.CatalogProductColSm = model.CatalogProductColSm;
 				storeFrontToEdit.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
+				storeFrontToEdit.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				storeFrontToEdit.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
 				storeFrontToEdit.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
 				storeFrontToEdit.HtmlFooter = model.HtmlFooter;
@@ -197,11 +201,12 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToEdit.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
 				storeFrontToEdit.NotFoundError_PageId = model.NotFoundError_PageId;
 				storeFrontToEdit.NotificationsLayoutName = model.NotificationsLayoutName;
+				storeFrontToEdit.NotificationsThemeId = model.NotificationsThemeId;
 				storeFrontToEdit.ProfileLayoutName = model.ProfileLayoutName;
+				storeFrontToEdit.ProfileThemeId = model.ProfileThemeId;
 				storeFrontToEdit.PublicUrl = model.PublicUrl;
 				storeFrontToEdit.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;
 				storeFrontToEdit.StoreError_PageId = model.StoreError_PageId;
-				storeFrontToEdit.ThemeId = model.ThemeId;
 				storeFrontToEdit.WelcomePerson_UserProfileId = model.WelcomePerson_UserProfileId;
 
 				GStoreDb.StoreFronts.Update(storeFrontToEdit);

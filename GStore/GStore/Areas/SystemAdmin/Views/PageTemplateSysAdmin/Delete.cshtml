@@ -1,0 +1,160 @@
+﻿@model GStore.Models.PageTemplate
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDeletePageTitle text-danger">Confirm Page Template Delete</h2>
+</div>
+<div class="row">
+	<h3 class="col-md-offset-4 col-md-8 text-danger text-left">Are you sure you want to delete Page Template: <br />'@(Model.Name)' [@(Model.PageTemplateId)]?</h3>
+</div>
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 form-actions no-color text-left">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+<hr />
+<div class="row">
+	<dl class="dl-horizontal">
+		<dt>
+			Page Template Sections
+		</dt>
+		<dd>
+			@Html.ActionLink("View Sections", "SectionIndex", "PageTemplateSysAdmin", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })<br />
+			Active: @Model.Sections.AsQueryable().WhereIsActive().Count() / Total @Model.Sections.Count()
+		</dd>
+		<dt>
+			@Html.DisplayNameFor(model => model.PageTemplateId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.PageTemplateId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Description)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Description)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ViewName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ViewName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.LayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.LayoutName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
+		</dd>
+
+	</dl>
+</div>
+<hr />
+<div class="row">
+	<div class="col-md-offset-4 col-md-8 form-actions no-color text-left">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+<hr />
+<p>
+	@Html.ActionLink("Back to List", "Index")
+</p>

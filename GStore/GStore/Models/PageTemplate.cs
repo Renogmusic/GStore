@@ -10,6 +10,8 @@ namespace GStore.Models
 	[Table("PageTemplates")]
 	public class PageTemplate : BaseClasses.AuditFieldsAllRequired
 	{
+		[Key]
+		[Display(Name="Page Template Id")]
 		public int PageTemplateId { get; set; }
 
 		[Required]
@@ -24,12 +26,19 @@ namespace GStore.Models
 		[Required]
 		public string Description { get; set; }
 
+		/// <summary>
+		/// Name of the file name View for MVC to display in the /Views/Page folder  without the .cshtml extension
+		/// example: "Welcome"  to point this template to "/Views/Page/Welcome.cshtml"
+		/// </summary>
 		[Required]
-		[Display(Name = "View Name")]
+		[Display(Name = "View Name (file name without .cshtml)", ShortName="View Name")]
 		public string ViewName { get; set; }
 
+		/// <summary>
+		/// Always "Bootstrap" until we have more layout master pages
+		/// </summary>
 		[Required]
-		[Display(Name="Layout Name")]
+		[Display(Name="Layout Name (always 'Bootstrap')", ShortName="'Bootstrap'")]
 		public string LayoutName { get; set; }
 
 		public virtual ICollection<PageTemplateSection> Sections { get; set; }

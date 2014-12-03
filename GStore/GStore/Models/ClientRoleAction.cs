@@ -8,7 +8,7 @@ using System.Web;
 namespace GStore.Models
 {
 	[Table("ClientRoleActions")]
-	public class ClientRoleAction : BaseClasses.ClientLiveRecord
+	public class ClientRoleAction : BaseClasses.ClientRecord
 	{
 		[Key]
 		public int ClientRoleActionId { get; set; }

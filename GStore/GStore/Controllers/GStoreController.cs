@@ -17,6 +17,14 @@ namespace GStore.Controllers
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+			}
+		}
+
 		public ActionResult About()
 		{
 			return View("About");

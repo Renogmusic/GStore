@@ -49,7 +49,7 @@ namespace GStore.Models.ViewModels
 					return null;
 				}
 
-				return CurrentCategoryOrNull.Products.WhereIsActive().ToList();
+				return CurrentCategoryOrNull.Products.AsQueryable().WhereIsActive().ToList();
 			}
 		}
 	}

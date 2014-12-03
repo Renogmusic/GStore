@@ -263,6 +263,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
+			ViewBag.ClientList = ClientList();
 
 			return View(valueListItem);
 		}

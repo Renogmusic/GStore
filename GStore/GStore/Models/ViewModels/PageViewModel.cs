@@ -10,17 +10,23 @@ namespace GStore.Models.ViewModels
 {
 	public class PageViewModel
 	{
-		public PageViewModel(Page page, bool showEditPageLink, bool editMode, bool autoPost)
+		public PageViewModel(Page page, bool showEditPageLink, bool editMode, bool autoPost, bool forTemplateSyncOnly, int? pageTemplateIdForSync)
 		{
-			if (page == null)
+			if (page == null && !forTemplateSyncOnly)
 			{
-				throw new ArgumentNullException("page", "page must be specified for page view model");
+				throw new ArgumentNullException("page", "page must be specified for page view model or forTemplateSyncOnly must be true");
+			}
+			if (forTemplateSyncOnly && !pageTemplateIdForSync.HasValue)
+			{
+				throw new ArgumentNullException("pageTemplateIdForSync", "PageTemplateIdForSync must be specified when forTemplateSyncOnly is true");
 			}
 
 			this.Page = page;
 			this.EditMode = editMode;
 			this.AutoPost = autoPost;
 			this.ShowEditPageLink = showEditPageLink;
+			this.ForTemplateSyncOnly = forTemplateSyncOnly;
+			this.PageTemplateIdForSync = pageTemplateIdForSync;
 		}
 
 		public Page Page { get; set; }
@@ -33,6 +39,12 @@ namespace GStore.Models.ViewModels
 
 		[Display(Name = "Auto-Post")]
 		public bool AutoPost { get; set; }
+
+		[Display(Name = "For Sync Only")]
+		public bool ForTemplateSyncOnly { get; set; }
+
+		public int? PageTemplateIdForSync { get; set; }
+
 
 	}
 }

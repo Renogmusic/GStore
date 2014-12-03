@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GStore.Models
 {
 	[Table("ValueLists")]
-	public class ValueList : BaseClasses.ClientLiveRecord
+	public class ValueList : BaseClasses.ClientRecord
 	{
 		[Key]
 		[Display(Name = "Value List Id")]

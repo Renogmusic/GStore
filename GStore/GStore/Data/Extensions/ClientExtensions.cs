@@ -37,6 +37,28 @@ namespace GStore.Data
 			client.UseTwilioSms = false;
 		}
 
+		public static void SetDefaultsForNew(this PageTemplate pageTemplate)
+		{
+			pageTemplate.Name = "New Page Template";
+			pageTemplate.Description = string.Empty;
+			pageTemplate.LayoutName = "Bootstrap";
+			pageTemplate.Order = 1000;
+			pageTemplate.ViewName = string.Empty;
+			pageTemplate.IsPending = false;
+			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+		}
+
+		public static void SetDefaultsForNew(this PageTemplateSection pageTemplateSection, PageTemplate pageTemplate)
+		{
+			pageTemplateSection.Name = "New Page Template Section";
+			pageTemplateSection.Order = 1000;
+			pageTemplateSection.PageTemplateId = (pageTemplate == null ? 0 : pageTemplate.PageTemplateId);
+			pageTemplateSection.IsPending = false;
+			pageTemplateSection.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			pageTemplateSection.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+		}
+
 		public static void SetDefaultsForNew(this ValueList valueList, int? clientId)
 		{
 			valueList.AllowDelete = true;

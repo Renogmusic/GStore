@@ -131,9 +131,9 @@ namespace GStore.Identity
 			{
 				return false;
 			}
-			return userProfile.ClientUserRoles
+			return userProfile.ClientUserRoles.AsQueryable()
 				.WhereIsActiveAndIsInScope(storeFront)
-				.Any(cur => cur.ClientRole.ClientRoleActions.WhereIsActive().Where(cra => cra.GStoreActionId == action).Any());
+				.Any(cur => cur.ClientRole.ClientRoleActions.AsQueryable().WhereIsActive().Where(cra => cra.GStoreActionId == action).Any());
 		}
 
 		/// <summary>
@@ -147,12 +147,12 @@ namespace GStore.Identity
 		{
 			//returns true if there is an active ClientUserRoleAction 
 			return db.ClientRoleActions
-				.Where(cra => cra.ClientRole.ClientUserRoles.WhereIsActiveAndIsInScope(storeFront).Any(cur => cur.UserProfileId == userProfile.UserProfileId))
+				.Where(cra => cra.ClientRole.ClientUserRoles.AsQueryable().WhereIsActiveAndIsInScope(storeFront).Any(cur => cur.UserProfileId == userProfile.UserProfileId))
 				.WhereIsActive()
 				.ToList();
 		}
 
-		public static IEnumerable<ClientUserRole> WhereIsActiveAndIsInScope(this IEnumerable<ClientUserRole> query, StoreFront storeFront)
+		public static IQueryable<ClientUserRole> WhereIsActiveAndIsInScope(this IQueryable<ClientUserRole> query, StoreFront storeFront)
 		{
 			return query.WhereIsActive()
 				.Where(cur => cur.ClientId == storeFront.ClientId && (cur.ScopeStoreFront == null || cur.ScopeStoreFrontId == storeFront.StoreFrontId));

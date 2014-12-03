@@ -80,6 +80,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFront = GStoreDb.StoreFronts.Create(storeFront);
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Add(storeFront);
+				AddUserMessage("Store Front Added", "Store Front '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//create folders for new Store Front if they don't exist already
@@ -150,6 +151,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Update(storeFront);
+				AddUserMessage("Store Front Updated", "Store Front '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//detect if folder name has changed

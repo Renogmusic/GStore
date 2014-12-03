@@ -7,7 +7,7 @@ using System.Web.Mvc;
 namespace GStore.Models
 {
 	[Table("StoreFronts")]
-	public class StoreFront : BaseClasses.ClientLiveRecord
+	public class StoreFront : BaseClasses.ClientRecord
 	{
 		[Key]
 		[Display(Name = "Store Front Id")]
@@ -71,25 +71,67 @@ namespace GStore.Models
 		[Display(Name = "Default Layout Name")]
 		public string DefaultNewPageLayoutName { get; set; }
 
+		[Display(Name = "Default Theme")]
+		[ForeignKey("DefaultNewPageThemeId")]
+		public virtual Theme DefaultNewPageTheme { get; set; }
+
+		[Display(Name = "Default Theme Id")]
+		public int DefaultNewPageThemeId { get; set; }
+
 		[Required]
 		[Display(Name = "Account Layout Name")]
 		public string AccountLayoutName { get; set; }
+
+		[Display(Name = "Account Theme")]
+		[ForeignKey("AccountThemeId")]
+		public virtual Theme AccountTheme { get; set; }
+
+		[Display(Name = "Account Theme Id")]
+		public int AccountThemeId { get; set; }
 
 		[Required]
 		[Display(Name = "Profile Layout Name")]
 		public string ProfileLayoutName { get; set; }
 
+		[Display(Name = "Profile Theme")]
+		[ForeignKey("ProfileThemeId")]
+		public virtual Theme ProfileTheme { get; set; }
+
+		[Display(Name = "Profile Theme Id")]
+		public int ProfileThemeId { get; set; }
+
 		[Required]
 		[Display(Name = "Notifications Layout Name")]
 		public string NotificationsLayoutName { get; set; }
+
+		[Display(Name = "Notifications Theme")]
+		[ForeignKey("NotificationsThemeId")]
+		public virtual Theme NotificationsTheme { get; set; }
+
+		[Display(Name = "Notifications Theme Id")]
+		public int NotificationsThemeId { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Layout Name")]
 		public string CatalogLayoutName { get; set; }
 
+		[Display(Name = "Catalog Theme")]
+		[ForeignKey("CatalogThemeId")]
+		public virtual Theme CatalogTheme { get; set; }
+
+		[Display(Name = "Catalog Theme Id")]
+		public int CatalogThemeId { get; set; }
+
 		[Required]
 		[Display(Name = "Store Admin Layout Name")]
 		public string AdminLayoutName { get; set; }
+
+		[Display(Name = "Store Admin Theme")]
+		[ForeignKey("AdminThemeId")]
+		public virtual Theme AdminTheme { get; set; }
+
+		[Display(Name = "Store Admin Theme Id")]
+		public int AdminThemeId { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Category col-sm")]
@@ -120,12 +162,6 @@ namespace GStore.Models
 
 		[Display(Name = "Google Analytics Web Property Id")]
 		public string GoogleAnalyticsWebPropertyId { get; set; }
-
-		[ForeignKey("ThemeId")]
-		public virtual Theme Theme { get; set; }
-
-		[Display(Name = "Theme Id")]
-		public int ThemeId { get; set; }
 
 		[ForeignKey("WelcomePerson_UserProfileId")]
 		[Display(Name = "Welcome Person")]
@@ -183,6 +219,7 @@ namespace GStore.Models
 
 		[Display(Name = "User Profiles")]
 		public virtual ICollection<UserProfile> UserProfiles { get; set; }
+
 		public virtual ICollection<Notification> Notifications { get; set; }
 
 

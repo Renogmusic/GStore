@@ -2,7 +2,23 @@
 by Prosperino "Reno" Gallipoli
 renogmusic@yahoo.com
 
---installing:
+Personal Home Page
+http://www.renog.info
+
+GStore Home Page
+http://www.gstore.renog.info
+
+
+GStore eCommerce Site Builder and CMS Platform
+Copyright (C) 2014 Prosperino Gallipoli
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ --installing:
 download the solution file, ctrl-B to build, F5 to run.
 the app will build out the database structure, run migrations, and seed the database with a sample storefront, client, and sample site pages.
 two users are created by the seed class;   

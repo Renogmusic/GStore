@@ -45,14 +45,6 @@
 		</div>
 
 		<div class="form-group">
-			@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.DropDownList("ThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.ThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
 			@Html.LabelFor(model => model.EnableGoogleAnalytics, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
 				@Html.EditorFor(model => model.EnableGoogleAnalytics, new { htmlAttributes = new { @class = "form-control" } })
@@ -253,10 +245,26 @@
 		</div>
 
 		<div class="form-group">
+			@Html.LabelFor(model => model.AccountThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("AccountThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.AccountThemeId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
 			@Html.LabelFor(model => model.AccountLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
 				@Html.EditorFor(model => model.AccountLayoutName, new { htmlAttributes = new { @class = "form-control" } })
 				@Html.ValidationMessageFor(model => model.AccountLayoutName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.AdminThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("AdminThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.AdminThemeId, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
@@ -269,10 +277,26 @@
 		</div>
 
 		<div class="form-group">
+			@Html.LabelFor(model => model.CatalogThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("CatalogThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.CatalogThemeId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
 			@Html.LabelFor(model => model.CatalogLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
 				@Html.EditorFor(model => model.CatalogLayoutName, new { htmlAttributes = new { @class = "form-control" } })
 				@Html.ValidationMessageFor(model => model.CatalogLayoutName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.DefaultNewPageThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("DefaultNewPageThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.DefaultNewPageThemeId, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
@@ -285,10 +309,26 @@
 		</div>
 
 		<div class="form-group">
+			@Html.LabelFor(model => model.NotificationsThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("NotificationsThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.NotificationsThemeId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
 			@Html.LabelFor(model => model.NotificationsLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
 				@Html.EditorFor(model => model.NotificationsLayoutName, new { htmlAttributes = new { @class = "form-control" } })
 				@Html.ValidationMessageFor(model => model.NotificationsLayoutName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.ProfileThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("ProfileThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ProfileThemeId, "", new { @class = "text-danger" })
 			</div>
 		</div>
 

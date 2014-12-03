@@ -31,6 +31,15 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.AdminTheme.FolderName;
+			}
+		}
+
+
 		public GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel StoreAdminViewModel
 		{
 			get

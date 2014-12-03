@@ -30,12 +30,25 @@ namespace GStore.Controllers.BaseClass
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				Models.Page page = CurrentPageOrNull;
+				if (page == null)
+				{
+					throw new ApplicationException("StoreFront error; unknown theme");
+				}
+				return page.Theme.FolderName;
+			}
+		}
+
 		public virtual ActionResult Display()
 		{
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
 			bool showPageEditLink = CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrNull, GStoreAction.Pages_Edit);
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false, false, null));
 		}
 
 		[HttpGet]
@@ -50,7 +63,7 @@ namespace GStore.Controllers.BaseClass
 
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost, false, null));
 		}
 
 		[HttpPost]

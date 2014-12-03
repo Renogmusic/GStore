@@ -250,6 +250,7 @@
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\StoreAdminAreaRegistration.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BaseClasses\SystemAdminBaseController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\PageTemplateSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ValueListSysAdminController.cs" />
@@ -276,8 +277,13 @@
     <Compile Include="Data\Extensions\NewStoreFrontExtensions.cs" />
     <Compile Include="Identity\AuthorizeGStoreAction.cs" />
     <Compile Include="Identity\GStoreAction.cs" />
-    <Compile Include="Identity\UNUSED_GStoreClaims.cs">
-      <SubType>Code</SubType>
+    <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.cs" />
+    <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.Designer.cs">
+      <DependentUpon>201412030922308_AddIsPendingToTemplates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412031630528_movethemes.cs" />
+    <Compile Include="Migrations\201412031630528_movethemes.Designer.cs">
+      <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
     <Compile Include="Models\ClientRoleAction.cs" />
@@ -308,9 +314,7 @@
     </Compile>
     <Compile Include="Hubs\NotifyHub.cs" />
     <Compile Include="Models\BaseClasses\AuditFieldsAllRequired.cs" />
-    <Compile Include="Models\BaseClasses\ClientLiveRecord.cs" />
     <Compile Include="Models\BaseClasses\ClientRecord.cs" />
-    <Compile Include="Models\BaseClasses\StoreFrontLiveRecord.cs" />
     <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
     <Compile Include="Exceptions\AppDefinedExceptions.cs" />
     <Compile Include="Data\Extensions\StoreFrontExtensions.cs" />
@@ -502,19 +506,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Server\Styles\GStoreApp.css" />
-    <Content Include="Models\UserProfile.cd" />
     <Content Include="Areas\StoreAdmin\Views\web.config" />
     <Content Include="Areas\StoreAdmin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\StoreAdmin\Index.cshtml" />
-    <Content Include="Models\BaseClasses\AuditFieldsAllRequired.cd" />
-    <Content Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cd" />
-    <Content Include="Models\BaseClasses\EventLogBase.cd" />
-    <Content Include="Models\StoreFront.cd" />
-    <Content Include="Models\BaseClasses\ClientLiveRecord.cd" />
-    <Content Include="Models\BaseClasses\ClientRecord.cd" />
-    <Content Include="Models\BaseClasses\StoreFrontLiveRecord.cd" />
-    <Content Include="Models\BaseClasses\StoreFrontRecord.cd" />
-    <Content Include="Models\Client.cd" />
     <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.woff" />
@@ -634,13 +628,37 @@
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Theme.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Page.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageNoLinks.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueList.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageTemplateSection.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueListNoLinks.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemIndex.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemCreate.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemEdit.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemDetails.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\ListItemDelete.cshtml" />
+    <Content Include="Models\BaseClasses\AuditFieldsAllRequired.cd" />
+    <Content Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cd" />
+    <Content Include="Models\BaseClasses\ClientRecord.cd" />
+    <Content Include="Models\BaseClasses\EventLogBase.cd" />
+    <Content Include="Models\BaseClasses\GStoreEntity.cd" />
+    <Content Include="Models\BaseClasses\StoreFrontRecord.cd" />
+    <Content Include="Models\Client.cd" />
+    <Content Include="Models\StoreFront.cd" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\Index.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageTemplate.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageTemplateNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\PageTemplateSectionNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueList.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionCreate.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionDelete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionDetails.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionEdit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionIndex.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Theme.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\UserProfile.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1085,6 +1103,14 @@
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Categories\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Products\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Styles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201412030922308_AddIsPendingToTemplates.resx">
+      <DependentUpon>201412030922308_AddIsPendingToTemplates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412031630528_movethemes.resx">
+      <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

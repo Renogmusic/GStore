@@ -18,6 +18,8 @@ namespace GStore.Controllers.BaseClass
 		/// </summary>
 		protected abstract string LayoutName { get; }
 
+		protected abstract string ThemeFolderName { get; }
+
 		protected IGstoreDb _dbContext = null;
 		protected bool _throwErrorIfStoreFrontNotFound = true;
 		protected bool _throwErrorIfUserProfileNotFound = false;
@@ -38,39 +40,95 @@ namespace GStore.Controllers.BaseClass
 		{
 			get
 			{
-				try 
-				{	        
-					return LayoutName;
-				}
-				catch (Exceptions.DynamicPageInactiveException dpiEx)
+				try
 				{
-					//dynamic page is inactive, return storefront default layout
-					return dpiEx.StoreFront.DefaultNewPageLayoutName;
-				}
-				catch (Exceptions.DynamicPageNotFoundException dpnfEx)
-				{
-					//dynamic page not found, return storefront default layout
-					return dpnfEx.StoreFront.DefaultNewPageLayoutName;
-				}
-				catch (Exceptions.NoMatchingBindingException)
-				{
-					//no storefront found, return app default layout
-					return Properties.Settings.Current.AppDefaultLayoutName;
-				}
-				catch (Exceptions.StoreFrontInactiveException)
-				{
-					//storefront is inactive, return app default layout
-					return Properties.Settings.Current.AppDefaultLayoutName;
+					try
+					{
+						return LayoutName;
+					}
+					catch (Exceptions.DynamicPageInactiveException dpiEx)
+					{
+						//dynamic page is inactive, return storefront default layout
+						return dpiEx.StoreFront.DefaultNewPageLayoutName;
+					}
+					catch (Exceptions.DynamicPageNotFoundException dpnfEx)
+					{
+						//dynamic page not found, return storefront default layout
+						return dpnfEx.StoreFront.DefaultNewPageLayoutName;
+					}
+					catch (Exceptions.NoMatchingBindingException)
+					{
+						//no storefront found, return app default layout
+						return Properties.Settings.Current.AppDefaultLayoutName;
+					}
+					catch (Exceptions.StoreFrontInactiveException)
+					{
+						//storefront is inactive, return app default layout
+						return Properties.Settings.Current.AppDefaultLayoutName;
+					}
+					catch (Exception)
+					{
+						//unknown exception, use storefront default layout
+						if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
+						{
+							//couldn't get storefront, use app default layout
+							return Properties.Settings.Current.AppDefaultLayoutName;
+						}
+						return CurrentStoreFrontOrThrow.DefaultNewPageLayoutName;
+					}
 				}
 				catch (Exception)
 				{
-					//unknown exception, use storefront default layout
-					if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
+					return Properties.Settings.Current.AppDefaultLayoutName;
+				}
+
+			}
+		}
+
+		public virtual string ThemeFolderNameToUse
+		{
+			get
+			{
+				try
+				{
+					try
 					{
-						//couldn't get storefront, use app default layout
-						return Properties.Settings.Current.AppDefaultLayoutName;
+						return ThemeFolderName;
 					}
-					return CurrentStoreFrontOrThrow.DefaultNewPageLayoutName;
+					catch (Exceptions.DynamicPageInactiveException dpiEx)
+					{
+						//dynamic page is inactive, return storefront default theme
+						return dpiEx.StoreFront.DefaultNewPageTheme.FolderName;
+					}
+					catch (Exceptions.DynamicPageNotFoundException dpnfEx)
+					{
+						//dynamic page not found, return storefront default theme
+						return dpnfEx.StoreFront.DefaultNewPageTheme.FolderName;
+					}
+					catch (Exceptions.NoMatchingBindingException)
+					{
+						//no storefront found, return app default theme
+						return Properties.Settings.Current.AppDefaultThemeFolderName;
+					}
+					catch (Exceptions.StoreFrontInactiveException)
+					{
+						//storefront is inactive, return app default theme
+						return Properties.Settings.Current.AppDefaultThemeFolderName;
+					}
+					catch (Exception)
+					{
+						//unknown exception, use storefront default theme
+						if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
+						{
+							//couldn't get storefront, use app default layout
+							return Properties.Settings.Current.AppDefaultThemeFolderName;
+						}
+						return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+					}
+				}
+				catch (Exception)
+				{
+					return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
 				}
 			}
 		}

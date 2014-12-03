@@ -248,6 +248,10 @@ namespace GStore.Data
 				theme.Order = 2000 + counter;
 				theme.FolderName = themeFolder.Name;
 				theme.Description = themeFolder.Name + " theme";
+				theme.IsPending = false;
+				theme.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+				theme.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
 				storeDb.Themes.Add(theme);
 			}
 			storeDb.SaveChangesEx(true, false, false, false);
@@ -256,6 +260,7 @@ namespace GStore.Data
 		public static Client CreateSeedClient(this IGstoreDb storeDb, string clientName, string clientFolder)
 		{
 			Client client = storeDb.Clients.Create();
+			client.IsPending = false;
 			client.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			client.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			client.Name = clientName;
@@ -277,6 +282,7 @@ namespace GStore.Data
 
 			storeFront.Name = storeFrontName;
 			storeFront.Folder = storeFrontFolder;
+			storeFront.IsPending = false;
 			storeFront.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeFront.Client = client;
@@ -284,17 +290,22 @@ namespace GStore.Data
 			storeFront.AccountAdmin = adminProfile;
 			storeFront.RegisteredNotify = adminProfile;
 			storeFront.WelcomePerson = adminProfile;
-			storeFront.Theme = selectedTheme;
 			storeFront.MetaApplicationName = storeFrontName;
 			storeFront.MetaApplicationTileColor = "#880088";
 			storeFront.MetaDescription = "New GStore Storefront " + storeFrontName;
 			storeFront.MetaKeywords = "GStore Storefront " + storeFrontName;
 			storeFront.AdminLayoutName = layout;
+			storeFront.AdminTheme = selectedTheme; 
 			storeFront.AccountLayoutName = layout;
+			storeFront.AccountTheme = selectedTheme; 
 			storeFront.ProfileLayoutName = layout;
+			storeFront.ProfileTheme = selectedTheme;
 			storeFront.NotificationsLayoutName = layout;
+			storeFront.NotificationsTheme = selectedTheme;
 			storeFront.CatalogLayoutName = layout;
+			storeFront.CatalogTheme = selectedTheme;
 			storeFront.DefaultNewPageLayoutName = layout;
+			storeFront.DefaultNewPageTheme = selectedTheme;
 			storeFront.CatalogPageInitialLevels = 6;
 			storeFront.NavBarCatalogMaxLevels = 6;
 			storeFront.NavBarItemsMaxLevels = 6;
@@ -468,6 +479,7 @@ namespace GStore.Data
 			StoreBinding storeBinding = storeDb.StoreBindings.Create();
 			storeBinding.ClientId = storeFront.ClientId;
 			storeBinding.StoreFrontId = storeFront.StoreFrontId;
+			storeBinding.IsPending = false;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 
@@ -491,6 +503,7 @@ namespace GStore.Data
 			StoreBinding storeBinding = storeDb.StoreBindings.Create();
 			storeBinding.ClientId = storeFront.ClientId;
 			storeBinding.StoreFrontId = storeFront.StoreFrontId;
+			storeBinding.IsPending = false;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeBinding.RootPath = "/";
@@ -522,6 +535,9 @@ namespace GStore.Data
 			pageTemplate.Description = "Auto-generated Page Template";
 			pageTemplate.LayoutName = layout;
 			pageTemplate.ViewName = viewName;
+			pageTemplate.IsPending = false;
+			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeDb.PageTemplates.Add(pageTemplate);
 			storeDb.SaveChangesEx(true, false, false, false);
 
@@ -575,6 +591,7 @@ namespace GStore.Data
 			page.Name = name;
 			page.PageTitle = pageTitle;
 			page.Public = true;
+			page.IsPending = false;
 			page.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			page.StoreFrontId = storeFront.StoreFrontId;
@@ -595,6 +612,7 @@ namespace GStore.Data
 			newItem.PageId = pageId;
 			newItem.Name = name;
 			newItem.Order = 100;
+			newItem.IsPending = false;
 			newItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			newItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			newItem.ForRegisteredOnly = forRegisteredOnly;
@@ -622,6 +640,7 @@ namespace GStore.Data
 			newItem.Area = area;
 			newItem.Name = name;
 			newItem.Order = order;
+			newItem.IsPending = false;
 			newItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			newItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			newItem.ForRegisteredOnly = forRegisteredOnly;
@@ -650,6 +669,7 @@ namespace GStore.Data
 			category.ImageName = urlName + ".png";
 			category.ShowIfEmpty = showIfEmpty;
 			category.ShowInMenu = true;
+			category.IsPending = false;
 			category.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			category.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			category.UseDividerAfterOnMenu = false;
@@ -673,6 +693,7 @@ namespace GStore.Data
 			product.Name = name;
 			product.UrlName = urlName;
 			product.Order = order;
+			product.IsPending = false;
 			product.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			product.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			product.Category = category;

@@ -33,6 +33,14 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return Properties.Settings.Current.AppDefaultThemeFolderName;
+			}
+		}
+
 		protected SelectList ClientFilterListEx(int? clientId, bool showAllOption = true, bool showNullOption = false, bool defaultNull = false)
 		{
 			int filterId = 0;
@@ -343,6 +351,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 		}
 
+
 		protected void ValidateClientFolder(Client client)
 		{
 			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Folder.ToLower() == client.Folder.ToLower()).Any())
@@ -398,6 +407,42 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				if (ModelState.ContainsKey("Name"))
 				{
 					ModelState["Name"].Value = new ValueProviderResult(storeFront.Name, storeFront.Name, null);
+				}
+			}
+		}
+
+		protected void ValidatePageTemplateName(PageTemplate pageTemplate)
+		{
+			if (GStoreDb.PageTemplates.Where(pt => pt.PageTemplateId != pageTemplate.PageTemplateId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any())
+			{
+				this.ModelState.AddModelError("Name", "Page Template name '" + pageTemplate.Name + "' is already in use. Please choose a new name");
+				bool nameIsDirty = true;
+				while (nameIsDirty)
+				{
+					pageTemplate.Name = pageTemplate.Name + "_New";
+					nameIsDirty = GStoreDb.PageTemplates.Where(pt => pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any();
+				}
+				if (ModelState.ContainsKey("Name"))
+				{
+					ModelState["Name"].Value = new ValueProviderResult(pageTemplate.Name, pageTemplate.Name, null);
+				}
+			}
+		}
+
+		protected void ValidatePageTemplateSectionName(PageTemplateSection pageTemplateSection)
+		{
+			if (GStoreDb.PageTemplateSections.Where(pt => pt.PageTemplateSectionId != pageTemplateSection.PageTemplateSectionId && pt.Name.ToLower() == pageTemplateSection.Name.ToLower()).Any())
+			{
+				this.ModelState.AddModelError("Name", "Page Template Section Name '" + pageTemplateSection.Name + "' is already in use. Please choose a new name");
+				bool nameIsDirty = true;
+				while (nameIsDirty)
+				{
+					pageTemplateSection.Name = pageTemplateSection.Name + "_New";
+					nameIsDirty = GStoreDb.PageTemplates.Where(pt => pt.Name.ToLower() == pageTemplateSection.Name.ToLower()).Any();
+				}
+				if (ModelState.ContainsKey("Name"))
+				{
+					ModelState["Name"].Value = new ValueProviderResult(pageTemplateSection.Name, pageTemplateSection.Name, null);
 				}
 			}
 		}

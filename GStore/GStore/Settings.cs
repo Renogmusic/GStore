@@ -159,6 +159,14 @@
 			}
 		}
 
+		public string AppDefaultThemeFolderName
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppDefaultThemeFolderName") ?? _projectSettings.AppDefaultThemeFolderName;
+			}
+		}
+
 		public bool AppEnableBindingAutoMapCatchAll
 		{
 			get
@@ -406,6 +414,7 @@
                 return EnvironmentOrAppSettingBool("IdentityEnableTwoFactorAuth") ?? _projectSettings.IdentityEnableTwoFactorAuth;
             }
         }
+
 
 	}
 }

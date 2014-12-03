@@ -310,7 +310,7 @@ namespace GStore.Data
 			{
 				return new List<TreeNode<ProductCategory>>();
 			}
-			var query = storeFront.ProductCategories
+			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
 				.Where(cat => cat.ShowInMenu && (cat.ShowIfEmpty || cat.ChildActiveCount > 0))
 				.OrderBy(cat => cat.Order)
@@ -326,7 +326,7 @@ namespace GStore.Data
 				return new List<TreeNode<NavBarItem>>();
 			}
 
-			var query = storeFront.NavBarItems
+			var query = storeFront.NavBarItems.AsQueryable()
 				.WhereIsActive()
 				.Where(nav => isRegistered || !nav.ForRegisteredOnly)
 				.OrderBy(nav => nav.Order)
@@ -693,7 +693,7 @@ namespace GStore.Data
 			foreach (ProductCategory category in categories)
 			{
 				//foreach category, calculate direct activecount
-				int activeCount = category.Products.WhereIsActive().Count();
+				int activeCount = category.Products.AsQueryable().WhereIsActive().Count();
 				category.DirectActiveCount = activeCount;
 			}
 
@@ -820,6 +820,9 @@ namespace GStore.Data
 			newSection.Order = order;
 			newSection.DefaultRawHtmlValue = defaultRawHtmlValue;
 			newSection.Description = description;
+			newSection.IsPending = false;
+			newSection.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			newSection.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			db.PageTemplateSections.Add(newSection);
 			db.SaveChanges();
 			return newSection;

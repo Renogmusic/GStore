@@ -33,17 +33,22 @@
 		string metaApplicationTileColor = "880088";
 		string metaDescription = "GStore Store Front";
 		string metaKeywords = "GStore Store Front";
-		string themeFolderName = GStore.Properties.Settings.Current.SystemAdminThemeFolderName;
+		string themeFolderName = Html.ThemeFolderName();
 		if (storeFront != null)
 		{
 			metaApplicationName = storeFront.MetaApplicationName;
 			metaApplicationTileColor = storeFront.MetaApplicationTileColor;
 			metaDescription = storeFront.MetaDescription;
 			metaKeywords = storeFront.MetaKeywords;
-			themeFolderName = storeFront.Theme.FolderName;
 		}
 
-		
+		if (page != null)
+		{
+			metaDescription = page.MetaDescription;
+			metaKeywords = page.MetaKeywords;
+		}
+
+
 		MenuViewModel menuViewModel = Html.MenuViewModel(storeFront, userProfile);
 
 	}

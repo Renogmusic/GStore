@@ -52,10 +52,43 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			return View("Index");
         }
 
+		public ActionResult ClearLogFolder(string folder)
+		{
+			if (string.IsNullOrEmpty(folder))
+			{
+				return HttpBadRequest("Folder is null");
+			}
+
+			//get folder
+			string virtualPath = EventLogExtensions.GStoreLogConstantNameToPath(folder);
+			string folderPath = Server.MapPath(virtualPath);
+
+			if (!System.IO.Directory.Exists(folderPath))
+			{
+				AddUserMessage("Log Folder does not exist", "Log Folder for " + folder + " does not exist, no need to delete", AppHtmlHelpers.UserMessageType.Info);
+				return RedirectToAction("Index");
+			}
+
+			//delete folder too
+			try
+			{
+				System.IO.Directory.Delete(folderPath, true);
+				AddUserMessage("Log Folder Cleared!", "Log folder " + folder + " cleared!", AppHtmlHelpers.UserMessageType.Success);
+				return RedirectToAction("Index");
+			}
+			catch (Exception ex)
+			{
+				AddUserMessage("Error clearing Log Folder!", "Error clearing log folder. Exception: " + ex.ToString(), AppHtmlHelpers.UserMessageType.Danger);
+			}
+
+			return RedirectToAction("Index");
+		}
+
 		public ActionResult ActivateCurrentInactiveStoreFront()
 		{
 			if (CurrentStoreFrontOrNull != null)
 			{
+				AddUserMessage("Activate Current Inactive Store Front not needed!", "Current Store Front is Already Active.", AppHtmlHelpers.UserMessageType.Warning);
 				return RedirectToAction("Index");
 			}
 

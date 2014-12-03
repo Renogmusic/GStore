@@ -149,6 +149,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 					newProfile.UserId = profile.Email;
 				}
 				newProfile = GStoreDb.UserProfiles.Add(newProfile);
+				AddUserMessage("User Profile Added", "User Profile '" + profile.FullName + "' &lt;" + profile.Email + " &gt; [" + profile.UserProfileId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				GStoreDb.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
@@ -206,6 +207,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				profile.UpdateAuditFields(CurrentUserProfileOrThrow);
 				profile = GStoreDb.UserProfiles.Update(profile);
+				AddUserMessage("User Profile Updated", "User Profile '" + profile.FullName + "' &lt;" + profile.Email + " &gt; [" + profile.UserProfileId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				return RedirectToAction("Index");

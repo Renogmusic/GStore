@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GStore.Models
 {
 	[Table("PageSections")]
-	public class PageSection : BaseClasses.StoreFrontLiveRecord
+	public class PageSection : BaseClasses.StoreFrontRecord
 	{
 		[Key]
 		[Editable(false)]
@@ -30,13 +30,13 @@ namespace GStore.Models
 
 		public int Order { get; set; }
 
-		[Display(Name = "Default")]
+		[Display(Name = "Is Default")]
 		public bool UseDefaultFromTemplate { get; set; }
 
-		[Display(Name = "Blank")]
+		[Display(Name = "Is Blank")]
 		public bool HasNothing { get; set; }
 
-		[Display(Name = "Text")]
+		[Display(Name = "Is Text")]
 		public bool HasPlainText { get; set; }
 		
 		[System.Web.Mvc.AllowHtml]
@@ -44,7 +44,7 @@ namespace GStore.Models
 		[Display(Name = "Plain text")]
 		public string PlainText { get; set; }
 
-		[Display(Name = "HTML")]
+		[Display(Name = "Is HTML")]
 		public bool HasRawHtml { get; set; }
 		
 		[System.Web.Mvc.AllowHtml]

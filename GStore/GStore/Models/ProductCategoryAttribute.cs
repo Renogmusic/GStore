@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GStore.Models
 {
 	[Table("ProductCategoryAttributes")]
-	public class ProductCategoryAttribute : BaseClasses.StoreFrontLiveRecord
+	public class ProductCategoryAttribute : BaseClasses.StoreFrontRecord
 	{
 		[Key]
 		[Display(Name = "Product Category Attribute Id")]
@@ -44,10 +44,13 @@ namespace GStore.Models
 
 
 
+		[Display(Name = "Include in Search")]
 		public bool IncludeInSearch { get; set; }
 
+		[Display(Name = "Include in Top filters")]
 		public bool IncludeInTopFilters { get; set; }
 
+		[Display(Name = "Include in Side filters")]
 		public bool IncludeInSideFilters { get; set; }
 
 	}

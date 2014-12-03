@@ -25,6 +25,15 @@ namespace GStore.Controllers
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.CatalogTheme.FolderName;
+			}
+		}
+
+
 		public ActionResult ViewCategoryByName(string urlName)
 		{
 			if (string.IsNullOrWhiteSpace(urlName))
@@ -32,7 +41,7 @@ namespace GStore.Controllers
 				return Index();
 			}
 
-			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.Where(cat => cat.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
+			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
 			if (category == null)
 			{
 				return CategoryNotFound(urlName);
@@ -49,7 +58,7 @@ namespace GStore.Controllers
 				return Index();
 			}
 
-			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.Where(cat => cat.ProductCategoryId == id.Value).WhereIsActive().SingleOrDefault();
+			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.ProductCategoryId == id.Value).WhereIsActive().SingleOrDefault();
 			if (category == null)
 			{
 				return CategoryNotFound("Category Id: " + id);
@@ -65,7 +74,7 @@ namespace GStore.Controllers
 				return Index();
 			}
 
-			Models.Product product = CurrentStoreFrontOrThrow.Products.Where(prod => prod.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
+			Models.Product product = CurrentStoreFrontOrThrow.Products.AsQueryable().Where(prod => prod.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
 			if (product == null)
 			{
 				return ProductNotFound(urlName);
@@ -81,7 +90,7 @@ namespace GStore.Controllers
 				return Index();
 			}
 
-			Models.Product product = CurrentStoreFrontOrThrow.Products.Where(prod => prod.ProductId == id.Value).WhereIsActive().SingleOrDefault();
+			Models.Product product = CurrentStoreFrontOrThrow.Products.AsQueryable().Where(prod => prod.ProductId == id.Value).WhereIsActive().SingleOrDefault();
 			if (product == null)
 			{
 				return ProductNotFound("Product Id: " + id);

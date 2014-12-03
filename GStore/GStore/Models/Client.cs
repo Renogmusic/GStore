@@ -68,15 +68,6 @@ namespace GStore.Models
 		[Display(Name = "Twilio From Email")]
 		public string TwilioSmsFromEmail { get; set; }
 
-		[Display(Name = "Is Pending")]
-		public bool IsPending { get; set; }
-
-		[Display(Name = "Start Date")]
-		public DateTime StartDateTimeUtc { get; set; }
-
-		[Display(Name = "End Date")]
-		public DateTime EndDateTimeUtc { get; set; }
-
 		[Display(Name = "Store Fronts")]
 		public virtual ICollection<StoreFront> StoreFronts { get; set; }
 

@@ -33,6 +33,9 @@ else
 				@Html.ActionSortLinkFor(model => model.ClientId, "Index")
 			</th>
 			<th class="small text-left">
+				@Html.ActionSortLinkFor(model => model.Order, "Index")
+			</th>
+			<th class="small text-left">
 				@Html.ActionSortLinkFor(model => model.Name, "Index")
 			</th>
 			<th class="small">
@@ -89,6 +92,9 @@ else
 			</td>
 			<td>
 				@Html.DisplayFor(modelItem => item.ClientId)
+			</td>
+			<td class="text-left">
+				@Html.DisplayFor(modelItem => item.Order)
 			</td>
 			<td class="text-left">
 				@Html.DisplayFor(modelItem => item.Name)

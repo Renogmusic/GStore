@@ -22,6 +22,14 @@ namespace GStore.Controllers
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.NotificationsTheme.FolderName;
+			}
+		}
+
 		// GET: Notifications
 		public ActionResult Index()
 		{

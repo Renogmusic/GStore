@@ -30,6 +30,14 @@ namespace GStore.Controllers
 			}
 		}
 
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+			}
+		}
+
 		public ActionResult Images(string path)
 		{
 			return StoreFile("/Images/" + path, true);

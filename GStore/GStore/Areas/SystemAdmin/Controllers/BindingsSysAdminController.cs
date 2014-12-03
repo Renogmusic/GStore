@@ -67,6 +67,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeBinding = GStoreDb.StoreBindings.Add(storeBinding);
 				GStoreDb.SaveChanges();
+				AddUserMessage("Store Binding Added", "Store Binding [" + storeBinding.StoreBindingId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
 			int? clientId = null;
@@ -113,6 +114,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeBinding = GStoreDb.StoreBindings.Update(storeBinding);
 				GStoreDb.SaveChanges();
+				AddUserMessage("Store Binding Saved", "Store Binding [" + storeBinding.StoreBindingId + "] updated successfully.", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
 			ViewBag.ClientList = ClientList();

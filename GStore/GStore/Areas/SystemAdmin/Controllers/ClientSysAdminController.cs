@@ -63,6 +63,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				client = db.Clients.Create(client);
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
 				client = GStoreDb.Clients.Add(client);
+				AddUserMessage("Client Added", "Client '" + client.Name + "' [" + client.ClientId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				try
@@ -112,6 +113,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
 				client = GStoreDb.Clients.Update(client);
+				AddUserMessage("Client Updated", "Client '" + client.Name + "' [" + client.ClientId + "] updated!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//detect if folder name has changed
