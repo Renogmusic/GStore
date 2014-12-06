@@ -21,54 +21,67 @@ namespace GStore.Models
 		[DataType(DataType.Url)]
 		[Required]
 		[Display(Name = "Public Url")]
+		[MaxLength(200)]
 		public string PublicUrl { get; set; }
 
 		[Required]
+		[MaxLength(50)]
 		public string Folder { get; set; }
 
 		public int Order { get; set; }
 
 		[AllowHtml]
 		[Display(Name = "Footer Html")]
+		[MaxLength(250)]
 		public string HtmlFooter { get; set; }
 
 		[Required]
 		[Display(Name = "Meta Tag App Name")]
+		[MaxLength(250)]
 		public string MetaApplicationName { get; set; }
 
 		[Required]
 		[Display(Name = "Meta Tag Tile Color")]
+		[MaxLength(25)]
 		public string MetaApplicationTileColor { get; set; }
 
 		[Display(Name = "Meta Tag Description")]
+		[MaxLength(1000)]
 		public string MetaDescription { get; set; }
 
 		[Display(Name = "Meta Tag Keywords")]
+		[MaxLength(1000)]
 		public string MetaKeywords { get; set; }
 
 		[Display(Name = "Show Register link on Login Page")]
 		public bool AccountLoginShowRegisterLink { get; set; }
 
 		[Display(Name = "Register link text on Login Page")]
+		[MaxLength(50)]
 		public string AccountLoginRegisterLinkText { get; set; }
 
 		[Display(Name = "Show Register link on Nav Bar")]
 		public bool NavBarShowRegisterLink { get; set; }
 
 		[Display(Name = "Nav Bar Register link text")]
+		[MaxLength(50)]
 		public string NavBarRegisterLinkText { get; set; }
 
-		[Display(Name = "Nav Bar Catalog Max Levels")]
-		public int NavBarCatalogMaxLevels { get; set; }
-
 		[Display(Name = "Catalog Page Initial Levels")]
+		[Range(1, 6)]
 		public int CatalogPageInitialLevels { get; set; }
 
+		[Display(Name = "Nav Bar Catalog Max Levels")]
+		[Range(1, 6)]
+		public int NavBarCatalogMaxLevels { get; set; }
+
 		[Display(Name = "Nav Bar Items Max Levels")]
+		[Range(1, 6)]
 		public int NavBarItemsMaxLevels { get; set; }
 
 		[Required]
 		[Display(Name = "Default Layout Name")]
+		[MaxLength(10)]
 		public string DefaultNewPageLayoutName { get; set; }
 
 		[Display(Name = "Default Theme")]
@@ -80,6 +93,7 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Account Layout Name")]
+		[MaxLength(10)]
 		public string AccountLayoutName { get; set; }
 
 		[Display(Name = "Account Theme")]
@@ -91,6 +105,7 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Profile Layout Name")]
+		[MaxLength(10)]
 		public string ProfileLayoutName { get; set; }
 
 		[Display(Name = "Profile Theme")]
@@ -102,6 +117,7 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Notifications Layout Name")]
+		[MaxLength(10)]
 		public string NotificationsLayoutName { get; set; }
 
 		[Display(Name = "Notifications Theme")]
@@ -113,6 +129,7 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Catalog Layout Name")]
+		[MaxLength(10)]
 		public string CatalogLayoutName { get; set; }
 
 		[Display(Name = "Catalog Theme")]
@@ -124,6 +141,7 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Store Admin Layout Name")]
+		[MaxLength(10)]
 		public string AdminLayoutName { get; set; }
 
 		[Display(Name = "Store Admin Theme")]
@@ -135,32 +153,39 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Catalog Category col-sm")]
+		[Range(1, 12)]
 		public int CatalogCategoryColSm { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Category col-md")]
+		[Range(1, 12)]
 		public int CatalogCategoryColMd { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Category col-lg")]
+		[Range(1, 12)]
 		public int CatalogCategoryColLg { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Product col-sm")]
+		[Range(1, 12)]
 		public int CatalogProductColSm { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Product col-md")]
+		[Range(1, 12)]
 		public int CatalogProductColMd { get; set; }
 
 		[Required]
 		[Display(Name = "Catalog Product col-lg")]
+		[Range(1, 12)]
 		public int CatalogProductColLg { get; set; }
 
 		[Display(Name = "Enable Google Analytics")]
 		public bool EnableGoogleAnalytics { get; set; }
 
 		[Display(Name = "Google Analytics Web Property Id")]
+		[MaxLength(50)]
 		public string GoogleAnalyticsWebPropertyId { get; set; }
 
 		[ForeignKey("WelcomePerson_UserProfileId")]

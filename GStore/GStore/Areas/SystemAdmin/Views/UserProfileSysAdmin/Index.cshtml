@@ -2,205 +2,209 @@
 @using GStore.AppHtmlHelpers
 @using GStore.Models
 @using GStore.Data
+@using GStore.Areas.SystemAdmin
+
+@{
+	bool isFiltered = Html.ClientIsFiltered();
+	int? filterClientId = Html.FilterClientId();
+	bool hideStoreFrontFilter = (isFiltered && !filterClientId.HasValue) ? true : false;
+	IEnumerable<SelectListItem> storeFrontFilterList = ViewBag.StoreFrontFilterList as IEnumerable<SelectListItem>;
+
+}
+
 <style>
-	table th
-	{
+	table th {
 		text-align: center;
 	}
-	table td
-	{
+
+	table td {
 		text-align: center;
 	}
 </style>
+
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">User Manager</h2>
+
 <p>
 	@{
-		bool isfiltered = false;
-		using (Html.BeginForm("Index", "UserProfileSysAdmin", FormMethod.Get, new { name = "storefrontfilterform", style = "display: inline" }))
+		int? filterStoreFrontId = null;
+		using (Html.BeginForm("Index", "UserProfileSysAdmin", FormMethod.Post, new { name = "storefrontfilterform", style = "display: inline" }))
 		{
-			IEnumerable<SelectListItem> clientFilterList = ViewBag.ClientFilterList;
-			IEnumerable<SelectListItem> storeFrontFilterList = ViewBag.StoreFrontFilterList;
-			
-			var selectedClientItem = clientFilterList.Where(l => l.Selected).FirstOrDefault();
-			if (selectedClientItem == null || string.IsNullOrEmpty(selectedClientItem.Value))
-			{
-				isfiltered = true;
-			}
-			
 			var selectedStoreFrontItem = storeFrontFilterList.Where(l => l.Selected).FirstOrDefault();
-			if (selectedStoreFrontItem == null || string.IsNullOrEmpty(selectedStoreFrontItem.Value))
+			if (selectedStoreFrontItem != null && !string.IsNullOrEmpty(selectedStoreFrontItem.Value))
 			{
-				isfiltered = true;
+				isFiltered = true;
+				filterStoreFrontId = int.Parse(selectedStoreFrontItem.Value);
 			}
-			
-			@Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+
+			@Html.ActionLink("Create New", "Create", new { clientId = filterClientId, storeFrontId = filterStoreFrontId }, new { @class = "btn btn-info" })
+
 			@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			@:Client Filter:
-			@Html.DropDownList("clientId", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['storefrontfilterform'].submit();", style = "display: inline;" })
-		
-			@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			@:Store Front Filter:
-			@Html.DropDownList("storeFrontId", storeFrontFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['storefrontfilterform'].submit();", style = "display: inline;" })
-		
+			@:<span @Html.Raw(hideStoreFrontFilter ? "style=\"visibility: hidden;\"" : string.Empty)>Store Front Filter:
+			@Html.DropDownList("storeFrontId", storeFrontFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['storefrontfilterform'].submit();", style = "display: inline;" + (hideStoreFrontFilter ? "visibility: hidden;" : string.Empty) })
+			@:</span>
 		}
 		<hr />
 	}
 </p>
 @if (Model.Count() == 0)
 {
-	if (isfiltered)
+	if (isFiltered && !filterClientId.HasValue || filterClientId.Value == 0)
 	{
-		<h2 class="text-info">No Store Fronts found for the selected client.</h2>
-		<h3 class="text-info">@Html.ActionLink("Click here to Clear Filter", "Index", new { id = string.Empty }, null)</h3>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New User", "Create", null, new { @class = "btn btn-info" })</h3>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Store Front", "Create", "StoreFrontSysAdmin", null, new { @class="btn btn-info"})</h3>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Client", "Create", "ClientSysAdmin", null, new { @class = "btn btn-info" })</h3>
+		<h2 class="text-info">No Client selected. Please select a client to view or ALL.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to show records for All Clients", "Index", new { ClientId = "-1" }, null)</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New User", "Create", new { clientId = filterClientId, storeFrontId = filterStoreFrontId }, new { @class = "btn btn-info" })</h3>
+	}
+	else if (isFiltered)
+	{
+		<h2 class="text-info">No User Profiles found for the selected client and/or Store Front.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Clear Filter", "Index", new { ClientId = "-1" }, null)</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New User", "Create", new { clientId = filterClientId, storeFrontId = filterStoreFrontId }, new { @class = "btn btn-info" })</h3>
 	}
 	else
 	{
-		<h2 class="text-info">No Store Fronts in database.</h2>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New User", "Create", null, new { @class = "btn btn-info" })</h3>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Store Front", "Create", "StoreFrontSysAdmin", null, new { @class = "btn btn-info" })</h3>
-		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Client", "Create", "ClientSysAdmin", null, new { @class = "btn btn-info" })</h3>
+		<h2 class="text-info">No User Profiles found in database.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New User", "Create", new { clientId = filterClientId, storeFrontId = filterStoreFrontId }, new { @class = "btn btn-info" })</h3>
 	}
 }
 else
 {
-	<table class="table table-hover table-striped">
-		<tr>
-			<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.ClientId, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.Client, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.StoreFrontId, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.StoreFront.Name, "Index")
-			</th>
-			<th>
-				@Html.ActionSortLinkFor(model => model.UserProfileId, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.UserName, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.Email, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.FullName, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.LastLogonDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLink("Status", "Index", "Status")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.IsPending, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
-			</th>
-			<th class="small"></th>
-		</tr>
-
-		@foreach (var item in Model)
-		{
-			bool userProfileIsActive = item.IsActiveDirect();
-			bool isAllActive = userProfileIsActive;
-			string rowClass = (isAllActive ? "" : "text-warning");
-			<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.UserProfileId }))');">
-				<td>
-					@Html.ActionLink("Details", "Details", new { id = item.UserProfileId }, new { @class = "btn-sm btn-success" })
-				</td>
-
-				<td>
-					@Html.DisplayFor(modelItem => item.Client.ClientId)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Client.Name)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.StoreFrontId)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.StoreFront.Name)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.UserProfileId)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.UserName)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Email)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.FullName)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.LastLogonDateTimeUtc)
-				</td>
-
-				<td>
-					@if (userProfileIsActive)
-					{
-						<span class="text-success">Active</span>
-					}
-					else
-					{
-						<span class="text-warning"><strong>Inactive</strong></span>
-						<br />
-						@Html.ActionLink("Activate User Profile", "Activate", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-warning" });
-					}
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsPending)
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserName)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserName)</small>
-				</td>
-				<td>
-					<span style="white-space: nowrap">
-						@Html.ActionLink("Edit", "Edit", new { id = item.UserProfileId}, new { @class = "btn-sm btn-warning" })
-						@Html.ActionLink("Delete", "Delete", new { id = item.UserProfileId }, new { @class = "btn-sm btn-danger" })
-					</span>
-				</td>
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.ClientId, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.Client, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StoreFrontId, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StoreFront.Name, "Index")
+				</th>
+				<th>
+					@Html.ActionSortLinkFor(model => model.UserProfileId, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.UserName, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.Email, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.FullName, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.LastLogonDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Status", "Index", "Status")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.IsPending, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
+				</th>
+				<th class="small"></th>
 			</tr>
-		}
-	</table>
+
+			@foreach (var item in Model)
+			{
+				bool userProfileIsActive = item.IsActiveDirect();
+				bool isAllActive = userProfileIsActive;
+				string rowClass = (isAllActive ? "" : "text-warning");
+				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.UserProfileId }))');">
+					<td>
+						@Html.ActionLink("Details", "Details", new { id = item.UserProfileId }, new { @class = "btn-sm btn-success" })
+					</td>
+
+					<td>
+						@Html.DisplayFor(modelItem => item.Client.ClientId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Client.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.StoreFrontId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.StoreFront.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.UserProfileId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.UserName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Email)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.FullName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.LastLogonDateTimeUtc)
+					</td>
+
+					<td>
+						@if (userProfileIsActive)
+						{
+							<span class="text-success">Active</span>
+						}
+						else
+						{
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate User Profile", "Activate", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-warning" });
+						}
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsPending)
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserName)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserName)</small>
+					</td>
+					<td>
+						<span style="white-space: nowrap">
+							@Html.ActionLink("Edit", "Edit", new { id = item.UserProfileId }, new { @class = "btn-sm btn-warning" })
+							@Html.ActionLink("Delete", "Delete", new { id = item.UserProfileId }, new { @class = "btn-sm btn-danger" })
+						</span>
+					</td>
+				</tr>
+			}
+		</table>
+	</div>
 }

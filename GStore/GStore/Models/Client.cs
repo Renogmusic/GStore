@@ -74,5 +74,13 @@ namespace GStore.Models
 		[Display(Name = "Client Roles")]
 		public virtual ICollection<ClientRole> ClientRoles { get; set; }
 
+		[Display(Name = "Themes")]
+		public virtual ICollection<Theme> Themes { get; set; }
+
+		[Display(Name = "Page Templates")]
+		public virtual ICollection<PageTemplate> PageTemplates { get; set; }
+
+
+
 	}
 }

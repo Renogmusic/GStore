@@ -13,13 +13,13 @@ else
 	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "User Profile";
 
-	<span class="@className">
-		@(Model.UserName) '@(Model.FullName)'@(inactiveText)
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) @(Model.UserName) '@(Model.FullName)'@(inactiveText)
 	</span>
 	@:&nbsp; @(Html.ActionLink(linkText, "Details", "UserProfileSysAdmin", new { id = Model.UserProfileId }, new { @class = viewLinkClass }))
 	if (Model.StoreFrontId.HasValue)
 	{
-		@:&nbsp; :&nbsp; @Html.DisplayNameFor(up => up.StoreFront) @Html.DisplayFor(up => up.StoreFront)
+		@:&nbsp; :&nbsp; @Html.DisplayFor(up => up.StoreFront)
 	}
 	else
 	{

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Data
 {
@@ -17,8 +18,9 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<Client> orderedQuery = null;
+
 			bool defaultSort = false;
-			switch (sortBy)
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -204,7 +206,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -227,7 +229,7 @@ namespace GStore.Data
 			IOrderedQueryable<StoreFront> orderedQuery = null;
 
 			bool defaultSort = false;
-			switch (sortBy)
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -446,7 +448,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -468,9 +470,9 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<StoreBinding> orderedQuery = null;
-			bool defaultSort = false;
 
-			switch (sortBy)
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -722,7 +724,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -753,9 +755,9 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<UserProfile> orderedQuery = null;
+			
 			bool defaultSort = false;
-
-			switch (sortBy)
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -821,6 +823,72 @@ namespace GStore.Data
 					else
 					{
 						orderedQuery = query.OrderByDescending(c => (c.StoreFront.IsPending || c.StoreFront.StartDateTimeUtc > DateTime.UtcNow || c.StoreFront.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+				case "storefront.name":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.StoreFront.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.StoreFront.Name);
+					}
+					break;
+
+				case "userprofileid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UserProfileId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UserProfileId);
+					}
+					break;
+
+				case "username":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UserName);
+					}
+					break;
+
+				case "email":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Email);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Email);
+					}
+					break;
+
+				case "fullname":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.FullName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.FullName);
+					}
+					break;
+
+				case "lastlogondatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.LastLogonDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.LastLogonDateTimeUtc);
 					}
 					break;
 
@@ -952,7 +1020,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -983,9 +1051,9 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<ValueList> orderedQuery = null;
-			bool defaultSort = false;
 
-			switch (sortBy)
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -1200,7 +1268,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -1227,9 +1295,9 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<Page> orderedQuery = null;
-			bool defaultSort = false;
 
-			switch (sortBy)
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
 			{
 				case "clientid":
 					if (sortAscending)
@@ -1253,17 +1321,6 @@ namespace GStore.Data
 					}
 					break;
 
-				case "name":
-					if (sortAscending)
-					{
-						orderedQuery = query.OrderBy(c => c.Name);
-					}
-					else
-					{
-						orderedQuery = query.OrderByDescending(c => c.Name);
-					}
-					break;
-
 				case "clientstatus":
 					if (sortAscending)
 					{
@@ -1272,6 +1329,17 @@ namespace GStore.Data
 					else
 					{
 						orderedQuery = query.OrderByDescending(c => (c.Client.IsPending || c.Client.StartDateTimeUtc > DateTime.UtcNow || c.Client.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+				case "name":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Name);
 					}
 					break;
 
@@ -1414,7 +1482,7 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
@@ -1445,10 +1513,44 @@ namespace GStore.Data
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
 			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
 			IOrderedQueryable<PageTemplate> orderedQuery = null;
-			bool defaultSort = false;
 
-			switch (sortBy)
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
 			{
+				case "clientid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ClientId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ClientId);
+					}
+					break;
+
+				case "client":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Client.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Client.Name);
+					}
+					break;
+
+				case "clientstatus":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => (c.Client.IsPending || c.Client.StartDateTimeUtc > DateTime.UtcNow || c.Client.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => (c.Client.IsPending || c.Client.StartDateTimeUtc > DateTime.UtcNow || c.Client.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+
 				case "name":
 					if (sortAscending)
 					{
@@ -1608,12 +1710,16 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Order)
+						orderedQuery = query.OrderBy(p => p.Client.Order)
+							.ThenBy(p => p.ClientId)
+							.ThenBy(p => p.Order)
 							.ThenBy(p => p.PageTemplateId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Order)
+						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+							.ThenByDescending(p => p.ClientId)
+							.ThenByDescending(p => p.Order)
 							.ThenByDescending(p => p.PageTemplateId);
 					}
 					break;
@@ -1624,23 +1730,251 @@ namespace GStore.Data
 					if (controller != null)
 					{
 						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
-						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy, AppHtmlHelpers.UserMessageType.Info);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 					}
 					goto case "";
 			}
 
 			if (!defaultSort && sortAscending)
 			{
-				orderedQuery = orderedQuery.ThenBy(p => p.Order)
+				orderedQuery = orderedQuery.ThenBy(p => p.Client.Order)
+					.ThenBy(p => p.ClientId)
+					.ThenBy(p => p.Order)
 					.ThenBy(p => p.PageTemplateId);
 			}
 			else if (!defaultSort && !sortAscending)
 			{
-				orderedQuery = orderedQuery.ThenByDescending(p => p.Order)
+				orderedQuery = orderedQuery.OrderByDescending(p => p.Client.Order)
+					.ThenByDescending(p => p.ClientId)
+					.ThenByDescending(p => p.Order)
 					.ThenByDescending(p => p.PageTemplateId);
 			}
 			return orderedQuery;
 		}
+
+
+		public static IOrderedQueryable<Theme> ApplySort(this IQueryable<Theme> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
+		{
+			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
+			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
+			IOrderedQueryable<Theme> orderedQuery = null;
+
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
+			{
+				case "clientid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ClientId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ClientId);
+					}
+					break;
+
+				case "client":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Client.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Client.Name);
+					}
+					break;
+
+				case "clientstatus":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => (c.Client.IsPending || c.Client.StartDateTimeUtc > DateTime.UtcNow || c.Client.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => (c.Client.IsPending || c.Client.StartDateTimeUtc > DateTime.UtcNow || c.Client.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+
+				case "themeid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ThemeId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ThemeId);
+					}
+					break;
+
+				case "name":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Name);
+					}
+					break;
+
+				case "foldername":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.FolderName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.FolderName);
+					}
+					break;
+
+				case "order":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Order);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Order);
+					}
+					break;
+
+				case "status":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+				case "ispending":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.IsPending);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.IsPending);
+					}
+					break;
+
+				case "startdatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.StartDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.StartDateTimeUtc);
+					}
+					break;
+
+				case "enddatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.EndDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.EndDateTimeUtc);
+					}
+					break;
+
+				case "createdatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreateDateTimeUtc);
+					}
+					break;
+
+				case "createdby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreatedBy.UserName);
+					}
+					break;
+
+				case "updatedatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdateDateTimeUtc);
+					}
+					break;
+
+				case "updatedby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdatedBy.UserName);
+					}
+					break;
+
+				case "":
+					//default sort
+					defaultSort = true;
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(p => p.Client.Order)
+							.ThenBy(p => p.ClientId)
+							.ThenBy(p => p.Order)
+							.ThenBy(p => p.ThemeId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+							.ThenByDescending(p => p.ClientId)
+							.ThenByDescending(p => p.Order)
+							.ThenByDescending(p => p.ThemeId);
+					}
+					break;
+
+
+				default:
+					//unknown sort
+					if (controller != null)
+					{
+						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
+					}
+					goto case "";
+			}
+
+			if (!defaultSort && sortAscending)
+			{
+				orderedQuery = orderedQuery.ThenBy(p => p.Client.Order)
+					.ThenBy(p => p.ClientId)
+					.ThenBy(p => p.Order)
+					.ThenBy(p => p.ThemeId);
+			}
+			else if (!defaultSort && !sortAscending)
+			{
+				orderedQuery = orderedQuery.OrderByDescending(p => p.Client.Order)
+					.ThenByDescending(p => p.ClientId)
+					.ThenByDescending(p => p.Order)
+					.ThenByDescending(p => p.ThemeId);
+			}
+			return orderedQuery;
+		}
+
 
 	}
 }

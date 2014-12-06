@@ -9,22 +9,35 @@
 	SelectList storeErrorPageList = ViewBag.StoreErrorPageList as SelectList;
 
 	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info title-align">New Store Front</h2>
+	</div>
 	
 	<div class="row">
-		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">New Store Front</h2>
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
 	</div>
-	<div class="form-horizontal">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenAuditFields()
 		</div>
+	</div>
+
+	<div class="form-horizontal">
 		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Create" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
 			</div>
 		</div>
+
 		<div class="form-group">
 			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
@@ -134,7 +147,7 @@
 			<div class="col-md-10 text-left">
 				@Html.EditorFor(model => model.NavBarShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
 				@Html.ValidationMessageFor(model => model.NavBarShowRegisterLink, "", new { @class = "text-danger" })
-				</div>
+			</div>
 		</div>
 
 		<div class="form-group">
@@ -354,6 +367,14 @@
 		</div>
 
 		<div class="form-group">
+			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
 			@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
 				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
@@ -369,28 +390,13 @@
 			</div>
 		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Create" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
-			</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
 		</div>
 	</div>
 }

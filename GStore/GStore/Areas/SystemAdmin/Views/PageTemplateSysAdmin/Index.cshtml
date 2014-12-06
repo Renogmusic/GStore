@@ -1,156 +1,205 @@
 ﻿@model IEnumerable<GStore.Models.PageTemplate>
 @using GStore.AppHtmlHelpers
+@using GStore.Models
 @using GStore.Data
+@using GStore.Areas.SystemAdmin
+
+@{
+	bool isFiltered = Html.ClientIsFiltered();
+	int? filterClientId = Html.FilterClientId();
+}
+
 <style>
-	table th {
+	table th
+	{
 		text-align: center;
 	}
 
-	table td {
+	table td
+		{
 		text-align: center;
 	}
 </style>
+
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">Page Template Manager</h2>
+
 <p>
-	@Html.ActionLink("Create a New Page Template", "Create", null, new { @class = "btn btn-info" })
+	@Html.ActionLink("Create New", "Create", new { clientId = filterClientId }, new { @class = "btn btn-info" })
 </p>
 
 @if (Model.Count() == 0)
 {
-	<p>
-		There are no Page Templates found in the database.
-		<br />
-		@Html.ActionLink("Click here to Create a New Page Template", "Create", null, new { @class = "btn btn-info" })
-	</p>
+	if (isFiltered && !filterClientId.HasValue || filterClientId.Value == 0)
+	{
+		<h2 class="text-info">No Client selected. Please select a client to view or ALL.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to show records for All Clients", "Index", new { ClientId = "-1" }, null)</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Page Template", "Create", new { clientId = filterClientId }, new { @class = "btn btn-info" })</h3>
+	}
+	else if (isFiltered)
+	{
+		<h2 class="text-info">No Page Templates found for the selected client.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Clear Filter", "Index", new { ClientId = "-1" }, null)</h3>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Page Template", "Create", new { clientId = filterClientId }, new { @class = "btn btn-info" })</h3>
+	}
+	else
+	{
+		<h2 class="text-info">No Page Templates in database.</h2>
+		<h3 class="text-info">@Html.ActionLink("Click here to Create a New Page Template", "Create", new { clientId = filterClientId }, new { @class = "btn btn-info" })</h3>
+	}
 }
 else
 {
-
-	<table class="table table-hover table-striped">
-		<tr>
-			<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.PageTemplateId, "Index")
-			</th>
-			<th class="small text-left">
-				@Html.ActionSortLinkFor(model => model.Name, "Index")
-			</th>
-			<th class="small text-left">
-				@Html.ActionSortLinkFor(model => model.Order, "Index")
-			</th>
-			<th class="small text-left">
-				@Html.ActionSortLinkFor(model => model.ViewName, "Index")
-			</th>
-			<th class="small text-left">
-				@Html.ActionSortLinkFor(model => model.LayoutName, "Index")
-			</th>
-			<th class="small text-left">
-				@Html.ActionSortLinkFor(model => model.Sections, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLink("Status", "Index", "Status")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.IsPending, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
-			</th>
-			<th class="small"></th>
-		</tr>
-
-		@foreach (var item in Model)
-		{
-			bool pageTemplateIsActive = item.IsActiveDirect();
-			bool isAllActive = pageTemplateIsActive;
-			string rowClass = (isAllActive ? "" : "text-warning");
-
-			<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.PageTemplateId }))');">
-				<td>
-					@Html.ActionLink("Details", "Details", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-success" })
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.PageTemplateId)
-				</td>
-				<td class="text-left">
-					@Html.DisplayFor(modelItem => item.Name)
-				</td>
-				<td class="text-left">
-					@Html.DisplayFor(modelItem => item.Order)
-				</td>
-				<td class="text-left">
-					@Html.DisplayFor(modelItem => item.ViewName)
-				</td>
-				<td class="text-left">
-					@Html.DisplayFor(modelItem => item.LayoutName)
-				</td>
-				<td class="text-left">
-					@item.Sections.AsQueryable().WhereIsActive().Count()
-					&nbsp;/&nbsp;
-					@item.Sections.Count()
-				</td>
-				<td>
-					@if (pageTemplateIsActive)
-					{
-						<span class="text-success">Active</span>
-					}
-					else
-					{
-						<span class="text-warning"><strong>Inactive</strong></span>
-						<br />
-						@Html.ActionLink("Activate Page Template", "Activate", new { id = item.PageTemplateId }, new { @class = "btn btn-sm btn-warning" });
-					}
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsPending)
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserId)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
-				</td>
-				<td>
-					<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)</small>
-				</td>
-				<td>
-					<span style="white-space: nowrap">
-						@Html.ActionLink("Edit", "Edit", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-warning" })
-						@Html.ActionLink("Delete", "Delete", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-danger" })
-					</span>
-				</td>
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.ClientId, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.Client, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Client Status", "Index", "ClientStatus")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.PageTemplateId, "Index")
+				</th>
+				<th class="small text-left">
+					@Html.ActionSortLinkFor(model => model.Name, "Index")
+				</th>
+				<th class="small text-left">
+					@Html.ActionSortLinkFor(model => model.Order, "Index")
+				</th>
+				<th class="small text-left">
+					@Html.ActionSortLinkFor(model => model.ViewName, "Index")
+				</th>
+				<th class="small text-left">
+					@Html.ActionSortLinkFor(model => model.LayoutName, "Index")
+				</th>
+				<th class="small text-left">
+					@Html.ActionSortLinkFor(model => model.Sections, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Status", "Index", "Status")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.IsPending, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
+				</th>
+				<th class="small"></th>
 			</tr>
-		}
 
-	</table>
-	<p>
-		@Html.ActionLink("Create a New Page Template", "Create", null, new { @class = "btn btn-info" })
-	</p>
+			@foreach (var item in Model)
+			{
+				bool clientIsActive = item.Client.IsActiveDirect();
+				bool pageTemplateIsActive = item.IsActiveDirect();
+				bool isAllActive = clientIsActive && pageTemplateIsActive;
+				string rowClass = (isAllActive ? "" : "text-warning");
 
+				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.PageTemplateId }))');">
+					<td>
+						@Html.ActionLink("Details", "Details", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-success" })
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Client.ClientId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Client.Name)
+					</td>
+					<td>
+						@if (clientIsActive)
+						{
+							<span class="text-success">Active</span>
+						}
+						else
+						{
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate Client", "Activate", "ClientSysAdmin", new { id = item.ClientId }, new { @class = "btn btn-sm btn-warning" });
+						}
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.PageTemplateId)
+					</td>
+					<td class="text-left">
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td class="text-left">
+						@Html.DisplayFor(modelItem => item.Order)
+					</td>
+					<td class="text-left">
+						@Html.DisplayFor(modelItem => item.ViewName)
+					</td>
+					<td class="text-left">
+						@Html.DisplayFor(modelItem => item.LayoutName)
+					</td>
+					<td class="text-left">
+						@item.Sections.AsQueryable().WhereIsActive().Count()
+						&nbsp;/&nbsp;
+						@item.Sections.Count()
+					</td>
+					<td>
+						@if (pageTemplateIsActive)
+						{
+							<span class="text-success">Active</span>
+						}
+						else
+						{
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate Page Template", "Activate", new { id = item.PageTemplateId }, new { @class = "btn btn-sm btn-warning" });
+						}
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsPending)
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.StartDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.EndDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.CreatedBy.UserId)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)</small>
+					</td>
+					<td>
+						<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)</small>
+					</td>
+					<td>
+						<span style="white-space: nowrap">
+							@Html.ActionLink("Edit", "Edit", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-warning" })
+							@Html.ActionLink("Delete", "Delete", new { id = item.PageTemplateId }, new { @class = "btn-sm btn-danger" })
+						</span>
+					</td>
+				</tr>
+			}
+
+		</table>
+	</div>
 }
 
 <div class="row">
@@ -164,43 +213,48 @@ else
 			}
 			else
 			{
-				@:<hr/>
-				@:<table class="table table-bordered table-striped">
-					@:<tr>
-						@:<td colspan="6" align="center">Page Templates in File System</td>
-					@:</tr>
-					@:<tr>
-						@:<th>@Html.DisplayNameFor(model => model.ViewName)</th>
-						@:<th>Created</th>
-						@:<th>Modified</th>
-						@:<th>Size</th>
-						@:<th></th>
-					@:</tr>
-				System.IO.DirectoryInfo dir = new DirectoryInfo(pageTemplateFilePath);
-				FileInfo[] files = dir.GetFiles("*.cshtml", SearchOption.TopDirectoryOnly).Where(f => !f.Name.StartsWith("_")).OrderBy(f => f.Name).ToArray();
-				foreach (FileInfo file in files)
-				{
-					<tr>
-						<td>
-							@{string viewName = file.Name.Substring(0, file.Name.Length - file.Extension.Length);}
-							'@(viewName)'<br />
-							@Html.ActionLink("Create Page Template for this File", "Create", new { ViewName = viewName }, new { @class = "btn btn-sm btn-info" } )
-						</td>
-						<td>
-							@file.CreationTime.ToString()
-						</td>
-
-						<td>
-							@file.LastWriteTime.ToString()
-						</td>
-
-						<td>
-							@file.Length.ToByteString()
-						</td>
-					</tr>
-				}
-					@:</table>
+				<hr />
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped table-hover">
+						<tr>
+							<td colspan="5" align="center">Page Templates in File System</td>
+						</tr>
+						<tr>
+							<th>&nbsp;</th>
+							<th>@Html.DisplayNameFor(model => model.ViewName)</th>
+							<th>Created</th>
+							<th>Modified</th>
+							<th>Size</th>
+						</tr>
+						@{
+							System.IO.DirectoryInfo dir = new DirectoryInfo(pageTemplateFilePath);
+							FileInfo[] files = dir.GetFiles("*.cshtml", SearchOption.TopDirectoryOnly).Where(f => !f.Name.StartsWith("_")).OrderBy(f => f.Name).ToArray();
+							foreach (FileInfo file in files)
+							{
+								string viewName = file.Name.Substring(0, file.Name.Length - file.Extension.Length);
+								<tr onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Create", new { clientId = filterClientId, ViewName = viewName }))');">
+									<td>
+										@Html.ActionLink("Create Page Template for this File", "Create", new { clientId = filterClientId, ViewName = viewName }, new { @class = "btn btn-info" })
+									</td>
+									<td>
+										'@(viewName)'<br />
+									</td>
+									<td>
+										@file.CreationTime.ToString()
+									</td>
+									<td>
+										@file.LastWriteTime.ToString()
+									</td>
+									<td>
+										@file.Length.ToByteString()
+									</td>
+								</tr>
+							}
+						}
+					</table>
+				</div>
 			}
 		}
 	</div>
 </div>
+

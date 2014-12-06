@@ -13,11 +13,11 @@ else
 	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Value List";
 
-	<span class="@className">
-		@(Html.DisplayFor(model => model.Name)) [@(Html.DisplayFor(model => model.ValueListId))]
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.ValueListId))]
 		@(inactiveText)
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "Details", "ValueListSysAdmin", new { id = Model.ValueListId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(m => m.Client))
+	@: - @(Html.DisplayFor(m => m.Client))
 }

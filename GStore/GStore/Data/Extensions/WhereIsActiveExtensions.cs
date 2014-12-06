@@ -312,20 +312,34 @@ namespace GStore.Data
 				&& (includePending || !data.ValueList.IsPending)
 				&& (data.ValueList.StartDateTimeUtc < dateTimeUtc)
 				&& (data.ValueList.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Client.IsPending)
+				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
 				);
 		}
 
 
 		public static IQueryable<PageTemplate> WhereIsActive(this IQueryable<PageTemplate> query)
 		{
-			return query.WhereIsActiveOn(DateTime.UtcNow);
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
 		}
-		public static IQueryable<PageTemplate> WhereIsActiveOn(this IQueryable<PageTemplate> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<PageTemplate> WhereIsActiveOrSelected(this IQueryable<PageTemplate> query, int? selectedId)
 		{
-			return query.Where(data =>
-				(includePending || !data.IsPending)
-				&& (data.StartDateTimeUtc < dateTimeUtc)
-				&& (data.EndDateTimeUtc > dateTimeUtc)
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<PageTemplate> WhereIsActiveOnOrSelected(this IQueryable<PageTemplate> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+			return query.Where(data => data.PageTemplateId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
 				);
 		}
 
@@ -347,16 +361,29 @@ namespace GStore.Data
 
 		public static IQueryable<Theme> WhereIsActive(this IQueryable<Theme> query)
 		{
-			return query.WhereIsActiveOn(DateTime.UtcNow);
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
 		}
-		public static IQueryable<Theme> WhereIsActiveOn(this IQueryable<Theme> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<Theme> WhereIsActiveOrSelected(this IQueryable<Theme> query, int? selectedId)
 		{
-			return query.Where(data =>
-				(includePending || !data.IsPending)
-				&& (data.StartDateTimeUtc < dateTimeUtc)
-				&& (data.EndDateTimeUtc > dateTimeUtc)
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<Theme> WhereIsActiveOnOrSelected(this IQueryable<Theme> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.ThemeId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
 				);
 		}
+
 
 
 		/// <summary>
@@ -411,6 +438,21 @@ namespace GStore.Data
 		/// </summary>
 		/// <param name="storeFront"></param>
 		/// <returns></returns>
+		public static bool IsActiveBubble(this PageTemplate pageTemplate)
+		{
+			if (pageTemplate == null)
+			{
+				throw new ArgumentNullException("pageTemplate");
+			}
+
+			return pageTemplate.IsActiveDirect() && pageTemplate.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
 		public static bool IsActiveBubble(this PageTemplateSection pageTemplateSection)
 		{
 			if (pageTemplateSection == null)
@@ -418,7 +460,22 @@ namespace GStore.Data
 				throw new ArgumentNullException("pageTemplateSection");
 			}
 
-			return pageTemplateSection.IsActiveDirect() && pageTemplateSection.PageTemplate.IsActiveDirect();
+			return pageTemplateSection.IsActiveDirect() && pageTemplateSection.PageTemplate.IsActiveBubble();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this Theme theme)
+		{
+			if (theme == null)
+			{
+				throw new ArgumentNullException("theme");
+			}
+
+			return theme.IsActiveDirect() && theme.Client.IsActiveDirect();
 		}
 
 		/// <summary>

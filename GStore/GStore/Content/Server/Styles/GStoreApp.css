@@ -7,9 +7,25 @@
 	margin: -10px 0 0 0;
 }
 
-/*.navbar-brand {
-	float: none;
-}*/
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  border: 0;
+  overflow: scroll;
+}
+
+/*Original Bootstrap .table-responsive */
+/*
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  border: 1px solid #ddd;
+}
+*/
 
 #PoweredByGStoreLink {
 }
@@ -32,12 +48,69 @@
 		padding: 10px;
 	}
 
+/* direct xs size - phone */
+@media (max-width: 767px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		overflow-x: scroll;
+		padding-bottom: 1.75em;
+		-ms-overflow-style: scrollbar;
+		overflow: auto;
+	}
+}
+
+/* direct sm small size - tablet */
+@media (min-width: 768px) and (max-width: 991px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct md size - landscape tablet */
+@media (min-width: 992px) and (max-width: 1199px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct lg size and up - desktop */
+@media (min-width: 1200px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct additions for HDTV wide desktops */
+@media (min-width: 1900px) {
+}
+
+
 @media (min-width: 768px) {
 	.checkbox input[type="checkbox"] {
 		margin-left: 5px;
 		height: auto;
 		width: auto;
 	}
+
 }
 
 @media (max-width: 767px) {
@@ -181,12 +254,17 @@ body {
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
-textarea {
+textarea, help-label {
 	max-width: 700px;
 }
 
 @media (max-width: 767px)
 {
+	.form-group label.control-label
+	{
+		padding-top: 2.25em;
+	}
+
 	.dl-horizontal
 	{
 		padding-left: 10px;
@@ -200,12 +278,22 @@ textarea {
 	.dl-horizontal dd
 	{
 		white-space: normal;
-		padding-bottom: 2em;
+		padding-bottom: 3em;
 		font-weight: bold;
 	}
 }
 @media (min-width: 768px)
 {
+	.form-group label.control-label
+	{
+		padding-top: 3.25em;
+	}
+
+	.form-group label.help-label
+	{
+		padding-top: 1.0em;
+	}
+
 	.dl-horizontal
 	{
 		padding-left: 10px;
@@ -297,3 +385,20 @@ textarea {
 {
 	text-align: left;
 }
+
+dd label.help-label, label.help-label
+{
+	font-weight: lighter;
+	font-style: oblique;
+}
+
+.bold
+{
+	font-weight: bolder;
+}
+
+div.sysadmin label.control-label
+{
+	padding-top: .7em;
+}
+

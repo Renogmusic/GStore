@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -17,12 +18,23 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(clientId);
+			clientId = FilterClientIdRaw();
 
 			IQueryable<ValueList> query = null;
 			if (clientId.HasValue)
 			{
-				query = GStoreDb.ValueLists.Where(vl => vl.ClientId == clientId.Value);
+				if (clientId.Value == -1)
+				{
+					query = GStoreDb.ValueLists.All();
+				}
+				else if (clientId.Value == 0)
+				{
+					query = GStoreDb.ValueLists.Where(sb => sb.ClientId == null);
+				}
+				else
+				{
+					query = GStoreDb.ValueLists.Where(sb => sb.ClientId == clientId.Value);
+				}
 			}
 			else
 			{
@@ -66,7 +78,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				valueList.UpdateAuditFields(CurrentUserProfileOrThrow);
 				valueList = GStoreDb.ValueLists.Add(valueList);
 				GStoreDb.SaveChanges();
-				AddUserMessage("Value List Created", "Value List '" + Server.HtmlEncode(valueList.Name) + "' [" + valueList.ValueListId + "] Created Successfully", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Value List Created", "Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "] Created Successfully", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
 			int? clientId = null;
@@ -105,7 +117,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				valueList.UpdateAuditFields(CurrentUserProfileOrThrow);
 				valueList = GStoreDb.ValueLists.Update(valueList);
 				GStoreDb.SaveChanges();
-				AddUserMessage("Value List Updated", "Changes saved successfully to Value List '" + Server.HtmlEncode(valueList.Name) + "' [" + valueList.ValueListId + "]", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Value List Updated", "Changes saved successfully to Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "]", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
 			ViewBag.ClientList = ClientList();
@@ -244,7 +256,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				valueListItem.ValueListId = valueList.ValueListId;
 				GStoreDb.ValueListItems.Add(valueListItem);
 				GStoreDb.SaveChanges();
-				AddUserMessage("Value List Item Created", "Value List Item created successfully", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Value List Item Created", "Value List Item '" + valueListItem.Name.ToHtml() + "' [" + valueListItem.ValueListItemId + "] created successfully", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
 
@@ -277,7 +289,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				valueListItem.UpdateAuditFields(CurrentUserProfileOrThrow);
 				valueListItem = GStoreDb.ValueListItems.Update(valueListItem);
 				GStoreDb.SaveChanges();
-				AddUserMessage("Value List Item Updated", "Changes saved successfully to Value List Item '" + Server.HtmlEncode(valueListItem.Name) + "' [" + valueListItem.ValueListItemId + "]", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Value List Item Updated", "Changes saved successfully to Value List Item '" + valueListItem.Name.ToHtml() + "' [" + valueListItem.ValueListItemId + "]", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
 			ViewBag.ClientList = ClientList();
@@ -368,7 +380,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			if (valueList.ValueListItems.Any(vl => vl.Name.ToLower() == stringValue.ToLower()))
 			{
-				AddUserMessage("Item not added", "Item with name '" + Server.HtmlEncode(stringValue) + "' already exists in this list. Use a different item name or remove the old item first.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Item not added", "Item with name '" + stringValue.ToHtml() + "' already exists in this list. Use a different item name or remove the old item first.", AppHtmlHelpers.UserMessageType.Danger);
 				return RedirectToAction("ListItemIndex", new { id = valueListId });
 			}
 
@@ -391,7 +403,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			GStoreDb.ValueListItems.Add(listItem);
 			GStoreDb.SaveChanges();
 
-			AddUserMessage("Item added to List", "Item '" + Server.HtmlEncode(stringValue) + "' [" + listItem.ValueListItemId + "] was successfully added to the list", AppHtmlHelpers.UserMessageType.Success);
+			AddUserMessage("Item added to List", "Item '" + stringValue.ToHtml() + "' [" + listItem.ValueListItemId + "] was successfully added to the list", AppHtmlHelpers.UserMessageType.Success);
 			return RedirectToAction("ListItemIndex", new { id = valueListId });
 		}
 

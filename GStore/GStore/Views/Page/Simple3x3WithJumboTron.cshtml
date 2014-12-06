@@ -12,40 +12,40 @@ else if (Model.ShowEditPageLink)
 }
 <div class="row">
 	<div class="jumbotron">
-		@Html.DisplayPageSection("Jumbotron", 1, string.Empty)
+		@Html.DisplayPageSection("Jumbotron", 1, "Jumbotron", string.Empty, false, false)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col1", 2, string.Empty)
+		@Html.DisplayPageSection("Row1Col1", 2, "Row 1 Column 1", string.Empty, false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col2", 3, string.Empty)
+		@Html.DisplayPageSection("Row1Col2", 3, "Row 1 Column 2", string.Empty, false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col3", 4, string.Empty)
-	</div>
-</div>
-<div class="row">
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col1", 5, string.Empty)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col2", 6, string.Empty)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col3", 7, string.Empty)
+		@Html.DisplayPageSection("Row1Col3", 4, "Row 1 Column 3", string.Empty, false, false)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col1", 8, string.Empty)
+		@Html.DisplayPageSection("Row2Col1", 5, "Row 2 Column 1", string.Empty, false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col2", 9, string.Empty)
+		@Html.DisplayPageSection("Row2Col2", 6, "Row 2 Column 2", string.Empty, false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col3", 10, string.Empty)
+		@Html.DisplayPageSection("Row2Col3", 7, "Row 2 Column 3", string.Empty, false, false)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col1", 8, "Row 3 Column 1", string.Empty, false, false)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col2", 9, "Row 3 Column 2", string.Empty, false, false)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col3", 10, "Row 3 Column 3", string.Empty, false, false)
 	</div>
 </div>
 @if (Model.EditMode)

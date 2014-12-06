@@ -1,16 +1,19 @@
 ﻿@model GStore.Models.UserProfile
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDeletePageTitle text-danger">Confirm User Profile Delete</h2>
+	<h2 class="jumbotron SysAdminDeletePageTitle col-md-offset-3 col-md-6 text-danger">Confirm User Profile Delete</h2>
 </div>
+
 <div class="row">
-	<h3 class="col-md-offset-4 col-md-8 text-danger text-left">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
 		Are you sure you want to delete User Profile  <br />'@(Model.FullName)' &lt;@(Model.Email)&gt; [@(Model.UserProfileId)]
-</h3>
+	</h3>
 </div>
+
 <div class="row">
-	<div class="form-actions col-md-offset-4 col-md-8 form-actions no-color text-left">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
@@ -20,11 +23,13 @@
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Edit", "Edit", new { id = Model.UserProfileId }, new { @class = "btn btn-warning" })
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Details", "Details", new { id = Model.UserProfileId}, new { @class = "btn btn-success" });
+			@Html.ActionLink("Details", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-success" });
 		}
 	</div>
 </div>
+
 <hr />
+
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>
@@ -135,9 +140,11 @@
 
 	</dl>
 </div>
+
 <hr/>
+
 <div class="row">
-	<div class="col-md-offset-4 col-md-8 form-actions no-color text-left">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
@@ -151,7 +158,9 @@
 		}
 	</div>
 </div>
+
 <hr />
+
 <p>
 	@Html.ActionLink("Back to List", "Index")
 </p>

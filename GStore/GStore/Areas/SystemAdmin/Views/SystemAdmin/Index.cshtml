@@ -1,58 +1,28 @@
 ﻿@using GStore.AppHtmlHelpers
 @using GStore.Models
 @using GStore.Data
-@using GStore.Areas.SystemAdmin.Controllers
+@using GStore.Areas.SystemAdmin
 
 @{
 	StoreFront currentStoreFront = Html.CurrentStoreFront(false);
 	Client currentClient = Html.CurrentClient(false);
 	UserProfile currentUserProfile = Html.CurrentUserProfile(false);
 	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
+	
 	GStore.Data.IGstoreDb gstoreDb = GStore.Data.RepositoryFactory.SystemWideRepository(currentUserProfile.UserName);
 
-	SelectList storeFrontFilterList = ViewBag.StoreFrontFilterList as SelectList;
-	IEnumerable<SelectListItem> clientFilterList = ViewBag.ClientFilterList;
-
+	bool isFiltered = Html.ClientIsFiltered();
+	int? filterClientId = Html.FilterClientId();
+	
 }
 <div class="jumbotron SysAdminIndexPageTitle col-md-12">
 	<h2>GStore System Admin Dashboard</h2>
 </div>
+
 <hr />
+
 <div class="row">
 	<div class="col-sm-3 text-left">
-		<div class="row">
-			<div class="col-xs-12 btn btn-info">
-				Client Filter
-			</div>
-			<div class="col-xs-12">
-				@{
-					bool showAll = false;
-					int? filterClientId = null;
-					using (Html.BeginForm("Index", "SystemAdmin", FormMethod.Post, new { name = "clientfilterform", style = "display: inline" }))
-					{
-						if (clientFilterList != null)
-						{
-							var selectedItem = clientFilterList.Where(l => l.Selected).FirstOrDefault();
-							if (selectedItem == null || string.IsNullOrEmpty(selectedItem.Value) || selectedItem.Value == "0")
-							{
-
-							}
-							else
-							{
-								filterClientId = int.Parse(selectedItem.Value);
-								if (filterClientId.Value == -1)
-								{
-									showAll = true;
-									filterClientId = null;
-								}
-							}
-							@Html.DropDownList("clientId", clientFilterList, new { @class = "form-control", id = "ClientFilter", onchange = "document.forms['clientfilterform'].submit();", style = "display: inline;" })
-						}
-					}
-				}
-			</div>
-		</div>
-		<hr />
 		<div class="row">
 			<div class="col-xs-12 btn btn-info">
 				Main Records &nbsp;-&nbsp; Active / Total
@@ -61,65 +31,89 @@
 				Clients:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Clients.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.Clients.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.Clients.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.Clients.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				StoreFronts:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.StoreFronts.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.StoreFronts.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.StoreFronts.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.StoreFronts.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				StoreBindings:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.StoreBindings.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.StoreBindings.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.StoreBindings.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.StoreBindings.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				UserProfiles:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.UserProfiles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.UserProfiles.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.UserProfiles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.UserProfiles.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				ProductCategories:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.ProductCategories.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.ProductCategories.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.ProductCategories.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.ProductCategories.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				Products:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Products.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.Products.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.Products.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.Products.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				PageTemplates:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageTemplates.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.PageTemplates.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				PageTemplateSections:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.PageTemplateSections.Where(c => !isFiltered || c.PageTemplate.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.PageTemplateSections.Where(c => !isFiltered || c.PageTemplate.ClientId == filterClientId).Count().ToString("N0")
+			</div>
+			<div class="col-xs-8">
+				Themes:
+			</div>
+			<div class="col-xs-4">
+				@gstoreDb.Themes.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				&nbsp;/&nbsp;
+				@gstoreDb.Themes.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				Pages:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Pages.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.Pages.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.Pages.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.Pages.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				PageSections:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.PageSections.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.PageSections.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.PageSections.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.PageSections.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-12"><hr /></div>
 
@@ -130,45 +124,45 @@
 				Notifications:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.Notifications.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.Notifications.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				NotificationLinks:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.NotificationLinks.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.NotificationLinks.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				ClientRoles:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.ClientRoles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.ClientRoles.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.ClientRoles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.ClientRoles.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				ClientRoleActions:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.ClientRoleActions.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.ClientRoleActions.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.ClientRoleActions.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.ClientRoleActions.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				ClientUserRoles:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.ClientUserRoles.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.ClientUserRoles.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.ClientUserRoles.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.ClientUserRoles.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				NavBarItems:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.NavBarItems.Where(c => showAll || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
+				@gstoreDb.NavBarItems.Where(c => !isFiltered || c.ClientId == filterClientId).WhereIsActive().Count().ToString("N0")
 				&nbsp;/&nbsp;
-				@gstoreDb.NavBarItems.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.NavBarItems.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-12"><hr /></div>
 
@@ -179,73 +173,45 @@
 				BadRequests:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.BadRequests.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.BadRequests.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				FileNotFoundLogs:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.FileNotFoundLogs.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.FileNotFoundLogs.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				PageViewEvents:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.PageViewEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.PageViewEvents.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				SecurityEvents:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.SecurityEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.SecurityEvents.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				SystemEvents:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.SystemEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
+				@gstoreDb.SystemEvents.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-8">
 				UserActionEvents:
 			</div>
 			<div class="col-xs-4">
-				@gstoreDb.UserActionEvents.Where(c => showAll || c.ClientId == filterClientId).Count().ToString("N0")
-			</div>
-			<div class="col-xs-12"><hr /></div>
-			<div class="col-xs-12 btn btn-info">
-				System Tables &nbsp;-&nbsp; Active / Total
-			</div>
-			<div class="col-xs-8">
-				PageTemplates:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.PageTemplates.All().WhereIsActive().Count().ToString("N0")
-				&nbsp;/&nbsp;
-				@gstoreDb.PageTemplates.All().Count().ToString("N0")
-			</div>
-			<div class="col-xs-8">
-				PageTemplateSections:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.PageTemplateSections.All().WhereIsActive().Count().ToString("N0")
-				&nbsp;/&nbsp;
-				@gstoreDb.PageTemplateSections.All().Count().ToString("N0")
-			</div>
-			<div class="col-xs-8">
-				Themes:
-			</div>
-			<div class="col-xs-4">
-				@gstoreDb.Themes.All().WhereIsActive().Count().ToString("N0")
-				&nbsp;/&nbsp;
-				@gstoreDb.Themes.All().Count().ToString("N0")
+				@gstoreDb.UserActionEvents.Where(c => !isFiltered || c.ClientId == filterClientId).Count().ToString("N0")
 			</div>
 			<div class="col-xs-12">
 				<hr />
 			</div>
 
-<div class="col-xs-12 btn btn-info">
-	System Log Files
-</div>
+			<div class="col-xs-12 btn btn-info">
+				System Log Files
+			</div>
 			<div class="col-xs-8">
 				Log Exception Files:
 				@if (GStore.Properties.Settings.Current.AppLogLogExceptionsToFile)

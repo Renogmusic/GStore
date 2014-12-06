@@ -9,6 +9,7 @@ using Microsoft.Owin.Security;
 using GStore.Models;
 using GStore.Data;
 using GStore.Models.ViewModels;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Controllers
 {
@@ -106,7 +107,7 @@ namespace GStore.Controllers
 			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendEmail(client, profile.Email, profile.FullName, subject, textBody, htmlBody, Request.Url.Host);
 			if (result)
 			{
-				AddUserMessage("Test Email Sent!", "Test Email was sent to '" + profile.Email + "'.", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Test Email Sent!", "Test Email was sent to '" + profile.Email.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
 			}
 			else
 			{
@@ -132,7 +133,7 @@ namespace GStore.Controllers
 			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendSms(client, profile.AspNetIdentityUser().PhoneNumber, textBody, Request.Url.Host);
 			if (result)
 			{
-				AddUserMessage("Test Text Message Sent!", "Test SMS Text Message was sent to '" + profile.AspNetIdentityUser().PhoneNumber + "'.", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Test Text Message Sent!", "Test SMS Text Message was sent to '" + profile.AspNetIdentityUser().PhoneNumber.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
 			}
 			else
 			{

@@ -9,7 +9,8 @@
 	<div class="row">
 		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">
 			New Page Template Section
-			<br /><small>@Html.DisplayNameFor(model => model.PageTemplate) @Html.DisplayFor(model => model.PageTemplate)</small>
+			<br />
+			<small>@Html.DisplayFor(model => model.PageTemplate, "PageTemplateNoLinks")</small>
 		</h2>
 	</div>
 
@@ -17,6 +18,7 @@
 		<div class="col-md-offset-2 col-md-10 text-left">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenFor(model => model.PageTemplateId)
+			@Html.HiddenFor(model => model.ClientId)
 			@Html.HiddenAuditFields()
 		</div>
 

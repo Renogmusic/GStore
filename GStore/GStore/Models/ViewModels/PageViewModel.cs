@@ -43,8 +43,17 @@ namespace GStore.Models.ViewModels
 		[Display(Name = "For Sync Only")]
 		public bool ForTemplateSyncOnly { get; set; }
 
+		[Display(Name = "Page Template Id For Sync Only")]
 		public int? PageTemplateIdForSync { get; set; }
 
+		[Display(Name = "Edit Page")]
+		public PageEditViewModel PageEditViewModel
+		{
+			get
+			{
+				return new PageEditViewModel(this.Page);
+			}
+		}
 
 	}
 }

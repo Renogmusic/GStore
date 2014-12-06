@@ -3,10 +3,13 @@
 @using GStore.Data
 @using GStore.Identity
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-success">Client Details: <br />@(Model.Name) [@(Model.ClientId)]</h2>
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminDetailsPageTitle text-success">
+		Client Details:
+		<br />@(Model.Name) [@(Model.ClientId)]
+	</h2>
 </div>
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
 		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
 		{
@@ -24,6 +27,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.Name)
+			<br/>@Html.HelpLabelFor(model => model.Name)
 		</dd>
 
 		<dt>
@@ -32,6 +36,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.EnablePageViewLog)
+			@Html.HelpLabelFor(model => model.EnablePageViewLog)
 		</dd>
 
 		<dt>
@@ -40,6 +45,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.EnableNewUserRegisteredBroadcast)
+			@Html.HelpLabelFor(model => model.EnableNewUserRegisteredBroadcast)
 		</dd>
 
 		<dt>
@@ -48,6 +54,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.UseSendGridEmail)
+			@Html.HelpLabelFor(model => model.UseSendGridEmail)
 		</dd>
 
 		<dt>
@@ -56,6 +63,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.SendGridMailAccount)
+			<br/>@Html.HelpLabelFor(model => model.SendGridMailAccount)
 		</dd>
 
 		<dt>
@@ -64,6 +72,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.SendGridMailFromEmail)
+			<br/>@Html.HelpLabelFor(model => model.SendGridMailFromEmail)
 		</dd>
 
 		<dt>
@@ -72,6 +81,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.SendGridMailFromName)
+			<br />@Html.HelpLabelFor(model => model.SendGridMailFromName)
 		</dd>
 
 		<dt>
@@ -80,6 +90,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.SendGridMailPassword)
+			<br />@Html.HelpLabelFor(model => model.SendGridMailPassword)
 		</dd>
 
 		<dt>
@@ -88,6 +99,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.UseTwilioSms)
+			@Html.HelpLabelFor(model => model.UseTwilioSms)
 		</dd>
 
 		<dt>
@@ -96,6 +108,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TwilioFromPhone)
+			<br />@Html.HelpLabelFor(model => model.TwilioFromPhone)
 		</dd>
 
 		<dt>
@@ -104,6 +117,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TwilioSid)
+			<br />@Html.HelpLabelFor(model => model.TwilioSid)
 		</dd>
 
 		<dt>
@@ -112,6 +126,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TwilioSmsFromEmail)
+			<br />@Html.HelpLabelFor(model => model.TwilioSmsFromEmail)
 		</dd>
 
 		<dt>
@@ -120,6 +135,7 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TwilioSmsFromName)
+			<br />@Html.HelpLabelFor(model => model.TwilioSmsFromName)
 		</dd>
 
 		<dt>
@@ -128,11 +144,12 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TwilioToken)
+			<br />@Html.HelpLabelFor(model => model.TwilioToken)
 		</dd>
 	</dl>
 </div>
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions col-md-offset-5 col-md-6 no-color">
 		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
 		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
 		{
@@ -140,6 +157,7 @@
 			@Html.ActionLink("Edit", "ClientEdit", null, new { @class = "btn btn-warning" })
 		}
 	</div>
+
 </div>
 <hr />
 <div>

@@ -370,6 +370,16 @@ namespace GStore.Controllers.BaseClass
 			throw new HttpException((int)System.Net.HttpStatusCode.BadRequest, statusDescription ?? "");
 		}
 
+		/// <summary>
+		/// Throws a HTTP 400 BadRequest exception
+		/// </summary>
+		/// <param name="statusDescription"></param>
+		/// <returns></returns>
+		protected virtual PartialViewResult HttpBadRequestPartial(string statusDescription = null)
+		{
+			throw new HttpException((int)System.Net.HttpStatusCode.BadRequest, statusDescription ?? "");
+		}
+
 		protected override void HandleUnknownAction(string actionName)
 		{
 			HttpNotFound("Unknown action: " + actionName + " in " + RouteData.ToSourceString());

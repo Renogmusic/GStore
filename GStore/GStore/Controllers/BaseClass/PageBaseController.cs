@@ -7,6 +7,7 @@ using GStore.Data;
 using GStore.Models.ViewModels;
 using GStore.Models;
 using GStore.Identity;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Controllers.BaseClass
 {
@@ -69,6 +70,58 @@ namespace GStore.Controllers.BaseClass
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
+		public virtual PartialViewResult UpdatePageAjax(int? PageId, PageEditViewModel pageEditViewModel)
+		{
+			if (!PageId.HasValue)
+			{
+				return HttpBadRequestPartial("Page id parameter is null");
+			}
+
+			if (pageEditViewModel.PageId == 0)
+			{
+				return HttpBadRequestPartial("Page id in viewmodel is 0");
+			}
+
+			if (PageId.Value != pageEditViewModel.PageId)
+			{
+				return HttpBadRequestPartial("Page id mismatch. PageId Parameter " + PageId.Value + " != " + pageEditViewModel.PageId);
+			}
+
+			if (pageEditViewModel.PageTemplateId == 0)
+			{
+				ModelState.AddModelError("PageTemplateId", "Page Template must be selected");
+			}
+
+			if (pageEditViewModel.ThemeId == 0)
+			{
+				ModelState.AddModelError("ThemeId", "Page Theme must be selected");
+			}
+
+			if (string.IsNullOrWhiteSpace(pageEditViewModel.Url))
+			{
+				ModelState.AddModelError("Url", "Url is invalid. Example: '/' or '/Contact'");
+			}
+
+			if (ModelState.IsValid)
+			{
+				Page page = null;
+				page = GStoreDb.UpdatePage(pageEditViewModel, this, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+				AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully", AppHtmlHelpers.UserMessageType.Success);
+				pageEditViewModel = new PageEditViewModel(page);
+				return PartialView("_PageEditPartial", pageEditViewModel);
+			}
+			else
+			{
+				AddUserMessage("Page Edit Error", "There was an error with your entry for page " + pageEditViewModel.Name.ToHtml() + " [" + pageEditViewModel.PageId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+			}
+
+			return PartialView("_PageEditPartial", pageEditViewModel);
+		}
+
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdateSectionAjax(PageSectionEditViewModel viewModel)
 		{
 			bool quietOnSave = false;
@@ -88,7 +141,7 @@ namespace GStore.Controllers.BaseClass
 					pageSection = GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 					if (!quietOnSave)
 					{
-						AddUserMessage("Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
+						AddUserMessage("Section Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
 					}
 				}
 				else
@@ -96,7 +149,7 @@ namespace GStore.Controllers.BaseClass
 					pageSection = GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 					if (!quietOnSave)
 					{
-						AddUserMessage("Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
+						AddUserMessage("Section Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
 					}
 				}
 
@@ -105,7 +158,7 @@ namespace GStore.Controllers.BaseClass
 			}
 			else
 			{
-				AddUserMessage("Error", "There was an error with your entry. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Section Update Error", "There was an error with your entry. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 			
 			return PartialView("_SectionEditPartial", viewModel);

@@ -1,91 +1,91 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GStore.Models.BaseClasses.StoreFrontRecord">
-    <Position X="18" Y="8.5" Width="1.5" />
+    <Position X="12" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.ClientRecord">
-    <Position X="17.75" Y="6.25" Width="1.75" />
+    <Position X="11.75" Y="9.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
-    <Position X="17.5" Y="3" Width="2.25" />
+    <Position X="11.5" Y="6" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
       <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.GStoreEntity">
-    <Position X="17.75" Y="0.75" Width="1.75" />
+    <Position X="11.75" Y="3.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.NavBarItem">
-    <Position X="6.5" Y="10.75" Width="2.25" />
+    <Position X="0.5" Y="13.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>JAECIAQQAwAQAAAAAUAAEAQAAAAAIgAEAABwAQAAEAQ=</HashCode>
       <FileName>Models\NavBarItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Notification">
-    <Position X="9.5" Y="10.75" Width="1.75" />
+    <Position X="3.5" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>FgAAAACAAAAACAAAAIAAAAAoAAAIAACgABAAIAAAAAI=</HashCode>
       <FileName>Models\Notification.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.NotificationLink">
-    <Position X="12" Y="10.75" Width="1.75" />
+    <Position X="6" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAASAAAAAAAAAAAAEAAAAQACACAAAAAAAAAA=</HashCode>
       <FileName>Models\NotificationLink.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Page">
-    <Position X="14.5" Y="10.75" Width="2" />
+    <Position X="8.5" Y="13.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAECAAAAAAAiAAAAAAAAAAQAAQABAAAACUAAAABAQAA=</HashCode>
+      <HashCode>QAECAAAAAAAjAAAQAAAAAAQAAQABIAAACUAAAABAAAA=</HashCode>
       <FileName>Models\Page.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.PageSection">
-    <Position X="17.25" Y="10.75" Width="2.25" />
+    <Position X="11.25" Y="13.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>CAECAAAAAAAQAAACAAQAAAAACQAAEAAAAAAAAIAAQAA=</HashCode>
       <FileName>Models\PageSection.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Product">
-    <Position X="20.25" Y="10.75" Width="1.75" />
+    <Position X="14.25" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>UAEAAAAAAAAAAAAAAAAAAAQCAAAABAAAAAACAABACAA=</HashCode>
       <FileName>Models\Product.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ProductCategory">
-    <Position X="22.75" Y="10.75" Width="2.5" />
+    <Position X="16.75" Y="13.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AgEAAAEAAAAgAAAAAQAAQAQCAABABIAAAAASAAAgAAQ=</HashCode>
       <FileName>Models\ProductCategory.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ProductCategoryAttribute">
-    <Position X="26" Y="10.75" Width="2.25" />
+    <Position X="20" Y="13.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAEAAQAAEAIAAgAAAABAAgQBAAAAACAAAAASAAAAEAA=</HashCode>
       <FileName>Models\ProductCategoryAttribute.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.StoreBinding">
-    <Position X="29" Y="10.75" Width="1.75" />
+    <Position X="23" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>gAEAAIAAAAAAAAAAAAAAAAAACCAIAAAAAAAAAAAAAgA=</HashCode>
       <FileName>Models\StoreBinding.cs</FileName>

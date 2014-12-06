@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using GStore.Areas.StoreAdmin.ViewModels;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.StoreAdmin.Controllers
 {
@@ -80,7 +81,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				if (!storeFrontToView.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.Name + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -114,7 +115,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -158,7 +159,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -212,7 +213,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				GStoreDb.StoreFronts.Update(storeFrontToEdit);
 				GStoreDb.SaveChanges();
 
-				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front '" + Server.HtmlEncode(storeFrontToEdit.Name) + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front '" + storeFrontToEdit.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
 
 				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId });
 			}

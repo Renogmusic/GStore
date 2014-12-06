@@ -25,12 +25,12 @@ namespace GStore.Models.ViewModels
 
 			if (storeFront != null)
 			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive();
+				this.CategoryTree = storeFront.CategoryTreeWhereActive(userProfile == null);
 				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(userProfile == null);
 			}
 			else
 			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive();
+				this.CategoryTree = storeFront.CategoryTreeWhereActive(userProfile == null);
 				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(userProfile == null);
 			}
 			this.ShowStoreAdminLink = storeFront.ShowStoreAdminLink(userProfile);

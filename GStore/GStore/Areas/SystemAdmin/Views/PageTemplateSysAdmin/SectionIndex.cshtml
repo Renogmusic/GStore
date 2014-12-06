@@ -1,6 +1,7 @@
 ﻿@model GStore.Models.PageTemplate
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <style>
 	table th {
 		text-align: center;
@@ -10,19 +11,26 @@
 		text-align: center;
 	}
 </style>
+
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">
 	Page Template Section Manager
-	<br /><small>Page Template: @Html.DisplayFor(model => model)</small>
+	<br />
+	<small>Page Template: @Html.DisplayForModel("PageTemplateNoLinks")</small>
 </h2>
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Create a New Section", "SectionCreate", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Refresh this Page", "SectionIndex", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
 		@Html.HiddenFor(model => model.PageTemplateId)
 	</div>
 </div>
+
 <hr />
 
 @if (Model.Sections.Count() == 0)
@@ -33,114 +41,120 @@
 else
 {
 	GStore.Models.PageTemplateSection firstRecord = Model.Sections.First();
-	<table class="table table-hover table-striped">
-		<tr>
-			<th>@Html.ActionSortLink("Default Sort", "SectionIndex", string.Empty)</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.PageTemplateSectionId, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.Name, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.Order, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLink("Status", "SectionIndex", "Status")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.IsPending, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.StartDateTimeUtc, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.EndDateTimeUtc, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.CreateDateTimeUtc, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.CreatedBy, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.UpdateDateTimeUtc, "SectionIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.UpdatedBy, "SectionIndex")
-			</th>
-			<th></th>
-		</tr>
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>@Html.ActionSortLink("Default Sort", "SectionIndex", string.Empty)</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.PageTemplateSectionId, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Name, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Order, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Status", "SectionIndex", "Status")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.IsPending, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.StartDateTimeUtc, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.EndDateTimeUtc, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreateDateTimeUtc, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreatedBy, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdateDateTimeUtc, "SectionIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdatedBy, "SectionIndex")
+				</th>
+				<th></th>
+			</tr>
 
-		@foreach (var item in Model.Sections)
+			@foreach (var item in Model.Sections)
 		{
 			bool pageTemplateIsActive = item.PageTemplate.IsActiveDirect();
 			bool sectionIsActive = item.IsActiveDirect();
 			bool isAllActive = pageTemplateIsActive && sectionIsActive;
 			string rowClass = (isAllActive ? "" : "text-warning");
 
-			<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("SectionDetails", new { @id = item.PageTemplateSectionId }))');">
-				<td>
-					@Html.ActionLink("Details", "SectionDetails", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-success" })
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.PageTemplateSectionId)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Name)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Order)
-				</td>
-				<td>
-					@if (sectionIsActive)
+				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("SectionDetails", new { @id = item.PageTemplateSectionId }))');">
+					<td>
+						@Html.ActionLink("Details", "SectionDetails", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-success" })
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.PageTemplateSectionId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Order)
+					</td>
+					<td>
+						@if (sectionIsActive)
 					{
-						<span class="text-success">Active</span>
+							<span class="text-success">Active</span>
 					}
 					else
 					{
-						<span class="text-warning"><strong>Inactive</strong></span>
-						<br />
-						@Html.ActionLink("Activate Page Template Section", "ActivateSection", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-warning" });
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate Page Template Section", "ActivateSection", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-warning" });
 					}
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsPending)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.CreatedBy.UserId)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
-				</td>
-				<td>
-					<span style="white-space: nowrap">
-						@Html.ActionLink("Edit", "SectionEdit", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-warning" })
-						@Html.ActionLink("Delete", "SectionDelete", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-danger" })
-					</span>
-				</td>
-			</tr>
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsPending)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreatedBy.UserId)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
+					</td>
+					<td>
+						<span style="white-space: nowrap">
+							@Html.ActionLink("Edit", "SectionEdit", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-warning" })
+							@Html.ActionLink("Delete", "SectionDelete", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-danger" })
+						</span>
+					</td>
+				</tr>
 		}
 
-	</table>
+		</table>
+	</div>
+
 	<div class="row">
-		<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		<div class="form-actions no-color col-md-offset-5 col-md-6">
 			@Html.ActionLink("OK", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-default" })
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Create a New Section", "SectionCreate", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
-			@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target="_blank" })
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Refresh this Page", "SectionIndex", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
 		</div>
 	</div>
 

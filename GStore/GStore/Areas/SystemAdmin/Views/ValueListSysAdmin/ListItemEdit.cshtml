@@ -2,34 +2,37 @@
 @using GStore.AppHtmlHelpers
 @using GStore.Models
 @using GStore.Data
+
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">
-			New Value List Item
-			<br /><small>@Html.DisplayNameFor(model => model.ValueList) @Html.DisplayFor(model => model.ValueList)</small>
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-warning">
+			Edit Value List Item
+			<br /><small>@Html.DisplayForModel("ValueListItemNoLinks")</small>
 		</h2>
 	</div>
 
-    <div class="form-horizontal">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "ListItemDetails", new { id = Model.ValueListItemId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenFor(model => model.ValueListId)
 			@Html.HiddenFor(model => model.ValueListItemId)
 			@Html.HiddenFor(model => model.ClientId)
 			@Html.HiddenAuditFields()
 		</div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "ListItemDetails", new { id = Model.ValueListItemId }, new { @class = "btn btn-default" })
-			</div>
-		</div>
-
+	</div>
+	
+    <div class="form-horizontal">
         <div class="form-group">
             @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
@@ -109,17 +112,19 @@
 				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
 			</div>
         </div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "ListItemDetails", new { id = Model.ValueListItemId }, new { @class = "btn btn-default" })
-			</div>
-		</div>
     </div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "ListItemDetails", new { id = Model.ValueListItemId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
 }
+
 <hr />
+
 <div>
 	@Html.ActionLink("Back to Value List Index", "Index")
 </div>

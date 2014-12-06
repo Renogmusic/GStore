@@ -2,13 +2,13 @@
 @using GStore.AppHtmlHelpers
 @using GStore.Data
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-center text-success">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-success">
 		Value List Item Details:
-		<br />'@(Model.Name)' [@(Model.ValueListItemId)]
+		<br />@Html.DisplayForModel("ValueListItemNoLinks")
 	</h2>
 </div>
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "ListItemIndex", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "ListItemEdit", new { id = Model.ValueListItemId }, new { @class = "btn btn-warning" })
@@ -136,7 +136,7 @@
 </div>
 <hr />
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "ListItemIndex", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "ListItemEdit", new { id = Model.ValueListItemId }, new { @class = "btn btn-warning" })

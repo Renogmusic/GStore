@@ -6,5 +6,17 @@
 }
 else
 {
-	@:@(Model.Name) [@(Model.ThemeId)]
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Theme";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.ThemeId)]@(inactiveText)
+	</span>
+	@: &nbsp;@(Html.ActionLink(linkText, "Details", "ThemeSysAdmin", new { id = Model.ThemeId }, new { @class = viewLinkClass }))
+	@: &nbsp; - @(Html.DisplayFor(model => model.Client))
 }
+

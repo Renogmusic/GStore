@@ -3,6 +3,7 @@ using System;
 using System.Web.Mvc;
 using GStore.Models;
 using System.Collections.Generic;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -21,8 +22,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				hasErrorMessage = true;
 				string sfiMessageHtml = "StoreFront is inactive.\n"
-					+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + Server.HtmlEncode(exSFI.StoreFront.Name + " [" + exSFI.StoreFront.StoreFrontId + "]") + "</a>\n"
-					+ exSFI.Message;
+					+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + exSFI.StoreFront.Name.ToHtml() + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
+					+ exSFI.Message.ToHtml();
 				AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
 			}
 			catch(Exceptions.NoMatchingBindingException exNMB)
@@ -30,14 +31,14 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				hasErrorMessage = true;
 				StoreFront guessStoreFront = GStoreDb.SeedAutoMapStoreFrontBestGuess();
 				string nmbMessageHtml = "No store front found for this Url.\n"
-					+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + Server.HtmlEncode(guessStoreFront.Name + " [" + guessStoreFront.StoreFrontId + "]") + "</a>\n"
-					+ exNMB.Message;
+					+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + guessStoreFront.Name.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+					+ exNMB.Message.ToHtml();
 				AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
 			}
 			catch (Exception ex)
 			{
 				hasErrorMessage = true;
-				string exMessageHtml = ex.Message + "\n" + ex.ToString();
+				string exMessageHtml = ex.Message.ToHtml() + "\n" + ex.ToString().ToHtml();
 				AddUserMessageBottom("Error getting current storefront: unknown error", exMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
 			}
 
@@ -46,8 +47,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Errors found!!", "Errors were found in the system configuration. See bottom of this page for details or <a href=\"#UserMessagesBottom\">click here<a/>", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
-			ViewBag.ClientFilterList = ClientFilterListEx(clientId, true, true, true) ;
-			ViewBag.StoreFrontFilterList = StoreFrontFilterList(clientId, storeFrontId);
+			ViewBag.StoreFrontFilterList = StoreFrontFilterListWithAllAndNull(clientId, storeFrontId);
 
 			return View("Index");
         }
@@ -65,7 +65,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			if (!System.IO.Directory.Exists(folderPath))
 			{
-				AddUserMessage("Log Folder does not exist", "Log Folder for " + folder + " does not exist, no need to delete", AppHtmlHelpers.UserMessageType.Info);
+				AddUserMessage("Log Folder does not exist", "Log Folder for " + folder.ToHtml() + " does not exist, no need to delete", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index");
 			}
 
@@ -73,12 +73,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			try
 			{
 				System.IO.Directory.Delete(folderPath, true);
-				AddUserMessage("Log Folder Cleared!", "Log folder " + folder + " cleared!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Log Folder Cleared!", "Log folder " + folder.ToHtml() + " cleared!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
 			catch (Exception ex)
 			{
-				AddUserMessage("Error clearing Log Folder!", "Error clearing log folder. Exception: " + ex.ToString(), AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Error clearing Log Folder!", "Error clearing log folder. Exception: " + ex.ToString().ToHtml(), AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			return RedirectToAction("Index");
@@ -102,7 +102,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			StoreBinding binding = inactiveBindings[0];
 			this.ActivateStoreFrontClientAndBinding(binding);
 
-			AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+			AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 			return RedirectToAction("Index");
 		}
@@ -119,6 +119,5 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			AddUserMessage("BindSeedBestGuessStoreFront Success!", "Auto-mapped Binding successfully!", AppHtmlHelpers.UserMessageType.Success);
 			return RedirectToAction("Index");
 		}
-
 	}
 }

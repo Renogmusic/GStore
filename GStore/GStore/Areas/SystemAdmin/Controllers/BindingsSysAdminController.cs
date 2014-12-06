@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -17,12 +18,23 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(clientId);
+			clientId = FilterClientIdRaw();
 
 			IQueryable<StoreBinding> query = null;
 			if (clientId.HasValue)
 			{
-				query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == clientId.Value);
+				if (clientId.Value == -1)
+				{
+					query = GStoreDb.StoreBindings.All();
+				}
+				else if (clientId.Value == 0)
+				{
+					query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == null);
+				}
+				else
+				{
+					query = GStoreDb.StoreBindings.Where(sb => sb.ClientId == clientId.Value);
+				}
 			}
 			else
 			{
@@ -167,7 +179,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				GStoreDb.SaveChanges();
 				if (deleted)
 				{
-					AddUserMessage("Store Binding Deleted", "Store Binding for Store Front '" + storeFrontName + "' Binding [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Store Binding Deleted", "Store Binding for Store Front '" + storeFrontName.ToHtml() + "' Binding [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
 				}
 			}
 			catch (Exception ex)

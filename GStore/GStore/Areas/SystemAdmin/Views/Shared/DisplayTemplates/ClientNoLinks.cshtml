@@ -8,8 +8,8 @@ else
 {
 	bool isActive = Model.IsActiveDirect();
 	string className = isActive ? string.Empty : "text-warning";
-	<span class="@className">
-		'@(Model.Name)' [@(Model.ClientId)] @(isActive ? string.Empty : " [INACTIVE]")
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.ClientId)] @(isActive ? string.Empty : " [INACTIVE]")
 	</span>
 }
 

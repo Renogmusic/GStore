@@ -1,0 +1,197 @@
+﻿@model GStore.Models.ViewModels.PageEditViewModel
+@using GStore.AppHtmlHelpers
+@{
+	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
+	List<SelectListItem> themeList = Model.ThemeSelectList;
+	List<SelectListItem> pageTemplateList = Model.PageTemplateSelectList;
+
+}
+<style>
+	.form-group .form-control
+	{
+		padding-top: 0;
+		margin-top: 0;
+		padding-bottom: 0;
+		margin-bottom: 10px;
+		/*background-color: red;*/
+	}
+	.form-group label
+	{
+		padding-top: 0;
+		margin-top: 5px;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		/*background-color: green;*/
+	}
+</style>
+<ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
+	<li class="active"><a data-toggle="tab" href="#sectionStart">Page</a></li>
+	<li class=""><a data-toggle="tab" href="#sectionBasic">Basic</a></li>
+	<li class=""><a data-toggle="tab" href="#sectionTheme">Theme</a></li>
+	<li class=""><a data-toggle="tab" href="#sectionAdvanced">Meta</a></li>
+	<li class="">@Html.ActionLink("Refresh", "Edit", new { DynamicPageUrl = Model.OriginalPageUrl })</li>
+</ul>
+<div class="row">
+	<div class="col-md-offset-3 col-md-9 text-left">
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		@Html.HiddenFor(model => model.PageId)
+		@Html.HiddenFor(model => model.IsPending)
+		@Html.HiddenFor(model => model.StartDateTimeUtc)
+		@Html.HiddenFor(model => model.EndDateTimeUtc)
+	</div>
+</div>
+
+<div class="tab-content">
+	<div id="sectionStart" class="tab-pane fade in active">
+	</div>
+	<div id="sectionBasic" class="tab-pane fade">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Basic Page Fields</h3>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.PageTitle, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.PageTitle, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.PageTitle, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.PageTitle, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Url, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.Url, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.Url, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Url, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.ForRegisteredOnly, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+		</div>
+		<div class="row">
+			<div class="col-md-offset-3 col-md-9 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Display", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-default" })
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Refresh this Page", "Edit", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-primary" })
+			</div>
+		</div>
+	</div>
+	<div id="sectionTheme" class="tab-pane fade">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Theme and Template</h3>
+			<div class="form-group">
+				@Html.LabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "help-label" })
+					@Html.DropDownList("PageTemplateId", pageTemplateList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.PageTemplateId, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.ThemeId, htmlAttributes: new { @class = "help-label" })
+					@Html.DropDownList("ThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.ThemeId, "", new { @class = "text-danger" })
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-offset-3 col-md-9 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Display", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-default" })
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Refresh this Page", "Edit", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-primary" })
+			</div>
+		</div>
+
+	</div>
+	<div id="sectionAdvanced" class="tab-pane fade">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Advanced</h3>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.BodyTopScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "help-label" })
+					@Html.EditorFor(model => model.BodyBottomScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row">
+			<div class="col-md-offset-3 col-md-9 text-left">
+				<input type="submit" value="Save" class="btn btn-warning" />
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Display", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-default" })
+				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Refresh this Page", "Edit", new { DynamicPageUrl = Model.OriginalPageUrl }, new { @class = "btn btn-primary" })
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+@Html.RenderUserMessages()

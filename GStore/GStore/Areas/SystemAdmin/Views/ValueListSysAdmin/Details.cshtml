@@ -1,11 +1,17 @@
 ﻿@model GStore.Models.ValueList
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-center text-success">Value List Details: <br />'@(Model.Name)' [@(Model.ValueListId)]</h2>
+	<h2 class="jumbotron SysAdminDetailsPageTitle col-md-offset-3 col-md-6 text-center text-success">
+		Value List Details:
+		<br />
+		@Html.DisplayForModel("ValueListNoLinks")
+	</h2>
 </div>
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "Edit", new { id = Model.ValueListId }, new { @class = "btn btn-warning" })
@@ -13,7 +19,9 @@
 		@Html.ActionLink("Delete", "Delete", new { id = Model.ValueListId }, new { @class = "btn btn-danger" })
 	</div>
 </div>
+
 <hr />
+
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>&nbsp;</dt>
@@ -139,9 +147,11 @@
 
 	</dl>
 </div>
+
 <hr />
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "Edit", new { id = Model.ValueListId }, new { @class = "btn btn-warning" })
@@ -149,7 +159,9 @@
 		@Html.ActionLink("Delete", "Delete", new { id = Model.ValueListId }, new { @class = "btn btn-danger" })
 	</div>
 </div>
+
 <hr />
+
 <p>
 	@Html.ActionLink("Back to List", "Index")
 </p>

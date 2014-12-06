@@ -5,25 +5,26 @@
 	@Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning text-left">Edit Client: '@(Model.Name)' [@(Model.ClientId)]</h2>
+		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning title-align">Edit Client: '@(Model.Name)' [@(Model.ClientId)]</h2>
 	</div>
 
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.ClientId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
 
-	<div class="form-horizontal">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenFor(model => model.ClientId)
 			@Html.HiddenAuditFields()
 		</div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-warning" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Details", new { id = Model.ClientId }, new { @class = "btn btn-default" })
-			</div>
-		</div>
-
+	</div>
+	
+	<div class="form-horizontal">
 		<div class="form-group">
 			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10">
@@ -176,16 +177,19 @@
 			</div>
 		</div>
 
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-warning" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Details", new { id = Model.ClientId }, new { @class = "btn btn-default" })
-			</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.ClientId }, new { @class = "btn btn-default" })
 		</div>
 	</div>
 }
+
 <hr/>
+
 <div>
 	@Html.ActionLink("Back to List", "Index")
 </div>

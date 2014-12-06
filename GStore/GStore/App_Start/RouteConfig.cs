@@ -108,6 +108,13 @@ namespace GStore
 				);
 
 				routes.MapRoute(
+					name: "Stores-DynamicPageEditPostRoute",
+					url: "Stores/{urlstorename}/UpdatePageAjax/{*DynamicPageUrl}",
+					defaults: new { controller = "Page", action = "UpdatePageAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-DynamicPageEditSectionPostRoute",
 					url: "Stores/{urlstorename}/UpdateSectionAjax/{*DynamicPageUrl}",
 					defaults: new { controller = "Page", action = "UpdateSectionAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -210,6 +217,13 @@ namespace GStore
 				name: "DynamicPageEditRoute",
 				url: "Edit/{*DynamicPageUrl}",
 				defaults: new { controller = "Page", action = "Edit", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "DynamicPageEditPostRoute",
+				url: "UpdatePageAjax/{*DynamicPageUrl}",
+				defaults: new { controller = "Page", action = "UpdatePageAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
 

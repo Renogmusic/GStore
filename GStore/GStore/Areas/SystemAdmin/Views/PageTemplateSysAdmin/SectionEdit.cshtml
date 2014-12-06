@@ -7,28 +7,31 @@
 	@Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">
-			New Page Template Section
-			<br /><small>@Html.DisplayNameFor(model => model.PageTemplate) @Html.DisplayFor(model => model.PageTemplate)</small>
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-warning title-align">
+			Edit Page Template Section
+			<br />
+			<small>Page Template Section: @Html.DisplayForModel("PageTemplateSectionNoLinks")</small>
 		</h2>
 	</div>
 
-	<div class="form-horizontal">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenFor(model => model.PageTemplateId)
 			@Html.HiddenFor(model => model.PageTemplateSectionId)
 			@Html.HiddenAuditFields()
 		</div>
+	</div>
 
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "SectionDetails", new { id = Model.PageTemplateSectionId }, new { @class = "btn btn-default" })
-			</div>
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "SectionDetails", new { id = Model.PageTemplateSectionId }, new { @class = "btn btn-default" })
 		</div>
-
+	</div>
+	
+	<div class="form-horizontal">
 		<div class="form-group">
 			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
@@ -84,17 +87,20 @@
 				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
 			</div>
 		</div>
+	</div>
 
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "SectionDetails", new { id = Model.PageTemplateSectionId }, new { @class = "btn btn-default" })
-			</div>
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "SectionDetails", new { id = Model.PageTemplateSectionId }, new { @class = "btn btn-default" })
 		</div>
 	</div>
+
 }
+
 <hr />
+
 <div>
 	@Html.ActionLink("Back to Page Template Index", "Index")
 </div>

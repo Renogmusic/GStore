@@ -9,10 +9,11 @@ else
 	bool isActiveDirect = Model.IsActiveDirect();
 	bool isActiveBubble = Model.IsActiveBubble();
 	string className = isActiveBubble ? string.Empty : "text-warning";
-	<span class="@className">
-		@(Html.DisplayNameFor(model => model.Name)) [@(Html.DisplayFor(model => model.PageId))]
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) [@(Html.DisplayFor(model => model.PageId))]
 		@(Html.DisplayNameFor(model => model.Url)) '@(Html.DisplayFor(model => model.Url))'
 		@(isActiveDirect ? string.Empty : " [INACTIVE]")
 	</span>
-	@: - @(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront, "StoreFrontNoLinks"))
+	@: - @(Html.DisplayFor(m => m.StoreFront, "StoreFrontNoLinks"))
+	@: - @(Html.DisplayFor(m => m.PageTemplate, "PageTemplateNoLinks"))
 }

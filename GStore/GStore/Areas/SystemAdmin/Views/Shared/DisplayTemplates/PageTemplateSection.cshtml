@@ -13,11 +13,11 @@ else
 	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Page Template Section";
 
-	<span class="@className">
-		'@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateSectionId))]
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateSectionId))]
 		@(inactiveText)
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "SectionDetails", "PageTemplateSysAdmin", new { id = Model.PageTemplateSectionId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayNameFor(model => model.PageTemplate)) @(Html.DisplayFor(m => m.PageTemplate))
+	@: - @(Html.DisplayFor(m => m.PageTemplate))
 }

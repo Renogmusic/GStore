@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -18,7 +19,26 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		// GET: SystemAdmin/ClientSysAdmin
         public ActionResult Index(string SortBy, bool? SortAscending)
         {
-			IQueryable<Client> query = GStoreDb.Clients.All();
+			IQueryable<Client> query = null;
+			int? filterClientIdRaw = FilterClientIdRaw();
+
+			if (!filterClientIdRaw.HasValue)
+			{
+				query = GStoreDb.Clients.Where(c => c.ClientId == null);
+			}
+			else if (filterClientIdRaw.Value == 0)
+			{
+				query = GStoreDb.Clients.Where(c => c.ClientId == null);
+			}
+			else if (filterClientIdRaw.Value == -1)
+			{
+				query = GStoreDb.Clients.All();
+			}
+			else
+			{
+				query = GStoreDb.Clients.Where(c => c.ClientId == filterClientIdRaw.Value);
+			}
+
 			IOrderedQueryable<Client> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
 			return View(queryOrdered.ToList());
         }
@@ -63,17 +83,17 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				client = db.Clients.Create(client);
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
 				client = GStoreDb.Clients.Add(client);
-				AddUserMessage("Client Added", "Client '" + client.Name + "' [" + client.ClientId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Client Added", "Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				try
 				{
 					SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(client.ClientVirtualDirectoryToMap()));
-					AddUserMessage("Client Folders Created", "Client Folders were created as: " + client.ClientVirtualDirectoryToMap(), AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Client Folders Created", "Client Folders were created as: " + client.ClientVirtualDirectoryToMap().ToHtml(), AppHtmlHelpers.UserMessageType.Success);
 				}
 				catch (Exception ex)
 				{
-					AddUserMessage("Error Creating Client Folders!", "There was an error creating the client folder '" + client.ClientVirtualDirectoryToMap() + "'. You will need to create the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
+					AddUserMessage("Error Creating Client Folders!", "There was an error creating the client folder '" + client.ClientVirtualDirectoryToMap().ToHtml() + "'. You will need to create the folder manually. Error: " + ex.Message.ToHtml(), AppHtmlHelpers.UserMessageType.Warning);
 				}
                 return RedirectToAction("Index");
             }
@@ -113,7 +133,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
 				client = GStoreDb.Clients.Update(client);
-				AddUserMessage("Client Updated", "Client '" + client.Name + "' [" + client.ClientId + "] updated!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Client Updated", "Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] updated!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//detect if folder name has changed
@@ -127,11 +147,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 						try
 						{
 							System.IO.Directory.Move(originalClientFolder, newClientFolder);
-							AddUserMessage("Folder Moved", "Client folder name was changed, so the client folder was moved from '" + originalFolderToMap + "' to '" + client.ClientVirtualDirectoryToMap() + "'", AppHtmlHelpers.UserMessageType.Success);
+							AddUserMessage("Folder Moved", "Client folder name was changed, so the client folder was moved from '" + originalFolderToMap.ToHtml() + "' to '" + client.ClientVirtualDirectoryToMap().ToHtml() + "'", AppHtmlHelpers.UserMessageType.Success);
 						}
 						catch (Exception ex)
 						{
-							AddUserMessage("Error Moving Client Folder!", "There was an error moving the client folder from '" + originalFolderToMap + "' to '" + client.ClientVirtualDirectoryToMap() + "'. You will need to move the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
+							AddUserMessage("Error Moving Client Folder!", "There was an error moving the client folder from '" + originalFolderToMap.ToHtml() + "' to '" + client.ClientVirtualDirectoryToMap().ToHtml() + "'. You will need to move the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
 						}
 					}
 					else
@@ -139,11 +159,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 						try
 						{
 							SysAdminActivationExtensions.CreateStoreFrontFolders(newClientFolder);
-							AddUserMessage("Folders Created", "Client folders were created: " + client.ClientVirtualDirectoryToMap(), AppHtmlHelpers.UserMessageType.Info);
+							AddUserMessage("Folders Created", "Client folders were created: " + client.ClientVirtualDirectoryToMap().ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 						}
 						catch (Exception ex)
 						{
-							AddUserMessage("Error Creating Client Folders!", "There was an error creating the client folder '" + client.ClientVirtualDirectoryToMap() + "'. You will need to create the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
+							AddUserMessage("Error Creating Client Folders!", "There was an error creating the client folder '" + client.ClientVirtualDirectoryToMap().ToHtml() + "'. You will need to create the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
 						}
 					}
 				}
@@ -201,10 +221,10 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				GStoreDb.SaveChanges();
 				if (deleted)
 				{
-					AddUserMessage("Client Deleted", "Client '" + clientName + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Client Deleted", "Client '" + clientName.ToHtml() + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
 					if (System.IO.Directory.Exists(Server.MapPath(clientFolderToMap)))
 					{
-						AddUserMessage("Client folders not deleted", "Client folder '" + clientFolderToMap + "' was not deleted from the file system. You will need to delete the folder manually.", AppHtmlHelpers.UserMessageType.Info);
+						AddUserMessage("Client folders not deleted", "Client folder '" + clientFolderToMap.ToHtml() + "' was not deleted from the file system. You will need to delete the folder manually.", AppHtmlHelpers.UserMessageType.Info);
 					}
 				}
 			}

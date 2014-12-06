@@ -65,13 +65,22 @@ namespace GStore.Data
 
 		public static void LogSecurityEvent_LogOff(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, UserProfile profile, Controllers.BaseClass.BaseController controller)
 		{
-			string message = "LogOff for " + profile.UserName
-				+ " \n\n-Email: " + profile.Email
-				+ " \n-Name: " + profile.FullName
-				+ " \n-UserId: " + profile.UserId
-				+ " \n-UserProfileId: " + profile.UserProfileId;
+			string message = "LogOff for " + mvcHttpContext.User.Identity.Name
+				+ " \n\n-Email: " + mvcHttpContext.User.Identity.Name
+				+ " \n-Name: " + mvcHttpContext.User.Identity.Name
+				+ " \n-UserId: " + mvcHttpContext.User.Identity.Name
+				+ " \n-UserProfileId: " + mvcHttpContext.User.Identity.Name;
 
-			ctx.LogSecurityEvent(mvcHttpContext, routeData, "LogOff", SecurityEventLevel.LogOff, true, false, profile.UserName, profile, message, controller);
+			if (profile != null)
+			{
+				message = "LogOff for " + profile.UserName
+					+ " \n\n-Email: " + profile.Email
+					+ " \n-Name: " + profile.FullName
+					+ " \n-UserId: " + profile.UserId
+					+ " \n-UserProfileId: " + profile.UserProfileId;
+			}
+
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "LogOff", SecurityEventLevel.LogOff, true, false, mvcHttpContext.User.Identity.Name, profile, message, controller);
 		}
 
 		public static void LogSecurityEvent_LoginFailed(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string loginAttempted, string passwordAttempted, UserProfile profile, Controllers.BaseClass.BaseController controller)

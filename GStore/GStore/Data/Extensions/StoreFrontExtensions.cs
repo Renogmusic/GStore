@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Data
 {
@@ -304,7 +305,7 @@ namespace GStore.Data
 			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_StoreAdminArea);
 		}
 
-		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActive(this StoreFront storeFront)
+		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActive(this StoreFront storeFront, bool isRegistered)
 		{
 			if (storeFront == null)
 			{
@@ -312,6 +313,7 @@ namespace GStore.Data
 			}
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
+				.Where(cat => isRegistered || !cat.ForRegisteredOnly)
 				.Where(cat => cat.ShowInMenu && (cat.ShowIfEmpty || cat.ChildActiveCount > 0))
 				.OrderBy(cat => cat.Order)
 				.ThenBy(cat => cat.Name)
@@ -598,6 +600,10 @@ namespace GStore.Data
 			notification.Message = "FYI - Your password was changed on " + requestUrl.Host
 				+ " \n - This is just a courtesy message to let you know.";
 
+			notification.IsPending = false;
+			notification.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			notification.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
 			db.Notifications.Add(notification);
 			db.SaveChanges();
 		}
@@ -811,11 +817,12 @@ namespace GStore.Data
 			return messageBody;
 		}
 
-		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, string description, string defaultRawHtmlValue, UserProfile userProfile)
+		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, string description, string defaultRawHtmlValue, int clientId, bool editInTop, bool editInBottom, UserProfile userProfile)
 		{
 			db.UserName = userProfile.UserName;
 			PageTemplateSection newSection = db.PageTemplateSections.Create();
 			newSection.PageTemplateId = pageTemplateId;
+			newSection.ClientId = clientId;
 			newSection.Name = sectionName;
 			newSection.Order = order;
 			newSection.DefaultRawHtmlValue = defaultRawHtmlValue;
@@ -864,6 +871,44 @@ namespace GStore.Data
 
 			return newRecord;
 			
+		}
+
+		public static Page UpdatePage(this IGstoreDb db, Models.ViewModels.PageEditViewModel viewModel, Controllers.BaseClass.BaseController controller, StoreFront storeFront, UserProfile userProfile)
+		{
+			//find existing record, update it
+			Page page = storeFront.Pages.SingleOrDefault(p => p.PageId == viewModel.PageId);
+			if (page == null)
+			{
+				throw new ApplicationException("Page not found in storefront pages. PageId: " + viewModel.PageId);
+			}
+
+			page.BodyBottomScriptTag = viewModel.BodyBottomScriptTag;
+			page.BodyTopScriptTag = viewModel.BodyTopScriptTag;
+			page.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			page.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			page.IsPending = viewModel.IsPending;
+			page.MetaDescription = viewModel.MetaDescription;
+			page.MetaKeywords = viewModel.MetaKeywords;
+			page.Name = viewModel.Name;
+			page.Order = viewModel.Order;
+			page.PageTitle = viewModel.PageTitle;
+			page.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			page.ThemeId = viewModel.ThemeId;
+			page.Url = viewModel.Url;
+			if (page.PageTemplateId != viewModel.PageTemplateId)
+			{
+				if (controller != null)
+				{
+					controller.AddUserMessage("Page Template Changed", "Page Template has been changed. Be sure to edit the new template sections for template '" + page.PageTemplate.Name.ToHtml() + "' [" + page.PageTemplateId + "].", AppHtmlHelpers.UserMessageType.Info);
+				}
+				page.PageTemplateId = viewModel.PageTemplateId;
+			}
+
+			db.Pages.Update(page);
+			db.SaveChanges();
+
+			return page;
+
 		}
 
 		public static PageSection UpdatePageSection(this IGstoreDb db, Models.ViewModels.PageSectionEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)

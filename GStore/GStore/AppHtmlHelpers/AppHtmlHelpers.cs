@@ -202,6 +202,16 @@ namespace GStore.AppHtmlHelpers
 			return true;
 		}
 
+		public static bool UserIsSystemAdmin(this HtmlHelper htmlHelper)
+		{
+			UserProfile profile = htmlHelper.CurrentUserProfile(false);
+			if (profile == null)
+			{
+				return false;
+			}
+			return profile.AspNetIdentityUserIsInRoleSystemAdmin();
+		}
+
 		/// <summary>
 		/// Creates a sort link that runs an action
 		/// internally uses Request["SortBy"] and Request["SortAscending"]
@@ -393,6 +403,82 @@ namespace GStore.AppHtmlHelpers
             tag.MergeAttributes(htmlAttributes, replaceExisting: true);
             return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
         }
+
+		/// <summary>
+		/// Renders a label with help text from the "Description" data attribute if found
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, HtmlHelper.AnonymousObjectToHtmlAttributes(new { @class="help-label" }));
+		}
+
+		/// <summary>
+		/// Renders a label with help text from the "Description" data attribute if found
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, typedHtmlAttributes);
+		}
+
+		/// <summary>
+		/// Renders a label with help text from the "Description" data attribute if found
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string labelText, object htmlAttributes)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, labelText, typedHtmlAttributes);
+		}
+
+		internal static MvcHtmlString HelpLabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string labelText = null, IDictionary<string, object> htmlAttributes = null)
+		{
+			string resolvedLabelText = labelText ?? metadata.Description;
+			if (String.IsNullOrEmpty(resolvedLabelText))
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			TagBuilder tag = new TagBuilder("label");
+			tag.Attributes.Add("for", TagBuilder.CreateSanitizedId(html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)));
+			tag.InnerHtml = resolvedLabelText.ToHtmlLines();
+			tag.MergeAttributes(htmlAttributes, replaceExisting: true);
+			return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
+		}
+
+		public static MvcHtmlString DisplayDescriptionFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+
+			if (string.IsNullOrEmpty(metadata.Description))
+			{
+				return new MvcHtmlString(string.Empty);
+			}
+			return new MvcHtmlString(metadata.Description);
+		}
+
 
 		/// <summary>
 		/// Renders alerts from viewbag and tempdata if any exist (messages to user)
@@ -1241,8 +1327,21 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="sectionName">sectionName is the PageTemplateSections.Name</param>
 		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
 		/// <returns></returns>
-		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string defaultRawHtmlValue)
+		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, bool editInTop, bool editInBottom)
 		{
+			if (index < 1)
+			{
+				throw new ArgumentOutOfRangeException("Index", "Template Error! Page Template Section Index must be 1 or greater");
+			}
+			if (string.IsNullOrWhiteSpace(sectionName))
+			{
+				throw new ArgumentOutOfRangeException("Index", "Template Error! Page Section Name cannot be blank");
+			}
+			if (string.IsNullOrWhiteSpace(description))
+			{
+				throw new ArgumentOutOfRangeException("Index", "Template Error! Section Description cannot be blank");
+			}
+
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
 			if (pageViewModel.ForTemplateSyncOnly)
 			{
@@ -1260,15 +1359,52 @@ namespace GStore.AppHtmlHelpers
 				PageTemplateSection sectionTest = template.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
 				if (sectionTest == null)
 				{
-					sectionTest = dbforSync.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, sectionName + " section", defaultRawHtmlValue, htmlHelper.CurrentUserProfile(true));
-					return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span>");
+					sectionTest = dbforSync.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, template.ClientId, editInTop, editInBottom, htmlHelper.CurrentUserProfile(true));
+					return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span><br/>");
 				}
-				return new MvcHtmlString("<span class=\"text-success\"><strong>Section OK '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span>");
+				bool update = false;
+				if (!string.IsNullOrEmpty(defaultRawHtmlValue) && (sectionTest.DefaultRawHtmlValue != defaultRawHtmlValue))
+				{
+					sectionTest.DefaultRawHtmlValue = defaultRawHtmlValue;
+					update = true;
+				}
+				if (sectionTest.Description != description)
+				{
+					sectionTest.Description = description;
+					update = true;
+				}
+				if (sectionTest.Order != 1000 + index)
+				{
+					sectionTest.Order = 1000 + index;
+					update = true;
+				}
+				if (sectionTest.EditInTop != editInTop)
+				{
+					sectionTest.EditInTop = editInTop;
+					update = true;
+				}
+				if (sectionTest.EditInBottom != editInBottom)
+				{
+					sectionTest.EditInBottom = editInBottom;
+					update = true;
+				}
+
+				if (!update)
+				{
+					return new MvcHtmlString("<span class=\"text-success\"><strong>Section OK '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
+				}
+				if (update)
+				{
+					dbforSync.PageTemplateSections.Update(sectionTest);
+					dbforSync.SaveChanges();
+					return new MvcHtmlString("<span class=\"text-info\"><strong>Section Updated '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
+				}
+
 			}
 
 			if (pageViewModel.Page == null)
 			{
-				throw new ArgumentNullException("Page", "Page cannot be null except in forSyncOnly");
+				throw new ArgumentNullException("Page", "Page cannot be null except in ForTemplateSyncOnly which is false");
 			}
 			Page page = pageViewModel.Page;
 			PageTemplate pageTemplate = page.PageTemplate;
@@ -1279,7 +1415,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				System.Diagnostics.Trace.WriteLine("--Auto-creating page template section. Template: " + pageTemplate.Name + " [" + pageTemplate.PageTemplateId + "] Section Name: " + sectionName);
 				IGstoreDb db = htmlHelper.GStoreDb();
-				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, sectionName + " section", defaultRawHtmlValue, db.SeedAutoMapUserBestGuess());
+				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, pageTemplate.ClientId, editInTop, editInBottom, db.SeedAutoMapUserBestGuess());
 			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
@@ -1429,6 +1565,78 @@ namespace GStore.AppHtmlHelpers
 			int fileCount = files.Count();
 
 			return new MvcHtmlString(fileCount.ToString("N0") + " file" + (fileCount == 1 ? string.Empty : "s"));
+		}
+
+		/// <summary>
+		/// Returns HTML Encoded string
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToHtml(this string value)
+		{
+			return HttpUtility.HtmlEncode(value);
+		}
+
+		/// <summary>
+		/// Returns HTML Encoded string and replaces line feeds (new lines) with BR tag
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToHtmlLines(this string value)
+		{
+			return HttpUtility.HtmlEncode(value).Replace("\n", "<br/>\n");
+		}
+
+		/// <summary>
+		/// Returns HTML attribute Encoded string
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToHtmlAttribute(this string value)
+		{
+			return HttpUtility.HtmlAttributeEncode(value);
+		}
+
+		/// <summary>
+		/// Returns JavaScript String Encoded string
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="addDoubleQuotes"></param>
+		/// <returns></returns>
+		public static string ToJavaScriptString(this string value, bool addDoubleQuotes = false)
+		{
+			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes);
+		}
+
+		/// <summary>
+		/// Returns HTML Encoded string in MvcHtmlString format
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ToMvcHtml(this string value)
+		{
+			return new MvcHtmlString(HttpUtility.HtmlEncode(value));
+		}
+
+		/// <summary>
+		/// Returns HTML attribute Encoded string in MvcHtmlString format
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ToMvcHtmlAttribute(this string value)
+		{
+			return new MvcHtmlString(HttpUtility.HtmlAttributeEncode(value));
+		}
+
+		/// <summary>
+		/// Returns Javascript String Encoded string in MvcHtmlString format
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="addDoubleQuotes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ToMvcJavaScriptString(this string value, bool addDoubleQuotes = false)
+		{
+			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
 		}
 
 	}

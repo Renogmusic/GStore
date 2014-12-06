@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -32,7 +33,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			client.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.Clients.Update(client);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Client", "Activated Client '" + client.Name + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Client", "Activated Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -57,7 +58,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.StoreFronts.Update(storeFront);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name + "' [" + storeFront.ClientId + "]" + " - Client '" + storeFront.Client.Name + "' [" + storeFront.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.ClientId + "]" + " - Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -83,7 +84,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			controller.GStoreDb.StoreBindings.Update(binding);
 			controller.GStoreDb.SaveChanges();
 			controller.AddUserMessage("Activated Store Front", "Activated Store Binding [" + binding.StoreBindingId + "] "
-				+ " Store Front: '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId  + "]" + " - Client '" + binding.Client.Name + "' [" + binding.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+				+ " Store Front: '" + binding.StoreFront.Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]" + " - Client '" + binding.Client.Name.ToHtml() + "' [" + binding.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -114,7 +115,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				client.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 				controller.GStoreDb.Clients.Update(client);
 				controller.GStoreDb.SaveChanges();
-				controller.AddUserMessage("Activated Client", "Activated Client '" + client.Name + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+				controller.AddUserMessage("Activated Client", "Activated Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 			}
 
 			if (!binding.StoreFront.IsActiveDirect())
@@ -125,31 +126,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 				controller.GStoreDb.StoreFronts.Update(storeFront);
 				controller.GStoreDb.SaveChanges();
-				controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+				controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 			}
 
 			return true;
 
-		}
-
-		public static StoreBinding AutoMapBindingSeedBestGuessStoreFront(this BaseClasses.SystemAdminBaseController controller)
-		{
-
-			StoreBinding binding = controller.GStoreDb.AutoMapBinding(controller);
-
-			StoreFront storeFront = binding.StoreFront;
-			string message = string.Empty;
-			if (Properties.Settings.Current.AppEnableBindingAutoMapCatchAll)
-			{
-				message = " to catch-all binding";
-			}
-			else
-			{
-				message = " to current Url";
-			}
-			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message + " store binding to best guess store front '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
-
-			return binding;
 		}
 
 		public static bool ActivateUserProfile(this BaseClasses.SystemAdminBaseController controller, int userProfileId)
@@ -172,7 +153,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			userProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.UserProfiles.Update(userProfile);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated User Profile", "Activated User Profile '" + userProfile.UserName + "' [" + userProfile.UserProfileId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated User Profile", "Activated User Profile '" + userProfile.UserName.ToHtml() + "' [" + userProfile.UserProfileId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 
@@ -198,7 +179,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.PageTemplates.Update(pageTemplate);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Page Template", "Activated Page Template '" + pageTemplate.Name + "' [" + pageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Page Template", "Activated Page Template '" + pageTemplate.Name.ToHtml() + "' [" + pageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -223,7 +204,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			pageTemplateSection.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.PageTemplateSections.Update(pageTemplateSection);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Page Template Section", "Activated Page Template Section '" + pageTemplateSection.Name + "' [" + pageTemplateSection.PageTemplateId + "] - Page Template '" + pageTemplateSection.PageTemplate.Name + "' [" + pageTemplateSection.PageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Page Template Section", "Activated Page Template Section '" + pageTemplateSection.Name.ToHtml() + "' [" + pageTemplateSection.PageTemplateId + "] - Page Template '" + pageTemplateSection.PageTemplate.Name.ToHtml() + "' [" + pageTemplateSection.PageTemplate.PageTemplateId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -248,7 +229,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			valueList.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.ValueLists.Update(valueList);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Value List", "Activated Value List '" + valueList.Name + "' [" + valueList.ValueListId + "]" + " - Client '" + valueList.Client.Name + "' [" + valueList.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Value List", "Activated Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "]" + " - Client '" + valueList.Client.Name.ToHtml() + "' [" + valueList.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -273,9 +254,54 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			valueListItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.ValueListItems.Update(valueListItem);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Value List Item", "Activated Value List Item '" + valueListItem.Name + "' [" + valueListItem.ValueListItemId + "]" + " - Value List '" + valueListItem.ValueList.Name + "' [" + valueListItem.ValueList.ValueListId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Value List Item", "Activated Value List Item '" + valueListItem.Name.ToHtml() + "' [" + valueListItem.ValueListItemId + "]" + " - Value List '" + valueListItem.ValueList.Name.ToHtml() + "' [" + valueListItem.ValueList.ValueListId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
+		}
+
+		public static bool ActivateTheme(this BaseClasses.SystemAdminBaseController controller, int themeId)
+		{
+			Theme theme = controller.GStoreDb.Themes.FindById(themeId);
+			if (theme == null)
+			{
+				controller.AddUserMessage("Activate Theme Failed!", "Theme not found by id: " + themeId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (theme.IsActiveDirect())
+			{
+				controller.AddUserMessage("Theme is already active.", "Theme is already active. id: " + themeId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			theme.IsPending = false;
+			theme.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			theme.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			controller.GStoreDb.Themes.Update(theme);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Theme", "Activated Theme '" + theme.Name.ToHtml() + "' [" + theme.ThemeId + "]" + " - Client '" + theme.Client.Name.ToHtml() + "' [" + theme.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
+		public static StoreBinding AutoMapBindingSeedBestGuessStoreFront(this BaseClasses.SystemAdminBaseController controller)
+		{
+
+			StoreBinding binding = controller.GStoreDb.AutoMapBinding(controller);
+
+			StoreFront storeFront = binding.StoreFront;
+			string message = string.Empty;
+			if (Properties.Settings.Current.AppEnableBindingAutoMapCatchAll)
+			{
+				message = " to catch-all binding";
+			}
+			else
+			{
+				message = " to current Url";
+			}
+			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message.ToHtml() + " store binding to best guess store front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+
+			return binding;
 		}
 
 		public static void CreateStoreFrontFolders(string basePath)

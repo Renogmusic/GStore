@@ -1,0 +1,138 @@
+﻿@model GStore.Models.Theme
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+
+<div class="row">
+	<h2 class="jumbotron SysAdminDetailsPageTitle col-md-offset-3 col-md-6 text-success">Theme Details: <br />'@(Model.Name)' [@(Model.ThemeId)]</h2>
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.ThemeId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.ThemeId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+
+<hr />
+
+<div class="row">
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.Client)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Client)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.FolderName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.FolderName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Description)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Description)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
+		</dd>
+
+	</dl>
+</div>
+
+<hr/>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.ThemeId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.ThemeId }, new { @class = "btn btn-danger" })
+	</div>
+</div>
+
+<hr />
+
+<p>
+	@Html.ActionLink("Back to List", "Index")
+</p>

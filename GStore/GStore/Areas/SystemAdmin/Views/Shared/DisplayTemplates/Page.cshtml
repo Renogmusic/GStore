@@ -13,12 +13,13 @@ else
 	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Page";
 
-	<span class="@className">
+	<span class="@className" style="white-space:nowrap">
 		@(Html.DisplayNameFor(model => model.Name)) [@(Html.DisplayFor(model => model.PageId))]
 		@(Html.DisplayNameFor(model => model.Url)) '@(Html.DisplayFor(model => model.Url))'
 		@(inactiveText)
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "Details", "PageSysAdmin", new { id = Model.PageId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront))
+	@: - @(Html.DisplayFor(m => m.StoreFront))
+	@: - @(Html.DisplayFor(m => m.PageTemplate))
 }

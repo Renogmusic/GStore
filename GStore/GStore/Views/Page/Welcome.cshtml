@@ -10,10 +10,10 @@ else if (Model.ShowEditPageLink)
 {
 	@Html.Partial("_EditLinkTopPartial", Model)
 }
-	@Html.DisplayPageSection("Headline1", 1, "<h1 class=\"text-danger\">Welcome to ::storefront.name::!</h1>")
-	@Html.DisplayPageSection("Headline2", 2, "<h3>Log in and customize your site with our GStore builder tools.</h3>")
-	@Html.DisplayPageSection("BodyText", 3, string.Empty)
-	@Html.DisplayPageSection("BodyLink", 4, "<a href=\"http://www.gstore.renog.info/Contact\">Click here to contact us about GStore</a>")
+	@Html.DisplayPageSection("Headline1", 1, "Headline 1", "<h1 class=\"text-danger\">Welcome to ::storefront.name::!</h1>", false, false)
+	@Html.DisplayPageSection("Headline2", 2, "Headline 2", "<h3>Log in and customize your site with our GStore builder tools.</h3>", false, false)
+	@Html.DisplayPageSection("BodyText", 3, "Body Text", string.Empty, false, false)
+	@Html.DisplayPageSection("BodyLink", 4, "Body Link", "<a href=\"http://www.gstore.renog.info/Contact\">Click here to contact us about GStore</a>", false, false)
 
 @if (Model.EditMode)
 {

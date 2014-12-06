@@ -8,13 +8,13 @@ using System.Web;
 namespace GStore.Models
 {
 	[Table("PageTemplateSections")]
-	public class PageTemplateSection : BaseClasses.AuditFieldsAllRequired
+	public class PageTemplateSection : BaseClasses.ClientRecord
 	{
 		[Key]
 		[Display(Name = "Page Template Section Id")]
 		public int PageTemplateSectionId { get; set; }
 
-		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[Index("UniqueRecord", IsUnique = true, Order = 2)]
 		[Display(Name = "Page Template Id")]
 		public int PageTemplateId { get; set; }
 
@@ -23,7 +23,7 @@ namespace GStore.Models
 		public virtual PageTemplate PageTemplate { get; set; }
 
 		[Required]
-		[Index("UniqueRecord", IsUnique = true, Order = 2)]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		[MaxLength(100)]
 		public string Name { get; set; }
 
@@ -35,6 +35,12 @@ namespace GStore.Models
 
 		[Display(Name="Default Raw Html Value")]
 		public string DefaultRawHtmlValue { get; set; }
+
+		[Display(Name = "Edit in Page Top Editor")]
+		public bool EditInTop { get; set; }
+
+		[Display(Name = "Edit in Page Bottom Editor")]
+		public bool EditInBottom { get; set; }
 
 		[Display(Name="Page Sections")]
 		public virtual ICollection<PageSection> PageSections { get; set; }

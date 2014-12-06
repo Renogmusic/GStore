@@ -590,7 +590,7 @@ namespace GStore.Data
 			page.Order = order;
 			page.Name = name;
 			page.PageTitle = pageTitle;
-			page.Public = true;
+			page.ForRegisteredOnly = false;
 			page.IsPending = false;
 			page.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);

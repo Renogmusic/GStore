@@ -1,0 +1,24 @@
+﻿@model GStore.Models.ValueListItem
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no Value List)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Value List Item";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.ValueListItemId))]
+		@(inactiveText)
+	</span>
+	@:&nbsp;
+	@(Html.ActionLink(linkText, "ListItemDetails", "ValueListSysAdmin", new { id = Model.ValueListItemId }, new { @class = viewLinkClass }))
+	@: - @(Html.DisplayFor(m => m.ValueList))
+}

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Controllers
 {
@@ -320,7 +321,7 @@ namespace GStore.Controllers
 
 			GStoreDb.Notifications.Add(notification);
 			GStoreDb.SaveChanges();
-			AddUserMessage("Message sent!", "Message sent to " + notification.To, AppHtmlHelpers.UserMessageType.Success);
+			AddUserMessage("Message sent!", "Message sent to " + notification.To.ToHtml(), AppHtmlHelpers.UserMessageType.Success);
 
 			return RedirectToAction("Index");
         }

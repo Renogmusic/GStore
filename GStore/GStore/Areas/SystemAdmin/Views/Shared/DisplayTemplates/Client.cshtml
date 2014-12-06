@@ -11,11 +11,11 @@ else
 	string viewLinkClass = isActive ? "text-success" : "text-warning";
 	string inactiveText = isActive ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActive ? string.Empty : "Inactive ") + "Client";
-	
-	<span class="@className">
-		'@(Model.Name)' [@(Model.ClientId)]@(inactiveText)
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.ClientId)]@(inactiveText)
 	</span>
-	
+
 	@:&nbsp; @(Html.ActionLink(linkText, "Details", "ClientSysAdmin", new { id = Model.ClientId }, new { @class = viewLinkClass }))
 
 }

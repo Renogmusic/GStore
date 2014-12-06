@@ -250,9 +250,11 @@
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\StoreAdminAreaRegistration.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BaseClasses\SystemAdminBaseController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\Extensions\SysAdminHtmlHelper.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\PageTemplateSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\ThemeSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ValueListSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\UserProfileSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\Extensions\SysAdminActivationExtensions.cs" />
@@ -284,6 +286,14 @@
     <Compile Include="Migrations\201412031630528_movethemes.cs" />
     <Compile Include="Migrations\201412031630528_movethemes.Designer.cs">
       <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412041035021_clientidforpagetemplateandtheme.cs" />
+    <Compile Include="Migrations\201412041035021_clientidforpagetemplateandtheme.Designer.cs">
+      <DependentUpon>201412041035021_clientidforpagetemplateandtheme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412041051464_clientidforpagetemplatesection.cs" />
+    <Compile Include="Migrations\201412041051464_clientidforpagetemplatesection.Designer.cs">
+      <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
     <Compile Include="Models\ClientRoleAction.cs" />
@@ -319,6 +329,7 @@
     <Compile Include="Exceptions\AppDefinedExceptions.cs" />
     <Compile Include="Data\Extensions\StoreFrontExtensions.cs" />
     <Compile Include="Data\Extensions\WhereIsActiveExtensions.cs" />
+    <Compile Include="Models\ViewModels\PageEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PageSectionEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PageViewModel.cs" />
     <Compile Include="Models\ViewModels\MenuViewModel.cs" />
@@ -659,6 +670,15 @@
     <Content Include="Areas\SystemAdmin\Views\PageTemplateSysAdmin\SectionIndex.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Theme.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\UserProfile.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueListItemNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ValueListItem.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ThemeNoLinks.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\String.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Index.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1087,6 +1107,8 @@
     <Content Include="Views\Page\_SectionEditPartial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\MultiLineText.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ClientNoLinks.cshtml" />
+    <Content Include="Views\Page\EditorTemplates\PageEditViewModel.cshtml" />
+    <Content Include="Views\Page\_PageEditPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1110,6 +1132,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412031630528_movethemes.resx">
       <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412041035021_clientidforpagetemplateandtheme.resx">
+      <DependentUpon>201412041035021_clientidforpagetemplateandtheme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412041051464_clientidforpagetemplatesection.resx">
+      <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

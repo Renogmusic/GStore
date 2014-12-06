@@ -40,7 +40,8 @@ namespace GStore.Models
 		[MaxLength(250)]
 		public string Url { get; set; }
 
-		public bool Public { get; set; }
+		[Display(Name = "For Registered Only", ShortName="Registered Only")]
+		public bool ForRegisteredOnly { get; set; }
 
 		[Display(Name = "Meta Tag Description")]
 		public string MetaDescription { get; set; }

@@ -9,8 +9,9 @@ else
 	bool isActiveDirect = Model.IsActiveDirect();
 	bool isActiveBubble = Model.IsActiveBubble();
 	string className = isActiveBubble ? string.Empty : "text-warning";
-	<span class="@className">
-		Store Binding [@(Model.StoreBindingId)]
+	
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) [@(Model.StoreBindingId)]
 		@(isActiveDirect ? string.Empty : " [INACTIVE]")
 		@(Html.DisplayNameFor(model => model.HostName)) '@(Html.DisplayFor(model => model.HostName))'
 		@(Html.DisplayNameFor(model => model.Port)) '@(Html.DisplayFor(model => model.Port))'

@@ -25,8 +25,8 @@ namespace GStore.Areas.SystemAdmin
 
 				context.MapRoute(
 					name: "Stores-SystemAdmin_default",
-					url: "Stores/{urlstorename}/SystemAdmin/{controller}/{action}/{id}",
-					defaults: new { controller = "SystemAdmin", action = "Index", id = UrlParameter.Optional },
+					url: "Stores/{urlstorename}/SystemAdmin/Client/{ClientId}/{controller}/{action}/{id}",
+					defaults: new { controller = "SystemAdmin", action = "Index", ClientId = 0, id = UrlParameter.Optional },
 					namespaces: new[] { "GStore.Areas.SystemAdmin.Controllers" }
 				);
 			}
@@ -40,10 +40,17 @@ namespace GStore.Areas.SystemAdmin
 
 			context.MapRoute(
 				name: "SystemAdmin_default",
-				url: "SystemAdmin/{controller}/{action}/{id}",
-				defaults: new { controller = "SystemAdmin", action = "Index", id = UrlParameter.Optional },
+				url: "SystemAdmin/Client/{ClientId}/{controller}/{action}/{id}",
+				defaults: new { controller = "SystemAdmin", action = "Index", ClientId = 0, id = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Areas.SystemAdmin.Controllers" }
 			);
+
+			//context.MapRoute(
+			//	name: "SystemAdmin_WithClientId",
+			//	url: "SystemAdmin/{controller}/{action}/{id}",
+			//	defaults: new { controller = "SystemAdmin", action = "Index", ClientId = 0, id = UrlParameter.Optional },
+			//	namespaces: new[] { "GStore.Areas.SystemAdmin.Controllers" }
+			//);
 
 		}
 	}

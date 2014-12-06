@@ -27,8 +27,14 @@
 		@if (Model.ShowSystemAdminLink)
 		{
 			//if user has system admin permission, show system admin link
+			Client currentClient = Html.CurrentClient(false);
+			int? clientId = null;
+			if (currentClient != null)
+			{
+				clientId = currentClient.ClientId;
+			}
 			<li>
-				@Html.ActionLink("System Admin", "Index", "SystemAdmin", new { Area = "SystemAdmin" }, htmlAttributes: new { title = "System Admin" })
+				@Html.ActionLink("System Admin", "Index", "SystemAdmin", new { ClientId = clientId, Area = "SystemAdmin" }, htmlAttributes: new { title = "System Admin" })
 			</li>
 		}
 		<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>

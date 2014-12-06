@@ -2,17 +2,20 @@
 @using GStore.Data
 @if (Model == null)
 {
-	@:(no Page Template)
+	@:(no page template)
 }
 else
 {
-	bool isActive = Model.IsActiveDirect();
-	string className = isActive ? string.Empty : "text-warning";
-	string viewLinkClass = isActive ? "text-success" : "text-warning";
-	string inactiveText = isActive ? string.Empty : " [INACTIVE]";
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Page Template";
 
-	<span class="@className">
-		'@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateId))]
-		@(inactiveText)
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.PageTemplateId)]@(inactiveText)
 	</span>
+	@: &nbsp; - @(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
 }
+

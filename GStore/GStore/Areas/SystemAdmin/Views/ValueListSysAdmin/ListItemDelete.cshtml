@@ -1,17 +1,21 @@
 ﻿@model GStore.Models.ValueListItem
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDeletePageTitle text-danger">Confirm Value List Item Delete</h2>
+	<h2 class="jumbotron SysAdminDeletePageTitle col-md-offset-3 col-md-6 text-danger">Confirm Value List Item Delete</h2>
 </div>
+
 <div class="row">
-	<h3 class="col-md-offset-4 col-md-8 text-danger text-left">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
 		Are you sure you want to delete
-		<br />Value List Item '@(Model.Name)' [@(Model.ValueListItemId)]?
+		<br />Value List Item
+		<br />@Html.DisplayForModel("ValueListItemNoLinks")?
 	</h3>
 </div>
+
 <div class="row">
-	<div class="col-md-offset-4 col-md-8 form-actions no-color text-left">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
@@ -25,7 +29,9 @@
 		}
 	</div>
 </div>
+
 <hr />
+
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>
@@ -143,9 +149,11 @@
 
 	</dl>
 </div>
+
 <hr />
+
 <div class="row">
-	<div class="col-md-offset-4 col-md-8 form-actions no-color text-left">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
@@ -159,7 +167,9 @@
 		}
 	</div>
 </div>
+
 <hr />
+
 <div>
 	@Html.ActionLink("Back to Value List Index", "Index")
 </div>

@@ -1,17 +1,25 @@
 ﻿@model GStore.Models.UserProfile
+@using GStore.Data
 @if (Model == null)
 {
 	@:(no user profile)
 }
 else
 {
-	@:@(Model.UserName) '@(Model.FullName)'
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) @(Model.UserName) '@(Model.FullName)'@(inactiveText)
+	</span>
 	if (Model.StoreFrontId.HasValue)
 	{
-		@: @Html.DisplayFor(up => up.StoreFront, "StoreFrontNoLinks")
+		@:&nbsp; :&nbsp; @Html.DisplayFor(up => up.StoreFront, "StoreFrontNoLinks")
 	}
 	else
 	{
-		@: @Html.DisplayFor(up => up.Client, "ClientNoLinks")
+		@:&nbsp; @Html.DisplayFor(up => up.Client, "ClientNoLinks")
 	}
 }

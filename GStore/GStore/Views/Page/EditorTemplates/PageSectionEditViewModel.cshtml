@@ -10,7 +10,7 @@
 	options.OnComplete = "OnComplete_" + Model.Index;
 	options.OnFailure = "OnFailure_" + Model.Index;
 	options.OnSuccess = "OnSuccess_" + Model.Index;
-	options.LoadingElementDuration = 500;
+	options.LoadingElementDuration = 700;
 }
 <script>
 	function OnBegin_@(Model.Index)() {
@@ -21,13 +21,13 @@
 		@*alert('OnComplete_@(Model.Index)');*@
 	}
 	function OnFailure_@(Model.Index)() {
-		alert('Save Failed. Please try again or re-load the page and try again. Section: @(Model.SectionName) [@(Model.PageTemplateSectionId)] Index: @(Model.Index)');
+		AddUserMessageDanger("Save Failed.", "Please try again or re-load the page and try again. Section: @(Model.SectionName) [@(Model.PageTemplateSectionId)] Index: @(Model.Index)");
 	}
 	function OnSuccess_@(Model.Index)() {
 		@*alert('OnSuccess_@(Model.Index)');*@
 	}
 </script>
-<div id="LoadingElementId_@(Model.Index)" style="background-color: green; display:none">
+<div id="LoadingElementId_@(Model.Index)" class="bg-success" style="display:none">
 	<strong>Saving....</strong>
 </div>
 @using (Ajax.BeginForm("UpdateSectionAjax", "Page", options, new { id = "SectionEditForm_" + Model.Index, name = "SectionEditForm_" + Model.Index }))

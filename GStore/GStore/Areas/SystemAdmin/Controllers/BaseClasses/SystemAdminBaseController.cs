@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 {
@@ -41,35 +42,127 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 		}
 
-		protected SelectList ClientFilterListEx(int? clientId, bool showAllOption = true, bool showNullOption = false, bool defaultNull = false)
+		/// <summary>
+		/// Returns the ClientId route value, includes -1 for all and 0 for null, and null if blank
+		/// </summary>
+		/// <returns></returns>
+		public int? FilterClientIdRaw()
+		{
+			var clientId = RouteData.Values["ClientId"];
+			if (clientId == null)
+			{
+				return null;
+			}
+			int value = 0;
+			if (int.TryParse(clientId.ToString(), out value))
+			{
+				return value;
+			}
+			return null;
+		}
+
+		public int? FilterClientId()
+		{
+			int? value = FilterClientIdRaw();
+			if (value.HasValue && value != 0 && value != -1)
+			{
+				return value;
+			}
+			return null;
+		}
+
+		public bool ClientIsFiltered()
+		{
+			int? filterValue = FilterClientIdRaw();
+			if (!filterValue.HasValue)
+			{
+				//default filter for clientid = null
+				return true;
+			}
+			if (filterValue.Value == -1)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public SelectList ClientFilterList()
+		{
+			int? clientId = FilterClientIdRaw();
+			return ClientFilterListHelper(clientId, true, true, false);
+		}
+
+		public bool ShowAllClients()
+		{
+			if (FilterClientIdRaw().HasValue && (FilterClientIdRaw().Value == -1))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Returns a SelectList of client id's with an option for ALL (-1) and Null/None. Null/None (0) is the default
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		protected SelectList ClientFilterListWithAllAndNull(int? clientId, bool showAllOption = true, bool showNullOption = true, bool defaultNull = true, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			return ClientFilterListHelper(clientId, showAllOption, showNullOption, defaultNull, labelForAll, labelForNull);
+		}
+
+		/// <summary>
+		/// Returns a SelectList of store front id's with an option for ALL (-1) and Null/None. Null/None (0) is the default
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		protected SelectList StoreFrontFilterListWithAllAndNull(int? clientId, int? storeFrontId, bool showAllOption = true, bool showNullOption = false, bool defaultNull = false, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			return StoreFrontFilterListHelper(clientId, storeFrontId, showAllOption, showNullOption, defaultNull, labelForAll, labelForNull);
+		}
+
+		protected SelectList ClientFilterListHelper(int? clientId, bool showAllOption = true, bool showNullOption = true, bool defaultNull = true, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
 		{
 			int filterId = 0;
 			string selectedValue = string.Empty;
+			bool nullSelected = false;
+			bool allSelected = false;
+
 			if (clientId.HasValue)
 			{
 				filterId = clientId.Value;
 				selectedValue = filterId.ToString();
+				if (filterId == 0)
+				{
+					nullSelected = true;
+				}
+				else if (filterId == -1)
+				{
+					allSelected = true;
+				}
 			}
 			else
 			{
 				if (defaultNull)
 				{
 					selectedValue = "0";
+					nullSelected = true;
 				}
 				else
 				{
 					selectedValue = "-1";
+					allSelected = true;
 				}
 			}
 			List<SelectListItem> items = new List<SelectListItem>();
-
 
 			if (showNullOption)
 			{
 				items.Add(new SelectListItem()
 				{
 					Value = "0",
-					Text = ((clientId.HasValue && clientId.Value == 0) || (!clientId.HasValue && defaultNull) ? "[SELECTED] " : string.Empty) + "(null)",
+					Text = (nullSelected ? "[SELECTED] " : string.Empty) + labelForNull,
+					Selected = nullSelected
 				});
 			}
 
@@ -78,7 +171,8 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				items.Add(new SelectListItem()
 				{
 					Value = "-1",
-					Text = ((clientId.HasValue && clientId.Value == -1) || (!clientId.HasValue && !defaultNull) ? "[SELECTED] " : string.Empty) + "(All)",
+					Text = (allSelected ? "[SELECTED] " : string.Empty) + labelForAll,
+					Selected = allSelected
 				});
 			}
 
@@ -86,85 +180,88 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
 			{
 				Value = c.ClientId.ToString(),
-				Text = (c.ClientId == filterId ? "[SELECTED] " : string.Empty) + c.Name + " [" + c.ClientId + "]",
+				Text = (c.ClientId == filterId ? "[SELECTED] " : string.Empty) + c.Name + " [" + c.ClientId + "]"
+					+ ((c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow) ? " [INACTIVE]" : string.Empty)
 			});
 			items.AddRange(clients);
 
 			return new SelectList(items, "Value", "Text", selectedValue);
 		}
 
-		protected SelectList ClientFilterList(int? clientId)
-		{
-			int filterId = 0;
-			string selectedValue = string.Empty;
-			if (clientId.HasValue)
-			{
-				filterId = clientId.Value;
-				selectedValue = filterId.ToString();
-			}
-
-			List<SelectListItem> items = new List<SelectListItem>();
-
-
-			items.Add(new SelectListItem()
-			{
-				Value = string.Empty,
-				Text = ((!clientId.HasValue) ? "[SELECTED] " : string.Empty) + "(All)",
-			});
-
-			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
-			IQueryable<SelectListItem> clients = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = (c.ClientId == filterId ? "[SELECTED] " : string.Empty) + c.Name + " [" + c.ClientId + "]",
-			});
-			items.AddRange(clients);
-
-			return new SelectList(items, "Value", "Text", selectedValue);
-		}
-
-
-		protected SelectList StoreFrontFilterList(int? clientId, int? storeFrontId)
+		protected SelectList StoreFrontFilterListHelper(int? clientId, int? storeFrontId, bool showAllOption = true, bool showNullOption = true, bool defaultNull = true, string labelForAll = "(ALL)", string labelForNull = "(NULL)")
 		{
 			int filterClientId = 0;
+			int filterStoreFrontId = 0;
+
+			string selectedValue = string.Empty;
+			bool nullSelected = false;
+			bool allSelected = false;
+
 			if (clientId.HasValue)
 			{
 				filterClientId = clientId.Value;
 			}
 
-			int filterStoreFrontId = 0;
 			if (storeFrontId.HasValue)
 			{
 				filterStoreFrontId = storeFrontId.Value;
-			}
-
-			List<SelectListItem> items = new List<SelectListItem>();
-			if (!clientId.HasValue)
-			{
-				items.Add(new SelectListItem()
+				selectedValue = filterStoreFrontId.ToString();
+				if (filterStoreFrontId == 0)
 				{
-					Value = "",
-					Text = "[SELECTED] (None)",
-					Selected = true
-				});
-				return new SelectList(items, "Value", "Text");
+					nullSelected = true;
+				}
+				else if (filterStoreFrontId == -1)
+				{
+					allSelected = true;
+				}
+
+			}
+			else
+			{
+				if (defaultNull)
+				{
+					selectedValue = "0";
+					nullSelected = true;
+				}
+				else
+				{
+					selectedValue = "-1";
+					allSelected = true;
+				}
 			}
 
 			if (filterClientId == 0)
 			{
-
+				showNullOption = true;
+				showAllOption = false;
 			}
 
-			items.Add(new SelectListItem()
+			List<SelectListItem> items = new List<SelectListItem>();
+
+			if (showNullOption)
 			{
-				Value = "0",
-				Text = (filterClientId == 0 ? "[SELECTED] " : string.Empty) + "-ALL-",
-				Selected = !(filterClientId == 0)
-			});
+				items.Add(new SelectListItem()
+				{
+					Value = "0",
+					Text = (nullSelected ? "[SELECTED] " : string.Empty) + labelForNull,
+					Selected = nullSelected
+				});
+			}
+
+			if (showAllOption)
+			{
+				items.Add(new SelectListItem()
+				{
+					Value = "-1",
+					Text = (allSelected ? "[SELECTED] " : string.Empty) + labelForAll,
+					Selected = allSelected
+				});
+			}
 
 			var query = GStoreDb.StoreFronts.All()
-					.Where(sf => filterClientId == 0 || sf.ClientId == filterClientId)
+					.Where(sf => filterClientId == -1 || (filterClientId == 0 && filterClientId == null) || sf.ClientId == filterClientId)
 					.OrderBy(sf => sf.Client.Order).ThenBy(sf => sf.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
+
 
 			IQueryable<SelectListItem> storeFronts = query.Select(sf => new SelectListItem
 			{
@@ -176,8 +273,9 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			});
 
 			items.AddRange(storeFronts);
-			return new SelectList(items, "Value", "Text");
+			return new SelectList(items, "Value", "Text", selectedValue);
 		}
+
 
 		protected SelectList ClientList()
 		{
@@ -189,7 +287,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			};
 			items.Add(nullItem);
 
-			var query = GStoreDb.Clients.All().OrderBy(c => c.Order).ThenBy(c => c.ClientId);
+			var query = GStoreDb.Clients.All().ApplySort(this, null, null);
 			IQueryable<SelectListItem> dbItems = query.Select(c => new SelectListItem
 			{
 				Value = c.ClientId.ToString(),
@@ -214,15 +312,15 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			IQueryable<StoreFront> query = null;
 			if (clientId.HasValue)
 			{
-				GStoreDb.StoreFronts.Where(sf => sf.ClientId == clientId.Value);
+				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == clientId.Value);
 			}
 			else
 			{
-				GStoreDb.StoreFronts.All();
+				query = GStoreDb.StoreFronts.All();
 			}
-			query = query.ApplySort(this, null, null);
+			IOrderedQueryable<StoreFront> orderedQuery = query.ApplySort(this, null, null);
 
-			IQueryable<SelectListItem> dbItems = query.Select(sf => new SelectListItem
+			IQueryable<SelectListItem> dbItems = orderedQuery.Select(sf => new SelectListItem
 			{
 				Value = sf.StoreFrontId.ToString(),
 				Text = sf.Name + " [" + sf.StoreFrontId + "] Client " + sf.Client.Name + " [" + sf.ClientId + "]"
@@ -332,6 +430,29 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			return new SelectList(items, "Value", "Text");
 		}
 
+		/// <summary>
+		/// Returns a list of theme folders from the file system for selection
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		protected SelectList ThemeFolderList(int? clientId)
+		{
+			string virtualPath = "~/Content/Server/Themes/";
+			if (!System.IO.Directory.Exists(Server.MapPath(virtualPath)))
+			{
+				throw new ApplicationException("Themes folder does not exist in file system at '" + virtualPath + "'");
+			}
+			System.IO.DirectoryInfo themesFolder = new System.IO.DirectoryInfo(Server.MapPath(virtualPath));
+			IEnumerable<System.IO.DirectoryInfo> themeFolders = themesFolder.EnumerateDirectories("*", System.IO.SearchOption.TopDirectoryOnly);
+
+			IEnumerable<SelectListItem> items = themeFolders.Select(t => new SelectListItem
+			{
+				Value = t.Name,
+				Text = t.Name + " ["+ (System.IO.File.Exists(t.FullName + "\\bootstrap.min.css") ? "bootstrap.min.css OK" : "WARNING: no bootstrap.min.css") + "]"
+			});
+			return new SelectList(items, "Value", "Text");
+		}
+
 		protected void ValidateClientName(Client client)
 		{
 			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).Any())
@@ -379,7 +500,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 		{
 			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Folder.ToLower() == storeFront.Folder.ToLower()).Any())
 			{
-				this.ModelState.AddModelError("Folder", "StoreFront Folder name '" + storeFront.Folder + "' is already in use. Please choose a new folder");
+				this.ModelState.AddModelError("Folder", "StoreFront Folder name '" + storeFront.Folder + "' is already in use for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please choose a new folder");
 				bool folderIsDirty = true;
 				while (folderIsDirty)
 				{
@@ -397,7 +518,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 		{
 			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any())
 			{
-				this.ModelState.AddModelError("Name", "Store Front name '" + storeFront.Name + "' is already in use. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Store Front name '" + storeFront.Name + "' is already in use for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
 				while (nameIsDirty)
 				{
@@ -413,9 +534,9 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 
 		protected void ValidatePageTemplateName(PageTemplate pageTemplate)
 		{
-			if (GStoreDb.PageTemplates.Where(pt => pt.PageTemplateId != pageTemplate.PageTemplateId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any())
+			if (GStoreDb.PageTemplates.Where(pt => pt.PageTemplateId != pageTemplate.PageTemplateId && pt.ClientId == pageTemplate.ClientId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any())
 			{
-				this.ModelState.AddModelError("Name", "Page Template name '" + pageTemplate.Name + "' is already in use. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Page Template name '" + pageTemplate.Name + "' is already in use for client '" + pageTemplate.Client.Name.ToHtml() + "' [" + pageTemplate.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
 				while (nameIsDirty)
 				{
@@ -433,7 +554,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 		{
 			if (GStoreDb.PageTemplateSections.Where(pt => pt.PageTemplateSectionId != pageTemplateSection.PageTemplateSectionId && pt.Name.ToLower() == pageTemplateSection.Name.ToLower()).Any())
 			{
-				this.ModelState.AddModelError("Name", "Page Template Section Name '" + pageTemplateSection.Name + "' is already in use. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Page Template Section Name '" + pageTemplateSection.Name + "' is already in use for client '" + pageTemplateSection.Client.Name.ToHtml() + "' [" + pageTemplateSection.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
 				while (nameIsDirty)
 				{
@@ -446,6 +567,26 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				}
 			}
 		}
+
+		protected void ValidateThemeName(Theme theme)
+		{
+			if (GStoreDb.Themes.Where(t => t.ThemeId != theme.ThemeId && t.ClientId == theme.ClientId && t.Name.ToLower() == theme.Name.ToLower()).Any())
+			{
+				this.ModelState.AddModelError("Name", "Theme name '" + theme.Name + "' is already in use for client '" + theme.Client.Name.ToHtml() + "' [" + theme.ClientId + "]. Please choose a new name");
+				bool nameIsDirty = true;
+				while (nameIsDirty)
+				{
+					theme.Name = theme.Name + "_New";
+					nameIsDirty = GStoreDb.Themes.Where(t => t.ClientId == theme.ClientId && t.Name.ToLower() == theme.Name.ToLower()).Any();
+				}
+				if (ModelState.ContainsKey("Name"))
+				{
+					ModelState["Name"].Value = new ValueProviderResult(theme.Name, theme.Name, null);
+				}
+			}
+		}
+
+
 
 	}
 }

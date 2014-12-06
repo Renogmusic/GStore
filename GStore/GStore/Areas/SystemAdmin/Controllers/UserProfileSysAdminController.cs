@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -17,41 +18,58 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Index(int? clientId, int? storeFrontId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(clientId);
-			ViewBag.StoreFrontFilterList = StoreFrontFilterList(clientId, storeFrontId);
+			SelectList clientFilterList = ClientFilterListWithAllAndNull(clientId, labelForNull: "(NULL)");
+			SelectList storeFrontFilterList = StoreFrontFilterListWithAllAndNull(clientId, storeFrontId, labelForNull: "(NULL)");
+
+			ViewBag.StoreFrontFilterList = StoreFrontFilterListWithAllAndNull(clientId, storeFrontId);
+			clientId = FilterClientIdRaw();
+
+			if (clientFilterList.SelectedValue != null)
+			{
+				clientId = int.Parse(clientFilterList.SelectedValue.ToString());
+			}
+			if (clientId == 0)
+			{
+				//null client set storefront to null also
+				storeFrontId = 0;
+			}
+			else if (storeFrontFilterList.SelectedValue != null)
+			{
+				storeFrontId = int.Parse(storeFrontFilterList.SelectedValue.ToString());
+			}
 
 			IQueryable<UserProfile> query = null;
-			if (!clientId.HasValue)
+			if (clientId.HasValue)
 			{
-				//no client filter (none)
-				query = GStoreDb.UserProfiles.Where(p => p.ClientId == null);
+				if (clientId.Value == -1)
+				{
+					query = GStoreDb.UserProfiles.All();
+				}
+				else if (clientId.Value == 0)
+				{
+					query = GStoreDb.UserProfiles.Where(sb => sb.ClientId == null);
+				}
+				else
+				{
+					query = GStoreDb.UserProfiles.Where(sb => sb.ClientId == clientId.Value);
+				}
 			}
-			else if (clientId.Value == 0)
+			else
 			{
 				//no client filter (all)
 				query = GStoreDb.UserProfiles.All();
 			}
-			else
-			{
-				query = GStoreDb.UserProfiles.Where(p => p.ClientId == clientId.Value);
-			}
 
-			if (!clientId.HasValue)
+			if (storeFrontId.HasValue && storeFrontId.Value != -1)
 			{
-				//no client or storefront filter; show nulls (none)
-				query = GStoreDb.UserProfiles.Where(p => p.StoreFrontId == null);
-			}
-			else if (!storeFrontId.HasValue)
-			{
-				//client filtered, but nothing on storefront, show all
-			}
-			else if (storeFrontId.Value == 0)
-			{
-				//no filter (all)
-			}
-			else
-			{
-				query = GStoreDb.UserProfiles.Where(p => p.StoreFrontId == storeFrontId.Value);
+				if (storeFrontId.Value == 0)
+				{
+					query = query.Where(sb => sb.StoreFrontId == null);
+				}
+				else
+				{
+					query = query.Where(sb => sb.StoreFrontId == storeFrontId.Value);
+				}
 			}
 
 			IOrderedQueryable<UserProfile> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
@@ -149,7 +167,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 					newProfile.UserId = profile.Email;
 				}
 				newProfile = GStoreDb.UserProfiles.Add(newProfile);
-				AddUserMessage("User Profile Added", "User Profile '" + profile.FullName + "' &lt;" + profile.Email + " &gt; [" + profile.UserProfileId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("User Profile Added", "User Profile '" + profile.FullName.ToHtml() + "' &lt;" + profile.Email.ToHtml() + " &gt; [" + profile.UserProfileId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				GStoreDb.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
@@ -207,7 +225,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				profile.UpdateAuditFields(CurrentUserProfileOrThrow);
 				profile = GStoreDb.UserProfiles.Update(profile);
-				AddUserMessage("User Profile Updated", "User Profile '" + profile.FullName + "' &lt;" + profile.Email + " &gt; [" + profile.UserProfileId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("User Profile Updated", "User Profile '" + profile.FullName.ToHtml() + "' &lt;" + profile.Email.ToHtml() + " &gt; [" + profile.UserProfileId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				return RedirectToAction("Index");

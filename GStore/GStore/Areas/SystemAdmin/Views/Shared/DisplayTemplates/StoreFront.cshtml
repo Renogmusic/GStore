@@ -12,11 +12,11 @@ else
 	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
 	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Store Front";
-	
-	<span class="@className">
-		'@(Model.Name)' [@(Model.StoreFrontId)]@(inactiveText)
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.StoreFrontId)]@(inactiveText)
 	</span>
 	@: &nbsp;@(Html.ActionLink(linkText, "Details", "StoreFrontSysAdmin", new { id = Model.StoreFrontId }, new { @class = viewLinkClass }))
-	@: &nbsp; - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client))
+	@: &nbsp; - @(Html.DisplayFor(model => model.Client))
 }
 

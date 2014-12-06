@@ -1,20 +1,31 @@
 ﻿@model GStore.Models.PageTemplate
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <div class="row">
-	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDetailsPageTitle text-success">Page Template Details: <br />'@(Model.Name)' [@(Model.PageTemplateId)]</h2>
+	<h2 class="jumbotron col-md-offset-3 col-md-6 SysAdminDetailsPageTitle text-success">
+		Page Template Details:
+		<br />
+		@Html.DisplayForModel("PageTemplateNoLinks")
+	</h2>
 </div>
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Delete", "Delete", new { id = Model.PageTemplateId }, new { @class = "btn btn-danger" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Refresh this Page", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
 	</div>
 </div>
+
 <hr />
+
 <div class="row">
 	<dl class="dl-horizontal">
 		<dt>
@@ -23,7 +34,7 @@
 		<dd>
 			@Html.ActionLink("View Sections", "SectionIndex", "PageTemplateSysAdmin", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })<br />
 			Active: @Model.Sections.AsQueryable().WhereIsActive().Count() / Total @Model.Sections.Count()
-			Load Template to Sync Sections
+			<br/>Sync Sections to Update
 		</dd>
 		<dt>
 			@Html.DisplayNameFor(model => model.PageTemplateId)
@@ -131,18 +142,25 @@
 
 	</dl>
 </div>
+
 <hr/>
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Delete", "Delete", new { id = Model.PageTemplateId }, new { @class = "btn btn-danger" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Refresh this Page", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
 	</div>
 </div>
+
 <hr/>
+
 <p>
     @Html.ActionLink("Back to List", "Index")
 </p>

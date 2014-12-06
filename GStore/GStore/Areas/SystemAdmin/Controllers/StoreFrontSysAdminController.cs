@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -18,12 +19,23 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		// GET: SystemAdmin/StoreFrontSysAdmin
 		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
 		{
-			ViewBag.ClientFilterList = ClientFilterList(clientId);
+			clientId = FilterClientIdRaw();
 
 			IQueryable<StoreFront> query = null;
 			if (clientId.HasValue)
 			{
-				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == clientId.Value);
+				if (clientId.Value == -1)
+				{
+					query = GStoreDb.StoreFronts.All();
+				}
+				else if (clientId.Value == 0)
+				{
+					query = GStoreDb.StoreFronts.Where(sb => sb.ClientId == null);
+				}
+				else
+				{
+					query = GStoreDb.StoreFronts.Where(sb => sb.ClientId == clientId.Value);
+				}
 			}
 			else
 			{
@@ -80,18 +92,18 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFront = GStoreDb.StoreFronts.Create(storeFront);
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Add(storeFront);
-				AddUserMessage("Store Front Added", "Store Front '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Store Front Added", "Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//create folders for new Store Front if they don't exist already
 				try
 				{
 					SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath)));
-					AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Success);
 				}
 				catch (Exception ex)
 				{
-					AddUserMessage("Error Creating Store Front Folders!", "There was an error creating the store front folders in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'. You will need to create the folder manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
+					AddUserMessage("Error Creating Store Front Folders!", "There was an error creating the store front folders in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'. You will need to create the folder manually. Error: " + ex.Message.ToHtml(), AppHtmlHelpers.UserMessageType.Warning);
 				}
 
 				return RedirectToAction("Index");
@@ -151,7 +163,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Update(storeFront);
-				AddUserMessage("Store Front Updated", "Store Front '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Store Front Updated", "Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
 
 				//detect if folder name has changed
@@ -165,11 +177,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 						try
 						{
 							System.IO.Directory.Move(originalStoreFrontFolder, newStoreFrontFolder);
-							AddUserMessage("Folder Moved", "StoreFront folder name was changed, so the StoreFront folder was moved from '" + originalFolderToMap + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'", AppHtmlHelpers.UserMessageType.Success);
+							AddUserMessage("Folder Moved", "StoreFront folder name was changed, so the StoreFront folder was moved from '" + originalFolderToMap.ToHtml() + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Success);
 						}
 						catch (Exception ex)
 						{
-							AddUserMessage("Error Moving StoreFront Folder!", "There was an error moving the StoreFront folder from '" + originalFolderToMap + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'. You will need to move the folders manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
+							AddUserMessage("Error Moving StoreFront Folder!", "There was an error moving the StoreFront folder from '" + originalFolderToMap.ToHtml() + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'. You will need to move the folders manually. Error: " + ex.Message.ToHtml(), AppHtmlHelpers.UserMessageType.Warning);
 						}
 					}
 					else
@@ -177,7 +189,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 						try
 						{
 							SysAdminActivationExtensions.CreateStoreFrontFolders(newStoreFrontFolder);
-							AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'", AppHtmlHelpers.UserMessageType.Info);
+							AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Info);
 						}
 						catch (Exception ex)
 						{
@@ -245,10 +257,10 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				GStoreDb.SaveChanges();
 				if (deleted)
 				{
-					AddUserMessage("Store Front Deleted", "Store Front '" + storeFrontName + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Store Front Deleted", "Store Front '" + storeFrontName.ToHtml() + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
 					if (System.IO.Directory.Exists(Server.MapPath(storeFrontFolderToMap)))
 					{
-						AddUserMessage("Store Front folders not deleted", "Store Front folder '" + storeFrontFolderToMap + "' was not deleted from the file system. You will need to delete the folder manually.", AppHtmlHelpers.UserMessageType.Info);
+						AddUserMessage("Store Front folders not deleted", "Store Front folder '" + storeFrontFolderToMap.ToHtml() + "' was not deleted from the file system. You will need to delete the folder manually.", AppHtmlHelpers.UserMessageType.Info);
 					}
 				}
 			}

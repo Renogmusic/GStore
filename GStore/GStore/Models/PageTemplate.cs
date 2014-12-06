@@ -8,14 +8,14 @@ using System.Web;
 namespace GStore.Models
 {
 	[Table("PageTemplates")]
-	public class PageTemplate : BaseClasses.AuditFieldsAllRequired
+	public class PageTemplate : BaseClasses.ClientRecord
 	{
 		[Key]
 		[Display(Name="Page Template Id")]
 		public int PageTemplateId { get; set; }
 
 		[Required]
-		[Index("UniqueRecord", IsUnique = true, Order = 1)]
+		[Index("UniqueRecord", IsUnique = true, Order = 2)]
 		[MaxLength(100)]
 		public string Name { get; set; }
 

@@ -157,5 +157,6 @@ namespace GStore.Identity
 			return query.WhereIsActive()
 				.Where(cur => cur.ClientId == storeFront.ClientId && (cur.ScopeStoreFront == null || cur.ScopeStoreFrontId == storeFront.StoreFrontId));
 		}
+
 	}
 }

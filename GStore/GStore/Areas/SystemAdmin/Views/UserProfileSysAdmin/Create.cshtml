@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.UserProfile
 @using GStore.AppHtmlHelpers
+
 @using (Html.BeginForm())
 {
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
@@ -30,25 +31,25 @@
 	@Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info text-left">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info title-align">
 			New User Profile
 		</h2>
 	</div>
+
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+	<div class="form-validation col-md-offset-2 col-md-10">
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		@Html.HiddenAuditFieldsOptional()
+	</div>
+
 	<div class="row form-horizontal">
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Create" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
-			</div>
-		</div>
-
-		<div class="col-md-offset-2 col-md-10 text-left">
-			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-			@Html.HiddenAuditFieldsOptional()
-		</div>
-
 		<div class="form-group">
 			@Html.LabelFor(model => model.ClientId, "ClientId", htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
@@ -232,13 +233,13 @@
 				@Html.TextBox("Password", password, new { @class = "form-control" })
 			</div>
 		</div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Create" class="btn btn-info" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
-			</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
 		</div>
 	</div>
 }

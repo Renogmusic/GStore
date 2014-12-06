@@ -1,6 +1,7 @@
 ﻿@model GStore.Models.ValueList
 @using GStore.AppHtmlHelpers
 @using GStore.Data
+
 <style>
 	table th {
 		text-align: center;
@@ -10,12 +11,14 @@
 		text-align: center;
 	}
 </style>
+
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">
 	Value List Item Manager
-	<br /><small>Value List: @Html.DisplayFor(model => model)</small>
+	<br /><small>Value List: @Html.DisplayForModel("ValueListNoLinks")</small>
 </h2>
+
 <div class="row">
-	<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
 		@using (Html.BeginForm("ListItemFastAdd", "ValueListSysAdmin", FormMethod.Post))
 		{
 			@Html.ActionLink("OK", "Details", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
@@ -29,6 +32,7 @@
 		}
 	</div>
 </div>
+
 <hr />
 
 @if (Model.ValueListItems.Count() == 0)
@@ -39,55 +43,56 @@
 else
 {
 	GStore.Models.ValueListItem firstRecord = Model.ValueListItems.First();
-	<table class="table table-hover table-striped">
-		<tr>
-			<th>@Html.ActionSortLink("Default Sort", "ListItemIndex", string.Empty)</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.ValueListItemId, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.Name, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.Order, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.IntegerValue, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.StringValue, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.Description, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLink("Status", "ListItemIndex", "Status")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.IsPending, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.StartDateTimeUtc, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.EndDateTimeUtc, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.CreateDateTimeUtc, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.CreatedBy, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.UpdateDateTimeUtc, "ListItemIndex")
-			</th>
-			<th class="small">
-				@Html.ActionSortLinkFor(model => firstRecord.UpdatedBy, "ListItemIndex")
-			</th>
-			<th></th>
-		</tr>
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>@Html.ActionSortLink("Default Sort", "ListItemIndex", string.Empty)</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.ValueListItemId, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Name, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Order, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.IntegerValue, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.StringValue, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Description, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Status", "ListItemIndex", "Status")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.IsPending, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.StartDateTimeUtc, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.EndDateTimeUtc, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreateDateTimeUtc, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreatedBy, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdateDateTimeUtc, "ListItemIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdatedBy, "ListItemIndex")
+				</th>
+				<th></th>
+			</tr>
 
-		@foreach (var item in Model.ValueListItems)
+			@foreach (var item in Model.ValueListItems)
 		{
 			bool clientIsActive = item.Client.IsActiveDirect();
 			bool valueListIsActive = item.ValueList.IsActiveDirect();
@@ -95,78 +100,79 @@ else
 			bool isAllActive = valueListItemIsActive && valueListIsActive && clientIsActive;
 			string rowClass = (isAllActive ? "" : "text-warning");
 
-			<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("ListItemDetails", new { @id = item.ValueListItemId }))');">
-				<td>
-					@Html.ActionLink("Details", "ListItemDetails", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-success" })
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.ValueListItemId)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Name)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Order)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsInteger) @Html.DisplayFor(modelItem => item.IntegerValue)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsString) @Html.DisplayFor(modelItem => item.StringValue)
-				</td>
+				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("ListItemDetails", new { @id = item.ValueListItemId }))');">
+					<td>
+						@Html.ActionLink("Details", "ListItemDetails", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-success" })
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.ValueListItemId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Order)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsInteger) @Html.DisplayFor(modelItem => item.IntegerValue)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsString) @Html.DisplayFor(modelItem => item.StringValue)
+					</td>
 
-				<td>
-					@Html.DisplayFor(modelItem => item.Description)
-				</td>
-				<td>
-					@if (valueListItemIsActive)
+					<td>
+						@Html.DisplayFor(modelItem => item.Description)
+					</td>
+					<td>
+						@if (valueListItemIsActive)
 					{
-						<span class="text-success">Active</span>
+							<span class="text-success">Active</span>
 					}
 					else
 					{
-						<span class="text-warning"><strong>Inactive</strong></span>
-						<br />
-						@Html.ActionLink("Activate Value List Item", "ActivateListItem", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-warning" });
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate Value List Item", "ActivateListItem", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-warning" });
 					}
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.IsPending)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.CreatedBy.UserId)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
-				</td>
-				<td class="small">
-					@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
-				</td>
-				<td>
-					<span style="white-space: nowrap">
-						@Html.ActionLink("Edit", "ListItemEdit", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-warning" })
-						@Html.ActionLink("Delete", "ListItemDelete", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-danger" })
-					</span>
-				</td>
-			</tr>
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsPending)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreatedBy.UserId)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
+					</td>
+					<td>
+						<span style="white-space: nowrap">
+							@Html.ActionLink("Edit", "ListItemEdit", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-warning" })
+							@Html.ActionLink("Delete", "ListItemDelete", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-danger" })
+						</span>
+					</td>
+				</tr>
 		}
 
-	</table>
+		</table>
+	</div>
+
 	<div class="row">
-		<div class="form-actions no-color text-left col-md-offset-5 col-md-6">
+		<div class="form-actions no-color col-md-offset-5 col-md-6">
 			@Html.ActionLink("OK", "Details", new { id = Model.ValueListId }, new { @class = "btn btn-default" })
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Create a New Value", "ListItemCreate", new { id = Model.ValueListId }, new { @class = "btn btn-info" })
 		</div>
 	</div>
-
 }

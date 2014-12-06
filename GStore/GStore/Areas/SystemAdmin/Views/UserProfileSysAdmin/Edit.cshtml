@@ -9,28 +9,30 @@
 	@Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning text-left">
+		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning title-align">
 			Edit User Profile
 			<br />
 			'@(Model.FullName)' &lt;@(Model.Email)&gt; [@(Model.UserProfileId)]
 		</h2>
 	</div>
-	<div class="row form-group">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
 			<input type="submit" value="Save" class="btn btn-warning" />
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
 		</div>
 	</div>
-
-	<div class="row form-horizontal">
-		<div class="col-md-offset-2 col-md-10 text-left">
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 			@Html.HiddenFor(model => model.UserProfileId)
 			@Html.HiddenAuditFieldsOptional()
 		</div>
+	</div>
 
-
+	<div class="row form-horizontal">
 		<div class="form-group">
 			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
@@ -173,17 +175,19 @@
 				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
 			</div>
 		</div>
-
-		<div class="form-group">
-			<div class="col-md-offset-2 col-md-10 text-left">
-				<input type="submit" value="Save" class="btn btn-warning" />
-				&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-				@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
-			</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
 		</div>
 	</div>
 }
+
 <hr />
+
 <div>
 	@Html.ActionLink("Back to List", "Index")
 </div>
