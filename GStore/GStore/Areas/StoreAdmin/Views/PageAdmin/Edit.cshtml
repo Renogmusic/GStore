@@ -1,0 +1,40 @@
+﻿@model GStore.Models.ViewModels.PageEditViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Identity
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8 text-warning">
+		Edit Page<br /><small>'@(Model.Name)' [@(Model.PageId)]</small>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Details", "Details", new { id = Model.PageId }, new { @class = "btn btn-success" })
+		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.PageId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+<hr/>
+@Html.EditorForModel()
+<hr />
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.Pages_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "Details", new { id = Model.PageId }, new { @class = "btn btn-success" })
+		}
+		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.PageId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+

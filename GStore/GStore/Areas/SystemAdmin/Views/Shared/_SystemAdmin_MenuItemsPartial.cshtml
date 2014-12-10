@@ -97,6 +97,20 @@
 		</ul>
 	</li>
 
+	<!-- Web Forms Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Web Forms">Web Forms<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Web Forms Manager", "Index", "WebFormSysAdmin")
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Web Form", "Create", "WebFormSysAdmin")
+			</li>
+		</ul>
+	</li>
+
 	<!-- Help Menu -->
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Help">Help<span class="caret"></span></a>

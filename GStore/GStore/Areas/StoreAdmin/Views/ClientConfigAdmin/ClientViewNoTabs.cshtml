@@ -1,0 +1,177 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.ClientConfigViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+@using GStore.Identity
+
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminDetailsPageTitle text-success">
+		Client Details:
+		<br /><small>@(Model.Name) [@(Model.ClientId)]</small>
+	</h2>
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "ClientEdit", null, new { @class = "btn btn-warning" })
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View in Tabs", "ClientView", null, new { @class = "btn btn-primary" })
+	</div>
+</div>
+
+<hr />
+
+<div>
+	<dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+			<br/>@Html.HelpLabelFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.EnablePageViewLog)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EnablePageViewLog)
+			@Html.HelpLabelFor(model => model.EnablePageViewLog)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.EnableNewUserRegisteredBroadcast)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EnableNewUserRegisteredBroadcast)
+			@Html.HelpLabelFor(model => model.EnableNewUserRegisteredBroadcast)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.UseSendGridEmail)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UseSendGridEmail)
+			@Html.HelpLabelFor(model => model.UseSendGridEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.SendGridMailAccount)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.SendGridMailAccount)
+			<br/>@Html.HelpLabelFor(model => model.SendGridMailAccount)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.SendGridMailFromEmail)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.SendGridMailFromEmail)
+			<br/>@Html.HelpLabelFor(model => model.SendGridMailFromEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.SendGridMailFromName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.SendGridMailFromName)
+			<br />@Html.HelpLabelFor(model => model.SendGridMailFromName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.SendGridMailPassword)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.SendGridMailPassword)
+			<br />@Html.HelpLabelFor(model => model.SendGridMailPassword)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.UseTwilioSms)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UseTwilioSms)
+			@Html.HelpLabelFor(model => model.UseTwilioSms)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.TwilioFromPhone)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TwilioFromPhone)
+			<br />@Html.HelpLabelFor(model => model.TwilioFromPhone)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.TwilioSid)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TwilioSid)
+			<br />@Html.HelpLabelFor(model => model.TwilioSid)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.TwilioSmsFromEmail)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TwilioSmsFromEmail)
+			<br />@Html.HelpLabelFor(model => model.TwilioSmsFromEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.TwilioSmsFromName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TwilioSmsFromName)
+			<br />@Html.HelpLabelFor(model => model.TwilioSmsFromName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Client.TwilioToken)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TwilioToken)
+			<br />@Html.HelpLabelFor(model => model.TwilioToken)
+		</dd>
+	</dl>
+</div>
+<div class="row">
+	<div class="form-actions col-md-offset-5 col-md-6 no-color">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "ClientEdit", null, new { @class = "btn btn-warning" })
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View in Tabs", "ClientView", null, new { @class = "btn btn-primary" })
+	</div>
+
+</div>
+<hr />
+<div>
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+	}
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</div>

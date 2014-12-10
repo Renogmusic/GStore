@@ -3,11 +3,14 @@ using GStore.Identity;
 using GStore.Models;
 using GStore.Models.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -405,6 +408,21 @@ namespace GStore.AppHtmlHelpers
         }
 
 		/// <summary>
+		/// Renders a label with help text from the "Description" data attribute if found using classes help-label and help-label-top
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelTopFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, HtmlHelper.AnonymousObjectToHtmlAttributes(new { @class = "help-label help-label-top" }));
+		}
+
+		/// <summary>
 		/// Renders a label with help text from the "Description" data attribute if found
 		/// </summary>
 		/// <typeparam name="TModel"></typeparam>
@@ -488,7 +506,6 @@ namespace GStore.AppHtmlHelpers
 		{
 			StringBuilder returnValue = new StringBuilder();
 
-			List<UserMessage> messages = new List<UserMessage>();
 			TempDataDictionary tempData = htmlHelper.ViewContext.TempData;
 			if (!tempData.ContainsKey("UserMessages"))
 			{
@@ -544,7 +561,6 @@ namespace GStore.AppHtmlHelpers
 		{
 			StringBuilder returnValue = new StringBuilder();
 
-			List<UserMessage> messages = new List<UserMessage>();
 			TempDataDictionary tempData = htmlHelper.ViewContext.TempData;
 			if (!tempData.ContainsKey("Announcements"))
 			{
@@ -571,7 +587,6 @@ namespace GStore.AppHtmlHelpers
 		{
 			StringBuilder returnValue = new StringBuilder();
 
-			List<UserMessage> messages = new List<UserMessage>();
 			TempDataDictionary tempData = htmlHelper.ViewContext.TempData;
 			if (!tempData.ContainsKey("GaEvents"))
 			{
@@ -1066,6 +1081,23 @@ namespace GStore.AppHtmlHelpers
 
 			return new MvcHtmlString(html);
 		}
+		public static string UrlResolved(this Page page, UrlHelper urlHelper)
+		{
+			string url = page.Url.Trim('~').Trim('/');
+			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
+			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
+			{
+				url = appRoot + "/" + url;
+			}
+			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
+			if (!string.IsNullOrEmpty(urlStoreName))
+			{
+				url = "Stores/" + urlStoreName + "/" + url;
+			}
+
+			return "/" + url;
+		}
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
 		{
@@ -1079,20 +1111,7 @@ namespace GStore.AppHtmlHelpers
 			}
 			else if (navBarItem.IsPage)
 			{
-				string url = navBarItem.Page.Url.Trim('~').Trim('/');
-				string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
-				string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
-				if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
-				{
-					url = appRoot + "/" + url;
-				}
-				string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
-				if (!string.IsNullOrEmpty(urlStoreName))
-				{
-					url = "Stores/" + urlStoreName + "/" + url;
-				}
-
-				return "/" + url;
+				return navBarItem.Page.UrlResolved(urlHelper);
 			}
 			else if (navBarItem.IsLocalHRef)
 			{
@@ -1399,7 +1418,6 @@ namespace GStore.AppHtmlHelpers
 					dbforSync.SaveChanges();
 					return new MvcHtmlString("<span class=\"text-info\"><strong>Section Updated '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
 				}
-
 			}
 
 			if (pageViewModel.Page == null)
@@ -1486,14 +1504,20 @@ namespace GStore.AppHtmlHelpers
 
 		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue)
 		{
+			Client client = htmlHelper.CurrentClient(false);
+			StoreFront storeFront = htmlHelper.CurrentStoreFront(false);
+			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
+			Page page = htmlHelper.CurrentPage(false);
+
+			return text.ReplaceVariables(nullValue, client, storeFront, userProfile, page);
+		}
+
+		public static string ReplaceVariables(this string text, string nullValue, Client client, StoreFront storeFront, UserProfile userProfile, Page page)
+		{
 			if (nullValue == null)
 			{
 				throw new ArgumentNullException("nullValue");
 			}
-
-			Client client = htmlHelper.CurrentClient(false);
-			StoreFront storeFront = htmlHelper.CurrentStoreFront(false);
-			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
 
 			string clientNullValue = null;
 			if (client == null)
@@ -1535,6 +1559,16 @@ namespace GStore.AppHtmlHelpers
 				.Replace("::userprofile.username::", userProfileNullValue ?? userProfile.UserName)
 				.Replace("::userprofile.UserProfileId::", userProfileNullValue ?? userProfile.UserProfileId.ToString());
 
+			string pageNullValue = null;
+			if (page == null)
+			{
+				pageNullValue = nullValue;
+			}
+			text = text.Replace("::page.title::", pageNullValue ?? page.PageTitle)
+				.Replace("::page.name::", pageNullValue ?? page.Name)
+				.Replace("::page.pageid::", pageNullValue ?? page.PageId.ToString())
+				.Replace("::page.url::", pageNullValue ?? page.Url);
+
 			DateTime today = DateTime.Today;
 			return text.Replace("::date::", today.ToString())
 				.Replace("::shortdate::", today.ToShortDateString().ToString())
@@ -1544,6 +1578,17 @@ namespace GStore.AppHtmlHelpers
 				.Replace("::dayofmonth::", today.Day.ToString())
 				.Replace("::year::", today.ToString("YYYY"));
 		}
+
+		public static MvcHtmlString DisplayPageForm<TModel>(this HtmlHelper<TModel> htmlHelper) where TModel: PageViewModel
+		{
+			if (!htmlHelper.ViewData.Model.Page.WebFormId.HasValue)
+			{
+				return new MvcHtmlString(string.Empty);
+			}
+
+			return htmlHelper.DisplayFor(model => model.Page.WebForm, htmlHelper.ViewData.Model.Page.WebForm.DisplayTemplateName);
+		}
+
 
 		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFront storeFront, UserProfile userProfile)
 		{
@@ -1637,6 +1682,63 @@ namespace GStore.AppHtmlHelpers
 		public static MvcHtmlString ToMvcJavaScriptString(this string value, bool addDoubleQuotes = false)
 		{
 			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
+		}
+
+		public static object GetModelStateValue(this HtmlHelper htmlHelper, string key, Type destinationType)
+		{
+			ModelState modelState;
+			if (htmlHelper.ViewData.ModelState.TryGetValue(key, out modelState))
+			{
+				if (modelState.Value != null)
+				{
+					return modelState.Value.ConvertTo(destinationType, null /* culture */);
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns a string useful for file names from a date/time value in yyyy-mm-dd_hh_mm_ss
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToFileSafeString(this DateTime value)
+		{
+			return value.ToString("yyyy-MM-dd_hh_mm_ss");
+		}
+
+		public static string ToDisplayName(this Enum value)
+		{
+			if (value == null)
+			{
+				return "(blank)";
+			}
+
+			var fieldInfo = value.GetType().GetField(value.ToString());
+			if (fieldInfo == null)
+			{
+				//field not found
+				return "(blank)";
+			}
+			var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
+			if (descriptionAttributes == null)
+			{
+				return value.ToString();
+			}
+
+			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Name : value.ToString();
+		}
+
+		public static string ToDisplayDescriptionOrBlankIfNone(this Enum value)
+		{
+			var fieldInfo = value.GetType().GetField(value.ToString());
+			var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
+			if (descriptionAttributes == null)
+			{
+				return string.Empty;
+			}
+
+			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Description : string.Empty;
 		}
 
 	}

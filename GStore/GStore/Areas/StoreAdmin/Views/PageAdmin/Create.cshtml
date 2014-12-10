@@ -1,1 +1,31 @@
-﻿<h2>Create Page Coming Soon</h2>
+﻿@model GStore.Models.ViewModels.PageEditViewModel
+@using GStore.AppHtmlHelpers
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminCreatePageTitle col-md-offset-1 col-md-8 text-info">
+		Create a New Page
+	</h1>
+</div>
+
+@using (Html.BeginForm())
+{
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Page" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+	
+	@Html.Partial("_PageEditPartial", Model)
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Page" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+}
+

@@ -16,6 +16,14 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[AuthorizeGStoreAction(GStoreAction.Admin_StoreAdminArea)]
         public ActionResult Index()
         {
+			UserProfile profile = CurrentUserProfileOrNull;
+			if (profile != null)
+			{
+				profile.LastStoreAdminVisitDateTimeUtc = DateTime.UtcNow;
+				GStoreDb.UserProfiles.Update(profile);
+				GStoreDb.SaveChangesDirect();
+			}
+
 			return View("Index", this.StoreAdminViewModel);
         }
 	}

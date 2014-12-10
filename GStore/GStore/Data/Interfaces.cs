@@ -102,6 +102,8 @@ namespace GStore.Data
 		IGStoreRepository<Models.UserProfile> UserProfiles { get; }
 		IGStoreRepository<Models.ValueList> ValueLists { get; }
 		IGStoreRepository<Models.ValueListItem> ValueListItems { get; }
+		IGStoreRepository<Models.WebForm> WebForms { get; }
+		IGStoreRepository<Models.WebFormField> WebFormFields { get; }
 	}
 
 	/// <summary>

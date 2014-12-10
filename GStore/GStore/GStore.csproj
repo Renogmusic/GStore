@@ -42,6 +42,7 @@
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
@@ -245,6 +246,7 @@
     <Compile Include="Areas\StoreAdmin\Controllers\ClientConfigAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ReportsAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\PageAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
@@ -255,9 +257,11 @@
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ThemeSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\WebFormSysAdmin.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ValueListSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\UserProfileSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\Extensions\SysAdminActivationExtensions.cs" />
+    <Compile Include="Data\Extensions\FormProcessorExtensions.cs" />
     <Compile Include="Data\Extensions\SortExtensions.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\StoreFrontSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\GStoreController.cs" />
@@ -278,6 +282,7 @@
     <Compile Include="Data\EntityFrameworkCodeFirstProvider\GStoreEFDbContextModelBuilder.cs" />
     <Compile Include="Data\Extensions\NewStoreFrontExtensions.cs" />
     <Compile Include="Identity\AuthorizeGStoreAction.cs" />
+    <Compile Include="Identity\AuthorizeSystemAdmin.cs" />
     <Compile Include="Identity\GStoreAction.cs" />
     <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.cs" />
     <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.Designer.cs">
@@ -295,6 +300,14 @@
     <Compile Include="Migrations\201412041051464_clientidforpagetemplatesection.Designer.cs">
       <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412090254347_webformid.cs" />
+    <Compile Include="Migrations\201412090254347_webformid.Designer.cs">
+      <DependentUpon>201412090254347_webformid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412090320558_webformid2.cs" />
+    <Compile Include="Migrations\201412090320558_webformid2.Designer.cs">
+      <DependentUpon>201412090320558_webformid2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
     <Compile Include="Models\ClientRoleAction.cs" />
     <Compile Include="Models\ClientRole.cs" />
@@ -307,6 +320,10 @@
     <Compile Include="Data\Extensions\UserProfileExtensions.cs" />
     <Compile Include="Data\ProductCategoryAttributeDataType.cs" />
     <Compile Include="Models\ProductCategoryAttribute.cs" />
+    <Compile Include="Models\ViewModels\WebFormFieldEditViewModel.cs" />
+    <Compile Include="Models\ViewModels\WebFormViewModel.cs" />
+    <Compile Include="Models\WebFormField.cs" />
+    <Compile Include="Models\WebForm.cs" />
     <Compile Include="Models\ValueListItem.cs" />
     <Compile Include="Models\ValueList.cs" />
     <Compile Include="Models\ViewModels\CatalogViewModel.cs" />
@@ -458,6 +475,7 @@
     <Content Include="Content\Server\Images\Logo\tiny.png" />
     <Content Include="Content\Server\Images\Logo\wide.png" />
     <Content Include="Content\Server\Scripts\Scripts.js" />
+    <Content Include="Content\Server\Styles\GStoreApp - Copy.css" />
     <Content Include="Content\Server\Styles\Styles.css" />
     <Content Include="Content\Server\Images\favicon.ico" />
     <Content Include="Content\Archive\themes\base\accordion.css" />
@@ -679,6 +697,30 @@
     <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Details.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Edit.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ThemeSysAdmin\Index.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ClientConfigAdmin\StoreFrontViewNoTabs.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Page.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ClientConfigAdmin\ClientViewNoTabs.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\Index.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\FieldCreate.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\FieldDelete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\FieldDetails.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\FieldEdit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\WebFormSysAdmin\FieldIndex.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormNoLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebForm.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormField.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormFieldNoLinks.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebForm.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\StoreFront.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Client.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\PageTemplate.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\PageAdmin\Edit.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\PageAdmin\Details.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\PageAdmin\Delete.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1103,12 +1145,17 @@
     <Content Include="Views\Page\_EditLinkBottomPartial.cshtml" />
     <Content Include="Views\Page\_EditModeBottomPartial.cshtml" />
     <Content Include="Views\Page\DebugInfo.cshtml" />
-    <Content Include="Views\Page\EditorTemplates\PageSectionEditViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PageSectionEditViewModel.cshtml" />
     <Content Include="Views\Page\_SectionEditPartial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\MultiLineText.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\ClientNoLinks.cshtml" />
-    <Content Include="Views\Page\EditorTemplates\PageEditViewModel.cshtml" />
-    <Content Include="Views\Page\_PageEditPartial.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PageEditViewModel.cshtml" />
+    <Content Include="Views\Shared\_PageEditPartial.cshtml" />
+    <Content Include="Views\Account\Unauthorized.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\WebForm.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\WebFormField.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PageEditViewModel.cshtml" />
+    <Content Include="Views\Shared\_PageDisplayPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1138,6 +1185,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412041051464_clientidforpagetemplatesection.resx">
       <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412090254347_webformid.resx">
+      <DependentUpon>201412090254347_webformid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412090320558_webformid2.resx">
+      <DependentUpon>201412090320558_webformid2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

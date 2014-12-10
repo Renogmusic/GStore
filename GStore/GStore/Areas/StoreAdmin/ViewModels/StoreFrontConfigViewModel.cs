@@ -47,6 +47,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.MetaApplicationTileColor = storeFront.MetaApplicationTileColor;
 			this.MetaDescription = storeFront.MetaDescription;
 			this.MetaKeywords = storeFront.MetaKeywords;
+			this.BodyTopScriptTag = storeFront.BodyTopScriptTag;
+			this.BodyBottomScriptTag = storeFront.BodyBottomScriptTag;
 			this.Name = storeFront.Name;
 			this.NavBarCatalogMaxLevels = storeFront.NavBarCatalogMaxLevels;
 			this.NavBarItemsMaxLevels = storeFront.NavBarItemsMaxLevels;
@@ -63,6 +65,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.PublicUrl = storeFront.PublicUrl;
 			this.RegisteredNotify = storeFront.RegisteredNotify;
 			this.RegisteredNotify_UserProfileId = storeFront.RegisteredNotify_UserProfileId;
+			this.RegisterWebForm = storeFront.RegisterWebForm;
+			this.Register_WebFormId = storeFront.Register_WebFormId;
 			this.StoreErrorPage = storeFront.StoreErrorPage;
 			this.StoreError_PageId = storeFront.StoreError_PageId;
 			this.WelcomePerson = storeFront.WelcomePerson;
@@ -168,21 +172,27 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(250)]
 		public string HtmlFooter { get; set; }
 
-		[Display(Name = "Meta Application Name", Description = "Application Name for Pinned Site in Windows 7 and Windows 8 Tiles\nExample: Your Store Name")]
+		[Display(Name = "Meta Application Name", Description = "Application Name for Pinned Site in Windows 7 and Windows 8 Tiles\nExample: Your Store Name\nLeave blank to use system default.")]
 		[MaxLength(250)]
 		public string MetaApplicationName { get; set; }
 
-		[Display(Name = "Meta Application Tile Color", Description = "Application Tile Color for Pinned Site\nExample: #880088")]
+		[Display(Name = "Meta Application Tile Color", Description = "Application Tile Color for Pinned Site\nExample: #880088\nLeave blank to use system default.")]
 		[MaxLength(25)]
 		public string MetaApplicationTileColor { get; set; }
 
-		[Display(Name = "Meta Description", Description = "Meta Description tag for search engines\nExample: the best site for online store builders")]
+		[Display(Name = "Meta Description", Description = "Meta Description tag for search engines\nExample: the best site for online store builders.\nLeave blank to use system default.")]
 		[MaxLength(1000)]
 		public string MetaDescription { get; set; }
 
-		[Display(Name = "Meta Keywords", Description = "Meta Keywords tag for search engines each keyword separated by a space\nExample: food carrots crafts arts")]
+		[Display(Name = "Meta Keywords", Description = "Meta Keywords tag for search engines each keyword separated by a space\nExample: food carrots crafts arts\nLeave blank to use system default.")]
 		[MaxLength(1000)]
 		public string MetaKeywords { get; set; }
+
+		[Display(Name = "Page Script on Top of Pages", Description = "Advanced: Script tags or HTML tags shown on the Top of pages for search engines.")]
+		public string BodyTopScriptTag { get; set; }
+
+		[Display(Name = "Page Script on Bottom of Pages", Description = "Advanced: Script tags or HTML tags shown on the bottom of pages for search engines.")]
+		public string BodyBottomScriptTag { get; set; }
 
 		[Display(Name = "Name", Description = "Name of Store Front - this is added to the Page title of all pages on the web site.")]
 		[Required]
@@ -201,6 +211,12 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Nav Bar Register Link Text", Description = "Enter a label for the Register/Sign-Up link on the Site Menu (Nav Bar)\nExample: Register")]
 		[MaxLength(50)]
 		public string NavBarRegisterLinkText { get; set; }
+
+		[Display(Name = "Register Web Form", Description = "Register Form for new users signing up or use the system default registration form")]
+		public WebForm RegisterWebForm { get; set; }
+
+		[Display(Name = "Register Web Form Id", Description = "Register Form for new users signing up or use the system default registration form")]
+		public int? Register_WebFormId { get; set; }
 
 		[Display(Name = "Not Found Error Page", Description = "Choose a page to display for File Not Found (404) errors or use the system default not found page")]
 		public Page NotFoundErrorPage { get; set; }

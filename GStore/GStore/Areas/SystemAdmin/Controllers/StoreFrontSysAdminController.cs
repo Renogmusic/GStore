@@ -68,6 +68,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, null);
 			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, null);
 			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, null);
 
@@ -117,6 +118,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, null);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFront.StoreFrontId);
 			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, storeFront.StoreFrontId);
 			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, storeFront.StoreFrontId);
 
@@ -139,6 +141,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
 
@@ -203,6 +206,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.ClientList = ClientList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
 			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
 

@@ -259,6 +259,56 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			return true;
 		}
 
+		public static bool ActivateWebForm(this BaseClasses.SystemAdminBaseController controller, int webFormId)
+		{
+			WebForm webForm = controller.GStoreDb.WebForms.FindById(webFormId);
+			if (webForm == null)
+			{
+				controller.AddUserMessage("Activate Web Form Failed!", "Web Form not found by id: " + webFormId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (webForm.IsActiveDirect())
+			{
+				controller.AddUserMessage("Web Form is already active.", "Web Form is already active. id: " + webFormId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			webForm.IsPending = false;
+			webForm.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			webForm.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			controller.GStoreDb.WebForms.Update(webForm);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Web Form", "Activated Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "]" + " - Client '" + webForm.Client.Name.ToHtml() + "' [" + webForm.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
+		public static bool ActivateWebFormField(this BaseClasses.SystemAdminBaseController controller, int webFormFieldId)
+		{
+			WebFormField webFormField = controller.GStoreDb.WebFormFields.FindById(webFormFieldId);
+			if (webFormField == null)
+			{
+				controller.AddUserMessage("Activate Web Form Field Failed!", "Web Form Field not found by id: " + webFormFieldId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (webFormField.IsActiveDirect())
+			{
+				controller.AddUserMessage("Web Form Field is already active.", "Web Form Field is already active. id: " + webFormFieldId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			webFormField.IsPending = false;
+			webFormField.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			webFormField.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			controller.GStoreDb.WebFormFields.Update(webFormField);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Web Form Field", "Activated Web Form Field '" + webFormField.Name.ToHtml() + "' [" + webFormField.WebFormFieldId + "]" + " - Web Form '" + webFormField.WebForm.Name.ToHtml() + "' [" + webFormField.WebForm.WebFormId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
 		public static bool ActivateTheme(this BaseClasses.SystemAdminBaseController controller, int themeId)
 		{
 			Theme theme = controller.GStoreDb.Themes.FindById(themeId);

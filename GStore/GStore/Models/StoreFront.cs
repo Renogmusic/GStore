@@ -35,12 +35,18 @@ namespace GStore.Models
 		[MaxLength(250)]
 		public string HtmlFooter { get; set; }
 
-		[Required]
+		[AllowHtml]
+		[Display(Name = "Body Top Script Tag")]
+		public string BodyTopScriptTag { get; set; }
+
+		[AllowHtml]
+		[Display(Name = "Body Bottom Script Tag")]
+		public string BodyBottomScriptTag { get; set; }
+
 		[Display(Name = "Meta Tag App Name")]
 		[MaxLength(250)]
 		public string MetaApplicationName { get; set; }
 
-		[Required]
 		[Display(Name = "Meta Tag Tile Color")]
 		[MaxLength(25)]
 		public string MetaApplicationTileColor { get; set; }
@@ -209,9 +215,19 @@ namespace GStore.Models
 		[Display(Name = "Registered Notify Id")]
 		public int RegisteredNotify_UserProfileId { get; set; }
 
-		///// <summary>
-		///// File Not Found 404 Store Error Page or null if none (use system default 404 page)
-		///// </summary>
+		/// <summary>
+		/// File Not Found 404 Store Error Page or null if none (use system default 404 page)
+		/// </summary>
+		[ForeignKey("Register_WebFormId")]
+		[Display(Name = "Register Web Form")]
+		public virtual WebForm RegisterWebForm { get; set; }
+
+		[Display(Name = "Register Web Form Id")]
+		public int? Register_WebFormId { get; set; }
+
+		/// <summary>
+		/// File Not Found 404 Store Error Page or null if none (use system default 404 page)
+		/// </summary>
 		[ForeignKey("NotFoundError_PageId")]
 		[Display(Name = "Not Found Error Page")]
 		public virtual Page NotFoundErrorPage { get; set; }
@@ -219,9 +235,9 @@ namespace GStore.Models
 		[Display(Name = "Not Found Error Page Id")]
 		public int? NotFoundError_PageId { get; set; }
 
-		///// <summary>
-		///// Store Error Page (for any error other than not found 404) or null if none (use system default 404 page)
-		///// </summary>
+		/// <summary>
+		/// Store Error Page (for any error other than not found 404) or null if none (use system default 404 page)
+		/// </summary>
 		[ForeignKey("StoreError_PageId")]
 		[Display(Name = "Store Error Page")]
 		public virtual Page StoreErrorPage { get; set; }

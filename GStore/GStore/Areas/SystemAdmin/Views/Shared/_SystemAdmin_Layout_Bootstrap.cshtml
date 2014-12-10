@@ -57,7 +57,21 @@
 </head>
 <body>
 	@Html.Partial("_SystemAdmin_MenuPartial")
-	<div class="container body-content sysadmin sysadmin-body-content">
+	@{
+		string classes = string.Empty;
+		RouteData routeData = ViewContext.RouteData;
+		if (routeData != null)
+		{
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				classes += " area-" + routeData.DataTokens["area"].ToString().ToLower();
+			}
+			classes += " controller-" + routeData.Values["controller"].ToString().ToLower();
+			classes += " action-" + routeData.Values["action"].ToString().ToLower();
+		}
+
+	}
+	<div class="container body-content sysadmin sysadmin-body-content@(classes)">
 		<!-- top alert container for dynamic alerts-->
 		<div id="usermessagecontainer" style="padding-top: 2em"></div>
 		@RenderBody()

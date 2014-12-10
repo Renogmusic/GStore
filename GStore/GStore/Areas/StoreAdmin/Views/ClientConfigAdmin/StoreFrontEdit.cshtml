@@ -5,13 +5,14 @@
 {
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
 	SelectList themeList = ViewBag.ThemeList as SelectList;
+	SelectList registerWebFormList = ViewBag.RegisterWebFormList as SelectList;
 	SelectList notFoundPageList = ViewBag.NotFoundPageList as SelectList;
 	SelectList storeErrorPageList = ViewBag.StoreErrorPageList as SelectList;
 
 	@Html.AntiForgeryToken()
 
 	<div class="row">
-		<h2 class="jumbotron StoreAdminEditPageTitle col-md-offset-2 col-md-10 text-warning title-align">
+		<h2 class="jumbotron StoreAdminEditPageTitle col-md-offset-2 col-md-7 text-warning title-align">
 			Edit Store Front Configuration
 			<br />
 			<small>@Html.DisplayNameFor(model => model.StoreFront) '@(Model.Name)' [@(Model.StoreFrontId)]</small>
@@ -19,374 +20,457 @@
 	</div>
 
 	<div class="row">
-		<div class="form-actions col-md-offset-2 col-md-10">
+		<div class="form-actions col-md-offset-3 col-md-9">
 			<input type="submit" value="Save" class="btn btn-warning" />
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Cancel", "StoreFrontView", new { id = Model.StoreFrontId }, new { @class = "btn btn-default" })
 		</div>
 	</div>
+
 	<div class="row">
-		<div class="form-validation col-md-offset-2 col-md-10">
+		<div class="form-validation col-md-offset-3 col-md-9">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger bold" })
 			@Html.HiddenFor(model => model.StoreFrontId)
 		</div>
 	</div>
 
 	<div class="form-horizontal">
-		<div class="form-group">
-			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.Name, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-			</div>
-		</div>
+		<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
+			<li class="active"><a data-toggle="tab" href="#sectionBasic">Basic</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionAdmins">Admins</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionMetaTags">Meta Tags</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionTracking">Tracking</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionThemes">Themes</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionCatalogLayout">Catalog Layout</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionAdvanced">Advanced</a></li>
+			<li class=""><a data-toggle="tab" href="#sectionLayouts">More Layouts (coming soon)</a></li>
+		</ul>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.PublicUrl, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.PublicUrl, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.PublicUrl, "", new { @class = "text-danger" })
-			</div>
-		</div>
+		<div class="tab-content">
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.EnableGoogleAnalytics, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.EnableGoogleAnalytics, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.EnableGoogleAnalytics, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.EnableGoogleAnalytics, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionBasic" class="tab-pane fade in active">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.GoogleAnalyticsWebPropertyId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.GoogleAnalyticsWebPropertyId, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.GoogleAnalyticsWebPropertyId, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.GoogleAnalyticsWebPropertyId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.Name, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NavBarShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NavBarShowRegisterLink, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.NavBarShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.NavBarShowRegisterLink, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.PublicUrl, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.PublicUrl, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.PublicUrl, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NavBarRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NavBarRegisterLinkText, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.NavBarRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.NavBarRegisterLinkText, "", new { @class = "text-danger" })
 			</div>
-		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AccountLoginShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AccountLoginShowRegisterLink, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.AccountLoginShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.AccountLoginShowRegisterLink, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionAdmins" class="tab-pane fade in">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AccountLoginRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AccountLoginRegisterLinkText, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.AccountLoginRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.AccountLoginRegisterLinkText, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.AccountAdmin_UserProfileId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("AccountAdmin_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.AccountAdmin_UserProfileId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AccountAdmin_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.HtmlFooter, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.RegisteredNotify_UserProfileId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("RegisteredNotify_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.RegisteredNotify_UserProfileId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.RegisteredNotify_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.MetaApplicationName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.MetaApplicationName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.MetaApplicationName, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.WelcomePerson_UserProfileId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("WelcomePerson_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.WelcomePerson_UserProfileId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.WelcomePerson_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.MetaApplicationTileColor, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.MetaApplicationTileColor, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.MetaApplicationTileColor, "", new { @class = "text-danger" })
 			</div>
-		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.MetaDescription, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionMetaTags" class="tab-pane fade in">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.MetaKeywords, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.MetaApplicationName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.MetaApplicationName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.MetaApplicationName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NavBarItemsMaxLevels, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NavBarItemsMaxLevels, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.NavBarItemsMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.NavBarItemsMaxLevels, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.MetaApplicationTileColor, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.MetaApplicationTileColor, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.MetaApplicationTileColor, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NavBarCatalogMaxLevels, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NavBarCatalogMaxLevels, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.NavBarCatalogMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.NavBarCatalogMaxLevels, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.MetaDescription, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogPageInitialLevels, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogPageInitialLevels, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogPageInitialLevels, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogPageInitialLevels, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.MetaKeywords, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogCategoryColLg, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogCategoryColLg, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogCategoryColLg, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogCategoryColLg, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.BodyTopScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.BodyTopScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogCategoryColMd, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogCategoryColMd, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogCategoryColMd, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogCategoryColMd, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.BodyBottomScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogCategoryColSm, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogCategoryColSm, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogCategoryColSm, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogCategoryColSm, "", new { @class = "text-danger" })
 			</div>
-		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogProductColLg, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogProductColLg, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogProductColLg, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogProductColLg, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionTracking" class="tab-pane fade in">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogProductColMd, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogProductColMd, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogProductColMd, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogProductColMd, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.EnableGoogleAnalytics, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.EnableGoogleAnalytics, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.EnableGoogleAnalytics, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.EnableGoogleAnalytics, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogProductColSm, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogProductColSm, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogProductColSm, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogProductColSm, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.GoogleAnalyticsWebPropertyId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.GoogleAnalyticsWebPropertyId, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.GoogleAnalyticsWebPropertyId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.GoogleAnalyticsWebPropertyId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AccountAdmin_UserProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AccountAdmin_UserProfileId, new { @class = "help-label" } )
-				@Html.DropDownList("AccountAdmin_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.AccountAdmin_UserProfileId, "", new { @class = "text-danger" })
 			</div>
-		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.RegisteredNotify_UserProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.RegisteredNotify_UserProfileId, new { @class = "help-label" } )
-				@Html.DropDownList("RegisteredNotify_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.RegisteredNotify_UserProfileId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionThemes" class="tab-pane fade in">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.WelcomePerson_UserProfileId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.WelcomePerson_UserProfileId, new { @class = "help-label" } )
-				@Html.DropDownList("WelcomePerson_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.WelcomePerson_UserProfileId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.DefaultNewPageThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("DefaultNewPageThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.DefaultNewPageThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.DefaultNewPageThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NotFoundError_PageId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NotFoundError_PageId, new { @class = "help-label" } )
-				@Html.DropDownList("NotFoundError_PageId", notFoundPageList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("CatalogThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.CatalogThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.StoreError_PageId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.StoreError_PageId, new { @class = "help-label" } )
-				@Html.DropDownList("StoreError_PageId", storeErrorPageList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.AccountThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("AccountThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.AccountThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AccountThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AccountThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AccountThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("AccountThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.AccountThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.NotificationsThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("NotificationsThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.NotificationsThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NotificationsThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AccountLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.AccountLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.AccountLayoutName, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.ProfileThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("ProfileThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.ProfileThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.ProfileThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AdminThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AdminThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("AdminThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.AdminThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.AdminThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("AdminThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.AdminThemeId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AdminThemeId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.AdminLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.AdminLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.AdminLayoutName, "", new { @class = "text-danger" })
 			</div>
-		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("CatalogThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.CatalogThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+			<div id="sectionCatalogLayout" class="tab-pane fade in">
+				<hr />
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.CatalogLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.CatalogLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.CatalogLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.CatalogLayoutName, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.NavBarItemsMaxLevels, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.NavBarItemsMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.NavBarItemsMaxLevels, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NavBarItemsMaxLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.DefaultNewPageThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.DefaultNewPageThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("DefaultNewPageThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.DefaultNewPageThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.NavBarCatalogMaxLevels, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.NavBarCatalogMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.NavBarCatalogMaxLevels, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NavBarCatalogMaxLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.DefaultNewPageLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.DefaultNewPageLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.DefaultNewPageLayoutName, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogPageInitialLevels, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogPageInitialLevels, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogPageInitialLevels, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogPageInitialLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NotificationsThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NotificationsThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("NotificationsThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.NotificationsThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogCategoryColLg, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogCategoryColLg, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogCategoryColLg, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogCategoryColLg, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.NotificationsLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.NotificationsLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.NotificationsLayoutName, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogCategoryColMd, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogCategoryColMd, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogCategoryColMd, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogCategoryColMd, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.ProfileThemeId, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.ProfileThemeId, new { @class = "help-label" } )
-				@Html.DropDownList("ProfileThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-				@Html.ValidationMessageFor(model => model.ProfileThemeId, "", new { @class = "text-danger" })
-			</div>
-		</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogCategoryColSm, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogCategoryColSm, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogCategoryColSm, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogCategoryColSm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.ProfileLayoutName, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10">
-				@Html.HelpLabelFor(model => model.ProfileLayoutName, new { @class = "help-label" } )
-				@Html.EditorFor(model => model.ProfileLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.ProfileLayoutName, "", new { @class = "text-danger" })
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogProductColLg, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogProductColLg, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogProductColLg, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogProductColLg, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogProductColMd, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogProductColMd, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogProductColMd, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogProductColMd, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogProductColSm, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogProductColSm, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogProductColSm, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogProductColSm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
 			</div>
+
+			<div id="sectionAdvanced" class="tab-pane fade in">
+				<hr />
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.HtmlFooter, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.NavBarShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.NavBarShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.NavBarShowRegisterLink, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NavBarShowRegisterLink, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.NavBarRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.NavBarRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.NavBarRegisterLinkText, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NavBarRegisterLinkText, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.AccountLoginShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.AccountLoginShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.AccountLoginShowRegisterLink, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AccountLoginShowRegisterLink, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.AccountLoginRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.AccountLoginRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.AccountLoginRegisterLinkText, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AccountLoginRegisterLinkText, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.Register_WebFormId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("Register_WebFormId", registerWebFormList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.Register_WebFormId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.Register_WebFormId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.NotFoundError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("NotFoundError_PageId", notFoundPageList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NotFoundError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.StoreError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("StoreError_PageId", storeErrorPageList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.StoreError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+			</div>
+
+			<div id="sectionLayouts" class="tab-pane fade in">
+				<hr />
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.DefaultNewPageLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.DefaultNewPageLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.DefaultNewPageLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.CatalogLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.CatalogLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.CatalogLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.CatalogLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.AccountLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.AccountLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.AccountLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.NotificationsLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.NotificationsLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.NotificationsLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.ProfileLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.ProfileLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.ProfileLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.ProfileLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.AdminLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.AdminLayoutName, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.AdminLayoutName, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+			</div>
+
 		</div>
 	</div>
-	
+
 	<div class="row">
-		<div class="form-actions col-md-offset-2 col-md-10">
+		<div class="form-actions col-md-offset-3 col-md-9">
 			<input type="submit" value="Save" class="btn btn-warning" />
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Cancel", "StoreFrontView", new { id = Model.StoreFrontId }, new { @class = "btn btn-default" })

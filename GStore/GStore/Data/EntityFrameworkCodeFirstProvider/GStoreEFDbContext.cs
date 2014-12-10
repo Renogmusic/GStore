@@ -95,6 +95,12 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		public virtual DbSet<ValueListItem> ValueListItemsTable { get; set; }
 		public IGStoreRepository<Models.ValueListItem> ValueListItems { get { return new GenericGStoreEFEntity<Models.ValueListItem>(this); } }
 
+		public virtual DbSet<WebForm> WebFormsTable { get; set; }
+		public IGStoreRepository<Models.WebForm> WebForms { get { return new GenericGStoreEFEntity<Models.WebForm>(this); } }
+
+		public virtual DbSet<WebFormField> WebFormFieldsTable { get; set; }
+		public IGStoreRepository<Models.WebFormField> WebFormFields { get { return new GenericGStoreEFEntity<Models.WebFormField>(this); } }
+
 		#endregion
 
 		#region IGStoreDb Repository Interface

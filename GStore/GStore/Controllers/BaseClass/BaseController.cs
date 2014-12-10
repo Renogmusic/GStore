@@ -218,7 +218,7 @@ namespace GStore.Controllers.BaseClass
 						return exSFI.StoreFront;
 					}
 					_currentStoreFrontError = true;
-					throw exSFI;
+					throw;
 				}
 				catch (Exceptions.NoMatchingBindingException exNMB)
 				{
@@ -245,7 +245,7 @@ namespace GStore.Controllers.BaseClass
 					System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
 					System.Diagnostics.Trace.Unindent();
 					_currentStoreFrontError = true;
-					throw dbEx;
+					throw;
 				}
 				catch (Exception ex)
 				{

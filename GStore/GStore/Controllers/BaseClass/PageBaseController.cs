@@ -46,15 +46,17 @@ namespace GStore.Controllers.BaseClass
 
 		public virtual ActionResult Display()
 		{
+			Page currentPage = CurrentPageOrThrow;
+			CheckAccessAndRedirect();
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
 			bool showPageEditLink = CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrNull, GStoreAction.Pages_Edit);
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false, false, null));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false, false, null, false, ""));
 		}
 
 		[HttpGet]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
-		public virtual ActionResult Edit(bool? AutoPost)
+		public virtual ActionResult Edit(bool? AutoPost, string Tab)
 		{
 			bool autoPost = true;
 			if (AutoPost.HasValue)
@@ -64,7 +66,51 @@ namespace GStore.Controllers.BaseClass
 
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost, false, null));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost, false, null, false, Tab));
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public virtual ActionResult SubmitForm()
+		{
+			CheckAccessAndRedirect();
+			Page page = CurrentPageOrThrow;
+			if (page.WebForm == null)
+			{
+				return HttpBadRequest("There is no form for page '" + page.Name + "' [" + page.PageId + "]");
+			}
+			if (!page.WebForm.IsActiveBubble())
+			{
+				return HttpBadRequest("Form is inactive for page '" + page.Name + "' [" + page.PageId + "]");
+			}
+
+			if (FormProcessorExtensions.ProcessWebForm(this, page.WebForm, page, CurrentUserProfileOrNull, Request))
+			{
+				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
+				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
+
+				messageBody = messageBody.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
+				messageTitle = messageTitle.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
+
+				AddUserMessage(messageTitle.ToHtml(), messageBody.ToHtmlLines(), UserMessageType.Success);
+				if (page.WebFormSuccessPageId == null)
+				{
+					return Display();
+				}
+				Page redirectPageTarget = CurrentStoreFrontOrThrow.Pages.SingleOrDefault(p => p.PageId == page.WebFormSuccessPageId.Value);
+				if (redirectPageTarget == null)
+				{
+					throw new ApplicationException("Success Page not found. page.WebFormSuccessPageId: " + page.WebFormSuccessPageId);
+				}
+				if (redirectPageTarget.IsActiveBubble())
+				{
+					return Redirect(redirectPageTarget.UrlResolved(Url));
+				}
+				return Display();
+			}
+			//re-display form if process error
+			AddUserMessage("Form Error", "There was a problem with your form values. Please correct the errors below.", UserMessageType.Danger);
+			return Display();
 		}
 
 		[HttpPost]
@@ -89,32 +135,53 @@ namespace GStore.Controllers.BaseClass
 
 			if (pageEditViewModel.PageTemplateId == 0)
 			{
-				ModelState.AddModelError("PageTemplateId", "Page Template must be selected");
+				string pageTemplateKey = (ModelState.ContainsKey("PageEditViewModel_PageTemplateId") ? "PageEditViewModel_PageTemplateId" : "PageTemplateId");
+				ModelState.AddModelError(pageTemplateKey, "Page Template must be selected");
 			}
 
 			if (pageEditViewModel.ThemeId == 0)
 			{
-				ModelState.AddModelError("ThemeId", "Page Theme must be selected");
+				string themeKey = (ModelState.ContainsKey("PageEditViewModel_ThemeId") ? "PageEditViewModel_ThemeId" : "ThemeId");
+				ModelState.AddModelError(themeKey, "Page Theme must be selected");
 			}
 
 			if (string.IsNullOrWhiteSpace(pageEditViewModel.Url))
 			{
-				ModelState.AddModelError("Url", "Url is invalid. Example: '/' or '/Contact'");
+				string urlKey = (ModelState.ContainsKey("PageEditViewModel_Url") ? "PageEditViewModel_Url" : "Url");
+				ModelState.AddModelError(urlKey, "Url cannot be blank. Example: '/' or '/Contact'");
 			}
 
-			if (ModelState.IsValid)
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+			bool urlIsValid = GStoreDb.ValidatePageUrl(this, pageEditViewModel.Url, storeFront.StoreFrontId, storeFront.ClientId, pageEditViewModel.PageId);
+
+			if (urlIsValid && ModelState.IsValid)
 			{
-				Page page = null;
-				page = GStoreDb.UpdatePage(pageEditViewModel, this, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-				AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully", AppHtmlHelpers.UserMessageType.Success);
-				pageEditViewModel = new PageEditViewModel(page);
-				return PartialView("_PageEditPartial", pageEditViewModel);
+				try
+				{
+					Page page = null;
+					page = GStoreDb.UpdatePage(pageEditViewModel, this, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully", AppHtmlHelpers.UserMessageType.Success);
+					pageEditViewModel = new PageEditViewModel(page);
+					return PartialView("_PageEditPartial", pageEditViewModel);
+				}
+				catch (Exception ex)
+				{
+					string errorMessage = "An error occurred while saving your changes to page '" + pageEditViewModel.Name + "' Url: '" + pageEditViewModel.Url + "' [" + pageEditViewModel.PageId + "] \nError: '" + ex.GetType().FullName + "'";
+
+					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
+					{
+						errorMessage += "\nException.ToString(): '" + ex.ToString() + "'";
+					}
+					AddUserMessage("Error Saving Page!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
+					ModelState.AddModelError("Ajax", errorMessage);
+				}
 			}
 			else
 			{
 				AddUserMessage("Page Edit Error", "There was an error with your entry for page " + pageEditViewModel.Name.ToHtml() + " [" + pageEditViewModel.PageId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
+			pageEditViewModel.FillListsIfEmpty(CurrentClientOrThrow, CurrentStoreFrontOrThrow);
 			return PartialView("_PageEditPartial", pageEditViewModel);
 		}
 
@@ -138,23 +205,53 @@ namespace GStore.Controllers.BaseClass
 				PageSection pageSection = null;
 				if (viewModel.PageSectionId.HasValue)
 				{
-					pageSection = GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-					if (!quietOnSave)
+					try
 					{
-						AddUserMessage("Section Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
+						pageSection = GStoreDb.UpdatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+						if (!quietOnSave)
+						{
+							AddUserMessage("Section Changes Saved!", "Page Section saved successfully", AppHtmlHelpers.UserMessageType.Success);
+						}
+						viewModel = new PageSectionEditViewModel(pageSection.PageTemplateSection, pageSection.Page, pageSection, viewModel.Index, viewModel.AutoSubmit);
+						return PartialView("_SectionEditPartial", viewModel);
+					}
+					catch (Exception ex)
+					{
+						string errorMessage = "An error occurred while saving your changes to page section '" + viewModel.PageSectionId.ToString() + " \nError: '" + ex.GetType().FullName + "'";
+
+						if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
+						{
+							errorMessage += " \nException.ToString(): '" + ex.ToString() + "'";
+						}
+						AddUserMessage("Error Updating Page Section [" + viewModel.PageSectionId + "]!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
+						ModelState.AddModelError("Ajax", errorMessage);
 					}
 				}
 				else
 				{
-					pageSection = GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-					if (!quietOnSave)
+					try
 					{
-						AddUserMessage("Section Changes Saved!", "Page Section created successfully", AppHtmlHelpers.UserMessageType.Success);
+						pageSection = GStoreDb.CreatePageSection(viewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+						if (!quietOnSave)
+						{
+							AddUserMessage("Section Changes Saved!", "Page Section '" + pageSection.PageTemplateSection.Name.ToHtml() + "' [" + pageSection.PageSectionId + "] created successfully", AppHtmlHelpers.UserMessageType.Success);
+						}
+						viewModel = new PageSectionEditViewModel(pageSection.PageTemplateSection, pageSection.Page, pageSection, viewModel.Index, viewModel.AutoSubmit);
+						return PartialView("_SectionEditPartial", viewModel);
+					}
+					catch (Exception ex)
+					{
+						string errorMessage = "An error occurred while creating page section '" + viewModel.PageSectionId.ToString()
+							+ "' for Page Template Section [" + viewModel.PageTemplateSectionId + "] \nError: '" + ex.GetType().FullName + "'";
+
+						if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
+						{
+							errorMessage += " \nException.ToString(): '" + ex.ToString() + "'";
+						}
+						AddUserMessage("Error Creating Page Section [" + viewModel.PageSectionId + "]!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
+						ModelState.AddModelError("Ajax", errorMessage);
 					}
 				}
-
-				viewModel = new PageSectionEditViewModel(pageSection.PageTemplateSection, pageSection.Page, pageSection, viewModel.Index, viewModel.AutoSubmit);
-				return PartialView("_SectionEditPartial", viewModel);
 			}
 			else
 			{
@@ -180,6 +277,21 @@ namespace GStore.Controllers.BaseClass
 				{
 					return null;
 				}
+			}
+		}
+
+		public void CheckAccessAndRedirect()
+		{
+			Page page = this.CurrentPageOrNull;
+			if (page == null)
+			{
+				//null page
+			}
+
+			if (page.ForRegisteredOnly && !User.Identity.IsAuthenticated)
+			{
+				AddUserMessage("Log in required", "Please log in to view this page", UserMessageType.Danger);
+				RedirectToAction("Login", "Account", null).ExecuteResult(this.ControllerContext);
 			}
 		}
 
@@ -225,19 +337,19 @@ namespace GStore.Controllers.BaseClass
 						System.Diagnostics.Trace.Indent();
 						System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
 						System.Diagnostics.Trace.Unindent();
-						throw dbEx;
+						throw;
 					}
 					catch (Exceptions.StoreFrontInactiveException exSFI)
 					{
 						//storefront is inactive
 						System.Diagnostics.Trace.WriteLine("--StoreFrontInactive in CurrentPage: " + exSFI.Message);
-						throw exSFI;
+						throw;
 					}
 					catch (Exceptions.NoMatchingBindingException exNMB)
 					{
 						//no store found
 						System.Diagnostics.Trace.WriteLine("--StoreFrontInactive in CurrentPage: " + exNMB.Message);
-						throw exNMB;
+						throw;
 					}
 					catch (Exception ex)
 					{

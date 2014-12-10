@@ -20,12 +20,19 @@
 			title = ViewBag.Title + " - " + title;
 		}
 
+		string metaApplicationName = "GStore Admin - " + storeFront.Name;
+		string metaApplicationTileColor = "880088";
+		string metaDescription = "GStore Store Front";
+		string metaKeywords = "GStore Store Front";
+		string bodyTopScriptTag = string.Empty;
+		string bodyBottomScriptTag = string.Empty;
 
+		string themeFolderName = Html.ThemeFolderName();
 	}
 	<title>@title</title>
 
-	<meta name="application-name" content="@(storeFront.MetaApplicationName) - Admin" />
-	<meta name="msapplication-TileColor" content="#@(storeFront.MetaApplicationTileColor)" />
+	<meta name="application-name" content="@(metaApplicationName)" />
+	<meta name="msapplication-TileColor" content="#@(metaApplicationTileColor)" />
 	<meta name="msapplication-square70x70logo" content="~/Images/Logo/tiny.png" />
 	<meta name="msapplication-square150x150logo" content="~/Images/Logo/square.png" />
 	<meta name="msapplication-wide310x150logo" content="~/Images/Logo/wide.png" />
@@ -33,8 +40,8 @@
 
 	<link rel="shortcut icon" href="~/Images/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="~/Images/favicon.ico" type="image/x-icon">
-	<meta name="description" content="@(storeFront.MetaDescription)" />
-	<meta name="keywords" content="@(storeFront.MetaKeywords)" />
+	<meta name="description" content="@(metaDescription)" />
+	<meta name="keywords" content="@(metaKeywords)" />
 	<link rel="apple-touch-icon" href="~/Images/Logo/Logo.png" />
 	<link rel="apple-touch-startup-image" href="~/Images/Logo/Logo.png" />
 
@@ -43,7 +50,7 @@
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFront));
 	</script>
 
-	@Styles.Render("~/Themes/" + Html.ThemeFolderName() + "/Bootstrap.min.css")
+	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.min.css")
 	@Styles.Render("~/Styles/GStoreApp.css")
 	@Styles.Render("~/Styles/Styles.css")
 
@@ -58,8 +65,25 @@
 	@Scripts.Render("~/Js/Scripts.js")
 </head>
 <body>
-	@Html.Partial("_StoreAdminMenuPartial")
-	<div class="container body-content storeadmin storeadmin-body-content">
+	@{
+		GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel viewModel = new GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel(Html.CurrentStoreFront(true), Html.CurrentUserProfile(true));
+
+		@Html.Partial("_StoreAdminMenuPartial", viewModel)
+		
+		string classes = string.Empty;
+		RouteData routeData = ViewContext.RouteData;
+		if (routeData != null)
+		{
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				classes += " area-" + routeData.DataTokens["area"].ToString().ToLower();
+			}
+			classes += " controller-" + routeData.Values["controller"].ToString().ToLower();
+			classes += " action-" + routeData.Values["action"].ToString().ToLower();
+		}
+
+	}
+	<div class="container body-content storeadmin storeadmin-body-content@(classes)">
 		<!-- top alert container for dynamic alerts-->
 		<div id="usermessagecontainer" style="padding-top: 2em"></div>
 		@RenderBody()

@@ -10,6 +10,7 @@ using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
 using GStore.AppHtmlHelpers;
+using GStore.Identity;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {

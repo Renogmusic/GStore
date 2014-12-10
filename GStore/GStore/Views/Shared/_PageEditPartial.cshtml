@@ -1,0 +1,617 @@
+﻿@model GStore.Models.ViewModels.PageEditViewModel
+@using GStore.AppHtmlHelpers
+@{
+	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
+	List<SelectListItem> themeList = Model.ThemeSelectList;
+	List<SelectListItem> pageTemplateList = Model.PageTemplateSelectList;
+	List<SelectListItem> webFormList = Model.WebFormSelectList;
+	List<SelectListItem> webFormSuccessPageList = Model.WebFormSuccessPageSelectList;
+
+	bool showRefresh = true;
+	bool showContentTab = true;
+	bool showCancelTab = false;
+	bool showSaveCancelButtons = true;
+	bool displayUserMessages = true;
+
+	string sectionPageActive = " active";
+	string sectionContentActive = string.Empty;
+	string sectionThemeActive = string.Empty;
+	string sectionMetaActive = string.Empty;
+	string sectionFormActive = string.Empty;
+	string sectionActivationActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())
+	{
+		case "page":
+			break;
+
+		case "content":
+			sectionContentActive = " active";
+			sectionPageActive = string.Empty;
+			break;
+		case "theme":
+			sectionThemeActive = " active";
+			sectionPageActive = string.Empty;
+			break;
+		case "meta":
+			sectionMetaActive = " active";
+			sectionPageActive = string.Empty;
+			break;
+		case "form":
+			sectionFormActive = " active";
+			sectionPageActive = string.Empty;
+			break;
+		case "activation":
+			sectionActivationActive = " active";
+			sectionPageActive = string.Empty;
+			break;
+
+		default:
+			break;
+	}
+
+	MvcHtmlString cancelUrl = null;
+	MvcHtmlString refreshUrl = null;
+	if (!Model.IsStoreAdminEdit)
+	{
+		cancelUrl = new MvcHtmlString(Url.Action("Display", new { DynamicPageUrl = Model.OriginalPageUrl }).Replace("//", "/"));
+		refreshUrl = new MvcHtmlString(Url.Action("Edit", new { DynamicPageUrl = Model.OriginalPageUrl }));
+	}
+	else
+	{
+		showContentTab = false;
+		showRefresh = false;
+		cancelUrl = new MvcHtmlString(Url.Action("Manager"));
+		if (Model.IsCreatePage)
+		{
+			showSaveCancelButtons = false;
+			showRefresh = false;
+			displayUserMessages = false;
+		}
+		else
+		{
+			refreshUrl = new MvcHtmlString(Url.Action("Edit", new { id = Model.PageId }));
+		}
+	}
+
+}
+<style>
+	.form-group .form-control {
+		padding-top: 0;
+		margin-top: 0;
+		padding-bottom: 0;
+		/*background-color: red;*/
+	}
+
+	.form-group label {
+		padding-top: 0;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		/*background-color: green;*/
+	}
+	.form-group .help-label
+	{
+		margin-right: 0;
+		padding-left: 30px;
+	}
+</style>
+<script>
+	@{
+		if (sectionContentActive.Length == 0)
+		{
+			@:$(document).ready(function () { HidePageSections(); });
+						}
+		else
+		{
+			@:$(document).ready(function () { ShowPageSections(); });
+						}
+	}
+	function ShowPageSections() {
+		if (document.getElementById('PageContent')) {
+			document.getElementById('PageContent').hidden = false;
+		}
+	}
+
+	function HidePageSections() {
+		if (document.getElementById('PageContent')) {
+			document.getElementById('PageContent').hidden = true;
+		}
+	}
+
+	function MakeItActive()
+	{
+		var startDateTime = @(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString(true)));
+		var endDateTime = @(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString(true)));
+		if (document.getElementById('IsPending'))
+		{
+			document.getElementById('IsPending').checked = false;
+		}
+		if (document.getElementById('PageEditViewModel_IsPending'))
+		{
+			document.getElementById('PageEditViewModel_IsPending').checked = false;
+		}
+		if (document.getElementById('StartDateTimeUtc'))
+		{
+			document.getElementById('StartDateTimeUtc').value = startDateTime;
+		}
+		if (document.getElementById('PageEditViewModel_StartDateTimeUtc'))
+		{
+			document.getElementById('PageEditViewModel_StartDateTimeUtc').value = startDateTime;
+		}
+		if (document.getElementById('EndDateTimeUtc'))
+		{
+			document.getElementById('EndDateTimeUtc').value = endDateTime;
+		}
+		if (document.getElementById('PageEditViewModel_EndDateTimeUtc'))
+		{
+			document.getElementById('PageEditViewModel_EndDateTimeUtc').value = endDateTime;
+		}
+
+	}
+</script>
+<div class="row">
+	<div class="col-md-offset-3 col-md-9 text-left">
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		@Html.HiddenFor(model => model.PageId)
+	</div>
+</div>
+
+<ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
+	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="HidePageSections();">Page</a></li>
+	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="HidePageSections();">Theme</a></li>
+	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="HidePageSections();">Meta</a></li>
+	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="HidePageSections();">Form</a></li>
+	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation">Activation</a></li>
+	@{
+		if (showContentTab)
+		{
+			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="ShowPageSections();">Content</a></li>
+		}
+		else
+		{
+			<li class=""><a target="_blank" href="~/Edit@(Model.OriginalPageUrl)?Tab=Content"><u>Content <small>(new window)</small></u></a></li>
+		}
+	}
+	@{
+		if (showCancelTab)
+		{
+			<li class=""><a href="@(cancelUrl)"><u>Cancel</u></a></li>
+		}
+	}
+	@{
+		if (showRefresh)
+		{
+			<li class=""><a href="@(refreshUrl)"><u>Refresh</u></a></li>
+		}
+
+		if (Model.PageId != 0 && Model.IsActiveBubble)
+		{
+			<li class=""><a target="_blank" href="@(Model.OriginalPageUrl)"><u>Live Page <small>(new window)</small></u></a></li>
+		}
+
+		if (Model.IsStoreAdminEdit)
+		{
+			<li class=""><a href="~/Edit@(Model.OriginalPageUrl)"><u>Edit in Site</u></a></li>
+		}
+		else
+		{
+			if (Html.UserHasPermission(GStore.Identity.GStoreAction.Pages_Edit))
+			{
+				<li class=""><a href="@(Url.Action("Edit", new { id = Model.PageId , controller = "PageAdmin", area = "StoreAdmin"} ))"><u>Edit in Store Admin</u></a></li>
+			}
+		}
+	}
+</ul>
+
+<div class="tab-content">
+
+	<div id="sectionContent" class="tab-pane fade in@(sectionContentActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Page Content</h3>
+		</div>
+	</div>
+
+	<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Basic Page Fields</h3>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.PageTitle, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.PageTitle, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.PageTitle, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.PageTitle, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Url, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.Url, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Url, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Url, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.ForRegisteredOnly, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
+				</div>
+			</div>
+
+		</div>
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						<input type="submit" value="Save" class="btn btn-warning" />
+						&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+						<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	<div id="sectionTheme" class="tab-pane fade in@(sectionThemeActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Theme and Template</h3>
+			
+			<div class="form-group">
+				@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.DropDownList("ThemeId", themeList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.ThemeId, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.ThemeId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.DropDownList("PageTemplateId", pageTemplateList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.PageTemplateId, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+		</div>
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						<input type="submit" value="Save" class="btn btn-warning" />
+						&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+						<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	<div id="sectionMeta" class="tab-pane fade in@(sectionMetaActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Meta Tags</h3>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.MetaApplicationName, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaApplicationName, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.MetaApplicationTileColor, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.MetaApplicationTileColor, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.BodyTopScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.BodyBottomScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+		</div>
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						<input type="submit" value="Save" class="btn btn-warning" />
+						&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+						<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	<div id="sectionForm" class="tab-pane fade in@(sectionFormActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Form</h3>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormId, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.DropDownList("WebFormId", webFormList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.WebFormId, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EnumDropDownListFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.WebFormProcessorType, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormThankYouTitle, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormThankYouTitle, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormThankYouMessage, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormThankYouMessage, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSuccessPageId, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.DropDownList("WebFormSuccessPageId", webFormSuccessPageList, htmlAttributes: new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.WebFormSuccessPageId, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSuccessPageId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormEmailToAddress, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormEmailToAddress, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormEmailToAddress, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormEmailToAddress, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormEmailToName, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormEmailToName, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormEmailToName, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormEmailToName, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+		</div>
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						<input type="submit" value="Save" class="btn btn-warning" />
+						&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+						<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
+		<div class="row form-group text-left-md text-left-lg">
+			<h3 class="col-md-offset-3 col-md-9">Activation</h3>
+			<h4 class="col-md-offset-3 col-md-9 text-warning">
+				Warning: editing these values incorrectly will make this page disappear from your site and only be editable from the Store Admin Menu.<br />
+				If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br/>
+				If you are unsure what to do, click the "Make It Active For Me" button to turn the page on with default values.
+			</h4>
+			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
+			<p class="col-md-offset-3 col-md-9">
+				Current UTC Time: @(DateTime.UtcNow.ToString())
+				<br />
+				<input type="button" id="MakeItActiveButton" onclick="MakeItActive();" class="btn btn-success" value="Make it Active for me" />
+			</p>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger form-validation" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+		</div>
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						<input type="submit" value="Save" class="btn btn-warning" />
+						&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+						<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+</div>
+@{
+	if (displayUserMessages)
+	{
+		@Html.RenderUserMessages()
+	}
+}

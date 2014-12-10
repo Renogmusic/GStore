@@ -361,7 +361,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Page Template not found by id: " + id);
 			}
-			Models.ViewModels.PageViewModel model = new Models.ViewModels.PageViewModel(null, false, false, false, true, id.Value);
+			Models.ViewModels.PageViewModel model = new Models.ViewModels.PageViewModel(null, false, false, false, true, id.Value, false, "");
 			return View("~/Views/Page/" + template.ViewName + ".cshtml", model);
 		}
 

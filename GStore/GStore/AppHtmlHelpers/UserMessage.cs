@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GStore.AppHtmlHelpers
 {
@@ -45,5 +46,26 @@ namespace GStore.AppHtmlHelpers
 			}
 		}
 
+	}
+
+	public static class AddUserMessageExtension
+	{
+		/// <summary>
+		/// Adds a message to the user's user message alerts (top)
+		/// </summary>
+		/// <param name="controller"></param>
+		/// <param name="title"></param>
+		/// <param name="message"></param>
+		/// <param name="userMessageType"></param>
+		public static void AddUserMessage(this System.Web.Mvc.TempDataDictionary tempData, string title, string message, UserMessageType userMessageType)
+		{
+			if (!tempData.ContainsKey("UserMessages"))
+			{
+				tempData.Add("UserMessages", new List<UserMessage>());
+			}
+
+			List<UserMessage> userMessages = (List<UserMessage>)tempData["UserMessages"];
+			userMessages.Add(new UserMessage(title, message, userMessageType));
+		}
 	}
 }

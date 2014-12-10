@@ -30,11 +30,29 @@
 <div id="PageEdit_LoadingElement" class="bg-success" style="display:none">
 	<strong>Saving....</strong>
 </div>
-@using (Ajax.BeginForm(actionName: "UpdatePageAjax", controllerName: "Page", ajaxOptions: options, routeValues: new { PageId = Model.PageId }))
+@{
+	string actionName = "UpdatePageAjax";
+	string controllerName = "Page";
+	string area = "";
+	
+	if (Model.IsStoreAdminEdit)
+	{
+		controllerName = "PageAdmin";
+		area = "StoreAdmin";
+		if (Model.PageId == default(int))
+		{
+			actionName = "CreatePageAjax";
+		}
+		else
+		{
+			actionName = "UpdatePageAjax";
+		}
+	}
+	
+}
+@using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { PageId = Model.PageId, area = area }))
 {
 	<div id="PageEdit_Target">
 		@Html.Partial("_PageEditPartial", Model)
 	</div>
-	
-	<p>feed in top sections?</p>
 }

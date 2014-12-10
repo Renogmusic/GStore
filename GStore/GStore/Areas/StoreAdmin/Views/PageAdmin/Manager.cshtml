@@ -1,1 +1,136 @@
-﻿<h2>Page Manager Coming Soon</h2>
+﻿@model GStore.Areas.StoreAdmin.ViewModels.PageAdminManagerViewModel
+@using GStore.Models
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+@using GStore.Identity
+@{
+
+	UserProfile profile = Html.CurrentUserProfile(true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Delete);
+
+}
+<script>
+	function GoToDetails(index)
+	{
+		urlStart = '@(Url.Action("Details", new { id = 9999 } ).ToMvcJavaScriptString())';
+		var url = urlStart.replace("9999", index);
+		GoToUrl(url);
+	}
+</script>
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminIndexPageTitle">
+		Page Manager
+		<br /><small>@(Html.DisplayNameFor(model => model.StoreFront)) @Html.DisplayFor(model => model.StoreFront)</small>
+	</h2>
+</div>
+
+@{
+	if (userCanCreate)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@Html.ActionLink("Create a New Page", "Create", null, new { @class = "btn btn-info" })
+			</div>
+		</div>
+	}
+}
+
+@{
+	if (Model.Pages.Count() == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<h2 class="text-warning">No Pages found for this store front.</h2>
+			</div>
+		</div>
+	}
+
+	else
+	{
+		<div class="table-responsive">
+			<table class="table table-condensed table-bordered table-hover">
+
+				<tr>
+					<th class="text-center"><small>@(Html.ActionSortLink("Default", "Manager", string.Empty))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Order", "Manager", "Order"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Page Id", "Manager", "PageId"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Name", "Manager", "Name"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Page Title", "Manager", "PageTitle"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Url", "Manager", "Url"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Page Template", "Manager", "PageTemplate.Name"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Theme", "Manager", "Theme.Name"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Web Form", "Manager", "WebForm.Name"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Update Date Time", "Manager", "UpdateDateTimeUtc"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Updated By", "Manager", "UpdatedBy"))</small></th>
+					<th class="text-center">&nbsp;</th>
+				</tr>
+
+				@{
+		foreach (GStore.Models.Page item in Model.Pages)
+		{
+			bool isActive = item.IsActiveBubble();
+			string rowClass = (isActive ? string.Empty : "text-warning");
+			
+			<tr class="@(rowClass)" onclick="GoToDetails(@(item.PageId));">
+				<td>@Html.ActionLink("Details", "Details", new { id = item.PageId }, new { @class = "btn btn-success" })</td>
+				<td><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.PageId))</small></td>
+				<td>
+					<small class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
+						@(item.IsActiveDirect() ? "Active" : "Inactive")
+					</small>
+				</td>
+				<td><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.PageTitle))</small></td>
+				<td>
+					<small>
+						@(Html.DisplayFor(model => item.Url))
+						@{
+							if (isActive)
+							{
+								@:<br /><a target="_blank" href="@(Html.Raw(item.UrlResolved(Url)))">View Page</a>
+								if (userCanEdit)
+								{
+									<br /><a target="_blank" href="Edit/@(Html.Raw(item.UrlResolved(Url)))">Edit Content</a>
+								}
+							}
+						}
+					</small>
+				</td>
+				<td><small>@(Html.DisplayFor(model => item.PageTemplate))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.Theme))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.WebForm))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td>
+					@{
+			if (userCanEdit)
+			{
+				@Html.ActionLink("Edit", "Edit", new { id = item.PageId }, new { @class = "btn btn-sm btn-warning" })
+			}
+
+			if (userCanEdit && userCanDelete)
+			{
+				@:<div class="row" style="padding-bottom: 0.5em;"></div>
+			}
+
+			if (userCanDelete)
+			{
+				@Html.ActionLink("Delete", "Delete", new { id = item.PageId }, new { @class = "btn btn-sm btn-danger" })
+			}
+
+					}
+				</td>
+			</tr>
+		}
+
+				}
+
+			</table>
+		</div>
+	}
+
+}

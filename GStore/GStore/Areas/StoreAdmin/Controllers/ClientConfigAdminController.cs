@@ -25,6 +25,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			return View("ClientView", viewModel);
 		}
 
+		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
+		public ActionResult ClientViewNoTabs()
+		{
+			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+			return View("ClientViewNoTabs", viewModel);
+		}
+
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Edit)]
 		public ActionResult ClientEdit()
 		{
@@ -93,6 +100,36 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			return View("StoreFrontView", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow));
 		}
 
+		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
+		public ActionResult StoreFrontViewNoTabs(int? id)
+		{
+			//verify the storeFront permissions in case we're operating on a different storefront
+			GStore.Models.StoreFront storeFrontToView = null;
+			if (id.HasValue && CurrentStoreFrontOrThrow.StoreFrontId != id.Value)
+			{
+				storeFrontToView = CurrentStoreFrontOrThrow.Client.StoreFronts.AsQueryable()
+					.Where(sf => sf.StoreFrontId == id.Value)
+					.WhereIsActive()
+					.SingleOrDefault();
+				if (storeFrontToView == null)
+				{
+					throw new ApplicationException("StoreFrontToView cannot be found. It may be cross-client or inactive. StoreFrontId: " + id.Value);
+				}
+
+				if (!storeFrontToView.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				{
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					return RedirectToAction("Manager");
+				}
+			}
+			else
+			{
+				storeFrontToView = CurrentStoreFrontOrThrow;
+			}
+
+			return View("StoreFrontViewNoTabs", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow));
+		}
+
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
 		public ActionResult StoreFrontEdit(int? id)
 		{
@@ -128,6 +165,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
 			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
 			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
 
@@ -200,6 +238,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToEdit.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
 				storeFrontToEdit.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
 				storeFrontToEdit.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
+				storeFrontToEdit.Register_WebFormId = model.Register_WebFormId;
 				storeFrontToEdit.NotFoundError_PageId = model.NotFoundError_PageId;
 				storeFrontToEdit.NotificationsLayoutName = model.NotificationsLayoutName;
 				storeFrontToEdit.NotificationsThemeId = model.NotificationsThemeId;
@@ -222,6 +261,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
+			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
 			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
 			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
 
@@ -230,8 +270,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 		protected SelectList ThemeList()
 		{
-			var query = GStoreDb.Themes.All().OrderBy(t => t.Order).ThenBy(t => t.ThemeId);
-			IQueryable<SelectListItem> items = query.Select(t => new SelectListItem
+			var query = CurrentClientOrThrow.Themes.OrderBy(t => t.Order).ThenBy(t => t.ThemeId);
+			IEnumerable<SelectListItem> items = query.Select(t => new SelectListItem
 			{
 				Value = t.ThemeId.ToString(),
 				Text = t.Name + " [" + t.ThemeId + "]"
@@ -274,6 +314,34 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					ModelState["Name"].Value = new ValueProviderResult(storeFront.Name, storeFront.Name, null);
 				}
 			}
+		}
+
+		protected SelectList RegisterWebFormList(int clientId, int storeFrontId)
+		{
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Registration Form)";
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+
+			if (CurrentStoreFrontOrNull == null)
+			{
+				return new SelectList(list, "Value", "Text");
+			}
+
+			var query = CurrentClientOrThrow.WebForms.OrderBy(pg => pg.Order).ThenBy(pg => pg.WebFormId);
+			IEnumerable<SelectListItem> items = query.Select(wf => new SelectListItem
+			{
+				Value = wf.WebFormId.ToString(),
+				Text = wf.Name + " [" + wf.WebFormId + "]"
+			});
+
+			if (items.Count() > 0)
+			{
+				list.AddRange(items);
+			}
+
+			return new SelectList(list, "Value", "Text");
 		}
 
 		protected SelectList StoreErrorPageList(int clientId, int storeFrontId)

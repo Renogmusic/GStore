@@ -90,31 +90,35 @@ namespace GStore.Data
 				);
 		}
 
-		/// <summary>
-		/// IQueryable query extension to check where Page, Client, and StoreFront is currently active and not pending or expired
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
 		public static IQueryable<Page> WhereIsActive(this IQueryable<Page> query)
 		{
-			return query.WhereIsActiveOn(DateTime.UtcNow);
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
 		}
-		public static IQueryable<Page> WhereIsActiveOn(this IQueryable<Page> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<Page> WhereIsActiveOrSelected(this IQueryable<Page> query, int? selectedId)
 		{
-			return query.Where(data =>
-				(includePending || !data.IsPending)
-				&& (data.StartDateTimeUtc < dateTimeUtc)
-				&& (data.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.PageTemplate.IsPending)
-				&& (data.PageTemplate.StartDateTimeUtc < dateTimeUtc)
-				&& (data.PageTemplate.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.Client.IsPending)
-				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
-				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.StoreFront.IsPending)
-				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
-				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<Page> WhereIsActiveOnOrSelected(this IQueryable<Page> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+			return query.Where(data => data.PageTemplateId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.PageTemplate.IsPending)
+					&& (data.PageTemplate.StartDateTimeUtc < dateTimeUtc)
+					&& (data.PageTemplate.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+				)
 				);
+
 		}
 
 		/// <summary>
@@ -318,7 +322,6 @@ namespace GStore.Data
 				);
 		}
 
-
 		public static IQueryable<PageTemplate> WhereIsActive(this IQueryable<PageTemplate> query)
 		{
 			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
@@ -382,6 +385,58 @@ namespace GStore.Data
 					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
 				)
 				);
+		}
+
+
+		public static IQueryable<WebForm> WhereIsActive(this IQueryable<WebForm> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<WebForm> WhereIsActiveOrSelected(this IQueryable<WebForm> query, int? selectedId)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<WebForm> WhereIsActiveOnOrSelected(this IQueryable<WebForm> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.WebFormId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+		}
+
+		public static IQueryable<WebFormField> WhereIsActive(this IQueryable<WebFormField> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<WebFormField> WhereIsActiveOnOrSelected(this IQueryable<WebFormField> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.WebFormFieldId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.WebForm.IsPending)
+					&& (data.WebForm.StartDateTimeUtc < dateTimeUtc)
+					&& (data.WebForm.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+
 		}
 
 
@@ -513,11 +568,46 @@ namespace GStore.Data
 		/// </summary>
 		/// <param name="storeFront"></param>
 		/// <returns></returns>
+		public static bool IsActiveBubble(this WebForm webForm)
+		{
+			if (webForm == null)
+			{
+				throw new ArgumentNullException("webForm");
+			}
+
+			return webForm.IsActiveDirect() && webForm.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this WebFormField webFormField)
+		{
+			if (webFormField == null)
+			{
+				throw new ArgumentNullException("webFormField");
+			}
+
+			return webFormField.IsActiveDirect() && webFormField.WebForm.IsActiveBubble();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
 		public static bool IsActiveBubble(this Page page)
 		{
 			if (page == null)
 			{
 				throw new ArgumentNullException("page");
+			}
+
+			if (page.PageId == default(int))
+			{
+				return false;
 			}
 
 			return page.IsActiveDirect() && page.PageTemplate.IsActiveDirect() && page.StoreFront.IsActiveBubble();
@@ -535,6 +625,10 @@ namespace GStore.Data
 				throw new ArgumentNullException("pageSection");
 			}
 
+			if (pageSection.PageSectionId == default(int))
+			{
+				return false;
+			}
 			return pageSection.IsActiveDirect() && pageSection.Page.IsActiveBubble()
 				&& pageSection.PageTemplateSection.IsActiveDirect()
 				&& pageSection.StoreFront.IsActiveBubble();

@@ -33,19 +33,64 @@
 		string metaApplicationTileColor = "880088";
 		string metaDescription = "GStore Store Front";
 		string metaKeywords = "GStore Store Front";
+		string bodyTopScriptTag = string.Empty;
+		string bodyBottomScriptTag = string.Empty;
+
 		string themeFolderName = Html.ThemeFolderName();
 		if (storeFront != null)
 		{
-			metaApplicationName = storeFront.MetaApplicationName;
-			metaApplicationTileColor = storeFront.MetaApplicationTileColor;
-			metaDescription = storeFront.MetaDescription;
-			metaKeywords = storeFront.MetaKeywords;
+			if (!string.IsNullOrEmpty(storeFront.MetaApplicationName))
+			{
+				metaApplicationName = storeFront.MetaApplicationName;
+			}
+			if (!string.IsNullOrEmpty(storeFront.MetaApplicationTileColor))
+			{
+				metaApplicationTileColor = storeFront.MetaApplicationTileColor;
+			}
+			if (!string.IsNullOrEmpty(storeFront.MetaDescription))
+			{
+				metaDescription = storeFront.MetaDescription;
+			}
+			if (!string.IsNullOrEmpty(storeFront.MetaKeywords))
+			{
+				metaKeywords = storeFront.MetaKeywords;
+			}
+			if (!string.IsNullOrEmpty(storeFront.BodyTopScriptTag))
+			{
+				bodyTopScriptTag = storeFront.BodyTopScriptTag;
+			}
+			if (!string.IsNullOrEmpty(storeFront.BodyBottomScriptTag))
+			{
+				bodyBottomScriptTag = storeFront.BodyBottomScriptTag;
+			}
 		}
 
 		if (page != null)
 		{
-			metaDescription = page.MetaDescription;
-			metaKeywords = page.MetaKeywords;
+			if (!string.IsNullOrEmpty(page.BodyTopScriptTag))
+			{
+				bodyTopScriptTag = page.BodyTopScriptTag;
+			}
+			if (!string.IsNullOrEmpty(page.BodyBottomScriptTag))
+			{
+				bodyBottomScriptTag = page.BodyBottomScriptTag;
+			}
+			if (!string.IsNullOrEmpty(page.MetaDescription))
+			{
+				metaDescription = page.MetaDescription;
+			}
+			if (!string.IsNullOrEmpty(page.MetaKeywords))
+			{
+				metaKeywords = page.MetaKeywords;
+			}
+			if (!string.IsNullOrEmpty(page.MetaApplicationName))
+			{
+				metaApplicationName = page.MetaApplicationName;
+			}
+			if (!string.IsNullOrEmpty(page.MetaApplicationTileColor))
+			{
+				metaApplicationTileColor = page.MetaApplicationTileColor;
+			}
 		}
 
 
@@ -91,10 +136,24 @@
 <body>
 	@if (page != null)
 	{
-		@Html.Raw(page.BodyTopScriptTag)
+		@Html.Raw(bodyTopScriptTag)
 	}
 	@Html.Partial("_NavbarPartial", menuViewModel)
-	<div class="container body-content">
+	@{
+		string classes = string.Empty;
+		RouteData routeData = ViewContext.RouteData;
+		if (routeData != null)
+		{
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				classes += " area-" + routeData.DataTokens["area"].ToString().ToLower();
+			}
+			classes += " controller-" + routeData.Values["controller"].ToString().ToLower();
+			classes += " action-" + routeData.Values["action"].ToString().ToLower();
+		}
+
+	}
+	<div class="container body-content@(classes)">
 		<!-- top alert container for dynamic alerts-->
 		<div id="usermessagecontainer" style="padding-top: 2em"></div>
 		@RenderBody()
@@ -111,9 +170,11 @@
 	@Html.RenderGaEvents()
 	@if (page != null)
 	{
-		@Html.Raw(page.BodyBottomScriptTag)
+		@Html.Raw(bodyBottomScriptTag)
 	}
 </body>
+
+
 
 
 </html>

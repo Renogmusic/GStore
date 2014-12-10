@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Data
 {
@@ -100,6 +101,38 @@ namespace GStore.Data
 			valueListItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
+		public static void SetDefaultsForNew(this WebForm webForm, int? clientId)
+		{
+			if (clientId.HasValue)
+			{
+				webForm.ClientId = clientId.Value;
+			}
+			webForm.DisplayTemplateName = "WebForm";
+			webForm.LabelMdColSpan = 2;
+			webForm.FieldMdColSpan = 10;
+			webForm.SubmitButtonClass = "btn btn-default";
+			webForm.SubmitButtonText = "Submit";
+			webForm.DisplayTemplateName = "WebForm";
+			webForm.IsPending = false;
+			webForm.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			webForm.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+		}
+
+		public static void SetDefaultsForNew(this WebFormField webFormField, WebForm webForm)
+		{
+			if (webForm != null)
+			{
+				webFormField.WebForm = webForm;
+				webFormField.WebFormId = webForm.WebFormId;
+				webFormField.ClientId = webForm.ClientId;
+			}
+			webFormField.DataType = System.ComponentModel.DataAnnotations.DataType.Text;
+			webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
+			webFormField.IsPending = false;
+			webFormField.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			webFormField.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+		}
+
 		public static void SetDefaultsForNew(this Theme theme, int? clientId)
 		{
 			if (clientId.HasValue)
@@ -111,6 +144,26 @@ namespace GStore.Data
 			theme.IsPending = false;
 			theme.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			theme.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+		}
+
+		public static void SetDefaultsForNew(this Page page, StoreFront storeFront)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			page.ClientId = storeFront.ClientId;
+			page.Client = storeFront.Client;
+			page.StoreFrontId = storeFront.StoreFrontId;
+			page.StoreFront = storeFront;
+			page.ThemeId = storeFront.DefaultNewPageThemeId;
+			page.Url = "/NewUrl";
+			page.PageTitle = "New Page";
+			page.Name = "New Page";
+			page.Order = 9000;
+			page.IsPending = false;
+			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			page.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
 
@@ -162,6 +215,86 @@ namespace GStore.Data
 			return items;
 		}
 
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectList(this IQueryable<WebForm> webForms, int? selectedWebFormId)
+		{
+			IQueryable<WebForm> query = webForms.WhereIsActiveOrSelected(selectedWebFormId);
+			IOrderedQueryable<WebForm> orderedQuery = query.ApplySort(null, null, null);
+
+			int webFormId = selectedWebFormId ?? 0;
+
+			IEnumerable<SelectListItem> items = orderedQuery.Select(t => new SelectListItem
+			{
+				Value = t.WebFormId.ToString(),
+				Text = (t.WebFormId == webFormId ? "[SELECTED] " : string.Empty) + t.Name + " [" + t.WebFormId + "]" + (t.IsActiveDirect() ? string.Empty : " [INACTIVE]"),
+				Selected = t.WebFormId == webFormId
+			});
+
+			return items;
+		}
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectListWithNull(this IQueryable<WebForm> webForms, int? selectedWebFormId, string nullString = "(no web form)")
+		{
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedWebFormId.HasValue) });
+			items.AddRange(webForms.ToSelectList(selectedWebFormId));
+
+			return items;
+		}
+
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectList(this IQueryable<Page> pages, int? selectedPageId)
+		{
+			IQueryable<Page> query = pages.WhereIsActiveOrSelected(selectedPageId);
+			IOrderedQueryable<Page> orderedQuery = query.ApplyDefaultSort();
+
+			int pageId = selectedPageId ?? 0;
+
+			IEnumerable<SelectListItem> items = orderedQuery.Select(t => new SelectListItem
+			{
+				Value = t.PageId.ToString(),
+				Text = (t.PageId == pageId ? "[SELECTED] " : string.Empty) + t.Name + " [" + t.PageId + "]" + (t.IsActiveDirect() ? string.Empty : " [INACTIVE]"),
+				Selected = t.PageId == pageId
+			});
+
+			return items;
+		}
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectListWithNull(this IQueryable<Page> pages, int? selectedPageId, string nullString = "(reload this page)")
+		{
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedPageId.HasValue) });
+			items.AddRange(pages.ToSelectList(selectedPageId));
+
+			return items;
+		}
 
 	}
 }

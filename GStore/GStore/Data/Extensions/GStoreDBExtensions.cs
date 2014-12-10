@@ -105,7 +105,6 @@ namespace GStore.Data
 			{
 				xmlWriter.Flush();
 				xmlWriter.Close();
-				xmlWriter.Dispose();
 			}
 		}
 

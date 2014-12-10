@@ -50,7 +50,7 @@
 
 /* direct xs size - phone */
 @media (max-width: 767px) {
-	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions, .title-align-right
 	{
 		text-align: center;
 	}
@@ -61,17 +61,34 @@
 		-ms-overflow-style: scrollbar;
 		overflow: auto;
 	}
+	.control-label
+	{
+		text-align: center;
+	}
+	.help-label
+	{
+		text-align: center;
+	}
+
 }
 
 /* direct sm small size - tablet */
 @media (min-width: 768px) and (max-width: 991px) {
-	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions, .title-align-right
 	{
 		text-align: center;
 	}
 	.table-responsive
 	{
 		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: center;
+	}
+	.help-label
+	{
+		text-align: center;
 	}
 }
 
@@ -81,9 +98,21 @@
 	{
 		text-align: left;
 	}
+	.title-align-right
+	{
+		text-align: right;
+	}
 	.table-responsive
 	{
 		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: right;
+	}
+	.help-label
+	{
+		text-align: left;
 	}
 }
 
@@ -93,9 +122,21 @@
 	{
 		text-align: left;
 	}
+	.title-align-right
+	{
+		text-align: right;
+	}
 	.table-responsive
 	{
 		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: right;
+	}
+	.help-label
+	{
+		text-align: left;
 	}
 }
 
@@ -258,13 +299,19 @@ textarea, help-label {
 	max-width: 700px;
 }
 
+dd label.help-label, label.help-label {
+	font-weight: lighter;
+	font-style: oblique;
+}
+
+dd label.help-label-top, label.help-label-top {
+	padding-top: 0 !important;
+}
+
+
+/* small and xs display */
 @media (max-width: 767px)
 {
-	.form-group label.control-label
-	{
-		padding-top: 2.25em;
-	}
-
 	.dl-horizontal
 	{
 		padding-left: 10px;
@@ -278,22 +325,20 @@ textarea, help-label {
 	.dl-horizontal dd
 	{
 		white-space: normal;
-		padding-bottom: 3em;
 		font-weight: bold;
 	}
+
+	dd label.help-label, label.help-label
+	{
+		padding-bottom: 2em;
+	}
+
+
 }
+
+/* Medium and up displays */
 @media (min-width: 768px)
 {
-	.form-group label.control-label
-	{
-		padding-top: 3.25em;
-	}
-
-	.form-group label.help-label
-	{
-		padding-top: 1.0em;
-	}
-
 	.dl-horizontal
 	{
 		padding-left: 10px;
@@ -305,7 +350,7 @@ textarea, help-label {
 		padding: 0 0 0 0;
 		white-space: normal;
 		text-align: right;
-		width: 45%;
+		width: 40%;
 		display: inline-block;
 	}
 	.dl-horizontal dd
@@ -313,12 +358,18 @@ textarea, help-label {
 		margin: 0 0 0 0;
 		padding: 0 0 0 0;
 		white-space: normal;
-		padding-bottom: 2em;
 		font-weight: bold;
 		text-align: left;
-		width: 53%;
+		width: 56%;
 		display: inline-block;
 	}
+
+	label.help-label, label.help-label
+	{
+		padding-top: 0;
+		padding-bottom: 1em !important;
+	}
+
 }
 
 .SysAdminIndexPageTitle
@@ -358,25 +409,26 @@ textarea, help-label {
 }
 .StoreAdminEditPageTitle
 {
-	max-width: 750px;
+	max-width: 1200px;
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
+	padding-left: 10% !important;
 }
 .StoreAdminDetailsPageTitle
 {
-	max-width: 800px;
+	max-width: 1200px;
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
 }
 .StoreAdminDeletePageTitle
 {
-	max-width: 800px;
+	max-width: 1200px;
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
 }
 .StoreAdminCreatePageTitle
 {
-	max-width: 750px;
+	max-width: 1200px;
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
 }
@@ -386,19 +438,13 @@ textarea, help-label {
 	text-align: left;
 }
 
-dd label.help-label, label.help-label
-{
-	font-weight: lighter;
-	font-style: oblique;
-}
-
 .bold
 {
 	font-weight: bolder;
 }
 
-div.sysadmin label.control-label
+.AccountTitle.jumbotron
 {
-	padding-top: .7em;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
 }
-

@@ -80,6 +80,9 @@ namespace GStore.Models
 		[Display(Name = "Page Templates")]
 		public virtual ICollection<PageTemplate> PageTemplates { get; set; }
 
+		[Display(Name = "Web Forms")]
+		public virtual ICollection<WebForm> WebForms { get; set; }
+
 
 
 	}

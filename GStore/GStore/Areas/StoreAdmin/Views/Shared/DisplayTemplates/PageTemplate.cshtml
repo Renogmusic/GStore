@@ -1,0 +1,10 @@
+﻿@model GStore.Models.PageTemplate
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no Page Template selected)
+}
+else
+{
+	@:@(Model.Name) [@(Model.PageTemplateId)]
+}

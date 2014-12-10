@@ -15,11 +15,13 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 	{
 		public StoreAdminBaseController(IGstoreDb dbContext): base(dbContext)
 		{
+			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = true;
 		}
 
 		public StoreAdminBaseController()
 		{
+			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = true;
 		}
 

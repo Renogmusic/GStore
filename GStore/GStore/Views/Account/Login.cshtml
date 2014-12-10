@@ -2,6 +2,7 @@
 @using GStore.AppHtmlHelpers
 @using GStore.Models
 @using GStore.Models.ViewModels
+
 @{
 	StoreFront storeFront = Html.CurrentStoreFront(false);
 	if (storeFront == null)
@@ -13,77 +14,78 @@
 		ViewBag.Title = "Log in to " + storeFront.Name;
 	}
 }
-<h2>@ViewBag.Title.</h2>
-<div class="row">
-	<div class="col-sm-8">
-		<section id="loginForm">
-			@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-			{
-				@Html.AntiForgeryToken()
-				<hr />
-				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-				<div class="form-group">
-					@Html.LabelFor(m => m.Email, new { @class = "col-sm-2 control-label" })
-					<div class="col-sm-10">
-						@Html.TextBoxFor(m => m.Email, new { @class = "form-control", id = "Email", MaxLength = 150 })
-						@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					@Html.LabelFor(m => m.Password, new { @class = "col-sm-2 control-label" })
-					<div class="col-sm-10">
-						@Html.PasswordFor(m => m.Password, new { @class = "form-control", MaxLength = 50 })
-						@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					@Html.LabelFor(m => m.RememberMe, new { @class = "col-sm-2 control-label" })
-					<div class="col-sm-10">
-						<div class="checkbox">
-							@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-control" })
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-offset-1 col-sm-10">
-						<input type="submit" value="Log in" class="btn btn-primary" />
-					</div>
-					<div class="col-sm-1"></div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-offset-1 col-sm-10">
-						@{
-							string linkText = string.Empty;
-							if (storeFront != null && !string.IsNullOrEmpty(storeFront.NavBarRegisterLinkText))
-							{
-								linkText = storeFront.AccountLoginRegisterLinkText;
-							}
-							else
-							{
-								linkText = "Sign-Up as a new user";
-							}
-							
-							if (storeFront != null && storeFront.AccountLoginShowRegisterLink)
-							{
-								@Html.ActionLink(linkText, "Register")
-								@:&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-							}
-							
-						}
-						@Html.ActionLink("Forgot your password?", "ForgotPassword")
-					</div>
-					<div class="col-sm-1"></div>
-				</div>
 
-			}
-		</section>
-	</div>
-	<div class="col-md-4">
-		<section id="socialLoginForm">
-			@Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
-		</section>
-	</div>
+<div class="row">
+	<h2 class="AccountTitle jumbotron col-md-offset-2 col-md-6 title-align">@ViewBag.Title</h2>
 </div>
+
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-7">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-horizontal">
+		<div class="form-group">
+			@Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+			<div class="col-md-7">
+				@Html.TextBoxFor(m => m.Email, new { @class = "form-control", id = "Email", MaxLength = 150 })
+				@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+			</div>
+			@Html.HelpLabelFor(m => m.Email, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+			<div class="col-md-7">
+				@Html.PasswordFor(m => m.Password, new { @class = "form-control", MaxLength = 50 })
+				@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+			</div>
+			@Html.HelpLabelFor(m => m.Password, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(m => m.RememberMe, new { @class = "col-md-2 control-label" })
+			<div class="col-md-7">
+				@Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-controlx" })
+			</div>
+			@Html.HelpLabelFor(m => m.RememberMe, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<hr />
+	
+	<div class="form-actions row">
+		<div class="col-md-offset-2 col-md-7">
+			<input type="submit" value="Log in" class="btn btn-primary" />
+
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			@{
+				string linkText = string.Empty;
+				if (storeFront != null && !string.IsNullOrEmpty(storeFront.NavBarRegisterLinkText))
+				{
+					linkText = storeFront.AccountLoginRegisterLinkText;
+				}
+				else
+				{
+					linkText = "Sign-Up as a new user";
+				}
+
+				if (storeFront != null && storeFront.AccountLoginShowRegisterLink)
+				{
+					@Html.ActionLink(linkText, "Register", null, new { @class = "btn btn-warning" })
+					@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				}
+
+				@Html.ActionLink("Forgot your password?", "ForgotPassword", null, new { @class="btn btn-danger" } )
+			}
+		</div>
+	</div>
+}
+
 
 @section Scripts {
 	@Scripts.Render("~/bundles/jqueryval")

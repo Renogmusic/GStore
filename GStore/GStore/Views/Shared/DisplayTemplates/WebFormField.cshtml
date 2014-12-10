@@ -1,0 +1,86 @@
+﻿@model GStore.Models.WebFormField
+@using GStore.Models
+@using GStore.AppHtmlHelpers
+@using System.ComponentModel.DataAnnotations
+@{
+	int labelMdColspan = Model.WebForm.LabelMdColSpan;
+	int fieldMdColspan = Model.WebForm.FieldMdColSpan;
+	if (labelMdColspan < 1 || labelMdColspan > 11)
+	{
+		labelMdColspan = 3;
+	}
+	if (fieldMdColspan < 1 || fieldMdColspan > 11)
+	{
+		fieldMdColspan = 7;
+	}
+
+	string align = "title-align";
+}
+<div class="form-group @(align)">
+	@{
+		if (!string.IsNullOrEmpty(Model.HelpLabelTopText))
+		{
+			<label class="col-xs-12 col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) help-label help-label-top @(align)">@(Model.HelpLabelTopText)</label>
+		}
+	}
+	<label class="col-md-@(labelMdColspan) control-label @(align)">@(Model.LabelText)</label>
+	<div class="col-md-@(fieldMdColspan) @(align)">
+		@{
+			bool usedCustomDisplay = false;
+			switch (Model.DataType)
+			{
+				case DataType.CreditCard:
+					break;
+				case DataType.Currency:
+					break;
+				case DataType.Custom:
+					break;
+				case DataType.Date:
+					break;
+				case DataType.DateTime:
+					break;
+				case DataType.Duration:
+					break;
+				case DataType.EmailAddress:
+					break;
+				case DataType.Html:
+					break;
+				case DataType.ImageUrl:
+					break;
+				case DataType.MultilineText:
+					@Html.TextArea(Model.Name.ToHtmlAttribute(), null, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" })
+					usedCustomDisplay = true;
+					break;
+				case DataType.Password:
+					break;
+				case DataType.PhoneNumber:
+					break;
+				case DataType.PostalCode:
+					break;
+				case DataType.Text:
+					break;
+				case DataType.Time:
+					break;
+				case DataType.Upload:
+					break;
+				case DataType.Url:
+					break;
+				default:
+					break;
+			}
+
+			if (!usedCustomDisplay)
+			{
+				@Html.TextBox(Model.Name.ToHtmlAttribute(), null, htmlAttributes: new { @class = "form-control " + align })
+			}
+		}
+
+	</div>
+	@Html.ValidationMessage(Model.Name.ToHtmlAttribute(), new { @class = "text-danger row col-md-offset-" + labelMdColspan + " col-md-" + fieldMdColspan + " help-label " + align })
+	@{
+		if (!string.IsNullOrEmpty(Model.HelpLabelBottomText))
+		{
+			<label class="col-xs-12 col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) help-label help-label-bottom @(align)">@(Model.HelpLabelBottomText)</label>
+		}
+	}
+</div>

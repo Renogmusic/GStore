@@ -12,6 +12,15 @@ namespace GStore.Areas.SystemAdmin.Controllers
         // GET: SystemAdmin/SystemAdmin
         public ActionResult Index(int? clientId, int? storeFrontId)
         {
+			UserProfile profile = CurrentUserProfileOrNull;
+			if (profile != null)
+			{
+				profile.LastSystemAdminVisitDateTimeUtc = DateTime.UtcNow;
+				GStoreDb.UserProfiles.Update(profile);
+				GStoreDb.SaveChangesDirect();
+			}
+
+
 			bool hasErrorMessage = false;
 			Models.StoreFront storeFront = null;
 			try

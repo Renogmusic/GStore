@@ -48,6 +48,9 @@ else if (Model.ShowEditPageLink)
 		@Html.DisplayPageSection("Row3Col3", 10, "Row 3 Column 3", string.Empty, false, false)
 	</div>
 </div>
+
+@Html.DisplayPageForm()
+
 @if (Model.EditMode)
 {
 	@Html.Partial("_EditModeBottomPartial", Model)

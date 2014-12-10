@@ -66,6 +66,52 @@ namespace GStore.Exceptions
 	}
 
 	[Serializable]
+	public class WebFormInactiveException : WebFormNotFoundException
+	{
+		public WebFormInactiveException() { }
+		public WebFormInactiveException(string message, string url, StoreFront storeFront)
+			: base(message, url, storeFront)
+		{
+		}
+	}
+
+	[Serializable]
+	public class WebFormNotFoundException : ApplicationException
+	{
+		public WebFormNotFoundException() { }
+		public WebFormNotFoundException(string message, string url, StoreFront storeFront)
+			: base(message)
+		{
+			this.Url = url;
+			this.StoreFront = storeFront;
+		}
+
+		public string Url { get; protected set; }
+		public StoreFront StoreFront { get; protected set; }
+
+		public bool IsHomePage
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(Url))
+				{
+					return true;
+				}
+				if (Url.Trim(' ', '/', '\\').Length == 0)
+				{
+					return true;
+				}
+				return false;
+			}
+		}
+
+		protected WebFormNotFoundException(
+		  System.Runtime.Serialization.SerializationInfo info,
+		  System.Runtime.Serialization.StreamingContext context)
+			: base(info, context) { }
+	}
+
+	[Serializable]
 	public class NoMatchingBindingException : ApplicationException
 	{
 		public NoMatchingBindingException() { }

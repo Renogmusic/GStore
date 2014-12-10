@@ -1,0 +1,11 @@
+﻿@model GStore.Models.StoreFront
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@:'@(Model.Name)' [@(Model.StoreFrontId)] - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client))
+	}
+}

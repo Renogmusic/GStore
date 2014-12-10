@@ -69,7 +69,7 @@ namespace GStore
 			catch (Exception exInHandler)
 			{
 				string errorInHandler = exInHandler.Message;
-				throw exInHandler;
+				throw;
 			}
 		}
 	}

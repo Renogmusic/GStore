@@ -34,6 +34,9 @@ else if (Model.ShowEditPageLink)
 	GStore.Properties.Settings.AppDefaultLayoutName
 	@GStore.Properties.Settings.Current.AppDefaultLayoutName
 <br/>
+
+@Html.DisplayPageForm()
+
 @if (Model.EditMode)
 {
 	@Html.Partial("_EditModeBottomPartial", Model)

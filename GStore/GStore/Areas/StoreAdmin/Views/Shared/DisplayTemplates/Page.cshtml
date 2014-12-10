@@ -1,0 +1,11 @@
+﻿@model GStore.Models.Page
+@{
+	if (Model == null)
+	{
+		@:(GStore System Default)
+	}
+	else
+	{
+		@:'@Model.Name' [@(Model.PageId)] - @Html.DisplayFor(model => model.StoreFront)
+	}
+}

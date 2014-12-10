@@ -40,22 +40,22 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public bool EnablePageViewLog { get; set; }
 
 		[Required]
-		[Display(Name = "Client Name", Description = "Internal Name used on your reports and your administration pages")]
+		[Display(Name = "Client Name", Description = "Internal Name used on your reports and your administration pages. \nExample: Your Store Name")]
 		public string Name { get; set; }
 
 		[Display(Name = "Use SendGrid Email", Description = "Check this box to use a SendGrid Email account to send email. If not selected, email will be disabled.")]
 		public bool UseSendGridEmail { get; set; }
 
-		[Display(Name = "SendGrid Mail Account", Description = "SendGrid Account name for sending email from your web sites.")]
+		[Display(Name = "SendGrid Mail Account", Description = "SendGrid Account name for sending email from your web sites. \nExample: yoursendgridaccount")]
 		public string SendGridMailAccount { get; set; }
 
-		[Display(Name = "SendGrid From Email", Description = "FROM Email address for outgoing SendGrid email.")]
+		[Display(Name = "SendGrid From Email", Description = "FROM Email address for outgoing SendGrid email. \nExample: yourname@domain.com")]
 		public string SendGridMailFromEmail { get; set; }
 
-		[Display(Name = "SendGrid From Name", Description = "FROM Name for outgoing SendGrid email.")]
+		[Display(Name = "SendGrid From Name", Description = "FROM Name for outgoing SendGrid email. \nExample: John Doe at My Store Name")]
 		public string SendGridMailFromName { get; set; }
 
-		[Display(Name = "SendGrid Password", Description = "Password for SendGrid to transmit outgoing email.")]
+		[Display(Name = "SendGrid Password", Description = "Password for SendGrid to transmit outgoing email. \nExample: password12345")]
 		public string SendGridMailPassword { get; set; }
 
 		[Display(Name = "Use Twilio SMS Text", Description = "Check this box to use a Twilio account to send SMS Text messages.")]
@@ -66,11 +66,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		[Display(Name = "Twilio API Sid", Description = "Twilio API Key (from their web site) for sending Text Messages. \nExample: AC1234ccc1111dddd1111g121212c1111c")]
 		public string TwilioSid { get; set; }
-		
-		[Display(Name = "Twilio SMS From Email", Description = "Email used in signature used when sending Twilio SMS Messages")]
+
+		[Display(Name = "Twilio SMS From Email", Description = "Email used in signature used when sending Twilio SMS Messages. \nExample: yourname@domain.com")]
 		public string TwilioSmsFromEmail { get; set; }
 
-		[Display(Name = "Twilio SMS From Name", Description = "Name used in signature used when sending Twilio SMS Messages")]
+		[Display(Name = "Twilio SMS From Name", Description = "Name used in signature used when sending Twilio SMS Messages. \nExample: John Doe at My Store Name")]
 		public string TwilioSmsFromName { get; set; }
 
 		[Display(Name = "Twilio API Token", Description = "Twilio TOKEN (from their web site) for sending Text Messages. \nExample: 44c111c11fffffeedb111d111ebb1111")]

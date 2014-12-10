@@ -36,6 +36,8 @@ namespace GStore.Data.ListProvider
 		public IGStoreRepository<Models.UserProfile> UserProfiles { get { return new GenericGStoreListSourceRepository<Models.UserProfile>(); } }
 		public IGStoreRepository<Models.ValueList> ValueLists { get { return new GenericGStoreListSourceRepository<Models.ValueList>(); } }
 		public IGStoreRepository<Models.ValueListItem> ValueListItems { get { return new GenericGStoreListSourceRepository<Models.ValueListItem>(); } }
+		public IGStoreRepository<Models.WebForm> WebForms { get { return new GenericGStoreListSourceRepository<Models.WebForm>(); } }
+		public IGStoreRepository<Models.WebFormField> WebFormFields { get { return new GenericGStoreListSourceRepository<Models.WebFormField>(); } }
 	
 
 		public string UserName { get; set; }

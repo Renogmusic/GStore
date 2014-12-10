@@ -1,0 +1,409 @@
+﻿#NavBarTinyLogo {
+	height: 42px;
+	width: 42px;
+	display: inline-block;
+	vertical-align: text-top;
+	padding: -10px 0 0 0;
+	margin: -10px 0 0 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  border: 0;
+  overflow: scroll;
+}
+
+/*Original Bootstrap .table-responsive */
+/*
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  border: 1px solid #ddd;
+}
+*/
+
+#PoweredByGStoreLink {
+}
+
+#PoweredByGStoreLogo {
+	padding-bottom: 0.5em;
+}
+
+#SystemInfo {
+}
+
+	#SystemInfo .header {
+		text-align: right;
+		min-width: 20%;
+		padding: 10px;
+	}
+
+	#SystemInfo .data {
+		text-align: left;
+		padding: 10px;
+	}
+
+/* direct xs size - phone */
+@media (max-width: 767px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		overflow-x: scroll;
+		padding-bottom: 1.75em;
+		-ms-overflow-style: scrollbar;
+		overflow: auto;
+	}
+}
+
+/* direct sm small size - tablet */
+@media (min-width: 768px) and (max-width: 991px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct md size - landscape tablet */
+@media (min-width: 992px) and (max-width: 1199px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct lg size and up - desktop */
+@media (min-width: 1200px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+}
+
+/* direct additions for HDTV wide desktops */
+@media (min-width: 1900px) {
+}
+
+
+@media (min-width: 768px) {
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		width: auto;
+	}
+
+}
+
+@media (max-width: 767px) {
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-xs {
+		display: block;
+	}
+
+	.text-left-xs {
+		text-align: left;
+	}
+
+	.text-right-xs {
+		text-align: right;
+	}
+
+	.text-center-xs {
+		text-align: center;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-sm {
+		display: block;
+	}
+
+	.text-left-sm {
+		text-align: left;
+	}
+
+	.text-right-sm {
+		text-align: right;
+	}
+
+	.text-center-sm {
+		text-align: center;
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-md {
+		display: block;
+	}
+
+	.text-left-md {
+		text-align: left;
+	}
+
+	.text-right-md {
+		text-align: right;
+	}
+
+	.text-center-md {
+		text-align: center;
+	}
+}
+
+@media (min-width: 1200px) {
+	.block-lg {
+		display: block;
+	}
+
+	.text-left-lg {
+		text-align: left;
+	}
+
+	.text-right-lg {
+		text-align: right;
+	}
+
+	.text-center-lg {
+		text-align: center;
+	}
+}
+
+@media (min-width: 1900px) {
+	.body-content {
+		width: 1900px;
+	}
+
+	.container {
+		width: 1900px;
+	}
+}
+
+.block {
+	display: block;
+}
+
+.CategoryListImage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	min-height: 100px;
+	min-width: 100px;
+}
+
+.CategoryListImageLink {
+}
+
+.CategoryListTextLink {
+}
+
+.CategoryListContainer {
+	text-align: center;
+}
+
+body {
+	text-align: center;
+	/*padding-bottom: 20px;*/
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 3em;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea, help-label {
+	max-width: 700px;
+}
+
+@media (max-width: 767px)
+{
+	.form-group label.control-label
+	{
+		padding-top: 2.25em;
+	}
+
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		white-space: normal;
+	}
+
+	.dl-horizontal dd
+	{
+		white-space: normal;
+		padding-bottom: 3em;
+		font-weight: bold;
+	}
+}
+@media (min-width: 768px)
+{
+	.form-group label.control-label
+	{
+		padding-top: 3.25em;
+	}
+
+	.form-group label.help-label
+	{
+		padding-top: 1.0em;
+	}
+
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		text-align: right;
+		width: 45%;
+		display: inline-block;
+	}
+	.dl-horizontal dd
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		padding-bottom: 2em;
+		font-weight: bold;
+		text-align: left;
+		width: 53%;
+		display: inline-block;
+	}
+}
+
+.SysAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminEditPageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDetailsPageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDeletePageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminCreatePageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+.StoreAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminEditPageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminDetailsPageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminDeletePageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminCreatePageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+.form-group div
+{
+	text-align: left;
+}
+
+dd label.help-label, label.help-label
+{
+	font-weight: lighter;
+	font-style: oblique;
+}
+
+.bold
+{
+	font-weight: bolder;
+}
+
+div.sysadmin label.control-label
+{
+	padding-top: .7em;
+}
+
+.AccountTitle.jumbotron
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}

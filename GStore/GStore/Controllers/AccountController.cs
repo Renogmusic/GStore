@@ -87,7 +87,7 @@ namespace GStore.Controllers
 			}
 
 			ViewBag.ReturnUrl = returnUrl;
-			return View();
+			return View("Login");
 		}
 
 		private ApplicationSignInManager _signInManager;
@@ -171,6 +171,12 @@ namespace GStore.Controllers
 		public ActionResult Register()
 		{
 			return View();
+		}
+
+		[AllowAnonymous]
+		public ActionResult Unauthorized()
+		{
+			return View("Unauthorized");
 		}
 
 		//

@@ -1,0 +1,17 @@
+﻿@model GStore.Models.WebForm
+@using GStore.Data
+@if (Model == null)
+{
+	@:(no Web Form)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.WebFormId))]
+		@(isActiveDirect ? string.Empty : " [INACTIVE]")
+	</span>
+	@: - @(Html.DisplayFor(m => m.Client, "ClientNoLinks"))
+}

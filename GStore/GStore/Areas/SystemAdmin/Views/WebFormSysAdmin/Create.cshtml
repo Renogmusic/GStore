@@ -1,0 +1,175 @@
+﻿@model GStore.Models.WebForm
+@using GStore.AppHtmlHelpers
+@using GStore.Models
+@using GStore.Data
+@using (Html.BeginForm()) 
+{
+	SelectList clientList = ViewBag.ClientList as SelectList;
+	
+    @Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info title-align">
+			New Web Form
+		</h2>
+	</div>
+
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenAuditFields()
+		</div>
+	</div>
+
+    <div class="form-horizontal">
+		<div class="form-group">
+			@Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.DropDownList("ClientId", clientList, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+			</div>
+        </div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+			</div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FormHeaderHtml, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FormHeaderHtml, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FormHeaderHtml, "", new { @class = "text-danger" })
+			</div>
+        </div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.FormFooterBeforeSubmitHtml, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FormFooterBeforeSubmitHtml, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FormFooterBeforeSubmitHtml, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.FormFooterAfterSubmitHtml, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FormFooterAfterSubmitHtml, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FormFooterAfterSubmitHtml, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.DisplayTemplateName, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.DisplayTemplateName, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.DisplayTemplateName, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SubmitButtonText, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SubmitButtonText, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SubmitButtonText, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.SubmitButtonClass, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.SubmitButtonClass, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.SubmitButtonClass, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.LabelMdColSpan, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.LabelMdColSpan, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.LabelMdColSpan, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.FieldMdColSpan, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.FieldMdColSpan, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.FieldMdColSpan, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10 text-left">
+				@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+			</div>
+        </div>
+    </div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+}
+
+<hr />
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>

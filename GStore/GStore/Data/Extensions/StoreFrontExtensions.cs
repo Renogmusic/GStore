@@ -265,6 +265,12 @@ namespace GStore.Data
 				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
 				page = query.FirstOrDefault();
 			}
+			else if (page == null && urlLower.TrimStart('/').StartsWith("submitform"))
+			{
+				urlLower = "/" + urlLower.TrimStart('/').Substring(10).TrimStart('/');
+				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
+				page = query.FirstOrDefault();
+			}
 
 			if (throwErrorIfNotFound && page == null)
 			{
@@ -873,6 +879,128 @@ namespace GStore.Data
 			
 		}
 
+		public static bool ValidatePageUrl(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string url, int storeFrontId, int clientId, int? currentPageId)
+		{
+			string urlField = (controller.ModelState.ContainsKey("PageEditViewModel_Url") ? "PageEditViewModel_Url" : "Url");
+
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				string errorMessage = "Url is required \n Please enter a url starting with /";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			if (!url.StartsWith("/"))
+			{
+				string errorMessage = "Invalid Url: '" + url + "'. Url must start with a slash. Example / for home page or /Food";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			if (url.Contains(" "))
+			{
+				string errorMessage = "Invalid Url: '" + url + "'. Url Cannot have spaces. Be sure to remove spaces from Url. You may replace spaces with underscore _ ";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			if (url.Contains("?"))
+			{
+				string errorMessage = "Invalid Url: '" + url + "'. Url Cannot have a question Mark ? in it. You may might choose to replace it with an underscore _ or dash -";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			if (url.Contains('~') || url.Contains('|') || url.Contains(':') || url.Contains("*") || url.Contains('\"') || url.Contains('<') || url.Contains('>'))
+			{
+				string errorMessage = "Invalid Url: '" + url + "'. These characters are not allowed in Urls. ~ | : * \\ < > . You might choose to replace these characters with underscore or dash -";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			if (!System.Uri.IsWellFormedUriString("http://www.test.com" + url, UriKind.Absolute))
+			{
+				string errorMessage = "Invalid Url: '" + url + "'. Url is not a valid URL. Example: /food   or /food/page1";
+				controller.ModelState.AddModelError(urlField, errorMessage);
+				return false;
+			}
+
+			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
+			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Images", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "StoreAdmin", "SystemAdmin"};
+
+			foreach (string blockedUrl in blockedUrls)
+			{
+				if (trimUrl.StartsWith(blockedUrl.ToLower()))
+				{
+					string errorMessage = "Url '" + url + "' is invalid. Url cannot start with '" + blockedUrl + "' because the system already has built-in " + blockedUrl + " pages. \n Please choose a different url";
+					controller.ModelState.AddModelError(urlField, errorMessage);
+					return false;
+				}
+			}
+
+			if (Properties.Settings.Current.AppEnableStoresVirtualFolders)
+			{
+				if (trimUrl.StartsWith("stores"))
+				{
+					string errorMessage = "Url '" + url + "' is invalid. Url cannot start with 'Stores' because the system already has built-in Stores pages. \n Please choose a different url";
+					controller.ModelState.AddModelError(urlField, errorMessage);
+					return false;
+				}
+			}
+
+			Page conflict = db.Pages.Where(p => p.ClientId == clientId && p.StoreFrontId == storeFrontId && p.Url.ToLower() == trimUrl && (p.PageId != currentPageId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Url '" + url + "' is already in use for page '" + conflict.Name + "' [" + conflict.PageId + "] in Store Front '" + conflict.StoreFront.Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Url or change the conflicting page Url.";
+
+			controller.ModelState.AddModelError(urlField, errorConflictMessage);
+			return false;
+
+		}
+
+		public static Page CreatePage(this IGstoreDb db, Models.ViewModels.PageEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			Page page = db.Pages.Create();
+			page.StoreFrontId = storeFront.StoreFrontId;
+			page.ClientId = storeFront.ClientId;
+
+			page.BodyBottomScriptTag = viewModel.BodyBottomScriptTag;
+			page.BodyTopScriptTag = viewModel.BodyTopScriptTag;
+			page.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			page.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			page.IsPending = viewModel.IsPending;
+			page.MetaDescription = viewModel.MetaDescription;
+			page.MetaKeywords = viewModel.MetaKeywords;
+			page.MetaApplicationName = viewModel.MetaApplicationName;
+			page.MetaApplicationTileColor = viewModel.MetaApplicationTileColor;
+			page.Name = viewModel.Name;
+			page.Order = viewModel.Order;
+			page.PageTitle = viewModel.PageTitle;
+			page.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			page.ThemeId = viewModel.ThemeId;
+			page.Url = viewModel.Url;
+			page.PageTemplateId = viewModel.PageTemplateId;
+			page.WebFormId = viewModel.WebFormId;
+			page.WebFormProcessorType = viewModel.WebFormProcessorType;
+			page.WebFormProcessorTypeName = page.WebFormProcessorType.ToDisplayName();
+			page.WebFormEmailToAddress = viewModel.WebFormEmailToAddress;
+			page.WebFormEmailToName = viewModel.WebFormEmailToName;
+			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
+			page.WebFormThankYouTitle = viewModel.WebFormThankYouTitle;
+			page.WebFormThankYouMessage = viewModel.WebFormThankYouMessage;
+			page.UpdateAuditFields(userProfile);
+
+			db.Pages.Add(page);
+			db.SaveChanges();
+
+			return page;
+
+		}
+
 		public static Page UpdatePage(this IGstoreDb db, Models.ViewModels.PageEditViewModel viewModel, Controllers.BaseClass.BaseController controller, StoreFront storeFront, UserProfile userProfile)
 		{
 			//find existing record, update it
@@ -889,6 +1017,8 @@ namespace GStore.Data
 			page.IsPending = viewModel.IsPending;
 			page.MetaDescription = viewModel.MetaDescription;
 			page.MetaKeywords = viewModel.MetaKeywords;
+			page.MetaApplicationName = viewModel.MetaApplicationName;
+			page.MetaApplicationTileColor = viewModel.MetaApplicationTileColor;
 			page.Name = viewModel.Name;
 			page.Order = viewModel.Order;
 			page.PageTitle = viewModel.PageTitle;
@@ -903,6 +1033,15 @@ namespace GStore.Data
 				}
 				page.PageTemplateId = viewModel.PageTemplateId;
 			}
+
+			page.WebFormId = viewModel.WebFormId;
+			page.WebFormProcessorType = viewModel.WebFormProcessorType;
+			page.WebFormProcessorTypeName = page.WebFormProcessorType.ToDisplayName();
+			page.WebFormEmailToAddress = viewModel.WebFormEmailToAddress;
+			page.WebFormEmailToName = viewModel.WebFormEmailToName;
+			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
+			page.WebFormThankYouTitle = viewModel.WebFormThankYouTitle;
+			page.WebFormThankYouMessage = viewModel.WebFormThankYouMessage;
 
 			db.Pages.Update(page);
 			db.SaveChanges();

@@ -1,0 +1,171 @@
+﻿@model GStore.Models.WebForm
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+
+<style>
+	table th {
+		text-align: center;
+	}
+
+	table td {
+		text-align: center;
+	}
+</style>
+
+<h2 class="jumbotron SysAdminIndexPageTitle col-md-12">
+	Web Form Field Manager
+	<br /><small>Web Form: @Html.DisplayForModel("WebFormNoLinks")</small>
+</h2>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@using (Html.BeginForm("FieldFastAdd", "WebFormSysAdmin", FormMethod.Post))
+		{
+			@Html.ActionLink("OK", "Details", new { id = Model.WebFormId }, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Create a New Field", "FieldCreate", new { id = Model.WebFormId }, new { @class = "btn btn-info" })
+			@Html.AntiForgeryToken()
+			@Html.HiddenFor(model => model.WebFormId)
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@: Fast Add Value @Html.TextBox("StringValue")
+			<input type="submit" value="Add Value" class="btn btn-info" />
+		}
+	</div>
+</div>
+
+<hr />
+
+@if (Model.WebFormFields.Count() == 0)
+{
+	<h2 class="text-info">This Form is empty.</h2>
+	<h3 class="text-info">@Html.ActionLink("Click here to Create a New Field", "FieldCreate", new { id = Model.WebFormId }, new { @class = "btn btn-info" })</h3>
+}
+else
+{
+	GStore.Models.WebFormField firstRecord = Model.WebFormFields.First();
+	<div class="table-responsive">
+		<table class="table table-hover table-striped">
+			<tr>
+				<th>@Html.ActionSortLink("Default Sort", "FieldIndex", string.Empty)</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.WebFormFieldId, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Name, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Description, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.Order, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.DataTypeString, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLink("Status", "FieldIndex", "Status")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.IsPending, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.StartDateTimeUtc, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.EndDateTimeUtc, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreateDateTimeUtc, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.CreatedBy, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdateDateTimeUtc, "FieldIndex")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => firstRecord.UpdatedBy, "FieldIndex")
+				</th>
+				<th></th>
+			</tr>
+
+			@foreach (var item in Model.WebFormFields)
+		{
+			bool clientIsActive = item.Client.IsActiveDirect();
+			bool webFormIsActive = item.WebForm.IsActiveDirect();
+			bool webFormFieldIsActive = item.IsActiveDirect();
+			bool isAllActive = webFormFieldIsActive && webFormIsActive && clientIsActive;
+			string rowClass = (isAllActive ? "" : "text-warning");
+
+				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("FieldDetails", new { @id = item.WebFormFieldId }))');">
+					<td>
+						@Html.ActionLink("Details", "FieldDetails", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-success" })
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.WebFormFieldId)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Description)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Order)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.DataTypeString)
+					</td>
+					<td>
+						@if (webFormFieldIsActive)
+					{
+							<span class="text-success">Active</span>
+					}
+					else
+					{
+							<span class="text-warning"><strong>Inactive</strong></span>
+							<br />
+							@Html.ActionLink("Activate Web Form Item", "ActivateField", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-warning" });
+					}
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.IsPending)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.StartDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.EndDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.CreatedBy.UserId)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdateDateTimeUtc)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
+					</td>
+					<td>
+						<span style="white-space: nowrap">
+							@Html.ActionLink("Edit", "FieldEdit", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-warning" })
+							@Html.ActionLink("Delete", "FieldDelete", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-danger" })
+						</span>
+					</td>
+				</tr>
+		}
+
+		</table>
+	</div>
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-5 col-md-6">
+			@Html.ActionLink("OK", "Details", new { id = Model.WebFormId }, new { @class = "btn btn-default" })
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Create a New Field", "FieldCreate", new { id = Model.WebFormId }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

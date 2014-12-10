@@ -8,20 +8,23 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using GStore.AppHtmlHelpers;
+using GStore.Identity;
 
 namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 {
-	[Authorize(Roles="SystemAdmin")]
+	[AuthorizeSystemAdmin]
 	public class SystemAdminBaseController : GStore.Controllers.BaseClass.BaseController
 	{
 		public SystemAdminBaseController(IGstoreDb dbContext): base(dbContext)
 		{
+			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = false;
 			this._throwErrorIfStoreFrontNotFound = false;
 		}
 
 		public SystemAdminBaseController()
 		{
+			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = false;
 			this._throwErrorIfStoreFrontNotFound = false;
 		}
@@ -356,6 +359,20 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			return new SelectList(items, "Value", "Text");
 		}
 
+		protected SelectList StoreFrontSuccessPageList(int? clientId, int? storeFrontId)
+		{
+			List<SelectListItem> list = new List<SelectListItem>();
+			if (clientId.HasValue && storeFrontId.HasValue)
+			{
+				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
+				if (dbItems != null)
+				{
+					list.AddRange(dbItems);
+				}
+			}
+			return new SelectList(list, "Value", "Text");
+		}
+
 		protected SelectList StoreFrontErrorPageList(int? clientId, int? storeFrontId)
 		{
 			SelectListItem itemNone = new SelectListItem();
@@ -373,6 +390,27 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 			return new SelectList(list, "Value", "Text");
 		}
+
+		protected SelectList RegisterWebFormList(int? clientId, int? storeFrontId)
+		{
+
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Register Form)";
+
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+			if (clientId.HasValue && storeFrontId.HasValue)
+			{
+				var dbItems = RegisterWebFormListItems(clientId.Value, storeFrontId.Value);
+				if (dbItems != null)
+				{
+					list.AddRange(dbItems);
+				}
+			}
+			return new SelectList(list, "Value", "Text");
+		}
+
 
 		protected SelectList StoreFrontNotFoundPageList(int? clientId, int? storeFrontId)
 		{
@@ -393,6 +431,30 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 			return new SelectList(list, "Value", "Text");
 		}
+
+		protected IEnumerable<SelectListItem> RegisterWebFormListItems(int clientId, int storeFrontId)
+		{
+			List<SelectListItem> list = new List<SelectListItem>();
+
+			SelectListItem itemNone = new SelectListItem();
+			if (clientId == 0 || storeFrontId == 0)
+			{
+				return null;
+			}
+
+			IQueryable<WebForm> query = GStoreDb.WebForms.Where(pg => pg.ClientId == clientId);
+
+			IOrderedQueryable<WebForm> orderedQuery = query.ApplySort(null, null, null);
+			IEnumerable<SelectListItem> items = orderedQuery.Select(wf => new SelectListItem
+			{
+				Value = wf.WebFormId.ToString(),
+				Text = wf.Name + " [" + wf.WebFormId + "]"
+					+ " - Client '" + wf.Client.Name + "' [" + wf.Client.ClientId + "]"
+			});
+
+			return items;
+		}
+
 
 		protected IEnumerable<SelectListItem> StoreFrontPageListItems(int clientId, int storeFrontId)
 		{
