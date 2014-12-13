@@ -84,7 +84,7 @@ namespace GStore.Controllers.BaseClass
 				return HttpBadRequest("Form is inactive for page '" + page.Name + "' [" + page.PageId + "]");
 			}
 
-			if (FormProcessorExtensions.ProcessWebForm(this, page.WebForm, page, CurrentUserProfileOrNull, Request))
+			if (FormProcessorExtensions.ProcessWebForm(this.GStoreDb, this.ModelState, page.WebForm, page, CurrentUserProfileOrNull, Request, page.WebFormProcessorType))
 			{
 				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
 				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
@@ -92,7 +92,9 @@ namespace GStore.Controllers.BaseClass
 				messageBody = messageBody.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
 				messageTitle = messageTitle.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
 
-				AddUserMessage(messageTitle.ToHtml(), messageBody.ToHtmlLines(), UserMessageType.Success);
+				ModelState.Clear();
+
+				AddUserMessage(messageTitle.ToHtml(), messageBody, UserMessageType.Success);
 				if (page.WebFormSuccessPageId == null)
 				{
 					return Display();

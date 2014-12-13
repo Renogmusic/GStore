@@ -30,7 +30,7 @@ namespace GStore.Models
 		public string IconImageName { get; set; }
 
 		[Display(Name = "Data Type Id")]
-		public GStore.Data.GStoreAttributeDataType DataType { get; set; }
+		public GStore.Data.GStoreValueDataType DataType { get; set; }
 
 		[Display(Name = "Data Type")]
 		public string DataTypeText { get; set; }

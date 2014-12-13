@@ -34,5 +34,9 @@ namespace GStore.Models
 		[Display(Name = "Value List Items")]
 		public virtual ICollection<ValueListItem> ValueListItems { get; set; }
 
+		[Display(Name = "Web Form Fields")]
+		public virtual ICollection<WebFormField> WebFormFields { get; set; }
+
+
 	}
 }

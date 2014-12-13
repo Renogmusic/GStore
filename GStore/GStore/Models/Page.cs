@@ -67,6 +67,7 @@ namespace GStore.Models
 
 		[Display(Name = "Body Top Script Tag")]
 		[MaxLength(10000)]
+		[DataType(DataType.MultilineText)]
 		public string BodyTopScriptTag { get; set; }
 
 		[Display(Name = "Body Bottom Script Tag")]
@@ -89,16 +90,22 @@ namespace GStore.Models
 		[MaxLength(2000)]
 		public string WebFormThankYouMessage { get; set; }
 
-		[Display(Name = "Form Processor Type")]
+		[Display(Name = "Web Form Processor Type")]
 		public Data.WebFormProcessorType WebFormProcessorType { get; set; }
 
-		[Display(Name = "Form Processor Type Name")]
+		[Display(Name = "Web Form Processor Type Name")]
 		[MaxLength(100)]
 		public string WebFormProcessorTypeName { get; set; }
 
+		[Display(Name = "Web Form Save to Database")]
+		public bool WebFormSaveToDatabase { get; set; }
 
 		[Display(Name = "Web Form Success Page Id")]
 		public int? WebFormSuccessPageId { get; set; }
+
+		//[ForeignKey("WebFormSuccessPageId")]
+		//[Display(Name = "Web Form Success Page")]
+		//public virtual Page WebFormSuccessPage { get; set; }
 
 		[Display(Name = "Web Form Email To Address")]
 		[MaxLength(200)]
@@ -108,14 +115,11 @@ namespace GStore.Models
 		[MaxLength(200)]
 		public string WebFormEmailToName { get; set; }
 
-
-		//[ForeignKey("WebFormSuccessPageId")]
-		//[Display(Name = "Web Form Success Page")]
-		//public virtual Page WebFormSuccessPage { get; set; }
-
-
+		[Display(Name = "Sections")]
 		public virtual ICollection<PageSection> Sections { get; set; }
 
+		[Display(Name = "Web Form Responses")]
+		public virtual ICollection<WebFormResponse> WebFormResponses { get; set; }
 
 	}
 }

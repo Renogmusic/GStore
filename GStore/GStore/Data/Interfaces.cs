@@ -104,6 +104,8 @@ namespace GStore.Data
 		IGStoreRepository<Models.ValueListItem> ValueListItems { get; }
 		IGStoreRepository<Models.WebForm> WebForms { get; }
 		IGStoreRepository<Models.WebFormField> WebFormFields { get; }
+		IGStoreRepository<Models.WebFormFieldResponse> WebFormFieldResponses { get; }
+		IGStoreRepository<Models.WebFormResponse> WebFormResponses { get; }
 	}
 
 	/// <summary>

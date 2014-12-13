@@ -74,37 +74,50 @@
 			bool isActive = item.IsActiveBubble();
 			string rowClass = (isActive ? string.Empty : "text-warning");
 			
-			<tr class="@(rowClass)" onclick="GoToDetails(@(item.PageId));">
-				<td>@Html.ActionLink("Details", "Details", new { id = item.PageId }, new { @class = "btn btn-success" })</td>
-				<td><small>@(Html.DisplayFor(model => item.Order))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.PageId))</small></td>
-				<td>
-					<small class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
+			<tr class="@(rowClass)">
+				<td onclick="GoToDetails(@(item.PageId));">@Html.ActionLink("Details", "Details", new { id = item.PageId }, new { @class = "btn btn-success" })</td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.PageId))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));">
+					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
 						@(item.IsActiveDirect() ? "Active" : "Inactive")
-					</small>
+					</span>
+					<br/>
+						@{
+							if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit))
+							{
+								@Html.ActionLink("Activation", "Edit", new { id = item.PageId, Tab = "Activation" }, new { @class = "" })
+							}
+							else if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_View))
+							{
+								@Html.ActionLink("Activation", "Details", new { id = item.PageId, Tab = "Activation" }, new { @class = "" })
+							}
+						}
 				</td>
-				<td><small>@(Html.DisplayFor(model => item.Name))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.PageTitle))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.PageTitle))</small></td>
 				<td>
 					<small>
-						@(Html.DisplayFor(model => item.Url))
+						<span onclick="GoToDetails(@(item.PageId));">
+							@(Html.DisplayFor(model => item.Url))
+						</span>
 						@{
 							if (isActive)
 							{
-								@:<br /><a target="_blank" href="@(Html.Raw(item.UrlResolved(Url)))">View Page</a>
+								@:<br /><a target="_blank" onclick="return true;" href="@(Html.Raw(item.UrlResolved(Url)))">View Page</a>
 								if (userCanEdit)
 								{
-									<br /><a target="_blank" href="Edit/@(Html.Raw(item.UrlResolved(Url)))">Edit Content</a>
+									<br /><a target="_blank" onclick="return true;" href="~/Edit@(Html.Raw(item.UrlResolved(Url)))?Tab=Content">Edit Content</a>
 								}
 							}
 						}
 					</small>
 				</td>
-				<td><small>@(Html.DisplayFor(model => item.PageTemplate))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.Theme))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.WebForm))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
-				<td><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.PageTemplate))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.Theme))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.WebForm))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
 				<td>
 					@{
 			if (userCanEdit)

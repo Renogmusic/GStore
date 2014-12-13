@@ -68,6 +68,11 @@ namespace GStore.Models
 		[Display(Name = "Web Form Fields")]
 		public virtual ICollection<WebFormField> WebFormFields { get; set; }
 
+		[Display(Name = "Web Form Responses")]
+		public virtual ICollection<WebFormResponse> WebFormResponses { get; set; }
+
+		[Display(Name = "Pages")]
 		public virtual ICollection<Page> Pages { get; set; }
+
 	}
 }

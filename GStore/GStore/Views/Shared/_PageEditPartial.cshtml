@@ -1,5 +1,7 @@
 ﻿@model GStore.Models.ViewModels.PageEditViewModel
 @using GStore.AppHtmlHelpers
+@using GStore.Data
+
 @{
 	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
 	List<SelectListItem> themeList = Model.ThemeSelectList;
@@ -462,6 +464,17 @@
 			</div>
 
 			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormSaveToDatabase, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormSaveToDatabase, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "control-label col-md-3" })
 				<div class="col-md-9 text-left">
 					@Html.EditorFor(model => model.WebFormThankYouTitle, new { htmlAttributes = new { @class = "form-control" } })
@@ -475,9 +488,10 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.WebFormThankYouMessage, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.TextAreaFor(model => model.WebFormThankYouMessage, new { id="WebFormThankYouMessage", @class = "form-control" } )
 					@Html.ValidationMessageFor(model => model.WebFormThankYouMessage, "", new { @class = "text-danger" })
 				</div>
+				<script>CKEDITOR.replace('WebFormThankYouMessage');</script>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>
@@ -545,14 +559,23 @@
 			<h4 class="col-md-offset-3 col-md-9 text-warning">
 				Warning: editing these values incorrectly will make this page disappear from your site and only be editable from the Store Admin Menu.<br />
 				If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br/>
-				If you are unsure what to do, click the "Make It Active For Me" button to turn the page on with default values.
+				If you are unsure what to do, click the "Make It Active Now" button to turn the page on with default values.
 			</h4>
 			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
-			<p class="col-md-offset-3 col-md-9">
-				Current UTC Time: @(DateTime.UtcNow.ToString())
-				<br />
-				<input type="button" id="MakeItActiveButton" onclick="MakeItActive();" class="btn btn-success" value="Make it Active for me" />
-			</p>
+			<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+
+			<div class="form-group">
+				<label class="text-right control-label col-md-3">Status</label>
+				<div class="col-md-9 text-left">
+					<p>
+						<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
+						<input type="button" id="MakeItActiveButton" onclick="MakeItActive();" class="btn btn-sm btn-success" value="Make it Active Now" />
+					</p>
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-3" })

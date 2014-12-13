@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.ViewModels.RegisterViewModel
 @using GStore.AppHtmlHelpers
+@using GStore.Data
 @using GStore.Models
 @using GStore.Models.ViewModels
 @{
@@ -96,6 +97,11 @@
 		</div>
 	</div>
 
+	if ((storeFront != null) && (storeFront.RegisterWebForm != null) && storeFront.RegisterWebForm.IsActiveBubble())
+	{
+		@Html.Partial("_RegisterWebFormFieldsPartial", Model);
+	}
+	
 	<div class="row">
 		<div class="form-actions row col-md-offset-2 col-md-7">
 			@{

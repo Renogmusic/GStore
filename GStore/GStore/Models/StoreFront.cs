@@ -215,9 +215,6 @@ namespace GStore.Models
 		[Display(Name = "Registered Notify Id")]
 		public int RegisteredNotify_UserProfileId { get; set; }
 
-		/// <summary>
-		/// File Not Found 404 Store Error Page or null if none (use system default 404 page)
-		/// </summary>
 		[ForeignKey("Register_WebFormId")]
 		[Display(Name = "Register Web Form")]
 		public virtual WebForm RegisterWebForm { get; set; }
@@ -248,8 +245,10 @@ namespace GStore.Models
 		[Display(Name = "Nav Bar Items")]
 		public virtual ICollection<NavBarItem> NavBarItems { get; set; }
 
+		[Display(Name = "Pages")]
 		public virtual ICollection<Page> Pages { get; set; }
 
+		[Display(Name = "Products")]
 		public virtual ICollection<Product> Products { get; set; }
 
 		[Display(Name = "Product Categories")]
@@ -261,8 +260,11 @@ namespace GStore.Models
 		[Display(Name = "User Profiles")]
 		public virtual ICollection<UserProfile> UserProfiles { get; set; }
 
+		[Display(Name = "Notifications")]
 		public virtual ICollection<Notification> Notifications { get; set; }
 
+		[Display(Name = "Web Form Responses")]
+		public virtual ICollection<WebFormResponse> WebFormResponses { get; set; }
 
 	}
 }

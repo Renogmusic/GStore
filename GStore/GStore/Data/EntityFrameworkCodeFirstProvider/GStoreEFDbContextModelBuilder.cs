@@ -76,6 +76,42 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				.HasForeignKey(fk => fk.WelcomePerson_UserProfileId)
 				.WillCascadeOnDelete(false);
 
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.AccountTheme)
+				.WithMany(u => u.AccountStoreFronts)
+				.HasForeignKey(fk => fk.AccountThemeId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.AdminTheme)
+				.WithMany(u => u.AdminStoreFronts)
+				.HasForeignKey(fk => fk.AdminThemeId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.CatalogTheme)
+				.WithMany(u => u.CatalogStoreFronts)
+				.HasForeignKey(fk => fk.CatalogThemeId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.DefaultNewPageTheme)
+				.WithMany(u => u.DefaultNewPageStoreFronts)
+				.HasForeignKey(fk => fk.DefaultNewPageThemeId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.NotificationsTheme)
+				.WithMany(u => u.NotificationsStoreFronts)
+				.HasForeignKey(fk => fk.NotificationsThemeId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<StoreFront>()
+				.HasRequired(s => s.ProfileTheme)
+				.WithMany(u => u.ProfileStoreFronts)
+				.HasForeignKey(fk => fk.ProfileThemeId)
+				.WillCascadeOnDelete(false);
+
 			modelBuilder.Entity<Page>()
 				.HasRequired(pg => pg.StoreFront)
 				.WithMany(sf => sf.Pages)

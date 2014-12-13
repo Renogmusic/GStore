@@ -56,10 +56,16 @@ namespace GStore.Data
 			storeDb.UserName = adminProfile.UserName;
 			storeDb.CachedUserProfile = adminProfile;
 
+			if (storeDb.Clients.IsEmpty())
+			{
+				Client newClient = storeDb.CreateSeedClient("New Company", "StarterClient");
+			}
+			Client firstClient = storeDb.Clients.All().First();
+
 			string virtualPathToThemes = "~/Content/Server/Themes";
 			if (storeDb.Themes.IsEmpty())
 			{
-				storeDb.CreateSeedThemes(virtualPathToThemes);
+				storeDb.CreateSeedThemes(virtualPathToThemes, firstClient);
 			}
 			if (storeDb.Themes.IsEmpty())
 			{
@@ -74,12 +80,6 @@ namespace GStore.Data
 				int randomThemeIndex = rndNumber.Next(1, themeCount);
 				selectedTheme = storeDb.Themes.All().OrderBy(t => t.Order).Skip(randomThemeIndex - 1).First();
 			}
-
-			if (storeDb.Clients.IsEmpty())
-			{
-				Client newClient = storeDb.CreateSeedClient("New Company", "StarterClient");
-			}
-			Client firstClient = storeDb.Clients.All().First();
 
 			if (storeDb.StoreFronts.IsEmpty())
 			{
@@ -98,7 +98,7 @@ namespace GStore.Data
 
 			if (storeDb.PageTemplates.IsEmpty())
 			{
-				PageTemplate newPageTemplate = storeDb.CreateSeedPageTemplate(layout + " Template", layout, pageTemplateViewName);
+				PageTemplate newPageTemplate = storeDb.CreateSeedPageTemplate(layout + " Template", layout, pageTemplateViewName, firstClient);
 			}
 
 			PageTemplate firstPageTemplate = storeDb.PageTemplates.All().First();
@@ -223,7 +223,7 @@ namespace GStore.Data
 			return profile;
 		}
 
-		public static void CreateSeedThemes(this IGstoreDb storeDb, string virtualPath)
+		public static void CreateSeedThemes(this IGstoreDb storeDb, string virtualPath, Client client)
 		{
 			string path = string.Empty;
 			if (HttpContext.Current == null)
@@ -251,6 +251,8 @@ namespace GStore.Data
 				theme.IsPending = false;
 				theme.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 				theme.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+				theme.Client = client;
+				theme.ClientId = client.ClientId;
 
 				storeDb.Themes.Add(theme);
 			}
@@ -528,7 +530,7 @@ namespace GStore.Data
 			return storeBinding;
 		}
 
-		public static PageTemplate CreateSeedPageTemplate(this IGstoreDb storeDb, string name, string layout, string viewName)
+		public static PageTemplate CreateSeedPageTemplate(this IGstoreDb storeDb, string name, string layout, string viewName, Client client)
 		{
 			PageTemplate pageTemplate = storeDb.PageTemplates.Create();
 			pageTemplate.Name = "Auto-generated Page Template";
@@ -538,6 +540,8 @@ namespace GStore.Data
 			pageTemplate.IsPending = false;
 			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			pageTemplate.Client = client;
+			pageTemplate.ClientId = client.ClientId;
 			storeDb.PageTemplates.Add(pageTemplate);
 			storeDb.SaveChangesEx(true, false, false, false);
 
@@ -565,7 +569,7 @@ namespace GStore.Data
 			else
 			{
 				//no page templates in database, create a seed one
-				pageTemplate = db.CreateSeedPageTemplate(storeFront.DefaultNewPageLayoutName + " Template", storeFront.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultPageTemplateViewName);
+				pageTemplate = db.CreateSeedPageTemplate(storeFront.DefaultNewPageLayoutName + " Template", storeFront.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultPageTemplateViewName, storeFront.Client);
 			}
 
 			Page page = db.CreateSeedPage(storeFront.Name, storeFront.Name, "/", 1000, storeFront, pageTemplate);
@@ -587,6 +591,8 @@ namespace GStore.Data
 			Page page = storeDb.Pages.Create();
 			page.ClientId = storeFront.ClientId;
 			page.PageTemplateId = pageTemplate.PageTemplateId;
+			page.Theme = storeFront.DefaultNewPageTheme;
+			page.ThemeId = storeFront.DefaultNewPageThemeId;
 			page.Order = order;
 			page.Name = name;
 			page.PageTitle = pageTitle;

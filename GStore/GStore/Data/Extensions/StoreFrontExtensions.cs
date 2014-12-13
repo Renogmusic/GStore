@@ -436,6 +436,10 @@ namespace GStore.Data
 			notification.Importance = "Normal";
 			notification.Subject = "Welcome!";
 			notification.UrlHost = request.Url.Host;
+			notification.IsPending = false;
+			notification.StartDateTimeUtc = DateTime.UtcNow;
+			notification.EndDateTimeUtc = DateTime.UtcNow;
+
 			if (!request.Url.IsDefaultPort)
 			{
 				notification.UrlHost += ":" + request.Url.Port;
@@ -516,6 +520,10 @@ namespace GStore.Data
 				newUserNotify.Importance = "Normal";
 				newUserNotify.Subject = "New User Registered on " + storeFront.Name + " - " + newProfile.FullName + " <" + newProfile.Email + ">";
 				newUserNotify.UrlHost = request.Url.Host;
+				newUserNotify.IsPending = false;
+				newUserNotify.StartDateTimeUtc = DateTime.UtcNow;
+				newUserNotify.EndDateTimeUtc = DateTime.UtcNow;
+
 				if (!request.Url.IsDefaultPort)
 				{
 					newUserNotify.UrlHost += ":" + request.Url.Port;
@@ -550,6 +558,9 @@ namespace GStore.Data
 			notification.To = profile.FullName;
 			notification.Importance = "Low";
 			notification.Subject = "Login failure for " + request.Url.Host;
+			notification.IsPending = false;
+			notification.EndDateTimeUtc = DateTime.UtcNow;
+			notification.StartDateTimeUtc = DateTime.UtcNow;
 			notification.UrlHost = request.Url.Host;
 			if (!request.Url.IsDefaultPort)
 			{
@@ -987,6 +998,7 @@ namespace GStore.Data
 			page.WebFormId = viewModel.WebFormId;
 			page.WebFormProcessorType = viewModel.WebFormProcessorType;
 			page.WebFormProcessorTypeName = page.WebFormProcessorType.ToDisplayName();
+			page.WebFormSaveToDatabase = viewModel.WebFormSaveToDatabase;
 			page.WebFormEmailToAddress = viewModel.WebFormEmailToAddress;
 			page.WebFormEmailToName = viewModel.WebFormEmailToName;
 			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
@@ -1042,6 +1054,7 @@ namespace GStore.Data
 			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
 			page.WebFormThankYouTitle = viewModel.WebFormThankYouTitle;
 			page.WebFormThankYouMessage = viewModel.WebFormThankYouMessage;
+			page.WebFormSaveToDatabase = viewModel.WebFormSaveToDatabase;
 
 			db.Pages.Update(page);
 			db.SaveChanges();

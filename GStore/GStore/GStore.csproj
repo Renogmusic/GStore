@@ -284,31 +284,10 @@
     <Compile Include="Identity\AuthorizeGStoreAction.cs" />
     <Compile Include="Identity\AuthorizeSystemAdmin.cs" />
     <Compile Include="Identity\GStoreAction.cs" />
-    <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.cs" />
-    <Compile Include="Migrations\201412030922308_AddIsPendingToTemplates.Designer.cs">
-      <DependentUpon>201412030922308_AddIsPendingToTemplates.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412031630528_movethemes.cs" />
-    <Compile Include="Migrations\201412031630528_movethemes.Designer.cs">
-      <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412041035021_clientidforpagetemplateandtheme.cs" />
-    <Compile Include="Migrations\201412041035021_clientidforpagetemplateandtheme.Designer.cs">
-      <DependentUpon>201412041035021_clientidforpagetemplateandtheme.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412041051464_clientidforpagetemplatesection.cs" />
-    <Compile Include="Migrations\201412041051464_clientidforpagetemplatesection.Designer.cs">
-      <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412090254347_webformid.cs" />
-    <Compile Include="Migrations\201412090254347_webformid.Designer.cs">
-      <DependentUpon>201412090254347_webformid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201412090320558_webformid2.cs" />
-    <Compile Include="Migrations\201412090320558_webformid2.Designer.cs">
-      <DependentUpon>201412090320558_webformid2.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Models\BaseClasses\ClientRecordUserProfileOptional.cs" />
     <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
     <Compile Include="Models\ClientRoleAction.cs" />
     <Compile Include="Models\ClientRole.cs" />
     <Compile Include="Identity\GStoreAuthorizationExtensions.cs">
@@ -318,10 +297,12 @@
     <Compile Include="Data\Extensions\ClientExtensions.cs" />
     <Compile Include="Data\Extensions\PageExtensions.cs" />
     <Compile Include="Data\Extensions\UserProfileExtensions.cs" />
-    <Compile Include="Data\ProductCategoryAttributeDataType.cs" />
+    <Compile Include="Data\GStoreValueDataType.cs" />
     <Compile Include="Models\ProductCategoryAttribute.cs" />
     <Compile Include="Models\ViewModels\WebFormFieldEditViewModel.cs" />
     <Compile Include="Models\ViewModels\WebFormViewModel.cs" />
+    <Compile Include="Models\WebFormFieldResponse.cs" />
+    <Compile Include="Models\WebFormResponse.cs" />
     <Compile Include="Models\WebFormField.cs" />
     <Compile Include="Models\WebForm.cs" />
     <Compile Include="Models\ValueListItem.cs" />
@@ -342,7 +323,7 @@
     <Compile Include="Hubs\NotifyHub.cs" />
     <Compile Include="Models\BaseClasses\AuditFieldsAllRequired.cs" />
     <Compile Include="Models\BaseClasses\ClientRecord.cs" />
-    <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecord.cs" />
     <Compile Include="Exceptions\AppDefinedExceptions.cs" />
     <Compile Include="Data\Extensions\StoreFrontExtensions.cs" />
     <Compile Include="Data\Extensions\WhereIsActiveExtensions.cs" />
@@ -721,6 +702,9 @@
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Edit.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Details.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Delete.cshtml" />
+    <Content Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cd" />
+    <Content Include="Models\BaseClasses\StoreFrontDataValueRecord.cd" />
+    <Content Include="Models\BaseClasses\ClientRecordUserProfileOptional.cd" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1156,6 +1140,7 @@
     <Content Include="Views\Shared\DisplayTemplates\WebFormField.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\PageEditViewModel.cshtml" />
     <Content Include="Views\Shared\_PageDisplayPartial.cshtml" />
+    <Content Include="Views\Account\_RegisterWebFormFieldsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1172,26 +1157,6 @@
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Categories\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Products\" />
     <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Styles\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201412030922308_AddIsPendingToTemplates.resx">
-      <DependentUpon>201412030922308_AddIsPendingToTemplates.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412031630528_movethemes.resx">
-      <DependentUpon>201412031630528_movethemes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412041035021_clientidforpagetemplateandtheme.resx">
-      <DependentUpon>201412041035021_clientidforpagetemplateandtheme.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412041051464_clientidforpagetemplatesection.resx">
-      <DependentUpon>201412041051464_clientidforpagetemplatesection.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412090254347_webformid.resx">
-      <DependentUpon>201412090254347_webformid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201412090320558_webformid2.resx">
-      <DependentUpon>201412090320558_webformid2.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

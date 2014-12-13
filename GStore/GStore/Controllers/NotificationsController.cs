@@ -319,6 +319,10 @@ namespace GStore.Controllers
 				notification.NotificationLinks = linkCollection;
 			}
 
+			notification.IsPending = false;
+			notification.StartDateTimeUtc = DateTime.UtcNow;
+			notification.EndDateTimeUtc = DateTime.UtcNow;
+
 			GStoreDb.Notifications.Add(notification);
 			GStoreDb.SaveChanges();
 			AddUserMessage("Message sent!", "Message sent to " + notification.To.ToHtml(), AppHtmlHelpers.UserMessageType.Success);

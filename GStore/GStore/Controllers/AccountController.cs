@@ -186,11 +186,38 @@ namespace GStore.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> Register(RegisterViewModel model)
 		{
+			StoreFront storeFront = CurrentStoreFrontOrNull;
+			if ((storeFront != null) && (storeFront.RegisterWebForm != null) && storeFront.RegisterWebForm.IsActiveBubble())
+			{
+				FormProcessorExtensions.ValidateFields(this.ModelState, storeFront.RegisterWebForm, Request);
+			}
+
 			if (ModelState.IsValid)
 			{
 				var user = new Identity.AspNetIdentityUser(model.Email) { UserName = model.Email, Email = model.Email };
 				user.TwoFactorEnabled = Properties.Settings.Current.IdentityEnableTwoFactorAuth;
-				var result = await UserManager.CreateAsync(user, model.Password);
+				IdentityResult result = null;
+				try
+				{
+					result = await UserManager.CreateAsync(user, model.Password);
+				}
+				catch(System.Data.Entity.Validation.DbEntityValidationException exDbEx)
+				{
+					foreach (System.Data.Entity.Validation.DbEntityValidationResult valResult in exDbEx.EntityValidationErrors)
+					{
+						ICollection<System.Data.Entity.Validation.DbValidationError> valErrors = valResult.ValidationErrors;
+						foreach (System.Data.Entity.Validation.DbValidationError error in valErrors)
+						{
+							ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+						}
+					}
+					return View(model);
+				}
+				catch (Exception ex)
+				{
+					string error = ex.ToString();
+					throw;
+				}
 				if (result.Succeeded)
 				{
 					await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
@@ -199,7 +226,7 @@ namespace GStore.Controllers
 
 					await SendEmailConfirmationCode(user.Id);
 
-					Data.IGstoreDb ctx = GStoreDb.NewContext(user.UserName);
+					Data.IGstoreDb ctx = GStoreDb;
 					UserProfile newProfile = ctx.UserProfiles.Create();
 					newProfile.UserId = user.Id;
 					newProfile.UserName = user.UserName;
@@ -217,6 +244,17 @@ namespace GStore.Controllers
 					newProfile.ClientId = this.CurrentClientOrThrow.ClientId;
 					ctx.UserProfiles.Add(newProfile);
 					ctx.SaveChanges();
+
+					ctx.UserName = user.UserName;
+					ctx.CachedUserProfile = null;
+
+					if (CurrentStoreFrontOrThrow.RegisterWebForm != null)
+					{
+						if (CurrentStoreFrontOrThrow.RegisterWebForm.IsActiveBubble())
+						{
+							FormProcessorExtensions.ProcessWebForm(GStoreDb, this.ModelState, CurrentStoreFrontOrThrow.RegisterWebForm, null, CurrentUserProfileOrThrow, Request, WebFormProcessorType.RegisterUserFormProcessor);
+						}
+					}
 
 					ctx.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });

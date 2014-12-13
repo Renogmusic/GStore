@@ -126,7 +126,7 @@ namespace GStore.Data
 				webFormField.WebFormId = webForm.WebFormId;
 				webFormField.ClientId = webForm.ClientId;
 			}
-			webFormField.DataType = System.ComponentModel.DataAnnotations.DataType.Text;
+			webFormField.DataType = GStoreValueDataType.SingleLineText;
 			webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
 			webFormField.IsPending = false;
 			webFormField.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);

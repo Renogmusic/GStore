@@ -15,8 +15,27 @@
 		fieldMdColspan = 7;
 	}
 	string align = "title-align";
+
+	IOrderedQueryable<WebFormField> fields = Model.WebFormFields.AsQueryable().WhereIsActive().ApplySortDefault();
+
 }
 
+@if (fields.Count() > 0)
+{
+	if (fields.Any(f => f.DataType == GStoreValueDataType.Html))
+	{
+		<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+	}
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			if ($('input:text:first'))
+			{
+				$('input:text:first').focus();
+			}
+		})
+	</script>
+}
 @using (Html.BeginForm("SubmitForm", "Page"))
 {
 	@Html.AntiForgeryToken()
@@ -46,7 +65,6 @@
 
 	<div class="form-horizontal @(align)">
 		@{
-	IOrderedQueryable<WebFormField> fields = Model.WebFormFields.AsQueryable().WhereIsActive().ApplySortDefault();
 	foreach (WebFormField item in fields)
 	{
 		@Html.DisplayFor(model => item)

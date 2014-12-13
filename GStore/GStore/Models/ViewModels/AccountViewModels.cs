@@ -84,13 +84,13 @@ namespace GStore.Models.ViewModels
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public string ConfirmPassword { get; set; }
 
-		[Display(Name = "Check this box to get an Email when this site is updated", Description = "Check this box to get Email when this site is updated")]
+		[Display(Name = "Email me Site Updates", Description = "Check this box to get Email when this site is updated")]
 		public bool NotifyOfSiteUpdates { get; set; }
 
-		[Display(Name = "Check this box to get Emails about my work in progress", Description = "Check this box to get Emails when I release updates")]
+		[Display(Name = "Send Me More Info", Description = "Check this box if you would like more information sent to you by Email")]
 		public bool SendMeMoreInfo { get; set; }
 
-		[Display(Name = "Comments, feedback, or anything interesting", Description = "Enter anything here you would like to share")]
+		[Display(Name = "Leave us a note", Description = "Leave us a message to help us assist you better")]
 		[DataType(DataType.MultilineText)]
 		public string SignupNotes { get; set; }
 

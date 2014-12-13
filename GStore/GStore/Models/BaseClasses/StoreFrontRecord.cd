@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GStore.Models.BaseClasses.StoreFrontRecord">
-    <Position X="12" Y="11.5" Width="1.5" />
+    <Position X="12.25" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.ClientRecord">
-    <Position X="11.75" Y="9.25" Width="1.75" />
+    <Position X="12" Y="9.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.AuditFieldsAllRequired">
-    <Position X="11.5" Y="6" Width="2.25" />
+    <Position X="11.75" Y="6" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
       <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.GStoreEntity">
-    <Position X="11.75" Y="3.75" Width="1.75" />
+    <Position X="12" Y="3.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
@@ -50,42 +50,42 @@
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Page">
-    <Position X="8.5" Y="13.75" Width="2" />
+    <Position X="8.5" Y="13.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>QAECAAAAAAAjAAAQAAAAAAQAAQABIAAACUAAAABAAAA=</HashCode>
+      <HashCode>QAECAAAAAAAjABAQAAAAAIQAAQARIIAAKUAJAABQEEA=</HashCode>
       <FileName>Models\Page.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.PageSection">
-    <Position X="11.25" Y="13.75" Width="2.25" />
+    <Position X="11.75" Y="13.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>CAECAAAAAAAQAAACAAQAAAAACQAAEAAAAAAAAIAAQAA=</HashCode>
       <FileName>Models\PageSection.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Product">
-    <Position X="14.25" Y="13.75" Width="1.75" />
+    <Position X="14.75" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>UAEAAAAAAAAAAAAAAAAAAAQCAAAABAAAAAACAABACAA=</HashCode>
       <FileName>Models\Product.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ProductCategory">
-    <Position X="16.75" Y="13.75" Width="2.5" />
+    <Position X="17.25" Y="13.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AgEAAAEAAAAgAAAAAQAAQAQCAABABIAAAAASAAAgAAQ=</HashCode>
+      <HashCode>AgEAAAEAAAAgAAAAAQAAQAQCAABAJIAAAAASAAAgAAQ=</HashCode>
       <FileName>Models\ProductCategory.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ProductCategoryAttribute">
-    <Position X="20" Y="13.75" Width="2.25" />
+    <Position X="20.5" Y="13.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAEAAQAAEAIAAgAAAABAAgQBAAAAACAAAAASAAAAEAA=</HashCode>
       <FileName>Models\ProductCategoryAttribute.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.StoreBinding">
-    <Position X="23" Y="13.75" Width="1.75" />
+    <Position X="23.5" Y="13.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>gAEAAIAAAAAAAAAAAAAAAAAACCAIAAAAAAAAAAAAAgA=</HashCode>
       <FileName>Models\StoreBinding.cs</FileName>

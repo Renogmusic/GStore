@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GStore.Models.BaseClasses.StoreFrontRecordUserProfileOptional">
+    <Position X="6.5" Y="8.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontRecordUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientRecordUserProfileOptional">
+    <Position X="6.5" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecordUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.AuditFieldsUserProfileOptional">
+    <Position X="6.5" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.GStoreEntity">
+    <Position X="6.75" Y="0.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.StoreFrontDataValueRecord">
+    <Position X="4.75" Y="10.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CgAAAAAEAAYAAAAAAEAAAAFAAAAAAAgAAAAQAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontDataValueRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.WebFormResponse">
+    <Position X="8" Y="10.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAIAAAAQAAABAIAAAAAAAAAQAIIAAAAAAQAAAAA=</HashCode>
+      <FileName>Models\WebFormResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GStore.Data;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -53,11 +54,18 @@ namespace GStore.Models
 
 		[Required]
 		[Display(Name = "Data Type")]
-		public DataType DataType { get; set; }
+		public GStoreValueDataType DataType { get; set; }
 
 		[MaxLength(50)]
 		[Display(Name = "Data Type String")]
 		public string DataTypeString { get; set; }
+
+		[Display(Name = "Value List Id")]
+		public int? ValueListId { get; set; }
+
+		[ForeignKey("ValueListId")]
+		[Display(Name = "Value List")]
+		public virtual ValueList ValueList { get; set; }
 
 		[Display(Name = "Text Area Rows")]
 		public int? TextAreaRows { get; set; }
@@ -65,5 +73,7 @@ namespace GStore.Models
 		[Display(Name = "Text Area Columns")]
 		public int? TextAreaColumns { get; set; }
 
+		[Display(Name = "Web Form Field Responses")]
+		public virtual ICollection<WebFormFieldResponse> WebFormFieldResponses { get; set; }
 	}
 }

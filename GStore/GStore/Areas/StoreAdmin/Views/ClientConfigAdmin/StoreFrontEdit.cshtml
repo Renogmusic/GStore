@@ -1,6 +1,8 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigViewModel
 @using GStore.AppHtmlHelpers
 @using GStore.Identity
+
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
 @using (Html.BeginForm())
 {
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
@@ -145,7 +147,7 @@
 				<div class="form-group">
 					@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.EditorFor(model => model.BodyTopScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.TextAreaFor(model => model.BodyTopScriptTag, new { @class = "form-control", rows = 8 })
 						@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
 					</div>
 					@Html.HelpLabelFor(model => model.BodyTopScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
@@ -154,7 +156,7 @@
 				<div class="form-group">
 					@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.EditorFor(model => model.BodyBottomScriptTag, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.TextAreaFor(model => model.BodyBottomScriptTag, new { @class = "form-control", rows=8 })
 						@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
 					</div>
 					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
@@ -336,10 +338,12 @@
 				<div class="form-group">
 					@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.EditorFor(model => model.HtmlFooter, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.TextAreaFor(model => model.HtmlFooter, new { @class = "form-control" } )
+						<script>CKEDITOR.replace('@(Html.IdFor(model => model.HtmlFooter))');</script>
 						@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
 					</div>
 					@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+
 				</div>
 
 				<div class="form-group">

@@ -1,6 +1,7 @@
 ﻿@model GStore.Models.WebFormField
 @using GStore.Models
 @using GStore.AppHtmlHelpers
+@using GStore.Data
 @using System.ComponentModel.DataAnnotations
 @{
 	int labelMdColspan = Model.WebForm.LabelMdColSpan;
@@ -12,6 +13,13 @@
 	if (fieldMdColspan < 1 || fieldMdColspan > 11)
 	{
 		fieldMdColspan = 7;
+	}
+
+	string prefix = Html.NameForModel().ToHtmlString();
+	string textValue = (Html.GetModelStateValue(prefix + Model.Name.ToHtmlAttribute(), typeof(string)) ?? string.Empty).ToString();
+	if (string.IsNullOrEmpty(textValue))
+	{
+		
 	}
 
 	string align = "title-align";
@@ -27,43 +35,57 @@
 	<div class="col-md-@(fieldMdColspan) @(align)">
 		@{
 			bool usedCustomDisplay = false;
+
 			switch (Model.DataType)
 			{
-				case DataType.CreditCard:
+				case GStoreValueDataType.YesNo:
 					break;
-				case DataType.Currency:
+				case GStoreValueDataType.Integer:
 					break;
-				case DataType.Custom:
+				case GStoreValueDataType.Decimal:
 					break;
-				case DataType.Date:
+				case GStoreValueDataType.IntegerRange:
 					break;
-				case DataType.DateTime:
+				case GStoreValueDataType.DecimalRange:
 					break;
-				case DataType.Duration:
+				case GStoreValueDataType.SingleLineText:
 					break;
-				case DataType.EmailAddress:
-					break;
-				case DataType.Html:
-					break;
-				case DataType.ImageUrl:
-					break;
-				case DataType.MultilineText:
-					@Html.TextArea(Model.Name.ToHtmlAttribute(), null, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" })
+				case GStoreValueDataType.MultiLineText:
+
+					int rows = 10;
+					if ((Model.TextAreaRows.HasValue) && (Model.TextAreaRows.Value > 0))
+					{
+						rows = Model.TextAreaRows.Value;
+					}
+					int cols = 40;
+					if ((Model.TextAreaColumns.HasValue) && (Model.TextAreaColumns.Value > 10))
+					{
+						rows = Model.TextAreaColumns.Value;
+					}
+					@Html.TextArea(Model.Name.ToHtmlAttribute(), textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
 					usedCustomDisplay = true;
 					break;
-				case DataType.Password:
+				case GStoreValueDataType.Html:
+				@(Html.TextArea(Model.Name.ToHtmlAttribute(), textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
+					usedCustomDisplay = true;
 					break;
-				case DataType.PhoneNumber:
+				case GStoreValueDataType.ValueListItemDropdown:
 					break;
-				case DataType.PostalCode:
+				case GStoreValueDataType.ValueListItemRadio:
 					break;
-				case DataType.Text:
+				case GStoreValueDataType.ValueListItemMultiCheckbox:
 					break;
-				case DataType.Time:
+				case GStoreValueDataType.ExternalLinkToPage:
 					break;
-				case DataType.Upload:
+				case GStoreValueDataType.ExternalLinkToImage:
 					break;
-				case DataType.Url:
+				case GStoreValueDataType.InternalLinkToAction:
+					break;
+				case GStoreValueDataType.InternalLinkToPageById:
+					break;
+				case GStoreValueDataType.InternalLinkToPageByUrl:
+					break;
+				case GStoreValueDataType.InternalLinkToImageByUrl:
 					break;
 				default:
 					break;
@@ -71,7 +93,8 @@
 
 			if (!usedCustomDisplay)
 			{
-				@Html.TextBox(Model.Name.ToHtmlAttribute(), null, htmlAttributes: new { @class = "form-control " + align })
+		<!-- Default text box -->
+				@Html.TextBox(Model.Name.ToHtmlAttribute(), textValue, htmlAttributes: new { @class = "form-control " + align })
 			}
 		}
 

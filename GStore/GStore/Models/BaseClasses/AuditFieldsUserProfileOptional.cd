@@ -1,31 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="GStore.Models.BaseClasses.AuditFieldsUserProfileOptional">
-    <Position X="8.5" Y="3.5" Width="2.25" />
+    <Position X="9" Y="3.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
       <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.GStoreEntity">
-    <Position X="8.75" Y="1.25" Width="1.75" />
+    <Position X="9.25" Y="1.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.BaseClasses.EventLogBase">
-    <Position X="6.75" Y="6.75" Width="2" />
+    <Position X="8.5" Y="6.75" Width="2" />
     <TypeIdentifier>
       <HashCode>gAAAEAAAAwgQAICAhIAAAApBAAAAAAABCQAFIRAAAAA=</HashCode>
       <FileName>Models\BaseClasses\EventLogBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.UserProfile">
-    <Position X="9.5" Y="6.75" Width="3.25" />
+    <Position X="11.25" Y="6.75" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>SAMAEiAAgCBgAJAAhEIAAAoQAAAAAAEMAQAACACIIAQ=</HashCode>
+      <HashCode>SAMAEiAAgCBgAJAAhEIAAAoQAAAAAAEMAQAACQiIIAQ=</HashCode>
       <FileName>Models\UserProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStore.Models.BaseClasses.ClientRecordUserProfileOptional">
+    <Position X="5.5" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecordUserProfileOptional.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9.75" />

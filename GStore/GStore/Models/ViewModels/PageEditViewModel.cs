@@ -72,6 +72,7 @@ namespace GStore.Models.ViewModels
 			this.WebFormThankYouMessage = page.WebFormThankYouMessage;
 			this.WebFormProcessorType = page.WebFormProcessorType;
 			this.WebFormProcessorTypeName = page.WebFormProcessorTypeName;
+			this.WebFormSaveToDatabase = page.WebFormSaveToDatabase;
 
 			this.PageTemplateSelectList = page.Client.PageTemplates.AsQueryable().ToSelectList(page.PageTemplateId).ToList();
 			this.ThemeSelectList = page.Client.Themes.AsQueryable().ToSelectList(page.ThemeId).ToList();
@@ -79,6 +80,7 @@ namespace GStore.Models.ViewModels
 			this.WebFormSuccessPageSelectList = page.StoreFront.Pages.AsQueryable().ToSelectListWithNull(page.WebFormSuccessPageId).ToList();
 
 			this.IsActiveBubble = page.IsActiveBubble();
+			this.IsActiveDirect = page.IsActiveDirect();
 		}
 
 		public void FillListsIfEmpty(Client client, StoreFront storeFront)
@@ -117,9 +119,13 @@ namespace GStore.Models.ViewModels
 		[Editable(false)]
 		public bool IsCreatePage { get; set; }
 
-		[Display(Name = "Page Is Active")]
+		[Display(Name = "Page Is Active (including store front)")]
 		[Editable(false)]
 		public bool IsActiveBubble { get; set; }
+
+		[Display(Name = "Page Is Active")]
+		[Editable(false)]
+		public bool IsActiveDirect { get; set; }
 
 		[Display(Name = "Active Tab")]
 		[Editable(false)]
@@ -214,6 +220,9 @@ namespace GStore.Models.ViewModels
 		[MaxLength(100)]
 		public string WebFormProcessorTypeName { get; set; }
 
+		[Display(Name = "Web Form Save to Database", Description = "Check this box to automatically save form results to the database. \nIf unchecked, form will not be saved to the database..")]
+		public bool WebFormSaveToDatabase { get; set; }
+
 		[Display(Name = "Web Form Success Page", Description = "Page to send the user to after they submit the form. Leave blank to re-load this page.")]
 		public int? WebFormSuccessPageId { get; set; }
 
@@ -232,6 +241,7 @@ namespace GStore.Models.ViewModels
 		[AllowHtml]
 		[Display(Name = "Web Form Thank You Message Body", Description = "Message Body for Form Submit Thank You Message. HTML and Variables allowed.")]
 		[MaxLength(2000)]
+		[DataType(DataType.Html)]
 		public string WebFormThankYouMessage { get; set; }
 
 		[Display(Name = "Index", Description = "Internal Index number used to sort this page in reports and lists on this site")]
@@ -266,13 +276,13 @@ namespace GStore.Models.ViewModels
 		public string MetaApplicationTileColor { get; set; }
 
 		[AllowHtml]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
+		[DataType(DataType.MultilineText)]
 		[Display(Name = "Page Top Script Tags", Description = "Scripts tags on the top portion of the page. Be careful here because bad HTML here can cause problems with your page. Tags should include the <script> and </script> elements.\nLeave blank to use your Store Front default.")]
 		[MaxLength(10000)]
 		public string BodyTopScriptTag { get; set; }
 
 		[AllowHtml]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
+		[DataType(DataType.MultilineText)]
 		[Display(Name = "Page Bottom Script Tags", Description = "Scripts tags on the bottom portion of the page. Be careful here because bad HTML here can cause problems with your page. Tags should include the <script> and </script> elements.\nLeave blank to use your Store Front default.")]
 		[MaxLength(10000)]
 		public string BodyBottomScriptTag { get; set; }
@@ -284,12 +294,12 @@ namespace GStore.Models.ViewModels
 		public bool IsPending { get; set; }
 
 		[Required]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.DateTime)]
+		[DataType(DataType.DateTime)]
 		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this page to be ACTIVE on.\nIf this date is in the future, your page will be inactive and can only be edited in the Store Admin section. \nExample: 1/1/2000 12:00 PM")]
 		public DateTime StartDateTimeUtc { get; set; }
 
 		[Required]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.DateTime)]
+		[DataType(DataType.DateTime)]
 		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this page to go INACTIVE on.\nIf this date is in the past, your page will be inactive and can only be edited in the Store Admin section. \nExample: 12/31/2199 11:59 PM")]
 		public DateTime EndDateTimeUtc { get; set; }
 

@@ -320,14 +320,15 @@
 			</div>
 
 			<div class="form-group">
-				@Html.LabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				@Html.LabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					@Html.EnumDropDownListFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "form-control", disabled = true, @readonly = "readonly" })
+					@Html.EditorFor(model => model.WebFormSaveToDatabase, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
 				</div>
 				<div class="row">
-					@Html.HelpLabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+					@Html.HelpLabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>
 			</div>
+
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "text-right control-label col-md-3" })
@@ -389,9 +390,21 @@
 			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
 
 			<div class="form-group">
+				<label class="text-right control-label col-md-3">Status</label>
+				<div class="col-md-9 text-left">
+					<p style="padding-top: 5px;">
+						<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
+					</p>
+					</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
 				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
