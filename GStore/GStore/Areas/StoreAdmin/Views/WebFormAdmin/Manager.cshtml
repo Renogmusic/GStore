@@ -1,0 +1,125 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormAdminManagerViewModel
+@using GStore.Models
+@using GStore.AppHtmlHelpers
+@using GStore.Data
+@using GStore.Identity
+@{
+
+	UserProfile profile = Html.CurrentUserProfile(true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.WebForms_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.WebForms_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.WebForms_Delete);
+
+}
+<script>
+	function GoToDetails(index)
+	{
+		urlStart = '@(Url.Action("Details", new { id = 9999 } ).ToMvcJavaScriptString())';
+		var url = urlStart.replace("9999", index);
+		GoToUrl(url);
+	}
+</script>
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminIndexPageTitle">
+		Web Form Manager
+		<br /><small>@(Html.DisplayNameFor(model => model.Client)) @Html.DisplayFor(model => model.Client)</small>
+	</h2>
+</div>
+
+@{
+	if (userCanCreate)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@Html.ActionLink("Create a New Web Form", "Create", null, new { @class = "btn btn-info" })
+			</div>
+		</div>
+	}
+}
+
+@{
+	if (Model.WebForms.Count() == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<h2 class="text-warning">No Web Forms found for this client.</h2>
+			</div>
+		</div>
+	}
+
+	else
+	{
+		<div class="table-responsive">
+			<table class="table table-condensed table-bordered table-hover">
+
+				<tr>
+					<th class="text-center"><small>@(Html.ActionSortLink("Default", "Manager", string.Empty))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Order", "Manager", "Order"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Web Form Id", "Manager", "WebFormId"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Name", "Manager", "Name"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Title", "Manager", "Title"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Update Date Time", "Manager", "UpdateDateTimeUtc"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Updated By", "Manager", "UpdatedBy"))</small></th>
+					<th class="text-center">&nbsp;</th>
+				</tr>
+
+				@{
+		foreach (GStore.Models.WebForm item in Model.WebForms)
+		{
+			bool isActive = item.IsActiveBubble();
+			string rowClass = (isActive ? string.Empty : "text-warning");
+			
+			<tr class="@(rowClass)">
+				<td onclick="GoToDetails(@(item.WebFormId));">@Html.ActionLink("Details", "Details", new { id = item.WebFormId }, new { @class = "btn btn-success" })</td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.WebFormId))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));">
+					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
+						@(item.IsActiveDirect() ? "Active" : "Inactive")
+					</span>
+					<br/>
+						@{
+			if (Html.CurrentStoreFront(true).Authorization_IsAuthorized(profile, GStoreAction.WebForms_Edit))
+							{
+								@Html.ActionLink("Activation", "Edit", new { id = item.WebFormId, Tab = "Activation" }, new { @class = "" })
+							}
+			else if (Html.CurrentStoreFront(true).Authorization_IsAuthorized(profile, GStoreAction.WebForms_View))
+							{
+								@Html.ActionLink("Activation", "Details", new { id = item.WebFormId, Tab = "Activation" }, new { @class = "" })
+							}
+						}
+				</td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.Title))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td>
+					@{
+			if (userCanEdit)
+			{
+				@Html.ActionLink("Edit", "Edit", new { id = item.WebFormId }, new { @class = "btn btn-sm btn-warning" })
+			}
+
+			if (userCanEdit && userCanDelete)
+			{
+				@:<div class="row" style="padding-bottom: 0.5em;"></div>
+			}
+
+			if (userCanDelete)
+			{
+				@Html.ActionLink("Delete", "Delete", new { id = item.WebFormId }, new { @class = "btn btn-sm btn-danger" })
+			}
+
+					}
+				</td>
+			</tr>
+		}
+
+				}
+
+			</table>
+		</div>
+	}
+
+}

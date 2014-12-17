@@ -46,6 +46,7 @@ namespace GStore.Controllers.BaseClass
 
 		public virtual ActionResult Display()
 		{
+			this._logActionsAsPageViews = true;
 			Page currentPage = CurrentPageOrThrow;
 			CheckAccessAndRedirect();
 			string rawUrl = Request.RawUrl;
@@ -58,6 +59,7 @@ namespace GStore.Controllers.BaseClass
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
 		public virtual ActionResult Edit(bool? AutoPost, string Tab)
 		{
+			this._logActionsAsPageViews = false;
 			bool autoPost = true;
 			if (AutoPost.HasValue)
 			{
@@ -73,6 +75,7 @@ namespace GStore.Controllers.BaseClass
 		[ValidateAntiForgeryToken]
 		public virtual ActionResult SubmitForm()
 		{
+			this._logActionsAsPageViews = true;
 			CheckAccessAndRedirect();
 			Page page = CurrentPageOrThrow;
 			if (page.WebForm == null)
@@ -84,7 +87,7 @@ namespace GStore.Controllers.BaseClass
 				return HttpBadRequest("Form is inactive for page '" + page.Name + "' [" + page.PageId + "]");
 			}
 
-			if (FormProcessorExtensions.ProcessWebForm(this.GStoreDb, this.ModelState, page.WebForm, page, CurrentUserProfileOrNull, Request, page.WebFormProcessorType))
+			if (FormProcessorExtensions.ProcessWebForm(this.GStoreDb, this.ModelState, page.WebForm, page, CurrentUserProfileOrNull, Request, false))
 			{
 				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
 				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
@@ -120,6 +123,7 @@ namespace GStore.Controllers.BaseClass
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdatePageAjax(int? PageId, PageEditViewModel pageEditViewModel)
 		{
+			this._logActionsAsPageViews = false;
 			if (!PageId.HasValue)
 			{
 				return HttpBadRequestPartial("Page id parameter is null");
@@ -163,7 +167,7 @@ namespace GStore.Controllers.BaseClass
 					Page page = null;
 					page = GStoreDb.UpdatePage(pageEditViewModel, this, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 					AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully", AppHtmlHelpers.UserMessageType.Success);
-					pageEditViewModel = new PageEditViewModel(page);
+					pageEditViewModel = new PageEditViewModel(page, activeTab: pageEditViewModel.ActiveTab);
 					return PartialView("_PageEditPartial", pageEditViewModel);
 				}
 				catch (Exception ex)
@@ -193,6 +197,7 @@ namespace GStore.Controllers.BaseClass
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdateSectionAjax(PageSectionEditViewModel viewModel)
 		{
+			this._logActionsAsPageViews = false;
 			bool quietOnSave = false;
 			if (viewModel.IsAutoPosted)
 			{

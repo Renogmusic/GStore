@@ -1,0 +1,11 @@
+﻿@model int?
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@(Model.Value.ToString("N0"))
+	}
+}

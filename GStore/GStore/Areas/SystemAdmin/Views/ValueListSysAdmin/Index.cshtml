@@ -27,7 +27,7 @@
 
 @if (Model.Count() == 0)
 {
-	if (isFiltered && !filterClientId.HasValue || filterClientId.Value == 0)
+	if (isFiltered && (!filterClientId.HasValue || filterClientId.Value == 0))
 	{
 		<h2 class="text-info">No Client selected. Please select a client to view or ALL.</h2>
 		<h3 class="text-info">@Html.ActionLink("Click here to show records for All Clients", "Index", new { ClientId = "-1" }, null)</h3>

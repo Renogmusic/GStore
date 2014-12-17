@@ -238,6 +238,7 @@
     <Compile Include="Areas\StoreAdmin\Controllers\BaseClasses\StoreAdminBaseController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\CatalogAdminController.cs" />
+    <Compile Include="Areas\StoreAdmin\Controllers\WebFormAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\PageAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ClientRoleAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\OrdersAdminController.cs" />
@@ -246,6 +247,8 @@
     <Compile Include="Areas\StoreAdmin\Controllers\ClientConfigAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ReportsAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
+    <Compile Include="Models\ViewModels\WebFormEditViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\PageAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigViewModel.cs" />
@@ -705,6 +708,15 @@
     <Content Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cd" />
     <Content Include="Models\BaseClasses\StoreFrontDataValueRecord.cd" />
     <Content Include="Models\BaseClasses\ClientRecordUserProfileOptional.cd" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Create.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Delete.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Details.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Edit.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Manager.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormEditViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormFieldEditViewModel_HiddenPopup.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Int.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormFieldEditViewModel - Copy.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1141,6 +1153,13 @@
     <Content Include="Views\Shared\DisplayTemplates\PageEditViewModel.cshtml" />
     <Content Include="Views\Shared\_PageDisplayPartial.cshtml" />
     <Content Include="Views\Account\_RegisterWebFormFieldsPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormEditViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormEditViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\_WebFormDisplayPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\_WebFormEditPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormFieldEditViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormFieldEditViewModel_HiddenPopup.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordNoUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

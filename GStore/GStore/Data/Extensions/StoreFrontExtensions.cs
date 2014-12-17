@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using GStore.AppHtmlHelpers;
+using GStore.Models.ViewModels;
 
 namespace GStore.Data
 {
@@ -937,7 +938,7 @@ namespace GStore.Data
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Images", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "StoreAdmin", "SystemAdmin"};
+			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Images", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "WebFormEdit", "StoreAdmin", "SystemAdmin" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{
@@ -973,6 +974,52 @@ namespace GStore.Data
 
 		}
 
+		public static bool ValidateWebFormName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, int clientId, int? currentWebFormId)
+		{
+			string nameField = "Name";
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				controller.ModelState.AddModelError(nameField, "Name is required. Please enter a name for this web form.");
+				return false;
+			}
+
+			WebForm conflict = db.WebForms.Where(wf => wf.ClientId == clientId && wf.Name.ToLower() == name && (wf.WebFormId != currentWebFormId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Name '" + name + "' is already in use for Web Form '" + conflict.Name + "' [" + conflict.WebFormId + "] in Client '" + conflict.Client.Name.ToHtml() + "' [" + conflict.ClientId + "]. \n You must enter a unique Name or change the conflicting Web Form name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
+		public static bool ValidateWebFormFieldName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, int clientId, int webFormId, int? currentWebFormFieldId)
+		{
+			string nameField = "Web Form Field Name";
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				controller.ModelState.AddModelError(nameField, "Field Name is required. Please enter a name for this field.");
+				return false;
+			}
+
+			WebFormField conflict = db.WebFormFields.Where(wf => wf.ClientId == clientId && wf.WebFormId == webFormId && wf.Name.ToLower() == name && (wf.WebFormId != currentWebFormFieldId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Name '" + name + "' is already in use for field '" + conflict.Name + "' [" + conflict.WebFormFieldId + "] in Web Form '" + conflict.WebForm.Name  + "' [" + conflict.WebFormId + "] for Client '" + conflict.Client.Name + "' [" + conflict.ClientId + "]. \n You must enter a unique Field Name or change the conflicting Field Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
 		public static Page CreatePage(this IGstoreDb db, Models.ViewModels.PageEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			Page page = db.Pages.Create();
@@ -996,9 +1043,9 @@ namespace GStore.Data
 			page.Url = viewModel.Url;
 			page.PageTemplateId = viewModel.PageTemplateId;
 			page.WebFormId = viewModel.WebFormId;
-			page.WebFormProcessorType = viewModel.WebFormProcessorType;
-			page.WebFormProcessorTypeName = page.WebFormProcessorType.ToDisplayName();
 			page.WebFormSaveToDatabase = viewModel.WebFormSaveToDatabase;
+			page.WebFormSaveToFile = viewModel.WebFormSaveToFile;
+			page.WebFormSendToEmail = viewModel.WebFormSendToEmail;
 			page.WebFormEmailToAddress = viewModel.WebFormEmailToAddress;
 			page.WebFormEmailToName = viewModel.WebFormEmailToName;
 			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
@@ -1047,8 +1094,9 @@ namespace GStore.Data
 			}
 
 			page.WebFormId = viewModel.WebFormId;
-			page.WebFormProcessorType = viewModel.WebFormProcessorType;
-			page.WebFormProcessorTypeName = page.WebFormProcessorType.ToDisplayName();
+			page.WebFormSaveToDatabase = viewModel.WebFormSaveToDatabase;
+			page.WebFormSaveToFile = viewModel.WebFormSaveToFile;
+			page.WebFormSendToEmail = viewModel.WebFormSendToEmail;
 			page.WebFormEmailToAddress = viewModel.WebFormEmailToAddress;
 			page.WebFormEmailToName = viewModel.WebFormEmailToName;
 			page.WebFormSuccessPageId = viewModel.WebFormSuccessPageId;
@@ -1090,6 +1138,224 @@ namespace GStore.Data
 			return pageSection;
 
 		}
+
+		public static WebForm CreateWebForm(this IGstoreDb db, WebFormEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			WebForm webForm = db.WebForms.Create();
+
+			webForm.Client = storeFront.Client;
+			webForm.ClientId = storeFront.ClientId;
+			webForm.CreateDateTimeUtc = DateTime.UtcNow;
+			webForm.CreatedBy = userProfile;
+			webForm.CreatedBy_UserProfileId = userProfile.UserProfileId;
+			webForm.Description = viewModel.Description;
+			webForm.DisplayTemplateName = viewModel.DisplayTemplateName;
+			webForm.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			webForm.FieldMdColSpan = viewModel.FieldMdColSpan;
+			webForm.FormFooterAfterSubmitHtml = viewModel.FormFooterAfterSubmitHtml;
+			webForm.FormFooterBeforeSubmitHtml = viewModel.FormFooterBeforeSubmitHtml;
+			webForm.FormHeaderHtml = viewModel.FormHeaderHtml;
+			webForm.IsPending = viewModel.IsPending;
+			webForm.LabelMdColSpan = viewModel.LabelMdColSpan;
+			webForm.Name = viewModel.Name;
+			webForm.Order = viewModel.Order;
+			webForm.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			webForm.SubmitButtonClass = viewModel.SubmitButtonClass;
+			webForm.SubmitButtonText = viewModel.SubmitButtonText;
+			webForm.Title = viewModel.Title;
+			webForm.UpdateDateTimeUtc = DateTime.UtcNow;
+			webForm.UpdatedBy = userProfile;
+			webForm.UpdatedBy_UserProfileId = userProfile.UserProfileId;
+
+			webForm.UpdateAuditFields(userProfile);
+
+			webForm = db.WebForms.Add(webForm);
+			db.SaveChanges();
+
+			return webForm;
+
+		}
+
+		public static WebForm UpdateWebForm(this IGstoreDb db, WebFormEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			//find existing record, update it
+			WebForm webForm = storeFront.Client.WebForms.SingleOrDefault(p => p.WebFormId == viewModel.WebFormId);
+			if (webForm == null)
+			{
+				throw new ApplicationException("Web Form not found in client web forms. Web Form Id: " + viewModel.WebFormId + " Client '" + storeFront.Client.Name + " [" + storeFront.ClientId + "]");
+			}
+
+			webForm.Description = viewModel.Description;
+			webForm.DisplayTemplateName = viewModel.DisplayTemplateName;
+			webForm.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			webForm.FieldMdColSpan = viewModel.FieldMdColSpan;
+			webForm.FormFooterAfterSubmitHtml = viewModel.FormFooterAfterSubmitHtml;
+			webForm.FormFooterBeforeSubmitHtml = viewModel.FormFooterBeforeSubmitHtml;
+			webForm.FormHeaderHtml = viewModel.FormHeaderHtml;
+			webForm.IsPending = viewModel.IsPending;
+			webForm.LabelMdColSpan = viewModel.LabelMdColSpan;
+			webForm.Name = viewModel.Name;
+			webForm.Order = viewModel.Order;
+			webForm.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			webForm.SubmitButtonClass = viewModel.SubmitButtonClass;
+			webForm.SubmitButtonText = viewModel.SubmitButtonText;
+			webForm.Title = viewModel.Title;
+			webForm.UpdateDateTimeUtc = DateTime.UtcNow;
+			webForm.UpdatedBy = userProfile;
+			webForm.UpdatedBy_UserProfileId = userProfile.UserProfileId;
+
+			webForm.UpdateAuditFields(userProfile);
+
+			webForm = db.WebForms.Update(webForm);
+			db.SaveChanges();
+
+			return webForm;
+
+		}
+
+		public static WebFormField UpdateWebFormField(this IGstoreDb db, WebFormFieldEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+
+			if (viewModel.WebFormId == 0)
+			{
+				throw new ArgumentNullException("viewModel.WebFormId", "viewModel.WebFormId cannot be 0. Make sure it's set in the form");
+			}
+
+			if (viewModel.WebFormFieldId == 0)
+			{
+				throw new ArgumentNullException("viewModel.WebFormFieldId", "viewModel.WebFormFieldId cannot be 0. Make sure it's set in the form");
+			}
+
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			//find existing record, update it
+			WebFormField webFormFieldToUpdate = db.WebFormFields.Where(wf => wf.ClientId == storeFront.ClientId && (wf.WebFormId == viewModel.WebFormId) && (wf.WebFormFieldId == viewModel.WebFormFieldId)).SingleOrDefault();
+			if (webFormFieldToUpdate == null)
+			{
+				throw new ApplicationException("Web Form Field not found in client web form fields. Web Form Field Id: " + viewModel.WebFormFieldId + " Web Form Id: " + viewModel.WebFormId + " Client '" + storeFront.Client.Name + " [" + storeFront.ClientId + "]");
+			}
+
+			webFormFieldToUpdate.DataType = viewModel.DataType;
+			webFormFieldToUpdate.DataTypeString = viewModel.DataType.ToDisplayName();
+			webFormFieldToUpdate.Description = viewModel.Description;
+			webFormFieldToUpdate.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			webFormFieldToUpdate.HelpLabelBottomText = viewModel.HelpLabelBottomText;
+			webFormFieldToUpdate.HelpLabelTopText = viewModel.HelpLabelTopText;
+			webFormFieldToUpdate.IsPending = viewModel.IsPending;
+			webFormFieldToUpdate.IsRequired = viewModel.IsRequired;
+			webFormFieldToUpdate.LabelText = viewModel.LabelText;
+			webFormFieldToUpdate.Name = viewModel.Name;
+			webFormFieldToUpdate.Order = viewModel.Order;
+			webFormFieldToUpdate.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			webFormFieldToUpdate.TextAreaColumns = viewModel.TextAreaColumns;
+			webFormFieldToUpdate.TextAreaRows = viewModel.TextAreaRows;
+			webFormFieldToUpdate.UpdateDateTimeUtc = DateTime.UtcNow;
+			webFormFieldToUpdate.UpdatedBy = userProfile;
+			webFormFieldToUpdate.UpdatedBy_UserProfileId = userProfile.UserProfileId;
+			webFormFieldToUpdate.ValueListId = viewModel.ValueListId;
+
+			webFormFieldToUpdate.UpdateAuditFields(userProfile);
+			try
+			{
+				webFormFieldToUpdate = db.WebFormFields.Update(webFormFieldToUpdate);
+				db.SaveChanges();
+				return webFormFieldToUpdate;
+			}
+			catch (Exception ex)
+			{
+				throw new ApplicationException("Database update failed", ex);
+			}
+		}
+
+		public static WebFormField CreateWebFormFieldFastAdd(this IGstoreDb db, WebFormEditViewModel viewModel, string FastAddField, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (string.IsNullOrWhiteSpace(FastAddField))
+			{
+				throw new ArgumentNullException("FastAddField");
+			}
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			WebFormField webFormField = db.WebFormFields.Create();
+
+			webFormField.Client = storeFront.Client;
+			webFormField.ClientId = storeFront.ClientId;
+			webFormField.CreateDateTimeUtc = DateTime.UtcNow;
+			webFormField.CreatedBy = userProfile;
+			webFormField.CreatedBy_UserProfileId = userProfile.UserProfileId;
+			webFormField.DataType = GStoreValueDataType.SingleLineText;
+			webFormField.DataTypeString = GStoreValueDataType.SingleLineText.ToDisplayName();
+			webFormField.Description = FastAddField;
+			webFormField.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			webFormField.HelpLabelBottomText = null;
+			webFormField.HelpLabelTopText = null;
+			webFormField.IsPending = false;
+			webFormField.IsRequired = false;
+			webFormField.LabelText = FastAddField;
+			webFormField.Name = FastAddField;
+			webFormField.Order = 9000;
+			webFormField.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			webFormField.TextAreaColumns = null;
+			webFormField.TextAreaRows = null;
+			webFormField.WebForm = viewModel.WebForm;
+			webFormField.WebFormId = viewModel.WebFormId;
+			webFormField.UpdateAuditFields(userProfile);
+
+			webFormField = db.WebFormFields.Add(webFormField);
+			db.SaveChanges();
+
+			return webFormField;
+
+		}
+
+
 
 		public static RouteData RouteData(this HttpRequest request)
 		{

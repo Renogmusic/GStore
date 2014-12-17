@@ -8,14 +8,85 @@
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
 	SelectList themeList = ViewBag.ThemeList as SelectList;
 	SelectList registerWebFormList = ViewBag.RegisterWebFormList as SelectList;
+	SelectList registerSuccessPageList = ViewBag.RegisterSuccessPageList as SelectList;
 	SelectList notFoundPageList = ViewBag.NotFoundPageList as SelectList;
 	SelectList storeErrorPageList = ViewBag.StoreErrorPageList as SelectList;
 
+	string tabBasicActive = string.Empty;
+	string tabAdminsActive = string.Empty;
+	string tabMetaTagsActive = string.Empty;
+	string tabTrackingActive = string.Empty;
+	string tabThemesActive = string.Empty;
+	string tabCatalogLayoutActive = string.Empty;
+	string tabErrorPagesActive = string.Empty;
+	string tabRegistrationActive = string.Empty;
+	string tabAdvancedActive = string.Empty;
+	string tabLayoutsActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "admins":
+			tabAdminsActive = "active";
+			break;
+		case "metatags":
+			tabMetaTagsActive = "active";
+			break;
+		case "tracking":
+			tabTrackingActive = "active";
+			break;
+		case "themes":
+			tabThemesActive = "active";
+			break;
+		case "cataloglayout":
+			tabCatalogLayoutActive = "active";
+			break;
+		case "errorpages":
+			tabErrorPagesActive = "active";
+			break;
+		case "registration":
+			tabRegistrationActive = "active";
+			break;
+		case "advanced":
+			tabAdvancedActive = "active";
+			break;
+		case "layouts":
+			tabLayoutsActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+	
+	<script>
+		function JumpToViewTab() {
+			var url = '@(Url.Action("StoreFrontView", new { id = Model.StoreFrontId, Tab = "XXXX"}))';
+			var tabName = GetActiveTab();
+			document.location = url.replace("XXXX", tabName);
+		}
+	function GetActiveTab()
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName) {
+		if (document.getElementById('ActiveTab')) {
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+	</script>
+
 	@Html.AntiForgeryToken()
 
+	
 	<div class="row">
 		<h2 class="jumbotron StoreAdminEditPageTitle col-md-offset-2 col-md-7 text-warning title-align">
-			Edit Store Front Configuration
+			<span class="text-warning">Edit Store Front Configuration</span>
 			<br />
 			<small>@Html.DisplayNameFor(model => model.StoreFront) '@(Model.Name)' [@(Model.StoreFrontId)]</small>
 		</h2>
@@ -25,7 +96,7 @@
 		<div class="form-actions col-md-offset-3 col-md-9">
 			<input type="submit" value="Save" class="btn btn-warning" />
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Cancel", "StoreFrontView", new { id = Model.StoreFrontId }, new { @class = "btn btn-default" })
+			<a class="btn btn-default" href="#" onclick="JumpToViewTab();">OK / Cancel</a>
 		</div>
 	</div>
 
@@ -37,21 +108,35 @@
 	</div>
 
 	<div class="form-horizontal">
+
 		<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
-			<li class="active"><a data-toggle="tab" href="#sectionBasic">Basic</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionAdmins">Admins</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionMetaTags">Meta Tags</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionTracking">Tracking</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionThemes">Themes</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionCatalogLayout">Catalog Layout</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionAdvanced">Advanced</a></li>
-			<li class=""><a data-toggle="tab" href="#sectionLayouts">More Layouts (coming soon)</a></li>
+			<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+			<li class="@(tabAdminsActive)"><a data-toggle="tab" href="#sectionAdmins" onclick="SetActiveTab('Admins');">Admins</a></li>
+			<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+			<li class="@(tabTrackingActive)"><a data-toggle="tab" href="#sectionTracking" onclick="SetActiveTab('Tracking');">Tracking</a></li>
+			<li class="@(tabThemesActive)"><a data-toggle="tab" href="#sectionThemes" onclick="SetActiveTab('Themes');">Themes</a></li>
+			<li class="@(tabCatalogLayoutActive)"><a data-toggle="tab" href="#sectionCatalogLayout" onclick="SetActiveTab('CatalogLayout');">Catalog Layout</a></li>
+			<li class="@(tabErrorPagesActive)"><a data-toggle="tab" href="#sectionErrorPages" onclick="SetActiveTab('ErrorPages');">Error Pages</a></li>
+			<li class="@(tabRegistrationActive)"><a data-toggle="tab" href="#sectionRegistration" onclick="SetActiveTab('Registration');">Registration</a></li>
+			<li class="@(tabAdvancedActive)"><a data-toggle="tab" href="#sectionAdvanced" onclick="SetActiveTab('Advanced');">Advanced</a></li>
+			<li class="@(tabLayoutsActive)"><a data-toggle="tab" href="#sectionLayouts" onclick="SetActiveTab('Layouts');">Layouts</a></li>
 		</ul>
+		@Html.HiddenFor(model => model.ActiveTab)
 
 		<div class="tab-content">
 
-			<div id="sectionBasic" class="tab-pane fade in active">
-				<hr />
+			<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.StoreFrontId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DisplayFor(model => model.StoreFrontId)
+					</div>
+					@Html.HelpLabelFor(model => model.StoreFrontId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -71,10 +156,22 @@
 					@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
 				</div>
 
+				<div class="form-group">
+					@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+						@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.Order, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
 			</div>
 
-			<div id="sectionAdmins" class="tab-pane fade in">
-				<hr />
+			<div id="sectionAdmins" class="tab-pane fade in @(tabAdminsActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Admin Users</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.AccountAdmin_UserProfileId, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -105,8 +202,11 @@
 
 			</div>
 
-			<div id="sectionMetaTags" class="tab-pane fade in">
-				<hr />
+			<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Meta Tags</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -156,7 +256,7 @@
 				<div class="form-group">
 					@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.TextAreaFor(model => model.BodyBottomScriptTag, new { @class = "form-control", rows=8 })
+						@Html.TextAreaFor(model => model.BodyBottomScriptTag, new { @class = "form-control", rows = 8 })
 						@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
 					</div>
 					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
@@ -164,8 +264,11 @@
 
 			</div>
 
-			<div id="sectionTracking" class="tab-pane fade in">
-				<hr />
+			<div id="sectionTracking" class="tab-pane fade in @(tabTrackingActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Tracking</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.EnableGoogleAnalytics, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -187,8 +290,11 @@
 
 			</div>
 
-			<div id="sectionThemes" class="tab-pane fade in">
-				<hr />
+			<div id="sectionThemes" class="tab-pane fade in @(tabThemesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Themes</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.DefaultNewPageThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -246,8 +352,11 @@
 
 			</div>
 
-			<div id="sectionCatalogLayout" class="tab-pane fade in">
-				<hr />
+			<div id="sectionCatalogLayout" class="tab-pane fade in @(tabCatalogLayoutActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Catalog Layout</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.NavBarItemsMaxLevels, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -332,18 +441,35 @@
 
 			</div>
 
-			<div id="sectionAdvanced" class="tab-pane fade in">
-				<hr />
+			<div id="sectionErrorPages" class="tab-pane fade in @(tabErrorPagesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Error Pages</h3>
+				</div>
 
 				<div class="form-group">
-					@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-3" })
+					@Html.LabelFor(model => model.NotFoundError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.TextAreaFor(model => model.HtmlFooter, new { @class = "form-control" } )
-						<script>CKEDITOR.replace('@(Html.IdFor(model => model.HtmlFooter))');</script>
-						@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
+						@Html.DropDownList("NotFoundError_PageId", notFoundPageList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
 					</div>
-					@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+					@Html.HelpLabelFor(model => model.NotFoundError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
 
+				<div class="form-group">
+					@Html.LabelFor(model => model.StoreError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.DropDownList("StoreError_PageId", storeErrorPageList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.StoreError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+				</div>
+
+			</div>
+
+
+			<div id="sectionRegistration" class="tab-pane fade in @(tabRegistrationActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Registration</h3>
 				</div>
 
 				<div class="form-group">
@@ -392,27 +518,39 @@
 				</div>
 
 				<div class="form-group">
-					@Html.LabelFor(model => model.NotFoundError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
+					@Html.LabelFor(model => model.RegisterSuccess_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
 					<div class="col-md-9">
-						@Html.DropDownList("NotFoundError_PageId", notFoundPageList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
+						@Html.DropDownList("RegisterSuccess_PageId", registerSuccessPageList, htmlAttributes: new { @class = "form-control" })
+						@Html.ValidationMessageFor(model => model.RegisterSuccess_PageId, "", new { @class = "text-danger" })
 					</div>
-					@Html.HelpLabelFor(model => model.NotFoundError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.StoreError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("StoreError_PageId", storeErrorPageList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.StoreError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+					@Html.HelpLabelFor(model => model.RegisterSuccess_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
 				</div>
 
 			</div>
 
-			<div id="sectionLayouts" class="tab-pane fade in">
-				<hr />
+			<div id="sectionAdvanced" class="tab-pane fade in @(tabAdvancedActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Advanced Info</h3>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-3" })
+					<div class="col-md-9">
+						@Html.TextAreaFor(model => model.HtmlFooter, new { @class = "form-control" })
+						<script>CKEDITOR.replace('@(Html.IdFor(model => model.HtmlFooter))');</script>
+						@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
+					</div>
+					@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
+
+				</div>
+
+			</div>
+
+			<div id="sectionLayouts" class="tab-pane fade in @(tabLayoutsActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Layouts</h3>
+				</div>
+
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.DefaultNewPageLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -477,7 +615,7 @@
 		<div class="form-actions col-md-offset-3 col-md-9">
 			<input type="submit" value="Save" class="btn btn-warning" />
 			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Cancel", "StoreFrontView", new { id = Model.StoreFrontId }, new { @class = "btn btn-default" })
+			<a class="btn btn-default" href="#" onclick="JumpToViewTab();">OK / Cancel</a>
 		</div>
 	</div>
 }

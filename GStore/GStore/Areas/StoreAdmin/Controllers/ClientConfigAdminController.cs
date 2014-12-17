@@ -19,23 +19,23 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
-		public ActionResult ClientView()
+		public ActionResult ClientView(string Tab)
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientView", viewModel);
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
 		public ActionResult ClientViewNoTabs()
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, null);
 			return View("ClientViewNoTabs", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Edit)]
-		public ActionResult ClientEdit()
+		public ActionResult ClientEdit(string Tab)
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientEdit", viewModel);
 		}
 
@@ -63,7 +63,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				client.UseTwilioSms = model.UseTwilioSms;
 				GStoreDb.Clients.Update(client);
 				GStoreDb.SaveChanges();
-				return RedirectToAction("ClientView");
+				return RedirectToAction("ClientView", new { Tab = model.ActiveTab });
 			}
 
 			return View("ClientEdit", model);
@@ -71,7 +71,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
-		public ActionResult StoreFrontView(int? id)
+		public ActionResult StoreFrontView(int? id, string Tab)
 		{
 			//verify the storeFront permissions in case we're operating on a different storefront
 			GStore.Models.StoreFront storeFrontToView = null;
@@ -97,7 +97,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontView", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow));
+			return View("StoreFrontView", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow, Tab));
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
@@ -127,11 +127,11 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontViewNoTabs", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow));
+			return View("StoreFrontViewNoTabs", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow, null));
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
-		public ActionResult StoreFrontEdit(int? id)
+		public ActionResult StoreFrontEdit(int? id, string Tab)
 		{
 			if (!id.HasValue)
 			{
@@ -166,10 +166,11 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
+			ViewBag.RegisterSuccessPageList = RegisterSuccessPageList(clientId, storeFrontId); 
 			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
 			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
 
-			return View("StoreFrontEdit", new StoreFrontConfigViewModel(storeFrontToEdit, CurrentUserProfileOrThrow));
+			return View("StoreFrontEdit", new StoreFrontConfigViewModel(storeFrontToEdit, CurrentUserProfileOrThrow, Tab));
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
@@ -238,7 +239,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToEdit.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
 				storeFrontToEdit.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
 				storeFrontToEdit.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
+				storeFrontToEdit.Order = model.Order;
 				storeFrontToEdit.Register_WebFormId = model.Register_WebFormId;
+				storeFrontToEdit.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
 				storeFrontToEdit.NotFoundError_PageId = model.NotFoundError_PageId;
 				storeFrontToEdit.NotificationsLayoutName = model.NotificationsLayoutName;
 				storeFrontToEdit.NotificationsThemeId = model.NotificationsThemeId;
@@ -254,7 +257,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front '" + storeFrontToEdit.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
 
-				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId });
+				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, Tab = model.ActiveTab });
 			}
 
 			int clientId = storeFrontToEdit.ClientId;
@@ -262,6 +265,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
 			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
+			ViewBag.RegisterSuccessPageList = RegisterSuccessPageList(clientId, storeFrontId); 
 			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
 			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
 
@@ -334,6 +338,29 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			{
 				Value = wf.WebFormId.ToString(),
 				Text = wf.Name + " [" + wf.WebFormId + "]"
+			});
+
+			if (items.Count() > 0)
+			{
+				list.AddRange(items);
+			}
+
+			return new SelectList(list, "Value", "Text");
+		}
+
+		protected SelectList RegisterSuccessPageList(int clientId, int storeFrontId)
+		{
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Register Success Page)";
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+
+			var query = CurrentStoreFrontOrThrow.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
+			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
+			{
+				Value = pg.PageId.ToString(),
+				Text = pg.Name + " [" + pg.PageId + "]"
 			});
 
 			if (items.Count() > 0)

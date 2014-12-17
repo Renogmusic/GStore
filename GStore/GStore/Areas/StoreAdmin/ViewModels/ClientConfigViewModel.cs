@@ -3,16 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Web;
+using System.Web.Mvc;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.StoreAdmin.ViewModels
 {
-	public class ClientConfigViewModel : StoreAdminViewModel
+	public class ClientConfigViewModel : StoreAdminViewModel, IValidatableObject
 	{
 		public ClientConfigViewModel() { }
 
-		public ClientConfigViewModel(Client client, StoreFront storeFront, UserProfile userProfile): base(storeFront, userProfile)
+		public ClientConfigViewModel(Client client, StoreFront storeFront, UserProfile userProfile, string activeTab): base(storeFront, userProfile)
 		{
+			this.ActiveTab = activeTab;
 			this.ClientId = client.ClientId;
 			this.EnableNewUserRegisteredBroadcast = client.EnableNewUserRegisteredBroadcast;
 			this.EnablePageViewLog = client.EnablePageViewLog;
@@ -29,6 +34,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.UseSendGridEmail = client.UseSendGridEmail;
 			this.UseTwilioSms = client.UseTwilioSms;
 		}
+
+		public string ActiveTab { get; set;}
 
 		[Key]
 		public int ClientId { get; set; }
@@ -75,7 +82,80 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		[Display(Name = "Twilio API Token", Description = "Twilio TOKEN (from their web site) for sending Text Messages. \nExample: 44c111c11fffffeedb111d111ebb1111")]
 		public string TwilioToken { get; set; }
-		
+
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			List<ValidationResult> result = new List<ValidationResult>();
+			string checkboxName = null;
+			string fieldName = null;
+			string fieldDisplay = null;
+			if (this.UseTwilioSms)
+			{
+				checkboxName = this.GetDisplayName("UseTwilioSms");
+				if (string.IsNullOrWhiteSpace(this.TwilioFromPhone))
+				{
+					fieldName = "TwilioFromPhone";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.TwilioSid))
+				{
+					fieldName = "TwilioSid";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.TwilioSmsFromEmail))
+				{
+					fieldName = "TwilioSmsFromEmail";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.TwilioSmsFromName))
+				{
+					fieldName = "TwilioSmsFromName";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.TwilioToken))
+				{
+					fieldName = "TwilioToken";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+			}
+
+			if (this.UseSendGridEmail)
+			{
+				checkboxName = this.GetDisplayName("UseSendGridEmail");
+				if (string.IsNullOrWhiteSpace(this.SendGridMailAccount))
+				{
+					fieldName = "SendGridMailAccount";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.SendGridMailFromEmail))
+				{
+					fieldName = "SendGridMailFromEmail";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.SendGridMailFromName))
+				{
+					fieldName = "SendGridMailFromName";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+				if (string.IsNullOrWhiteSpace(this.SendGridMailPassword))
+				{
+					fieldName = "SendGridMailPassword";
+					fieldDisplay = this.GetDisplayName(fieldName);
+					result.Add(new ValidationResult(fieldDisplay + " is required when " + checkboxName + " is checked", new string[] { fieldName }));
+				}
+			}
+
+			return result;
+		}
 
 	}
 }

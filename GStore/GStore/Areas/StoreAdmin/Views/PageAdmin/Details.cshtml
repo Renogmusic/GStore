@@ -3,18 +3,28 @@
 @using GStore.Identity
 
 <div class="row">
-	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8 text-success">
-		Page Details<br /><small>'@(Model.Name)' [@(Model.PageId)]</small>
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-success">Page Details</span><br /><small>'@(Model.Name)' [@(Model.PageId)]</small>
 	</h1>
 </div>
-
+<script>
+	function GotoEditTab()
+	{
+		var url = '@(Html.Raw(Url.Action("Edit", new { id = Model.PageId, Tab = "XXXX" }).ToJavaScriptString()))';
+		if (document.getElementById("ActiveTab"))
+		{
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		document.location.href = url;
+	}
+</script>
 <div class="row">
 	<div class="form-actions no-color col-md-offset-4 col-md-6">
 		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
 		@if (Html.UserHasPermission(GStoreAction.Pages_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Edit", "Edit", new { id = Model.PageId }, new { @class = "btn btn-warning" })
+			<a href="#" class="btn btn-warning" onclick="GotoEditTab();">Edit</a>
 		}
 		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
 		{
@@ -32,7 +42,7 @@
 		@if (Html.UserHasPermission(GStoreAction.Pages_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Edit", "Edit", new { id = Model.PageId }, new { @class = "btn btn-warning" })
+			<a href="#" class="btn btn-warning" onclick="GotoEditTab();">Edit</a>
 		}
 		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
 		{

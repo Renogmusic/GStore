@@ -17,10 +17,9 @@
 
 	string prefix = Html.NameForModel().ToHtmlString();
 	string textValue = (Html.GetModelStateValue(prefix + Model.Name.ToHtmlAttribute(), typeof(string)) ?? string.Empty).ToString();
-	if (string.IsNullOrEmpty(textValue))
-	{
-		
-	}
+	
+	string fieldId = "Page_WebForm_item_" + Model.Name.ToHtmlAttribute().Replace(' ', '_');
+	string fieldName = Model.Name.ToHtmlAttribute();
 
 	string align = "title-align";
 }
@@ -38,7 +37,7 @@
 
 			switch (Model.DataType)
 			{
-				case GStoreValueDataType.YesNo:
+				case GStoreValueDataType.CheckboxYesNo:
 					break;
 				case GStoreValueDataType.Integer:
 					break;
@@ -62,11 +61,12 @@
 					{
 						rows = Model.TextAreaColumns.Value;
 					}
-					@Html.TextArea(Model.Name.ToHtmlAttribute(), textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
+					@Html.TextArea(fieldName , textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.Html:
-				@(Html.TextArea(Model.Name.ToHtmlAttribute(), textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
+					@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
+					<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.ValueListItemDropdown:
@@ -94,7 +94,7 @@
 			if (!usedCustomDisplay)
 			{
 		<!-- Default text box -->
-				@Html.TextBox(Model.Name.ToHtmlAttribute(), textValue, htmlAttributes: new { @class = "form-control " + align })
+				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align })
 			}
 		}
 

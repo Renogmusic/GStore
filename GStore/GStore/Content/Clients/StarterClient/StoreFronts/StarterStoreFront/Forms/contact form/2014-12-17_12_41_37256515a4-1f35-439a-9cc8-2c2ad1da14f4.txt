@@ -1,0 +1,18 @@
+localhost Form 'Contact Form' [12] submitted at 12/17/2014 4:41:37 AM
+
+Your Name = Mike
+
+Your Email Address = hahahah
+
+Comments / Questions / Feedback = (blank)
+
+
+- - - - - - - -
+User: 'System Admin' <admin@domain.com>
+Url: http://localhost:55520/SubmitForm/Contact
+Store Front: New Storefront [1] Url: http://localhost:55520/
+Client: New Company [1]
+Host: localhost
+Raw Url: /SubmitForm/Contact
+IP Address: ::1
+

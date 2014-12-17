@@ -24,6 +24,15 @@
 <div>
 	<dl class="dl-horizontal">
 		<dt>
+			@Html.DisplayNameFor(model => model.StoreFrontId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StoreFrontId)
+			<br />@Html.HelpLabelFor(model => model.StoreFrontId, new { @class = "help-label" })
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.Name)
 		</dt>
 
@@ -39,6 +48,15 @@
 		<dd>
 			<a target="_blank" href="@(Html.Raw(Model.PublicUrl))">@Html.Encode(Model.PublicUrl)</a> (opens in new window)
 			<br />@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "help-label" } )
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+			<br />@Html.HelpLabelFor(model => model.Order, new { @class = "help-label" })
 		</dd>
 
 		<dt>
@@ -276,6 +294,15 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.RegisterSuccessPage)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.RegisterSuccessPage)
+			<br />@Html.HelpLabelFor(model => model.RegisterSuccessPage, new { @class = "help-label" })
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.NotFoundErrorPage)
 		</dt>
 
@@ -303,30 +330,12 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
-			<br />@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "help-label" } )
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.AdminTheme)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.AdminTheme)
 			<br />@Html.HelpLabelFor(model => model.AdminTheme, new { @class = "help-label" } )
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.AdminLayoutName)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.AdminLayoutName)
-			<br />@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "help-label" } )
 		</dd>
 
 		<dt>
@@ -339,21 +348,57 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.AccountLayoutName)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.AccountLayoutName)
-			<br />@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "help-label" } )
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.CatalogTheme)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.CatalogTheme)
 			<br />@Html.HelpLabelFor(model => model.CatalogTheme, new { @class = "help-label" } )
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotificationsTheme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.NotificationsTheme)
+			<br />@Html.HelpLabelFor(model => model.NotificationsTheme, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ProfileTheme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ProfileTheme)
+			<br />@Html.HelpLabelFor(model => model.ProfileTheme, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
+			<br />@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AdminLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AdminLayoutName)
+			<br />@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AccountLayoutName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.AccountLayoutName)
+			<br />@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "help-label" })
 		</dd>
 
 		<dt>
@@ -366,30 +411,12 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.NotificationsTheme)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.NotificationsTheme)
-			<br />@Html.HelpLabelFor(model => model.NotificationsTheme, new { @class = "help-label" } )
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.NotificationsLayoutName)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.NotificationsLayoutName)
 			<br />@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "help-label" } )
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.ProfileTheme)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.ProfileTheme)
-			<br />@Html.HelpLabelFor(model => model.ProfileTheme, new { @class = "help-label" } )
 		</dd>
 
 		<dt>

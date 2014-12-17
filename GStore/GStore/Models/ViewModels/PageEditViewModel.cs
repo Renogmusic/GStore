@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace GStore.Models.ViewModels
 {
-	public class PageEditViewModel
+	public class PageEditViewModel : IValidatableObject
 	{
 		public PageEditViewModel()
 		{
@@ -48,6 +48,10 @@ namespace GStore.Models.ViewModels
 			this.MetaApplicationName = page.MetaApplicationName;
 			this.MetaApplicationTileColor = page.MetaApplicationTileColor;
 			this.Name = page.Name;
+			this.OriginalPageUrl = page.Url;
+			this.OriginalPageTemplate = page.PageTemplate;
+			this.OriginalTheme = page.Theme;
+			this.OriginalWebForm = page.WebForm;
 			this.Order = page.Order;
 			this.PageId = page.PageId;
 			this.PageTemplateId = page.PageTemplateId;
@@ -63,15 +67,17 @@ namespace GStore.Models.ViewModels
 			this.IsPending = page.IsPending;
 			this.StartDateTimeUtc = page.StartDateTimeUtc;
 			this.EndDateTimeUtc = page.EndDateTimeUtc;
-			this.OriginalPageUrl = page.Url;
+			this.StoreFront = page.StoreFront;
+			this.StoreFrontId = page.StoreFrontId;
 			this.WebFormId = page.WebFormId;
 			this.WebFormEmailToAddress = page.WebFormEmailToAddress;
 			this.WebFormEmailToName = page.WebFormEmailToName;
 			this.WebFormSuccessPageId = page.WebFormSuccessPageId;
 			this.WebFormThankYouTitle = page.WebFormThankYouTitle;
 			this.WebFormThankYouMessage = page.WebFormThankYouMessage;
-			this.WebFormProcessorType = page.WebFormProcessorType;
-			this.WebFormProcessorTypeName = page.WebFormProcessorTypeName;
+			this.WebFormSaveToDatabase = page.WebFormSaveToDatabase;
+			this.WebFormSaveToFile = page.WebFormSaveToFile;
+			this.WebFormSendToEmail = page.WebFormSendToEmail;
 			this.WebFormSaveToDatabase = page.WebFormSaveToDatabase;
 
 			this.PageTemplateSelectList = page.Client.PageTemplates.AsQueryable().ToSelectList(page.PageTemplateId).ToList();
@@ -85,6 +91,11 @@ namespace GStore.Models.ViewModels
 
 		public void FillListsIfEmpty(Client client, StoreFront storeFront)
 		{
+			if (this.StoreFront == null)
+			{
+				this.StoreFront = storeFront;
+				this.StoreFrontId = storeFront.StoreFrontId;
+			}
 			if (this.PageTemplateSelectList == null)
 			{
 				this.PageTemplateSelectList = client.PageTemplates.AsQueryable().ToSelectList(this.PageTemplateId).ToList();
@@ -190,8 +201,24 @@ namespace GStore.Models.ViewModels
 
 
 		[Editable(false)]
+		[Display(Name = "Store Front")]
+		public StoreFront StoreFront { get; protected set;}
+
+		[Editable(false)]
+		[Display(Name = "Store Front Id")]
+		public int StoreFrontId { get; protected set; }
+
 		[Display(Name = "Original Page Url")]
-		public string OriginalPageUrl { get; set; }
+		public string OriginalPageUrl { get; protected set; }
+
+		[Display(Name = "Page Template", Description = "Template Used for this page.  Changing the template will required you to edit the page content")]
+		public PageTemplate OriginalPageTemplate { get; protected set; }
+
+		[Display(Name = "Theme", Description = "Template Used for this page.  Changing the template will required you to edit the page content")]
+		public Theme OriginalTheme { get; protected set; }
+
+		[Display(Name = "Web Form", Description = "Template Used for this page.  Changing the template will required you to edit the page content")]
+		public WebForm OriginalWebForm { get; protected set; }
 
 		[Key]
 		[Editable(false)]
@@ -213,15 +240,14 @@ namespace GStore.Models.ViewModels
 		[Display(Name = "Web Form", Description = "Web Form used for this page.")]
 		public int? WebFormId { get; set; }
 
-		[Display(Name = "Web Form Processor", Description = "Web Form Processor used for the form on this page.")]
-		public Data.WebFormProcessorType WebFormProcessorType { get; set; }
-
-		[Display(Name = "Web Form Processor Type Name", Description = "Web Form Processor used for the form on this page.")]
-		[MaxLength(100)]
-		public string WebFormProcessorTypeName { get; set; }
-
-		[Display(Name = "Web Form Save to Database", Description = "Check this box to automatically save form results to the database. \nIf unchecked, form will not be saved to the database..")]
+		[Display(Name = "Web Form Save to Database", Description = "Check this box to automatically save form results to the database. \nIf unchecked, form will not be saved to the database.")]
 		public bool WebFormSaveToDatabase { get; set; }
+
+		[Display(Name = "Web Form Save to File", Description = "Check this box to save form results to the Store Front Forms folder. \nIf unchecked, form will not be saved to file.")]
+		public bool WebFormSaveToFile { get; set; }
+
+		[Display(Name = "Web Form Send To Email", Description = "Check this box to send form results to email. \n If Email address is blank, form will be sent to the store front Registered Notify user.")]
+		public bool WebFormSendToEmail { get; set; }
 
 		[Display(Name = "Web Form Success Page", Description = "Page to send the user to after they submit the form. Leave blank to re-load this page.")]
 		public int? WebFormSuccessPageId { get; set; }
@@ -318,5 +344,21 @@ namespace GStore.Models.ViewModels
 		[Editable(false)]
 		[Display(Name = "Updated By")]
 		public UserProfile UpdatedBy { get; set; }
+	
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+
+			if (this.WebFormId.HasValue && !(this.WebFormSaveToDatabase || this.WebFormSaveToFile || this.WebFormSendToEmail))
+			{
+				List<ValidationResult> result = new List<ValidationResult>();
+				string[] memberNames = { "WebFormId" };
+
+				ValidationResult item = new ValidationResult("You must select one of: Save to Database, Save to File, or Send to Email when using a Web Form", memberNames);
+				result.Add(item);
+				return result;
+			}
+
+			return new List<ValidationResult>();
+		}
 	}
 }

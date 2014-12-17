@@ -14,8 +14,9 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 	{
 		public StoreFrontConfigViewModel() { }
 
-		public StoreFrontConfigViewModel(StoreFront storeFront, UserProfile userProfile): base(storeFront, userProfile)
+		public StoreFrontConfigViewModel(StoreFront storeFront, UserProfile userProfile, string activeTab): base(storeFront, userProfile)
 		{
+			this.ActiveTab = activeTab;
 			this.StoreFrontId = storeFront.StoreFrontId;
 			this.AccountAdmin = storeFront.AccountAdmin;
 			this.AccountAdmin_UserProfileId = storeFront.AccountAdmin_UserProfileId;
@@ -47,6 +48,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.MetaApplicationTileColor = storeFront.MetaApplicationTileColor;
 			this.MetaDescription = storeFront.MetaDescription;
 			this.MetaKeywords = storeFront.MetaKeywords;
+			this.Order = storeFront.Order;
 			this.BodyTopScriptTag = storeFront.BodyTopScriptTag;
 			this.BodyBottomScriptTag = storeFront.BodyBottomScriptTag;
 			this.Name = storeFront.Name;
@@ -65,6 +67,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.PublicUrl = storeFront.PublicUrl;
 			this.RegisteredNotify = storeFront.RegisteredNotify;
 			this.RegisteredNotify_UserProfileId = storeFront.RegisteredNotify_UserProfileId;
+			this.RegisterSuccessPage = storeFront.RegisterSuccessPage;
+			this.RegisterSuccess_PageId = storeFront.RegisterSuccess_PageId;
 			this.RegisterWebForm = storeFront.RegisterWebForm;
 			this.Register_WebFormId = storeFront.Register_WebFormId;
 			this.StoreErrorPage = storeFront.StoreErrorPage;
@@ -74,6 +78,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 			this.IsSystemAdmin = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 		}
+
+		public string ActiveTab { get; set; }
 
 		[Key]
 		[Display(Name = "Store Front Id", Description = "Internal Store Front Id Number")]
@@ -212,6 +218,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(50)]
 		public string NavBarRegisterLinkText { get; set; }
 
+		[Required]
+		[Display(Name = "Index", Description = "Use this to sort your store front list in a particular order. \nExample: 100")]
+		public int Order { get; set; }
+
+
 		[Display(Name = "Register Web Form", Description = "Register Form for new users signing up or use the system default registration form")]
 		public WebForm RegisterWebForm { get; set; }
 
@@ -253,6 +264,12 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		[Display(Name = "Registered Notify Id", Description = "This profile will receive a notification when a new user signs up")]
 		public int RegisteredNotify_UserProfileId { get; set; }
+
+		[Display(Name = "Register Success Page", Description = "Choose a page to display when a user signs up successfully, or or use the system default register success page")]
+		public Page RegisterSuccessPage { get; set; }
+
+		[Display(Name = "Register Success Page Id", Description = "Choose a page to display when a user signs up successfully, or or use the system default register success page")]
+		public int? RegisterSuccess_PageId { get; set; }
 
 		[Display(Name = "Store Error Page", Description = "Choose a page to display for web site errors or use the system default error page")]
 		public Page StoreErrorPage { get; set; }

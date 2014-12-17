@@ -222,10 +222,44 @@ namespace GStore.Data
 		/// <param name="pageTemplates"></param>
 		/// <param name="selectedPageTemplateId"></param>
 		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectList(this IQueryable<ValueList> valueLists, int? selectedValueListId)
+		{
+			IQueryable<ValueList> query = valueLists.WhereIsActiveOrSelected(selectedValueListId);
+			IOrderedQueryable<ValueList> orderedQuery = query.ApplyDefaultSort();
+
+			int valueListId = selectedValueListId ?? 0;
+
+			IEnumerable<SelectListItem> items = orderedQuery.Select(vl => new SelectListItem
+			{
+				Value = vl.ValueListId.ToString(),
+				Text = (vl.ValueListId == valueListId ? "[SELECTED] " : string.Empty) + vl.Name + " [" + vl.ValueListId + "]" + (vl.IsActiveDirect() ? string.Empty : " [INACTIVE]"),
+				Selected = vl.ValueListId == valueListId
+			});
+
+			return items;
+		}
+
+		public static IEnumerable<SelectListItem> ToSelectListWithNull(this IQueryable<ValueList> valueLists, int? selectedValueListId, string nullString = "(no value list)")
+		{
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedValueListId.HasValue) });
+			items.AddRange(valueLists.ToSelectList(selectedValueListId));
+
+			return items;
+		}
+
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
 		public static IEnumerable<SelectListItem> ToSelectList(this IQueryable<WebForm> webForms, int? selectedWebFormId)
 		{
 			IQueryable<WebForm> query = webForms.WhereIsActiveOrSelected(selectedWebFormId);
-			IOrderedQueryable<WebForm> orderedQuery = query.ApplySort(null, null, null);
+			IOrderedQueryable<WebForm> orderedQuery = query.ApplyDefaultSort();
 
 			int webFormId = selectedWebFormId ?? 0;
 

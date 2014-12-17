@@ -6,6 +6,6 @@
 	}
 	else
 	{
-		@:'@Model.Name' [@(Model.PageId)] - @Html.DisplayFor(model => model.StoreFront)
+		@:'@Model.Name' [@(Model.PageId)] - @(Html.DisplayNameFor(model => model.StoreFront)) @Html.DisplayFor(model => model.StoreFront)
 	}
 }

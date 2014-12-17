@@ -29,5 +29,24 @@ namespace GStore.Models
 		[Display(Name = "Web Form Field")]
 		public virtual WebFormField WebFormField { get; set; }
 
+		[Required]
+		[Display(Name = "Web Form Name")]
+		public string WebFormName { get; set; }
+
+		[Required]
+		[Display(Name = "Web Form Order")]
+		public int WebFormOrder { get; set; }
+
+		[Required]
+		[Display(Name = "Web Form Field Name")]
+		public string WebFormFieldName { get; set; }
+
+		[Required]
+		[Display(Name = "Web Form Field Order")]
+		public int WebFormFieldOrder { get; set; }
+
+		[Required]
+		[Display(Name = "Web Form Field Label text")]
+		public string WebFormFieldLabelText { get; set; }
 	}
 }

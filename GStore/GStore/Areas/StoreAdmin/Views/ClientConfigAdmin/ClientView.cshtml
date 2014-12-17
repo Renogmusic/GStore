@@ -3,6 +3,51 @@
 @using GStore.Data
 @using GStore.Identity
 
+@{
+	string tabBasicActive = string.Empty;
+	string tabEmailActive = string.Empty;
+	string tabSmsActive = string.Empty;
+	string tabAdvancedActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "email":
+			tabEmailActive = "active";
+			break;
+		case "sms":
+			tabSmsActive = "active";
+			break;
+		case "advanced":
+			tabAdvancedActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+}
+<script>
+	function JumpToEditTab() {
+		var url = '@(Url.Action("ClientEdit", new { Tab = "XXXX"}))';
+		var tabName = GetActiveTab();
+		document.location = url.replace("XXXX", tabName);
+	}
+	function GetActiveTab() {
+		if (document.getElementById('ActiveTab')) {
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName) {
+		if (document.getElementById('ActiveTab')) {
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+</script>
+@Html.HiddenFor(model => model.ActiveTab)
+
 <div class="row">
 	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminDetailsPageTitle text-success">
 		Client Details:
@@ -16,7 +61,7 @@
 		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Edit", "ClientEdit", null, new { @class = "btn btn-warning" })
+			<a class="btn btn-warning" href="#" onclick="JumpToEditTab();">Edit</a>
 		}
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("View without Tabs", "ClientViewNoTabs", null, new { @class = "btn btn-primary" })
@@ -27,16 +72,19 @@
 
 <div class="row">
 	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
-		<li class="active"><a data-toggle="tab" href="#sectionBasic">Basic</a></li>
-		<li class=""><a data-toggle="tab" href="#sectionEmail">Email</a></li>
-		<li class=""><a data-toggle="tab" href="#sectionSms">SMS Text</a></li>
-		<li class=""><a data-toggle="tab" href="#sectionAdvanced">Advanced</a></li>
+		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+		<li class="@(tabEmailActive)"><a data-toggle="tab" href="#sectionEmail" onclick="SetActiveTab('Email');">Email</a></li>
+		<li class="@(tabSmsActive)"><a data-toggle="tab" href="#sectionSms" onclick="SetActiveTab('Sms');">SMS Text</a></li>
+		<li class="@(tabAdvancedActive)"><a data-toggle="tab" href="#sectionAdvanced" onclick="SetActiveTab('Advanced');">Advanced</a></li>
 	</ul>
 
 	<div class="tab-content">
 
-		<div id="sectionBasic" class="tab-pane fade in active">
-			<hr />
+		<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-6 bg-info">Basic Info</h3>
+			</div>
+
 			<dl class="dl-horizontal">
 				<dt>
 					@Html.DisplayNameFor(model => model.Client.Name)
@@ -51,8 +99,38 @@
 		</div>
 
 
-		<div id="sectionEmail" class="tab-pane fade in">
-			<hr />
+		<div id="sectionEmail" class="tab-pane fade in @(tabEmailActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-6 bg-info">Email</h3>
+			</div>
+
+			@{
+				if (GStore.Properties.Settings.Current.AppEnableEmail)
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-6 bg-success text-success">
+							<h3>Email System is Enabled</h3>
+							<p>
+								Check the Use SendGrid Email box and enter your sendgrid account info to enable Email for your site.<br />
+								Contact your System Administrator if you need assistance.
+							</p>
+						</div>
+					</div>
+				}
+				else
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+							<h3>Email System is disabled in web server settings.</h3>
+							<p>
+								These settings below will only take effect when Email is enabled for the web server.<br />
+								Contact your System Administrator if you wish to enable Email.
+							</p>
+						</div>
+					</div>
+				}
+			}
+
 			<dl class="dl-horizontal">
 
 				<dt>
@@ -60,7 +138,7 @@
 				</dt>
 				<dd>
 					@Html.DisplayFor(model => model.UseSendGridEmail)
-					<br/>@Html.HelpLabelFor(model => model.UseSendGridEmail)
+					<br />@Html.HelpLabelFor(model => model.UseSendGridEmail)
 				</dd>
 
 				<dt>
@@ -68,7 +146,7 @@
 				</dt>
 				<dd>
 					@Html.DisplayFor(model => model.SendGridMailAccount)
-					<br/>@Html.HelpLabelFor(model => model.SendGridMailAccount)
+					<br />@Html.HelpLabelFor(model => model.SendGridMailAccount)
 				</dd>
 
 				<dt>
@@ -76,7 +154,7 @@
 				</dt>
 				<dd>
 					@Html.DisplayFor(model => model.SendGridMailFromEmail)
-					<br/>@Html.HelpLabelFor(model => model.SendGridMailFromEmail)
+					<br />@Html.HelpLabelFor(model => model.SendGridMailFromEmail)
 				</dd>
 
 				<dt>
@@ -84,7 +162,7 @@
 				</dt>
 				<dd>
 					@Html.DisplayFor(model => model.SendGridMailFromName)
-					<br/>@Html.HelpLabelFor(model => model.SendGridMailFromName)
+					<br />@Html.HelpLabelFor(model => model.SendGridMailFromName)
 				</dd>
 
 				<dt>
@@ -92,14 +170,43 @@
 				</dt>
 				<dd>
 					@Html.DisplayFor(model => model.SendGridMailPassword)
-					<br/>@Html.HelpLabelFor(model => model.SendGridMailPassword)
+					<br />@Html.HelpLabelFor(model => model.SendGridMailPassword)
 				</dd>
 
 			</dl>
 		</div>
 
-		<div id="sectionSms" class="tab-pane fade in">
-			<hr />
+		<div id="sectionSms" class="tab-pane fade in @(tabSmsActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-6 bg-info">SMS / Text Messages</h3>
+			</div>
+
+			@{
+				if (GStore.Properties.Settings.Current.AppEnableSMS)
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-6 bg-success text-success">
+							<h3>SMS/Text Message System is Enabled</h3>
+							<p>
+								Check the Use Twilio SMS Service box and enter your Twilio account info to enable SMS Text Messages for your site.<br />
+								Contact your System Administrator if you need assistance.
+							</p>
+						</div>
+					</div>
+				}
+				else
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+							<h3>SMS/Text Message System is disabled in web server settings.</h3>
+							<p>
+								These settings below will only take effect when SMS/Text Messaging is enabled for the web server.<br />
+								Contact your System Administrator if you wish to enable SMS/Text Messages.
+							</p>
+						</div>
+					</div>
+				}
+			}
 			<dl class="dl-horizontal">
 
 				<dt>
@@ -158,8 +265,11 @@
 			</dl>
 		</div>
 
-		<div id="sectionAdvanced" class="tab-pane fade in">
-			<hr />
+		<div id="sectionAdvanced" class="tab-pane fade in @(tabAdvancedActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-6 bg-info">Advanced Settings</h3>
+			</div>
+
 			<dl class="dl-horizontal">
 
 				<dt>
@@ -192,7 +302,7 @@
 		@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			@Html.ActionLink("Edit", "ClientEdit", null, new { @class = "btn btn-warning" })
+			<a class="btn btn-warning" href="#" onclick="JumpToEditTab();">Edit</a>
 		}
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		@Html.ActionLink("View without Tabs", "ClientViewNoTabs", null, new { @class = "btn btn-primary" })

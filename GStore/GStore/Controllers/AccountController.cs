@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Collections.Generic;
+using GStore.AppHtmlHelpers;
 using GStore.Models;
 using GStore.Data;
 using GStore.Models.ViewModels;
@@ -159,8 +160,17 @@ namespace GStore.Controllers
 				default:
 					UserProfile userProfileFailure = GStoreDb.GetUserProfileByEmail(model.Email, false);
 					GStoreDb.LogSecurityEvent_LoginFailed(this.HttpContext, RouteData, model.Email, model.Password, userProfileFailure, this);
-					//todo: handle login attempt with unknown email - maybe ask user to sign up, or let us know if spam?
-					ModelState.AddModelError("", "Invalid login attempt.");
+
+					if (userProfileFailure == null)
+					{
+						//unknown user, maybe ask to sign up?
+						ModelState.AddModelError("", "User Name or Password is invalid. Please correct it and try again. ");
+					}
+					else
+					{
+						//looks like an existing user but wrong password
+						ModelState.AddModelError("", "User Name or Password is invalid. Please check your password and try again. ");
+					}
 					return View(model);
 			}
 		}
@@ -252,7 +262,7 @@ namespace GStore.Controllers
 					{
 						if (CurrentStoreFrontOrThrow.RegisterWebForm.IsActiveBubble())
 						{
-							FormProcessorExtensions.ProcessWebForm(GStoreDb, this.ModelState, CurrentStoreFrontOrThrow.RegisterWebForm, null, CurrentUserProfileOrThrow, Request, WebFormProcessorType.RegisterUserFormProcessor);
+							FormProcessorExtensions.ProcessWebForm(GStoreDb, this.ModelState, CurrentStoreFrontOrThrow.RegisterWebForm, null, CurrentUserProfileOrThrow, Request, true);
 						}
 					}
 
@@ -268,6 +278,10 @@ namespace GStore.Controllers
 						hubCtx.Clients.All.addNewMessageToPage(title, message);
 					}
 
+					if (storeFront.RegisterSuccess_PageId.HasValue)
+					{
+						return Redirect(storeFront.RegisterSuccessPage.UrlResolved(this.Url));
+					}
 					return View("RegisterSuccess", newProfile);
 				}
 				AddErrors(result);
@@ -415,7 +429,7 @@ namespace GStore.Controllers
 				{
 					//todo: user not found; email the person to get them to sign up, or do nothing?
 					GStoreDb.LogSecurityEvent_ForgotPasswordEmailNotFound(HttpContext, RouteData, model.Email, this);
-					return View("ForgotPasswordConfirmation");
+					return View("ForgotPasswordNoUser", model);
 				}
 
 				UserProfile profile = GStoreDb.GetUserProfileByEmail(model.Email);

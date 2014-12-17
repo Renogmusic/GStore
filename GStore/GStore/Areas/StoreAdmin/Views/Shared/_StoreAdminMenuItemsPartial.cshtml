@@ -45,7 +45,6 @@
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
 					@Html.ActionLink("Edit Store Front Configuration", "StoreFrontEdit", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
 				</li>
-				<li class="nav-divider"></li>
 			}
 
 		</ul>
@@ -69,6 +68,29 @@
 			{
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
 					@Html.ActionLink("Create a Page", "Create", "PageAdmin")
+				</li>
+			}
+		</ul>
+	</li>
+}
+
+@if (Html.UserHasPermission(GStoreAction.WebForms_StoreAdminMenuItem))
+{
+	<!-- Pages Menu Item -->
+	<li class="AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Web Forms">Web Forms<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			@if (Html.UserHasPermission(GStoreAction.WebForms_Manager))
+			{
+				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+					@Html.ActionLink("Web Form Manager", "Manager", "WebFormAdmin")
+				</li>
+				<li class="nav-divider"></li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.WebForms_Create))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Create a Web Form", "Create", "WebFormAdmin")
 				</li>
 			}
 		</ul>

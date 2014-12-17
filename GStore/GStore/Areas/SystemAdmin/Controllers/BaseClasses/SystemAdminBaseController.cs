@@ -411,6 +411,25 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			return new SelectList(list, "Value", "Text");
 		}
 
+		protected SelectList StoreFrontRegisterSuccessPageList(int? clientId, int? storeFrontId)
+		{
+
+			SelectListItem itemNone = new SelectListItem();
+			itemNone.Value = null;
+			itemNone.Text = "(GStore System Default Register Success Page)";
+
+			List<SelectListItem> list = new List<SelectListItem>();
+			list.Add(itemNone);
+			if (clientId.HasValue && storeFrontId.HasValue)
+			{
+				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
+				if (dbItems != null)
+				{
+					list.AddRange(dbItems);
+				}
+			}
+			return new SelectList(list, "Value", "Text");
+		}
 
 		protected SelectList StoreFrontNotFoundPageList(int? clientId, int? storeFrontId)
 		{

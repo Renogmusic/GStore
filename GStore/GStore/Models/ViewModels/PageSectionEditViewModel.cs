@@ -28,7 +28,7 @@ namespace GStore.Models.ViewModels
 			{
 				throw new ArgumentNullException("page", "page must be specified and exist before editing page sections");
 			}
-			if (index == 0)
+			if (index < 1)
 			{
 				throw new ArgumentOutOfRangeException("index", "Index cannot be 0, it starts from 1 and up");
 			}

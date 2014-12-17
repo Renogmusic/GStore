@@ -169,7 +169,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[HttpPost]
 		[ActionName("Delete")]
 		[ValidateAntiForgeryToken]
-		[AuthorizeGStoreAction(true, GStoreAction.Pages_View, GStoreAction.Pages_Delete)]
+		[AuthorizeGStoreAction(GStoreAction.Pages_Delete)]
 		public ActionResult DeleteConfirmed(int? id)
 		{
 			if (!id.HasValue)
@@ -223,7 +223,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
-		public virtual PartialViewResult UpdatePageAjax(int? PageId, GStore.Models.ViewModels.PageEditViewModel pageEditViewModel, string Tab)
+		public virtual PartialViewResult UpdatePageAjax(int? PageId, GStore.Models.ViewModels.PageEditViewModel pageEditViewModel)
 		{
 			if (!PageId.HasValue)
 			{
@@ -277,7 +277,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				{
 					page = GStoreDb.UpdatePage(pageEditViewModel, this, storeFront, CurrentUserProfileOrThrow);
 					AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
-					pageEditViewModel = new PageEditViewModel(page, isStoreAdminEdit: true, activeTab: Tab);
+					pageEditViewModel = new PageEditViewModel(page, isStoreAdminEdit: true, activeTab: pageEditViewModel.ActiveTab);
 					return PartialView("_PageEditPartial", pageEditViewModel);
 				}
 				catch (Exception ex)

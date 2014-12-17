@@ -101,6 +101,13 @@ namespace GStore
 				);
 
 				routes.MapRoute(
+					name: "Stores-WebFormEdit",
+					url: "Stores/{urlstorename}/WebFormEdit/{action}/{id}",
+					defaults: new { controller = "WebFormEdit", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-DynamicPageFormSubmitRoute",
 					url: "Stores/{urlstorename}/SubmitForm/{*DynamicPageUrl}",
 					defaults: new { controller = "Page", action = "SubmitForm", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -221,6 +228,13 @@ namespace GStore
 			);
 
 			routes.MapRoute(
+				name: "WebFormEdit",
+				url: "WebFormEdit/{action}/{id}",
+				defaults: new { controller = "WebFormEdit", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
 				name: "DynamicPageEditRoute",
 				url: "Edit/{*DynamicPageUrl}",
 				defaults: new { controller = "Page", action = "Edit", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -245,6 +259,20 @@ namespace GStore
 				name: "DynamicPageEditSectionPostRoute",
 				url: "UpdateSectionAjax/{*DynamicPageUrl}",
 				defaults: new { controller = "Page", action = "UpdateSectionAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "DynamicWebFormEditPostRoute",
+				url: "UpdateWebFormAjax/{*DynamicPageUrl}",
+				defaults: new { controller = "Page", action = "UpdateWebFormAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "DynamicWebFormFieldEditPostRoute",
+				url: "UpdateWebFormFieldAjax/{*DynamicPageUrl}",
+				defaults: new { controller = "Page", action = "UpdateWebFormFieldAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
 

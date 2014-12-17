@@ -11,22 +11,9 @@ using System.Web.Mvc;
 
 namespace GStore.Data
 {
-	public enum WebFormProcessorType
-	{
-		[Display(Name = "Save to Store Front Forms Folder and Email Results")]
-		FileAndEmailFormProcessor = 100,
-
-		[Display(Name = "Save to Store Front Forms Folder")]
-		FileFormProcessor = 120,
-
-		[Display(Name = "Register User Processor")]
-		RegisterUserFormProcessor = 200,
-
-	}
-
 	public static class FormProcessorExtensions
 	{
-		public static bool ProcessWebForm(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, WebFormProcessorType webFormProcessorType)
+		public static bool ProcessWebForm(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, bool isRegisterPage)
 		{
 			if (modelStateDictionary == null)
 			{
@@ -40,12 +27,14 @@ namespace GStore.Data
 			{
 				throw new ArgumentNullException("request");
 			}
-			if (page == null && (webFormProcessorType != WebFormProcessorType.RegisterUserFormProcessor))
+			if (page == null && (!isRegisterPage))
 			{
 				throw new ArgumentNullException("page");
 			}
-
-
+			if (!isRegisterPage && !(page.WebFormSaveToDatabase || page.WebFormSaveToFile || page.WebFormSendToEmail))
+			{
+				throw new ArgumentException("No form processing specified in Page. One of the following must be enabled: page.WebFormSaveToDatabase or page.WebFormSaveToFile or page.WebFormSendToEmail", "page");
+			}
 
 			ValidateFields(modelStateDictionary, webForm, request);
 			if (!modelStateDictionary.IsValid)
@@ -72,20 +61,30 @@ namespace GStore.Data
 
 			if (page == null || page.WebFormSaveToDatabase)
 			{
-				SaveWebFormToDb(db, modelStateDictionary, webForm, page, userProfile, request, storeFront, formSubject, formBodyText);
+				//register form always goes to database
+				ProcessWebForm_ToDatabase(db, modelStateDictionary, webForm, page, userProfile, request, storeFront, formSubject, formBodyText);
 			}
 
-			switch (webFormProcessorType)
+			if (isRegisterPage)
 			{
-				case WebFormProcessorType.FileAndEmailFormProcessor:
-					return ProcessWebForm_FileAndEmail(modelStateDictionary, webForm, page, storeFront, userProfile, request);
-				case WebFormProcessorType.FileFormProcessor:
-					return ProcessWebForm_File(modelStateDictionary, webForm, page, storeFront, userProfile, request);
-				case WebFormProcessorType.RegisterUserFormProcessor:
-					return ProcessWebForm_Register(modelStateDictionary, webForm, page, userProfile, request);
-				default:
-					throw new ApplicationException("Unknown Web Form Processor Type: " + page.WebFormProcessorType.ToString() + " StringValue: " + page.WebFormProcessorType.ToDisplayName());
+				bool registered = ProcessWebForm_Register(modelStateDictionary, webForm, page, userProfile, request);
 			}
+			else
+			{
+				bool savedToFile = false;
+				bool emailed = false;
+				if (page.WebFormSaveToFile)
+				{
+					savedToFile = ProcessWebForm_ToFile(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+				}
+				if (page.WebFormSendToEmail)
+				{
+					emailed = ProcessWebForm_ToEmail(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+				}
+			}
+
+			return true;
+
 		}
 
 		public static void ValidateFields(ModelStateDictionary modelStateDictionary, WebForm webForm, HttpRequestBase request)
@@ -95,24 +94,24 @@ namespace GStore.Data
 			{
 				string formFieldName = "Page.WebForm.item." + field.Name;
 				string stringValue = null;
-				if (request.Form.AllKeys.Contains(formFieldName))
+				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 				{
-					stringValue = request.Form.Get(formFieldName) ?? string.Empty;
+					stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 				}
 				if (stringValue == null)
 				{
 					formFieldName = "WebForm.item." + field.Name;
-					if (request.Form.AllKeys.Contains(formFieldName))
+					if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 					{
-						stringValue = request.Form.Get(formFieldName) ?? string.Empty;
+						stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 					}
 				}
 				if (stringValue == null)
 				{
 					formFieldName = "item." + field.Name;
-					if (request.Form.AllKeys.Contains(formFieldName))
+					if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 					{
-						stringValue = request.Form.Get(formFieldName) ?? string.Empty;
+						stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 					}
 				}
 				
@@ -132,7 +131,7 @@ namespace GStore.Data
 
 		}
 
-		private static void SaveWebFormToDb(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, StoreFront storeFront, string formSubject, string formBodyText)
+		private static void ProcessWebForm_ToDatabase(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, StoreFront storeFront, string formSubject, string formBodyText)
 		{
 			WebFormResponse webFormResponse = db.WebFormResponses.Create();
 			webFormResponse.StoreFrontId = storeFront.StoreFrontId;
@@ -168,7 +167,7 @@ namespace GStore.Data
 			return true;
 		}
 
-		private static bool ProcessWebForm_File(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static bool ProcessWebForm_ToFile(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
 		{
 			if (!modelStateDictionary.IsValid)
 			{
@@ -192,14 +191,8 @@ namespace GStore.Data
 			return true;
 		}
 
-		private static bool ProcessWebForm_FileAndEmail(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static bool ProcessWebForm_ToEmail(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
 		{
-
-			if (!ProcessWebForm_File(modelStateDictionary, webForm, page, storeFront, userProfile, request))
-			{
-				//file log failed, return false
-				return false;
-			}
 
 			if (!Properties.Settings.Current.AppEnableEmail || !page.StoreFront.Client.UseSendGridEmail)
 			{
@@ -325,6 +318,11 @@ namespace GStore.Data
 				fieldResponse.IsPending = false;
 				fieldResponse.StartDateTimeUtc = DateTime.UtcNow;
 				fieldResponse.EndDateTimeUtc = DateTime.UtcNow;
+				fieldResponse.WebFormFieldLabelText = field.LabelText;
+				fieldResponse.WebFormFieldName = field.Name;
+				fieldResponse.WebFormFieldOrder = field.Order;
+				fieldResponse.WebFormName = field.WebForm.Name;
+				fieldResponse.WebFormOrder = field.WebForm.Order;
 
 				fieldResponse.SetValueFieldsFromFormValues(request);
 
@@ -375,7 +373,7 @@ namespace GStore.Data
 			
 			switch (data.DataType)
 			{
-				case GStoreValueDataType.YesNo:
+				case GStoreValueDataType.CheckboxYesNo:
 					if (!string.IsNullOrWhiteSpace(data.Value1String))
 					{
 						if (
@@ -551,7 +549,7 @@ namespace GStore.Data
 			string value1 = string.Empty;
 			if (request.Form.AllKeys.Contains(formFieldName))
 			{
-				value1 = request.Form.Get(formFieldName);
+				value1 = request.Unvalidated.Form.Get(formFieldName);
 			}
 
 			return value1;
@@ -564,7 +562,7 @@ namespace GStore.Data
 			string value2 = string.Empty;
 			if (request.Form.AllKeys.Contains(formFieldName + "_Value2"))
 			{
-				value2 = request.Form.Get(formFieldName + "_Value2");
+				value2 = request.Unvalidated.Form.Get(formFieldName + "_Value2");
 			}
 
 			return value2;

@@ -71,17 +71,20 @@ namespace GStore.Models
 		[Display(Name = "Store Fronts")]
 		public virtual ICollection<StoreFront> StoreFronts { get; set; }
 
-		[Display(Name = "Client Roles")]
-		public virtual ICollection<ClientRole> ClientRoles { get; set; }
+		[Display(Name = "Page Templates")]
+		public virtual ICollection<PageTemplate> PageTemplates { get; set; }
 
 		[Display(Name = "Themes")]
 		public virtual ICollection<Theme> Themes { get; set; }
 
-		[Display(Name = "Page Templates")]
-		public virtual ICollection<PageTemplate> PageTemplates { get; set; }
-
 		[Display(Name = "Web Forms")]
 		public virtual ICollection<WebForm> WebForms { get; set; }
+
+		[Display(Name = "Value Lists")]
+		public virtual ICollection<ValueList> ValueLists { get; set; }
+
+		[Display(Name = "Client Roles")]
+		public virtual ICollection<ClientRole> ClientRoles { get; set; }
 
 
 

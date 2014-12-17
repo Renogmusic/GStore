@@ -250,6 +250,45 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
+		/// Creates a sort link that runs an action ; uses a child object such as  model => yourobject.Name  and cuts out yourobjectname
+		/// internally uses Request["SortBy"] and Request["SortAscending"]
+		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TProperty"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionSortLinkForItem<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool removeItemName, bool useShortName = true, string TabName = "", int? id = null)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TProperty>(expression, new ViewDataDictionary<TModel>());
+			string expressionText = ExpressionHelper.GetExpressionText(expression);
+			string displayName = (useShortName ? metadata.ShortDisplayName : null) ?? metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
+
+			string[] dotValues = expressionText.Split('.');
+			if (dotValues.Count() > 1)
+			{
+				string firstItem = dotValues[0];
+				if (useShortName)
+				{
+					displayName = htmlHelper.DisplayShortName(firstItem).ToHtmlString() + " " + displayName;
+				}
+				else
+				{
+					displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				}
+			}
+
+			if (removeItemName && dotValues.Count() > 1)
+			{
+				expressionText = dotValues[1];
+			}
+
+			return htmlHelper.ActionSortLink(displayName, action, expressionText, TabName, id);
+		}
+
+		/// <summary>
 		/// Creates a sort link that runs an action
 		/// internally uses Request["SortBy"] and Request["SortAscending"]
 		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
@@ -294,7 +333,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="action"></param>
 		/// <param name="sortField"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLink(this HtmlHelper helper, string linkText, string action, string sortField)
+		public static MvcHtmlString ActionSortLink(this HtmlHelper helper, string linkText, string action, string sortField, string TabName = "", int? id = null)
 		{
 
 			HttpRequestBase request = helper.ViewContext.HttpContext.Request;
@@ -303,7 +342,7 @@ namespace GStore.AppHtmlHelpers
 			bool linkWillSortUp = true;
 			bool? currentSortUp = null;
 
-			if (string.IsNullOrEmpty(request["SortBy"]) || request["SortBy"].ToLower() != sortField.ToLower())
+			if (string.IsNullOrEmpty(request["SortBy"]) || request["SortBy"].ToLower() != (sortField ?? string.Empty).ToLower())
 			{
 				//fresh sort
 				//this field is not part of the sort
@@ -344,7 +383,30 @@ namespace GStore.AppHtmlHelpers
 
 			}
 
-			MvcHtmlString returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
+			MvcHtmlString returnValue = null;
+			if (id.HasValue)
+			{
+				if (!string.IsNullOrWhiteSpace(TabName))
+				{
+					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { id= id.Value, SortBy = sortField, SortAscending = linkWillSortUp, Tab = TabName }, new { @title = title });
+				}
+				else
+				{
+					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { id = id.Value, SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
+				}
+			}
+			else
+			{
+				if (!string.IsNullOrWhiteSpace(TabName))
+				{
+					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp, Tab = TabName }, new { @title = title });
+				}
+				else
+				{
+					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
+				}
+			}
+
 			if (!string.IsNullOrEmpty(sortClue))
 			{
 				returnValue = new MvcHtmlString(returnValue.ToHtmlString() + helper.Encode(sortClue));
@@ -1081,9 +1143,28 @@ namespace GStore.AppHtmlHelpers
 
 			return new MvcHtmlString(html);
 		}
+
 		public static string UrlResolved(this Page page, UrlHelper urlHelper)
 		{
 			string url = page.Url.Trim('~').Trim('/');
+			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
+			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
+			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
+			{
+				url = appRoot + "/" + url;
+			}
+			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
+			if (!string.IsNullOrEmpty(urlStoreName))
+			{
+				url = "Stores/" + urlStoreName + "/" + url;
+			}
+
+			return "/" + url;
+		}
+
+		public static string UrlResolved(this PageEditViewModel pageEditViewModel, UrlHelper urlHelper)
+		{
+			string url = pageEditViewModel.Url.Trim('~').Trim('/');
 			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
 			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
 			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
@@ -1707,6 +1788,11 @@ namespace GStore.AppHtmlHelpers
 			return value.ToString("yyyy-MM-dd_hh_mm_ss");
 		}
 
+		/// <summary>
+		/// Returns the display name of a enum value, using the Display attribute, or the enum name
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static string ToDisplayName(this Enum value)
 		{
 			if (value == null)
@@ -1739,6 +1825,38 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Description : string.Empty;
+		}
+
+		/// <summary>
+		/// Gets a display attribute for an object without using HTML Helper
+		/// works for any object, if display attribute is not found, will return property name
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <param name="model"></param>
+		/// <param name="fieldName"></param>
+		/// <param name="shortName"></param>
+		/// <returns></returns>
+		public static string GetDisplayName<TModel>(this TModel model, string fieldName, bool shortName = false) where TModel : class
+		{
+			PropertyInfo prop = model.GetType().GetProperty(fieldName);
+			if (prop == null)
+			{
+				throw new ApplicationException("Property '" + fieldName + "' not found in this object: " + model.GetType().FullName);
+			}
+			DisplayAttribute displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
+			if (displayAttribute != null)
+			{
+				if (shortName && !(string.IsNullOrEmpty(displayAttribute.ShortName)))
+				{
+					return displayAttribute.ShortName;
+				}
+				if (!string.IsNullOrEmpty(displayAttribute.Name))
+				{
+					return displayAttribute.Name;
+				}
+			}
+
+			return prop.Name;
 		}
 
 	}

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Data
 {
@@ -37,6 +38,7 @@ namespace GStore.Data
 			}
 
 			Identity.AspNetIdentityContext ctx = new Identity.AspNetIdentityContext();
+			ctx.Database.Initialize(false);
 			ctx.CreateRoleIfNotExists("AccountAdmin");
 			ctx.CreateRoleIfNotExists("NotificationAdmin");
 			ctx.CreateRoleIfNotExists("StoreAdmin");
@@ -105,23 +107,46 @@ namespace GStore.Data
 
 			if (storeDb.Pages.IsEmpty())
 			{
-				Page page1 = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, firstStoreFront, firstPageTemplate);
+				Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, firstStoreFront, firstPageTemplate);
 
-				Page page2 = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, firstStoreFront, firstPageTemplate);
-				NavBarItem aboutLink = storeDb.CreateSeedNavBarItem("About Us", page2.PageId, false, null, firstStoreFront);
+				Page aboutUsPage = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, firstStoreFront, firstPageTemplate);
+				NavBarItem aboutLink = storeDb.CreateSeedNavBarItem("About Us", aboutUsPage.PageId, false, null, firstStoreFront);
 
-				Page page3 = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, firstStoreFront, firstPageTemplate);
-				NavBarItem contactLink = storeDb.CreateSeedNavBarItem("Contact Us", page3.PageId, false, null, firstStoreFront);
+				Page contactUsPage = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, firstStoreFront, firstPageTemplate);
+				NavBarItem contactUsLink = storeDb.CreateSeedNavBarItem("Contact Us", contactUsPage.PageId, false, null, firstStoreFront);
 
-				Page page4 = storeDb.CreateSeedPage("Questions?", "Questions?", "/Answers", 400, firstStoreFront, firstPageTemplate);
-				NavBarItem answersLink = storeDb.CreateSeedNavBarItem("Questions?", page4.PageId, false, null, firstStoreFront);
+				Page answersPage = storeDb.CreateSeedPage("Answers", "Answers", "/Answers", 400, firstStoreFront, firstPageTemplate);
+				NavBarItem answersLink = storeDb.CreateSeedNavBarItem("Questions?", answersPage.PageId, false, null, firstStoreFront);
 
-				Page page5 = storeDb.CreateSeedPage("Location", "Location", "/Location", 500, firstStoreFront, firstPageTemplate);
-				NavBarItem locationLink = storeDb.CreateSeedNavBarItem("Location", page5.PageId, false, null, firstStoreFront);
+				Page locationPage = storeDb.CreateSeedPage("Location", "Location", "/Location", 500, firstStoreFront, firstPageTemplate);
+				NavBarItem locationLink = storeDb.CreateSeedNavBarItem("Location", locationPage.PageId, false, null, firstStoreFront);
 
-				//NavBarItem aboutGStoreLink = storeDb.CreateSeedNavBarItemForAction("About GStore", 9999, "About", "GStore", string.Empty, false, null, firstStoreFront);
+				if (storeDb.WebForms.IsEmpty())
+				{
+					//add sample WebForms for Contact Us and Register
+					WebForm registerForm = storeDb.CreateSeedWebForm("Sample Register Form", "Sample Register Form", firstClient);
+					WebFormField customField = storeDb.CreateSeedWebFormField(registerForm, "How did you find us?", helpLabelBottomText: "Enter the name of the web site or person that referred you to us");
+
+					WebForm contactForm = storeDb.CreateSeedWebForm("Sample Contact Form", "Sample Contact Form", firstClient);
+					WebFormField contactName = storeDb.CreateSeedWebFormField(contactForm, "Your Name", 100, isRequired: true, helpLabelBottomText: "Please enter your Name");
+					WebFormField contactEmail = storeDb.CreateSeedWebFormField(contactForm, "Your Email Address", 101, isRequired: true, helpLabelBottomText: "Please enter your Email Address");
+					WebFormField contactPhone = storeDb.CreateSeedWebFormField(contactForm, "Phone (optional)", 102, isRequired: false, helpLabelTopText: "If you would like us to reach you by phone, please enter your phone number below.");
+					WebFormField contactMessage = storeDb.CreateSeedWebFormField(contactForm, "Message", 103, dataType: GStoreValueDataType.MultiLineText, isRequired: true, helpLabelTopText: "Enter a message below");
+
+					contactUsPage.WebForm = contactForm;
+					contactUsPage.WebFormId = contactForm.WebFormId;
+					firstStoreFront.Register_WebFormId = registerForm.WebFormId;
+					firstStoreFront.RegisterWebForm = registerForm;
+					storeDb.SaveChangesEx(true, false, false, false);
+
+				}
 
 			}
+
+
+
+
+
 
 			//add browser user
 			UserProfile browserProfile = browserUser.GetUserProfile(storeDb, false);
@@ -166,6 +191,8 @@ namespace GStore.Data
 				storeDb.RecalculateProductCategoryActiveCount(firstStoreFront);
 				
 			}
+
+			
 
 
 		}
@@ -212,7 +239,7 @@ namespace GStore.Data
 			profile.SendSiteMessagesToSms = false;
 			profile.SubscribeToNewsletterEmail = true;
 			profile.UserName = userName;
-			profile.IsPending = true;
+			profile.IsPending = false;
 			profile.Order = 100;
 			profile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			profile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -546,6 +573,53 @@ namespace GStore.Data
 			storeDb.SaveChangesEx(true, false, false, false);
 
 			return pageTemplate;
+		}
+
+		public static WebForm CreateSeedWebForm(this IGstoreDb storeDb, string name, string description, Client client)
+		{
+			WebForm webForm = storeDb.WebForms.Create();
+			webForm.SetDefaultsForNew(client.ClientId);
+			webForm.Client = client;
+			webForm.Name = name;
+			webForm.Description = description;
+			storeDb.WebForms.Add(webForm);
+			storeDb.SaveChangesEx(true, false, false, false);
+
+			return webForm;
+		}
+
+		public static WebFormField CreateSeedWebFormField(this IGstoreDb storeDb, WebForm webForm, string name, int order = 1000, string description = null, bool isRequired = false, string helpLabelBottomText = "", string helpLabelTopText = "", GStoreValueDataType? dataType = null)
+		{
+			if (webForm == null)
+			{
+				throw new ArgumentNullException("webForm");
+			}
+			if (string.IsNullOrEmpty(name))
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			WebFormField webFormField = storeDb.WebFormFields.Create();
+			webFormField.SetDefaultsForNew(webForm);
+			webFormField.Client = webForm.Client;
+
+			webFormField.Name = name;
+			webFormField.Description = description ?? name;
+			webFormField.IsRequired = isRequired;
+			webFormField.LabelText = name;
+			webFormField.Order = order;
+			webFormField.HelpLabelBottomText = helpLabelBottomText;
+			webFormField.HelpLabelTopText = helpLabelTopText;
+			if (dataType.HasValue)
+			{
+				webFormField.DataType = dataType.Value;
+				webFormField.DataTypeString = dataType.ToDisplayName();
+			}
+
+			storeDb.WebFormFields.Add(webFormField);
+			storeDb.SaveChangesEx(true, false, false, false);
+
+			return webFormField;
 		}
 
 		public static Page CreateAutoHomePage(this IGstoreDb db, HttpRequestBase request, StoreFront storeFront, Controllers.BaseClass.BaseController baseController)

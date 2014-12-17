@@ -26,8 +26,6 @@ namespace GStore.Identity
 		Pages_Create = 3030,
 		Pages_Edit = 3040,
 		Pages_Delete = 3050,
-		Pages_Edit_MetaTags = 3060,
-		Pages_Edit_Scripts = 3070,
 
 		WebForms_StoreAdminMenuItem = 3500,
 		WebForms_Manager = 3510,
@@ -35,8 +33,6 @@ namespace GStore.Identity
 		WebForms_Create = 3530,
 		WebForms_Edit = 3540,
 		WebForms_Delete = 3550,
-		WebForms_Edit_MetaTags = 3560,
-		WebForms_Edit_Scripts = 3570,
 
 		Catalog_StoreAdminMenuItem = 4000,
 		Catalog_Manager = 4100,

@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.ViewModels.PageEditViewModel
 @using GStore.AppHtmlHelpers
+@using GStore.Data
 @{
 	//MvcHtmlString prefix = new MvcHtmlString("viewModel[" + Model.Index + "].");
 	List<SelectListItem> themeList = Model.ThemeSelectList;
@@ -96,17 +97,27 @@
 		/*background-color: green;*/
 	}
 </style>
-
+@Html.HiddenFor(model => model.ActiveTab)
+<script>
+	function SetActiveTab(tabName) {
+		if (document.getElementById('PageEditViewModel_ActiveTab')) {
+			document.getElementById('PageEditViewModel_ActiveTab').value = tabName;
+		}
+		if (document.getElementById('ActiveTab')) {
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+</script>
 <ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
-	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage">Page</a></li>
-	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme">Theme</a></li>
-	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta">Meta</a></li>
-	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm">Form</a></li>
-	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation">Activation</a></li>
+	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="SetActiveTab('Page');">Page</a></li>
+	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="SetActiveTab('Theme');">Theme</a></li>
+	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="SetActiveTab('Meta');">Meta</a></li>
+	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="SetActiveTab('Form');">Form</a></li>
+	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 	@{
 		if (showContentTab)
 		{
-			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent">Content</a></li>
+			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content');">Content</a></li>
 		}
 	}
 	@{
@@ -121,7 +132,7 @@
 			<li class=""><a href="@(refreshUrl)">Refresh</a></li>
 		}
 
-		if (Model.PageId != 0 && Model.IsActiveBubble)
+		if (!Model.IsCreatePage && Model.IsActiveBubble)
 		{
 			if (Model.IsStoreAdminEdit)
 			{
@@ -153,12 +164,13 @@
 <div class="tab-content">
 
 	<div id="sectionContent" class="tab-pane fade in@(sectionContentActive)">
+		<h3 class="col-md-offset-3 col-md-9 bg-success">Page Content</h3>
 	</div>
 
 	<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
 		<div class="row form-group text-left-md text-left-lg">
 
-			<h3 class="col-md-offset-3 col-md-9">Basic Page Fields</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-success">Basic Page Fields</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "text-right control-label col-md-3" })
@@ -199,13 +211,24 @@
 					@Html.HelpLabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>
 			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
 		</div>
 	</div>
 
 	<div id="sectionTheme" class="tab-pane fade in@(sectionThemeActive)">
 		<div class="row form-group text-left-md text-left-lg">
 
-			<h3 class="col-md-offset-3 col-md-9">Theme and Template</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-success">Theme and Template</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "text-right control-label col-md-3" })
@@ -231,17 +254,7 @@
 
 	<div id="sectionMeta" class="tab-pane fade in@(sectionMetaActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Meta Tags</h3>
-
-			<div class="form-group">
-				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
+			<h3 class="col-md-offset-3 col-md-9 bg-success">Meta Tags</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "text-right control-label col-md-3" })
@@ -307,7 +320,7 @@
 
 	<div id="sectionForm" class="tab-pane fade in@(sectionFormActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Form</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-success">Form</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormId, htmlAttributes: new { @class = "text-right control-label col-md-3" })
@@ -319,13 +332,77 @@
 				</div>
 			</div>
 
+			@{
+				if (Model.WebFormId.HasValue && Html.UserHasPermissionToAny(GStore.Identity.GStoreAction.WebForms_Edit, GStore.Identity.GStoreAction.WebForms_View))
+				{
+					<div class="form-group">
+						<label class="text-right control-label col-md-3">Web Form Fields</label>
+						<div class="col-md-9 text-left">
+							@{
+								if (Model.OriginalWebForm != null && Model.OriginalWebForm.WebFormFields != null)
+								{
+									@:Active Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().WhereIsActive().Count().ToString("N0"))
+									@:&nbsp;&nbsp;|&nbsp;&nbsp;
+									@:Total Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().Count().ToString("N0"))
+								<br />
+								}
+							}
+							@{
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_View))
+					{
+						@Html.ActionLink("View Web Form", "Details", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId }, new { @class = "btn btn-sm btn-success" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("View Fields", "Details", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId, Tab = "fields" }, new { @class = "btn btn-sm btn-success" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						}
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_Edit))
+					{
+						@Html.ActionLink("Edit Web Form", "Edit", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId }, new { @class = "btn btn-sm btn-warning" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("Edit Fields", "Edit", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId, Tab = "fields" }, new { @class = "btn btn-sm btn-warning" })
+					}
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_Create))
+					{
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("Create a New Web Form", "Create", "WebFormAdmin", new { area = "StoreAdmin" }, new { @class = "btn btn-sm btn-info" })
+					}
+							}
+						</div>
+						<div class="row">
+							<label class="col-md-offset-3 col-md-9 help-label">View and edit fields for the current form. Save changes before clicking these links.</label>
+						</div>
+					</div>
+				}
+			}
+
+
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.WebFormSaveToDatabase, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.EditorFor(model => model.WebFormSaveToDatabase, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormSaveToFile, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormSendToEmail, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>
 			</div>
 
@@ -384,7 +461,7 @@
 
 	<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Activation</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-success">Activation</h3>
 
 			<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
 			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
@@ -395,7 +472,7 @@
 					<p style="padding-top: 5px;">
 						<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
 					</p>
-					</div>
+				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>

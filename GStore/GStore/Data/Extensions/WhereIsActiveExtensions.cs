@@ -387,6 +387,31 @@ namespace GStore.Data
 				);
 		}
 
+		public static IQueryable<ValueList> WhereIsActive(this IQueryable<ValueList> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<ValueList> WhereIsActiveOrSelected(this IQueryable<ValueList> query, int? selectedId)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<ValueList> WhereIsActiveOnOrSelected(this IQueryable<ValueList> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.ValueListId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+		}
+
 
 		public static IQueryable<WebForm> WhereIsActive(this IQueryable<WebForm> query)
 		{

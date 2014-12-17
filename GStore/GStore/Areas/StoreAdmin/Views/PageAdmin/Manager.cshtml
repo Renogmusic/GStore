@@ -49,29 +49,31 @@
 
 	else
 	{
+		GStore.Models.ViewModels.PageEditViewModel firstRecord = null;
+		
 		<div class="table-responsive">
 			<table class="table table-condensed table-bordered table-hover">
 
 				<tr>
 					<th class="text-center"><small>@(Html.ActionSortLink("Default", "Manager", string.Empty))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Order", "Manager", "Order"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Page Id", "Manager", "PageId"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Order, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.PageId, "Manager", true))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Name", "Manager", "Name"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Page Title", "Manager", "PageTitle"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Url", "Manager", "Url"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Name, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.PageTitle, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Url, "Manager", true))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Page Template", "Manager", "PageTemplate.Name"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Theme", "Manager", "Theme.Name"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Web Form", "Manager", "WebForm.Name"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Update Date Time", "Manager", "UpdateDateTimeUtc"))</small></th>
-					<th class="text-center"><small>@(Html.ActionSortLink("Updated By", "Manager", "UpdatedBy"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.UpdateDateTimeUtc, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.UpdatedBy, "Manager", true))</small></th>
 					<th class="text-center">&nbsp;</th>
 				</tr>
 
 				@{
-		foreach (GStore.Models.Page item in Model.Pages)
+		foreach (GStore.Models.ViewModels.PageEditViewModel item in Model.PageEditViewModels)
 		{
-			bool isActive = item.IsActiveBubble();
+			bool isActive = item.IsActiveBubble;
 			string rowClass = (isActive ? string.Empty : "text-warning");
 			
 			<tr class="@(rowClass)">
@@ -79,8 +81,8 @@
 				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
 				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.PageId))</small></td>
 				<td onclick="GoToDetails(@(item.PageId));">
-					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
-						@(item.IsActiveDirect() ? "Active" : "Inactive")
+					<span class="@(item.IsActiveDirect ? "text-success": "text-warning")">
+						@(item.IsActiveDirect ? "Active" : "Inactive")
 					</span>
 					<br/>
 						@{
@@ -113,9 +115,9 @@
 						}
 					</small>
 				</td>
-				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.PageTemplate))</small></td>
-				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.Theme))</small></td>
-				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.WebForm))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.OriginalPageTemplate))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.OriginalTheme))</small></td>
+				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.OriginalWebForm))</small></td>
 				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
 				<td onclick="GoToDetails(@(item.PageId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
 				<td>

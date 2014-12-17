@@ -57,7 +57,7 @@
 	if (!Model.IsStoreAdminEdit)
 	{
 		cancelUrl = new MvcHtmlString(Url.Action("Display", new { DynamicPageUrl = Model.OriginalPageUrl }).Replace("//", "/"));
-		refreshUrl = new MvcHtmlString(Url.Action("Edit", new { DynamicPageUrl = Model.OriginalPageUrl }));
+		refreshUrl = new MvcHtmlString(Url.Action("Edit", new { DynamicPageUrl = Model.OriginalPageUrl, Tab = "XXXX" }));
 	}
 	else
 	{
@@ -91,22 +91,23 @@
 		margin-bottom: 0;
 		/*background-color: green;*/
 	}
-	.form-group .help-label
-	{
+
+	.form-group .help-label {
 		margin-right: 0;
 		padding-left: 30px;
 	}
 </style>
 <script>
 	@{
-		if (sectionContentActive.Length == 0)
+		@:$(document).ready(function () { HideFormPreview(); });
+											if (sectionContentActive.Length == 0)
 		{
 			@:$(document).ready(function () { HidePageSections(); });
-						}
+																}
 		else
 		{
 			@:$(document).ready(function () { ShowPageSections(); });
-						}
+																}
 	}
 	function ShowPageSections() {
 		if (document.getElementById('PageContent')) {
@@ -119,7 +120,11 @@
 			document.getElementById('PageContent').hidden = true;
 		}
 	}
-
+	function HideFormPreview() {
+		if (document.getElementById('PageForm')) {
+			document.getElementById('PageForm').hidden = true;
+		}
+	}
 	function MakeItActive()
 	{
 		var startDateTime = @(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString(true)));
@@ -148,31 +153,58 @@
 		{
 			document.getElementById('PageEditViewModel_EndDateTimeUtc').value = endDateTime;
 		}
-
 	}
+
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('PageEditViewModel_ActiveTab'))
+		{
+			document.getElementById('PageEditViewModel_ActiveTab').value = tabName;
+		}
+		if (document.getElementById('ActiveTab'))
+		{
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+
+	@{
+		if (showRefresh)
+		{
+			@:function RefreshPage()
+					@:{
+					@:	var url = '@(refreshUrl.ToHtmlString().ToJavaScriptString())';
+					@:	if (document.getElementById('PageEditViewModel_ActiveTab'))
+						@:	{
+						@:		url = url.replace("XXXX", document.getElementById("PageEditViewModel_ActiveTab").value);
+						@:	}
+						@:	else if (document.getElementById("ActiveTab"))
+							@:	{
+							@:		url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+							@:	}
+					@:	document.location.href = url;
+					@:}
+			}
+}
 </script>
 <div class="row">
 	<div class="col-md-offset-3 col-md-9 text-left">
 		@Html.AntiForgeryToken()
 		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 		@Html.HiddenFor(model => model.PageId)
+		@Html.HiddenFor(model => model.ActiveTab)
 	</div>
 </div>
 
 <ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
-	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="HidePageSections();">Page</a></li>
-	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="HidePageSections();">Theme</a></li>
-	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="HidePageSections();">Meta</a></li>
-	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="HidePageSections();">Form</a></li>
-	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation">Activation</a></li>
+	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="SetActiveTab('Page');HidePageSections();">Page</a></li>
+	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="SetActiveTab('Theme');HidePageSections();">Theme</a></li>
+	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="SetActiveTab('Meta');HidePageSections();">Meta</a></li>
+	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="SetActiveTab('Form');HidePageSections();">Form</a></li>
+	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');HidePageSections()">Activation</a></li>
 	@{
 		if (showContentTab)
 		{
-			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="ShowPageSections();">Content</a></li>
-		}
-		else
-		{
-			<li class=""><a target="_blank" href="~/Edit@(Model.OriginalPageUrl)?Tab=Content"><u>Content <small>(new window)</small></u></a></li>
+			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content');ShowPageSections();">Content</a></li>
 		}
 	}
 	@{
@@ -184,17 +216,21 @@
 	@{
 		if (showRefresh)
 		{
-			<li class=""><a href="@(refreshUrl)"><u>Refresh</u></a></li>
+			<li class=""><a href="#" onclick="RefreshPage()"><u>Refresh</u></a></li>
 		}
 
-		if (Model.PageId != 0 && Model.IsActiveBubble)
+		if (!Model.IsCreatePage && Model.IsActiveBubble)
 		{
-			<li class=""><a target="_blank" href="@(Model.OriginalPageUrl)"><u>Live Page <small>(new window)</small></u></a></li>
+			<li class=""><a target="_blank" href="@(Model.OriginalPageUrl)"><u>Live Page <small>(new window to site)</small></u></a></li>
 		}
 
 		if (Model.IsStoreAdminEdit)
 		{
-			<li class=""><a href="~/Edit@(Model.OriginalPageUrl)"><u>Edit in Site</u></a></li>
+			if (!Model.IsCreatePage && Model.IsActiveBubble)
+			{
+				<li class=""><a target="_blank" href="~/Edit@(Model.OriginalPageUrl)?Tab=Content"><u>Content <small>(new window to site)</small></u></a></li>
+				<li class=""><a href="~/Edit@(Model.OriginalPageUrl)"><u>Edit in Site</u></a></li>
+			}
 		}
 		else
 		{
@@ -206,17 +242,19 @@
 	}
 </ul>
 
+
+
 <div class="tab-content">
 
 	<div id="sectionContent" class="tab-pane fade in@(sectionContentActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Page Content</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Page Content</h3>
 		</div>
 	</div>
 
 	<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Basic Page Fields</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Basic Page Fields</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -262,6 +300,17 @@
 				</div>
 			</div>
 
+			<div class="form-group">
+				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
 		</div>
 
 		@{
@@ -287,8 +336,8 @@
 
 	<div id="sectionTheme" class="tab-pane fade in@(sectionThemeActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Theme and Template</h3>
-			
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Theme and Template</h3>
+
 			<div class="form-group">
 				@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
 				<div class="col-md-9 text-left">
@@ -335,18 +384,7 @@
 
 	<div id="sectionMeta" class="tab-pane fade in@(sectionMetaActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Meta Tags</h3>
-
-			<div class="form-group">
-				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Meta Tags</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -439,7 +477,7 @@
 
 	<div id="sectionForm" class="tab-pane fade in@(sectionFormActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Form</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Form</h3>
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormId, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -452,16 +490,60 @@
 				</div>
 			</div>
 
-			<div class="form-group">
-				@Html.LabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EnumDropDownListFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "form-control" })
-					@Html.ValidationMessageFor(model => model.WebFormProcessorType, "", new { @class = "text-danger" })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.WebFormProcessorType, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
+			@{
+				if (Model.WebFormId.HasValue && Html.UserHasPermissionToAny(GStore.Identity.GStoreAction.WebForms_Edit, GStore.Identity.GStoreAction.WebForms_View))
+				{
+					<div class="form-group">
+						<label class="text-right control-label col-md-3">Web Form Fields</label>
+						<div class="col-md-9 text-left">
+							@{
+								if (Model.OriginalWebForm != null && Model.OriginalWebForm.WebFormFields != null)
+								{
+									@:Active Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().WhereIsActive().Count().ToString("N0"))
+									@:&nbsp;&nbsp;|&nbsp;&nbsp;
+									@:Total Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().Count().ToString("N0"))
+								<br />
+								}
+							}
+							@{
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_View))
+					{
+						@Html.ActionLink("View Web Form", "Details", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId }, new { @class = "btn btn-sm btn-success", target = "_blank" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("View Fields", "Details", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId, Tab = "fields" }, new { @class = "btn btn-sm btn-success", target = "_blank" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								}
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_Edit))
+					{
+						@Html.ActionLink("Edit Web Form", "Edit", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId }, new { @class = "btn btn-sm btn-warning", target = "_blank" })
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("Edit Fields", "Edit", "WebFormAdmin", new { area = "StoreAdmin", id = Model.WebFormId, Tab = "fields" }, new { @class = "btn btn-sm btn-warning", target = "_blank" })
+					}
+					if (Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_Create))
+					{
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@Html.ActionLink("Create a New Web Form", "Create", "WebFormAdmin", new { area = "StoreAdmin" }, new { @class = "btn btn-sm btn-info", target = "_blank" })
+					}
+							}
+						</div>
+						<div class="row">
+							<label class="col-md-offset-3 col-md-9 help-label">These links open in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
+						</div>
+					</div>
+				}
+				else if (!Model.IsCreatePage && Html.UserHasPermission(GStore.Identity.GStoreAction.WebForms_Create))
+				{
+					<div class="form-group">
+						@Html.LabelFor(model => model.WebFormId, htmlAttributes: new { @class = "control-label col-md-3" })
+						<div class="col-md-9 text-left">
+							@Html.ActionLink("Create a New Web Form", "Create", "WebFormAdmin", new { area = "StoreAdmin" }, new { @class = "btn btn-sm btn-info", target = "_blank" })
+						</div>
+						<div class="row">
+							<label class="col-md-offset-3 col-md-9 help-label">This link opens in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
+						</div>
+					</div>
+				}
+			}
 
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "control-label col-md-3" })
@@ -471,6 +553,28 @@
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormSaveToFile, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormSaveToFile, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "control-label col-md-3" })
+				<div class="col-md-9 text-left">
+					@Html.EditorFor(model => model.WebFormSendToEmail, new { htmlAttributes = new { @class = "form-control" } })
+					@Html.ValidationMessageFor(model => model.WebFormSendToEmail, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
 				</div>
 			</div>
 
@@ -488,7 +592,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					@Html.TextAreaFor(model => model.WebFormThankYouMessage, new { id="WebFormThankYouMessage", @class = "form-control" } )
+					@Html.TextAreaFor(model => model.WebFormThankYouMessage, new { id = "WebFormThankYouMessage", @class = "form-control" })
 					@Html.ValidationMessageFor(model => model.WebFormThankYouMessage, "", new { @class = "text-danger" })
 				</div>
 				<script>CKEDITOR.replace('WebFormThankYouMessage');</script>
@@ -555,10 +659,10 @@
 
 	<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
 		<div class="row form-group text-left-md text-left-lg">
-			<h3 class="col-md-offset-3 col-md-9">Activation</h3>
+			<h3 class="col-md-offset-3 col-md-9 bg-warning">Activation</h3>
 			<h4 class="col-md-offset-3 col-md-9 text-warning">
 				Warning: editing these values incorrectly will make this page disappear from your site and only be editable from the Store Admin Menu.<br />
-				If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br/>
+				If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br />
 				If you are unsure what to do, click the "Make It Active Now" button to turn the page on with default values.
 			</h4>
 			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
@@ -569,7 +673,13 @@
 				<div class="col-md-9 text-left">
 					<p>
 						<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
-						<input type="button" id="MakeItActiveButton" onclick="MakeItActive();" class="btn btn-sm btn-success" value="Make it Active Now" />
+						@{
+
+							if (!Model.IsCreatePage)
+							{
+								<input type="button" id="MakeItActiveButton" onclick="MakeItActive();" class="btn btn-sm btn-success" value="Make it Active Now" />
+							}
+						}
 					</p>
 				</div>
 				<div class="row">

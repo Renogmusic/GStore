@@ -225,6 +225,16 @@ namespace GStore.Models
 		/// <summary>
 		/// File Not Found 404 Store Error Page or null if none (use system default 404 page)
 		/// </summary>
+		[ForeignKey("RegisterSuccess_PageId")]
+		[Display(Name = "Register Success Page")]
+		public virtual Page RegisterSuccessPage { get; set; }
+
+		[Display(Name = "Register Success Page Id")]
+		public int? RegisterSuccess_PageId { get; set; }
+
+		/// <summary>
+		/// File Not Found 404 Store Error Page or null if none (use system default 404 page)
+		/// </summary>
 		[ForeignKey("NotFoundError_PageId")]
 		[Display(Name = "Not Found Error Page")]
 		public virtual Page NotFoundErrorPage { get; set; }

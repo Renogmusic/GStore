@@ -192,11 +192,13 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(c => c.Order).ThenBy(c => c.ClientId);
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(c => c.Order).ThenBy(c => c.ClientId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(c => c.Order).ThenByDescending(c => c.ClientId);
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(c => c.Order).ThenByDescending(c => c.ClientId);
 					}
 					break;
 
@@ -434,11 +436,13 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(sf => sf.Client.Order).ThenBy(sf => sf.Client.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(sf => sf.Client.Order).ThenBy(sf => sf.Client.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(sf => sf.Client.Order).ThenByDescending(sf => sf.Client.ClientId).ThenByDescending(sf => sf.Order).ThenByDescending(sf => sf.StoreFrontId);
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(sf => sf.Client.Order).ThenByDescending(sf => sf.Client.ClientId).ThenByDescending(sf => sf.Order).ThenByDescending(sf => sf.StoreFrontId);
 					}
 					break;
 
@@ -700,7 +704,8 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(sb => sb.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(sb => sb.Client.Order)
 							.ThenBy(sb => sb.Client.ClientId)
 							.ThenBy(sb => sb.StoreFront.Order)
 							.ThenBy(sb => sb.StoreFrontId)
@@ -709,7 +714,8 @@ namespace GStore.Data
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(sb => sb.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(sb => sb.Client.Order)
 							.ThenByDescending(sb => sb.Client.ClientId)
 							.ThenByDescending(sb => sb.StoreFront.Order)
 							.ThenByDescending(sb => sb.StoreFrontId)
@@ -996,7 +1002,8 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.StoreFront.Order)
 							.ThenBy(p => p.StoreFrontId)
@@ -1005,7 +1012,8 @@ namespace GStore.Data
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.StoreFront.Order)
 							.ThenByDescending(p => p.StoreFrontId)
@@ -1046,6 +1054,10 @@ namespace GStore.Data
 			return orderedQuery;
 		}
 
+		public static IOrderedQueryable<ValueList> ApplyDefaultSort(this IQueryable<ValueList> query)
+		{
+			return query.ApplySort(null, null, null);
+		}
 		public static IOrderedQueryable<ValueList> ApplySort(this IQueryable<ValueList> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
 		{
 			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
@@ -1248,14 +1260,16 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.Order)
 							.ThenBy(p => p.ValueListId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.Order)
 							.ThenByDescending(p => p.ValueListId);
@@ -1288,6 +1302,11 @@ namespace GStore.Data
 					.ThenByDescending(p => p.ValueListId);
 			}
 			return orderedQuery;
+		}
+
+		public static IOrderedQueryable<WebForm> ApplyDefaultSort(this IQueryable<WebForm> query)
+		{
+			return query.ApplySort(null, null, null);
 		}
 
 		public static IOrderedQueryable<WebForm> ApplySort(this IQueryable<WebForm> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
@@ -1340,6 +1359,17 @@ namespace GStore.Data
 					else
 					{
 						orderedQuery = query.OrderByDescending(c => c.Name);
+					}
+					break;
+
+				case "title":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Title);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Title);
 					}
 					break;
 
@@ -1459,14 +1489,16 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.Order)
 							.ThenBy(p => p.WebFormId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.Order)
 							.ThenByDescending(p => p.WebFormId);
@@ -1593,6 +1625,50 @@ namespace GStore.Data
 					}
 					break;
 
+				case "labeltext":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.LabelText);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.LabelText);
+					}
+					break;
+
+				case "datatypestring":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.DataTypeString);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.DataTypeString);
+					}
+					break;
+
+				case "isrequired":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.IsRequired);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.IsRequired);
+					}
+					break;
+
+				case "webformfieldresponses":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.WebFormFieldResponses.Count);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.WebFormFieldResponses.Count);
+					}
+					break;
+
 				case "status":
 					if (sortAscending)
 					{
@@ -1686,7 +1762,8 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.WebForm.Order)
 							.ThenBy(p => p.WebFormId)
@@ -1695,7 +1772,8 @@ namespace GStore.Data
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.WebForm.Order)
 							.ThenByDescending(p => p.WebFormId)
@@ -1965,7 +2043,8 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p=> p.StoreFront.Order)
 							.ThenBy(p=> p.StoreFront.StoreFrontId)
@@ -1974,7 +2053,8 @@ namespace GStore.Data
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.StoreFront.Order)
 							.ThenByDescending(p => p.StoreFront.StoreFrontId)
@@ -2217,14 +2297,16 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.Order)
 							.ThenBy(p => p.PageTemplateId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.Order)
 							.ThenByDescending(p => p.PageTemplateId);
@@ -2440,14 +2522,16 @@ namespace GStore.Data
 					defaultSort = true;
 					if (sortAscending)
 					{
-						orderedQuery = query.OrderBy(p => p.Client.Order)
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenBy(p => p.Client.Order)
 							.ThenBy(p => p.ClientId)
 							.ThenBy(p => p.Order)
 							.ThenBy(p => p.ThemeId);
 					}
 					else
 					{
-						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow))
+							.ThenByDescending(p => p.Client.Order)
 							.ThenByDescending(p => p.ClientId)
 							.ThenByDescending(p => p.Order)
 							.ThenByDescending(p => p.ThemeId);

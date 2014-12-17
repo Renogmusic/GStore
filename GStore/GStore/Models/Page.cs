@@ -90,18 +90,17 @@ namespace GStore.Models
 		[MaxLength(2000)]
 		public string WebFormThankYouMessage { get; set; }
 
-		[Display(Name = "Web Form Processor Type")]
-		public Data.WebFormProcessorType WebFormProcessorType { get; set; }
-
-		[Display(Name = "Web Form Processor Type Name")]
-		[MaxLength(100)]
-		public string WebFormProcessorTypeName { get; set; }
+		[Display(Name = "Web Form Success Page Id")]
+		public int? WebFormSuccessPageId { get; set; }
 
 		[Display(Name = "Web Form Save to Database")]
 		public bool WebFormSaveToDatabase { get; set; }
 
-		[Display(Name = "Web Form Success Page Id")]
-		public int? WebFormSuccessPageId { get; set; }
+		[Display(Name = "Web Form Save to File")]
+		public bool WebFormSaveToFile { get; set; }
+
+		[Display(Name = "Web Form Send To Email")]
+		public bool WebFormSendToEmail { get; set; }
 
 		//[ForeignKey("WebFormSuccessPageId")]
 		//[Display(Name = "Web Form Success Page")]
