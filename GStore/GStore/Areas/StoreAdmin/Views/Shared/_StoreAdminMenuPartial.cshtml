@@ -3,10 +3,10 @@
 @using GStore.Models;
 @using GStore.Data;
 <!-- Store Admin Menu -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a href="@(Url.Action("Index", "StoreAdmin"))" class="navbar-brand">
+			<a id="navbarbrandlink" href="@(Url.Action("Index", "StoreAdmin"))" class="navbar-brand">
 				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
 					 src="~/Images/Logo/NavBarTinyLogo.png"
 					 alt="@(Html.AttributeEncode(Model.StoreFront.Name))"

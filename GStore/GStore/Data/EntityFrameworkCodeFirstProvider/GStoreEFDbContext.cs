@@ -383,7 +383,9 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		}
 
-		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigViewModel> StoreFrontConfigViewModels { get; set; }
+		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigAdminViewModel> StoreFrontConfigViewModels { get; set; }
+
+		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel> NavBarItemEditAdminViewModels { get; set; }
 
 	}
 }

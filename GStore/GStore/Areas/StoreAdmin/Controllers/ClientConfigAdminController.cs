@@ -21,28 +21,28 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
 		public ActionResult ClientView(string Tab)
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientView", viewModel);
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
 		public ActionResult ClientViewNoTabs()
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, null);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, null);
 			return View("ClientViewNoTabs", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Edit)]
 		public ActionResult ClientEdit(string Tab)
 		{
-			ClientConfigViewModel viewModel = new ClientConfigViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientEdit", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Edit)]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public ActionResult ClientEdit(ClientConfigViewModel model)
+		public ActionResult ClientEdit(ClientConfigAdminViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -97,7 +97,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontView", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow, Tab));
+			return View("StoreFrontView", new StoreFrontConfigAdminViewModel(storeFrontToView, CurrentUserProfileOrThrow, Tab));
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
@@ -127,7 +127,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontViewNoTabs", new StoreFrontConfigViewModel(storeFrontToView, CurrentUserProfileOrThrow, null));
+			return View("StoreFrontViewNoTabs", new StoreFrontConfigAdminViewModel(storeFrontToView, CurrentUserProfileOrThrow, null));
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
@@ -170,13 +170,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
 			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
 
-			return View("StoreFrontEdit", new StoreFrontConfigViewModel(storeFrontToEdit, CurrentUserProfileOrThrow, Tab));
+			return View("StoreFrontEdit", new StoreFrontConfigAdminViewModel(storeFrontToEdit, CurrentUserProfileOrThrow, Tab));
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
 		[ValidateAntiForgeryToken]
 		[HttpPost]
-		public ActionResult StoreFrontEdit(StoreFrontConfigViewModel model)
+		public ActionResult StoreFrontEdit(StoreFrontConfigAdminViewModel model)
 		{
 			if (model == null)
 			{

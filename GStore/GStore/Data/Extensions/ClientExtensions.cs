@@ -166,6 +166,36 @@ namespace GStore.Data
 			page.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
+		public static void SetDefaultsForNew(this NavBarItem navBarItem, StoreFront storeFront)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			navBarItem.ClientId = storeFront.ClientId;
+			navBarItem.Client = storeFront.Client;
+			navBarItem.StoreFrontId = storeFront.StoreFrontId;
+			navBarItem.StoreFront = storeFront;
+			if (storeFront.NavBarItems == null || storeFront.NavBarItems.Count == 0)
+			{
+				navBarItem.Name = "New Menu Item";
+				navBarItem.Order = 100;
+			}
+			else
+			{
+				navBarItem.Order = (storeFront.NavBarItems.Max(nb => nb.Order) + 10);
+				navBarItem.Name = "New Menu Item " + navBarItem.Order;
+			}
+			navBarItem.ForRegisteredOnly = false;
+			navBarItem.IsPage = true;
+			navBarItem.OpenInNewWindow = false;
+			navBarItem.UseDividerAfterOnMenu = true;
+			navBarItem.IsPending = false;
+			navBarItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			navBarItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+
+		}
+
 
 		/// <summary>
 		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
@@ -326,6 +356,46 @@ namespace GStore.Data
 			List<SelectListItem> items = new List<SelectListItem>();
 			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedPageId.HasValue) });
 			items.AddRange(pages.ToSelectList(selectedPageId));
+
+			return items;
+		}
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectList(this IQueryable<NavBarItem> navBarItems, int? selectedNavBarItemId)
+		{
+			IQueryable<NavBarItem> query = navBarItems.WhereIsActiveOrSelected(selectedNavBarItemId);
+			IOrderedQueryable<NavBarItem> orderedQuery = query.ApplyDefaultSort();
+
+			int navBarItemId = selectedNavBarItemId ?? 0;
+
+			IEnumerable<SelectListItem> items = orderedQuery.Select(t => new SelectListItem
+			{
+				Value = t.NavBarItemId.ToString(),
+				Text = (t.NavBarItemId == navBarItemId ? "[SELECTED] " : string.Empty) + t.Name + " [" + t.NavBarItemId + "]" + (t.IsActiveDirect() ? string.Empty : " [INACTIVE]"),
+				Selected = t.NavBarItemId == navBarItemId
+			});
+
+			return items;
+		}
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records, and the currently selected value even if inactive
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> ToSelectListWithNull(this IQueryable<NavBarItem> navBarItems, int? selectedNavBarItemId, string nullString = "(no parent - top level item)")
+		{
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedNavBarItemId.HasValue) });
+			items.AddRange(navBarItems.ToSelectList(selectedNavBarItemId));
 
 			return items;
 		}

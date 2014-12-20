@@ -337,7 +337,11 @@ namespace GStore.Data
 
 			var query = storeFront.NavBarItems.AsQueryable()
 				.WhereIsActive()
-				.Where(nav => isRegistered || !nav.ForRegisteredOnly)
+				.Where(nav => 
+					(isRegistered || !nav.ForRegisteredOnly) 
+					&& 
+					(!isRegistered || !nav.ForAnonymousOnly ))
+
 				.OrderBy(nav => nav.Order)
 				.ThenBy(nav => nav.Name)
 				.AsTree(nav => nav.NavBarItemId, nav => nav.ParentNavBarItemId);
@@ -974,6 +978,31 @@ namespace GStore.Data
 
 		}
 
+		public static bool ValidateNavBarItemName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, int storeFrontId, int clientId, int? currentNavBarItemId)
+		{
+			string nameField = "Name";
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				string errorMessage = "Name is required \n Please enter a unique name for this menu item";
+				controller.ModelState.AddModelError(nameField, errorMessage);
+				return false;
+			}
+
+			NavBarItem conflict = db.NavBarItems.Where(p => p.ClientId == clientId && p.StoreFrontId == storeFrontId && p.Name.ToLower() == name && (p.NavBarItemId != currentNavBarItemId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Name '" + name + "' is already in use for Menu Item '" + conflict.Name + "' [" + conflict.NavBarItemId + "] in Store Front '" + conflict.StoreFront.Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Name or change the conflicting Menu Item Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
 		public static bool ValidateWebFormName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, int clientId, int? currentWebFormId)
 		{
 			string nameField = "Name";
@@ -1138,6 +1167,109 @@ namespace GStore.Data
 			return pageSection;
 
 		}
+
+		public static NavBarItem CreateNavBarItem(this IGstoreDb db, Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			NavBarItem record = db.NavBarItems.Create();
+
+			record.Action = viewModel.Action;
+			record.ActionIdParam = viewModel.ActionIdParam;
+			record.Area = viewModel.Area;
+			record.Controller = viewModel.Controller;
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.htmlAttributes = viewModel.htmlAttributes;
+			record.IsAction = viewModel.IsAction;
+			record.IsLocalHRef = viewModel.IsLocalHRef;
+			record.IsPage = viewModel.IsPage;
+			record.IsRemoteHRef = viewModel.IsRemoteHRef;
+			record.LocalHRef = viewModel.LocalHRef;
+			record.Name = viewModel.Name;
+			record.OpenInNewWindow = viewModel.OpenInNewWindow;
+			record.Order = viewModel.Order;
+			record.PageId = viewModel.PageId;
+			record.ParentNavBarItemId = viewModel.ParentNavBarItemId;
+			record.RemoteHRef = viewModel.RemoteHRef;
+			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
+			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+
+			record.StoreFrontId = storeFront.StoreFrontId;
+			record.ClientId = storeFront.ClientId;
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+
+			record.UpdateAuditFields(userProfile);
+
+			db.NavBarItems.Add(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		public static NavBarItem UpdateNavBarItem(this IGstoreDb db, Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			//find existing record, update it
+			NavBarItem record = storeFront.NavBarItems.SingleOrDefault(p => p.NavBarItemId == viewModel.NavBarItemId);
+			if (record == null)
+			{
+				throw new ApplicationException("Nav Bar Item not found in storefront Nav Bar Items . Nav Bar Item Id: " + viewModel.NavBarItemId);
+			}
+
+			record.Action = viewModel.Action;
+			record.ActionIdParam = viewModel.ActionIdParam;
+			record.Area = viewModel.Area;
+			record.Controller = viewModel.Controller;
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.htmlAttributes = viewModel.htmlAttributes;
+			record.IsAction = viewModel.IsAction;
+			record.IsLocalHRef = viewModel.IsLocalHRef;
+			record.IsPage = viewModel.IsPage;
+			record.IsRemoteHRef = viewModel.IsRemoteHRef;
+			record.LocalHRef = viewModel.LocalHRef;
+			record.Name = viewModel.Name;
+			record.OpenInNewWindow = viewModel.OpenInNewWindow;
+			record.Order = viewModel.Order;
+			record.PageId = viewModel.PageId;
+			record.ParentNavBarItemId = viewModel.ParentNavBarItemId;
+			record.RemoteHRef = viewModel.RemoteHRef;
+			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
+			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			record.UpdatedBy = userProfile;
+			record.UpdateDateTimeUtc = DateTime.UtcNow;
+
+			db.NavBarItems.Update(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		/// <summary>
+		/// re-orders siblings and puts them in order by 10's, and saves to database
+		/// </summary>
+		/// <param name="navBarItems"></param>
+		public static void NavBarItemsRenumberSiblings(this IGstoreDb db, IEnumerable<NavBarItem> navBarItems)
+		{
+			List<NavBarItem> sortedItems = navBarItems.AsQueryable().ApplyDefaultSort().ToList();
+
+			int order = 100;
+			foreach (NavBarItem item in sortedItems)
+			{
+				item.Order = order;
+				order += 10;
+			}
+
+			db.SaveChanges();
+		}
+
+
 
 		public static WebForm CreateWebForm(this IGstoreDb db, WebFormEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{

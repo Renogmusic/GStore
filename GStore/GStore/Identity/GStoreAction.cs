@@ -27,6 +27,13 @@ namespace GStore.Identity
 		Pages_Edit = 3040,
 		Pages_Delete = 3050,
 
+		NavBarItems_StoreAdminMenuItem = 3200,
+		NavBarItems_Manager = 3210,
+		NavBarItems_View = 3220,
+		NavBarItems_Create = 3230,
+		NavBarItems_Edit = 3240,
+		NavBarItems_Delete = 3250,
+
 		WebForms_StoreAdminMenuItem = 3500,
 		WebForms_Manager = 3510,
 		WebForms_View = 3520,
@@ -34,6 +41,7 @@ namespace GStore.Identity
 		WebForms_Edit = 3540,
 		WebForms_Delete = 3550,
 
+//items below are not implemented yet //
 		Catalog_StoreAdminMenuItem = 4000,
 		Catalog_Manager = 4100,
 		Catalog_Categories_Manager = 4200,
@@ -90,5 +98,6 @@ namespace GStore.Identity
 		Reports_MonthlyPageViews_View = 9300,
 		Reports_MonthlyVisitors_View = 9400,
 		Reports_AbandonedCarts_View = 9500
+
 	}
 }

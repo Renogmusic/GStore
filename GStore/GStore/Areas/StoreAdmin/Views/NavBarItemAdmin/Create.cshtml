@@ -1,0 +1,130 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel
+
+@using GStore.AppHtmlHelpers
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminCreatePageTitle col-md-offset-1 col-md-8">
+		<span class="text-info">Create a New Menu Item</span>
+	</h1>
+</div>
+
+@using (Html.BeginForm())
+{
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Menu Item" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<p>
+				This page creates a menu item that links to a page.<br />
+				If you want to link the menu item to a URL or set advanced settings,<br />
+				click the "Edit" button after you create the menu item.
+			</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-9">
+			@Html.AntiForgeryToken()
+			@Html.ValidationSummary(false, "", new { @class = "text-danger bold" })
+			@Html.HiddenFor(model => model.IsPage)
+			@Html.HiddenFor(model => model.IsSimpleCreatePage)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Name, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.PageId, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DropDownListFor(model => model.PageId, null, new { @class = "form-control" })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.PageId, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Order, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ForRegisteredOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.ForAnonymousOnly, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ForAnonymousOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsPending, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.StartDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.EndDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Menu Item" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+}
+

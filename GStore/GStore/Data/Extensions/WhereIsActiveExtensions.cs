@@ -169,27 +169,27 @@ namespace GStore.Data
 				);
 		}
 
-		/// <summary>
-		/// IQueryable query extension to check where NavBarItem, Client, and StoreFront is currently active and not pending or expired
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
 		public static IQueryable<NavBarItem> WhereIsActive(this IQueryable<NavBarItem> query)
 		{
-			return query.WhereIsActiveOn(DateTime.UtcNow);
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
 		}
-		public static IQueryable<NavBarItem> WhereIsActiveOn(this IQueryable<NavBarItem> query, DateTime dateTimeUtc, bool includePending = false)
+		public static IQueryable<NavBarItem> WhereIsActiveOrSelected(this IQueryable<NavBarItem> query, int? selectedId)
 		{
-			return query.Where(data =>
-				(includePending || !data.IsPending)
-				&& (data.StartDateTimeUtc < dateTimeUtc)
-				&& (data.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.Client.IsPending)
-				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
-				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
-				&& (includePending || !data.StoreFront.IsPending)
-				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
-				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, selectedId);
+		}
+		public static IQueryable<NavBarItem> WhereIsActiveOnOrSelected(this IQueryable<NavBarItem> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+			int selectedValue = selectedId ?? 0;
+			return query.Where(data => data.NavBarItemId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
 				);
 		}
 
@@ -556,6 +556,21 @@ namespace GStore.Data
 			}
 
 			return theme.IsActiveDirect() && theme.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this NavBarItem navBarItem)
+		{
+			if (navBarItem == null)
+			{
+				throw new ArgumentNullException("navBarItem");
+			}
+
+			return navBarItem.IsActiveDirect() && navBarItem.Client.IsActiveDirect();
 		}
 
 		/// <summary>

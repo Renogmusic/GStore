@@ -282,7 +282,7 @@ namespace GStore.AppHtmlHelpers
 
 			if (removeItemName && dotValues.Count() > 1)
 			{
-				expressionText = dotValues[1];
+				expressionText = expressionText.Substring(expressionText.IndexOf('.') + 1);
 			}
 
 			return htmlHelper.ActionSortLink(displayName, action, expressionText, TabName, id);
@@ -1182,7 +1182,7 @@ namespace GStore.AppHtmlHelpers
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
 		{
-			if (navBarItem.IsAction)
+			if (navBarItem.IsAction && !string.IsNullOrEmpty(navBarItem.Action) && !string.IsNullOrEmpty(navBarItem.Controller))
 			{
 				if (!string.IsNullOrEmpty(navBarItem.Area))
 				{
@@ -1190,15 +1190,15 @@ namespace GStore.AppHtmlHelpers
 				}
 				return urlHelper.Action(navBarItem.Action, navBarItem.Controller);
 			}
-			else if (navBarItem.IsPage)
+			else if (navBarItem.IsPage && navBarItem.PageId.HasValue)
 			{
 				return navBarItem.Page.UrlResolved(urlHelper);
 			}
-			else if (navBarItem.IsLocalHRef)
+			else if (navBarItem.IsLocalHRef && !string.IsNullOrEmpty(navBarItem.LocalHRef))
 			{
 				return urlHelper.GStoreLocalUrl(navBarItem.LocalHRef);
 			}
-			else if (navBarItem.IsRemoteHRef)
+			else if (navBarItem.IsRemoteHRef && !string.IsNullOrEmpty(navBarItem.RemoteHRef))
 			{
 				if (navBarItem.RemoteHRef.ToLower().StartsWith("http://") || navBarItem.RemoteHRef.ToLower().StartsWith("mailto:"))
 				{
@@ -1206,7 +1206,11 @@ namespace GStore.AppHtmlHelpers
 				}
 				return "http://" + navBarItem.RemoteHRef;
 			}
-			throw new ApplicationException("Unknown navBarItem type. NavBarItemId: " + navBarItem.NavBarItemId);
+
+			string errorMessage = "Nav Bar Item type is unknown or has no valid data. Nav Bar Item '" + navBarItem.Name + "' [" + navBarItem.NavBarItemId + "]";
+			Debug.WriteLine("-- NavBarItem.Url error: " + errorMessage);
+
+			return urlHelper.GStoreLocalUrl("/");
 		}
 
 		public static MvcHtmlString ProductCategoryWithParentLinks(this HtmlHelper htmlHelper, ProductCategory category, string catalogLinkText, bool level1IsLink, string htmlSeparator = " &gt; ", int maxLevels = 10)

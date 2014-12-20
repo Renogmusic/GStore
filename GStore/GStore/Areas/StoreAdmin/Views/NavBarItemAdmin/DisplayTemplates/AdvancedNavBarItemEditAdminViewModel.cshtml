@@ -1,0 +1,247 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel
+@using GStore.AppHtmlHelpers
+
+<div class="form-horizontal">
+	<div class="form-group">
+		@Html.LabelFor(model => model.NavBarItemId, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DisplayFor(model => model.NavBarItemId)
+			@Html.HiddenFor(model => model.NavBarItemId)
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.NavBarItemId, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @readonly="readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Name, new { @class = "col-md-offset-2 col-md-10 help-label"})
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Order, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ParentNavBarItemId, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DisplayFor(model => model.ParentNavBarItem)
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ParentNavBarItemId, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ForRegisteredOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.ForAnonymousOnly, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ForAnonymousOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.UseDividerBeforeOnMenu, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.UseDividerBeforeOnMenu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.UseDividerBeforeOnMenu, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.UseDividerAfterOnMenu, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.UseDividerAfterOnMenu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.UseDividerAfterOnMenu, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.OpenInNewWindow, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.OpenInNewWindow, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled="disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.OpenInNewWindow, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.htmlAttributes, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.htmlAttributes, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.htmlAttributes, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsPage, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsPage, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled="disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsPage, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.PageId, "PageId", htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.DisplayFor(model => model.Page)
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.PageId, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsLocalHRef, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsLocalHRef, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsLocalHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.LocalHRef, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.LocalHRef, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.LocalHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsRemoteHRef, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsRemoteHRef, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsRemoteHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.RemoteHRef, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.RemoteHRef, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.RemoteHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsAction, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsAction, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsAction, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Action, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Action, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Action, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ActionIdParam, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.ActionIdParam, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.ActionIdParam, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Area, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Area, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Area, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Controller, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.Controller, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.Controller, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", disabled = "disabled" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.IsPending, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.StartDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
+		<div class="col-md-10">
+			@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+		</div>
+		<div class="row">
+			@Html.HelpLabelFor(model => model.EndDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
+		</div>
+	</div>
+
+</div>

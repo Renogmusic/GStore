@@ -270,21 +270,28 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.FormHeaderHtml, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					<a id="FormHeaderShowPreviewLink" href="#" onclick="ShowFormHeaderPreview(); return false;">Show Preview</a>
-					<a id="FormHeaderHidePreviewLink" href="#" hidden="hidden" onclick="HideFormHeaderPreview(); return false;">Hide Preview</a>
-					&nbsp;&nbsp;
-					-
-					&nbsp;&nbsp;
-					<a id="FormHeaderShowCodeLink" href="#" onclick="ShowFormHeaderCode(); return false;">Show HTML Code</a>
-					<a id="FormHeaderHideCodeLink" href="#" hidden="hidden" onclick="HideFormHeaderCode(); return false;">Hide HTML Code</a>
-					<div id="FormHeaderPreview" class="table-bordered" hidden="hidden" style="">
-						Preview<hr /><br />
-						@Html.Raw(Model.FormHeaderHtml)
-					</div>
-					<div id="FormHeaderCode" class="table-bordered" hidden="hidden">
-						HTML Code<hr /><br />
-						@(Model.FormHeaderHtml)
-					</div>
+					@{
+						if (string.IsNullOrEmpty(Model.FormHeaderHtml))
+						{
+							@:(blank)
+						}
+						else
+						{
+							<a id="FormHeaderShowPreviewLink" href="#" onclick="ShowFormHeaderPreview(); return false;">Show Preview</a>
+							<a id="FormHeaderHidePreviewLink" href="#" hidden="hidden" onclick="HideFormHeaderPreview(); return false;">Hide Preview</a>
+							@:&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
+							<a id="FormHeaderShowCodeLink" href="#" onclick="ShowFormHeaderCode(); return false;">Show HTML Code</a>
+							<a id="FormHeaderHideCodeLink" href="#" hidden="hidden" onclick="HideFormHeaderCode(); return false;">Hide HTML Code</a>
+							<div id="FormHeaderPreview" class="table-bordered" hidden="hidden" style="">
+								<strong>Preview</strong><hr />
+								@Html.Raw(Model.FormHeaderHtml)
+							</div>
+							<div id="FormHeaderCode" class="table-bordered" hidden="hidden">
+								<strong>HTML Code</strong><hr />
+								@(Model.FormHeaderHtml)
+							</div>
+						}
+					}
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.FormHeaderHtml, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
@@ -324,21 +331,28 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.FormFooterBeforeSubmitHtml, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					<a id="FormFooterBeforeShowPreviewLink" href="#" onclick="ShowFormFooterBeforePreview(); return false;">Show Preview</a>
-					<a id="FormFooterBeforeHidePreviewLink" href="#" hidden="hidden" onclick="HideFormFooterBeforePreview(); return false;">Hide Preview</a>
-					&nbsp;&nbsp;
-					-
-					&nbsp;&nbsp;
-					<a id="FormFooterBeforeShowCodeLink" href="#" onclick="ShowFormFooterBeforeCode(); return false;">Show HTML Code</a>
-					<a id="FormFooterBeforeHideCodeLink" href="#" hidden="hidden" onclick="HideFormFooterBeforeCode(); return false;">Hide HTML Code</a>
-					<div id="FormFooterBeforePreview" class="table-bordered" hidden="hidden" style="">
-						Preview<hr /><br />
-						@Html.Raw(Model.FormFooterBeforeSubmitHtml)
-					</div>
-					<div id="FormFooterBeforeCode" class="table-bordered" hidden="hidden">
-						HTML Code<hr /><br />
-						@(Model.FormFooterBeforeSubmitHtml)
-					</div>
+				@{
+					if (string.IsNullOrEmpty(Model.FormFooterBeforeSubmitHtml))
+					{
+						@:(blank)
+					}
+					else
+					{
+						<a id="FormFooterBeforeShowPreviewLink" href="#" onclick="ShowFormFooterBeforePreview(); return false;">Show Preview</a>
+						<a id="FormFooterBeforeHidePreviewLink" href="#" hidden="hidden" onclick="HideFormFooterBeforePreview(); return false;">Hide Preview</a>
+						@:&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
+						<a id="FormFooterBeforeShowCodeLink" href="#" onclick="ShowFormFooterBeforeCode(); return false;">Show HTML Code</a>
+						<a id="FormFooterBeforeHideCodeLink" href="#" hidden="hidden" onclick="HideFormFooterBeforeCode(); return false;">Hide HTML Code</a>
+						<div id="FormFooterBeforePreview" class="table-bordered" hidden="hidden" style="">
+							<strong>Preview</strong><hr />
+							@Html.Raw(Model.FormFooterBeforeSubmitHtml)
+						</div>
+						<div id="FormFooterBeforeCode" class="table-bordered" hidden="hidden">
+							<strong>HTML Code</strong><hr />
+							@(Model.FormFooterBeforeSubmitHtml)
+						</div>
+					}
+				}
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.FormFooterBeforeSubmitHtml, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
@@ -368,21 +382,28 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.FormFooterAfterSubmitHtml, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 text-left">
-					<a id="FormFooterAfterShowPreviewLink" href="#" onclick="ShowFormFooterAfterPreview(); return false;">Show Preview</a>
-					<a id="FormFooterAfterHidePreviewLink" href="#" hidden="hidden" onclick="HideFormFooterAfterPreview(); return false;">Hide Preview</a>
-					&nbsp;&nbsp;
-					-
-					&nbsp;&nbsp;
-					<a id="FormFooterAfterShowCodeLink" href="#" onclick="ShowFormFooterAfterCode(); return false;">Show HTML Code</a>
-					<a id="FormFooterAfterHideCodeLink" href="#" hidden="hidden" onclick="HideFormFooterAfterCode(); return false;">Hide HTML Code</a>
-					<div id="FormFooterAfterPreview" class="table-bordered" hidden="hidden" style="">
-						Preview<hr /><br />
-						@Html.Raw(Model.FormFooterAfterSubmitHtml)
-					</div>
-					<div id="FormFooterAfterCode" class="table-bordered" hidden="hidden">
-						HTML Code<hr /><br />
-						@(Model.FormFooterAfterSubmitHtml)
-					</div>
+					@{
+						if (string.IsNullOrEmpty(Model.FormFooterAfterSubmitHtml))
+						{
+							@:(blank)
+						}
+						else
+						{
+							<a id="FormFooterAfterShowPreviewLink" href="#" onclick="ShowFormFooterAfterPreview(); return false;">Show Preview</a>
+							<a id="FormFooterAfterHidePreviewLink" href="#" hidden="hidden" onclick="HideFormFooterAfterPreview(); return false;">Hide Preview</a>
+							@:&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
+							<a id="FormFooterAfterShowCodeLink" href="#" onclick="ShowFormFooterAfterCode(); return false;">Show HTML Code</a>
+							<a id="FormFooterAfterHideCodeLink" href="#" hidden="hidden" onclick="HideFormFooterAfterCode(); return false;">Hide HTML Code</a>
+							<div id="FormFooterAfterPreview" class="table-bordered" hidden="hidden" style="">
+								<strong>Preview</strong><hr />
+								@Html.Raw(Model.FormFooterAfterSubmitHtml)
+							</div>
+							<div id="FormFooterAfterCode" class="table-bordered" hidden="hidden">
+								<strong>HTML Code</strong><hr />
+								@(Model.FormFooterAfterSubmitHtml)
+							</div>
+						}
+					}
 				</div>
 				<div class="row">
 					@Html.HelpLabelFor(model => model.FormFooterAfterSubmitHtml, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
@@ -402,8 +423,7 @@
 			@Html.HiddenFor(model => model.SortAscending)
 			@Html.HiddenFor(model => model.SortBy)
 			<script>
-				function ApplyFieldSort(sortBy, sortAscending)
-				{
+				function ApplyFieldSort(sortBy, sortAscending) {
 					if (document.getElementById("SortBy")) {
 						document.getElementById("SortBy").value = sortBy;
 					}
@@ -448,24 +468,24 @@
 						MvcHtmlString popupfieldOnClick = new MvcHtmlString(" onclick=\"$('#FieldEditModal_" + fieldModel.Index + "').modal('show');\"");
 
 						@:
-								<tr class="@(fieldRowClass)">
-									<td class="text-center">
-										<span id="EditFieldLink_@(fieldModel.Index)">
-											<button id="EditFieldButton_@(fieldModel.Index) "type="button" class="btn btn-xs btn-success" data-toggle="modal" data-target="#FieldEditModal_@(fieldModel.Index)">
-												Field Details
-											</button>
-											@(fieldModel.Index + 1)
-										</span>
-									</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.LabelText, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Name, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.DataTypeString, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.IsRequired, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldResponses.Count, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Order, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldId, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>
-										@{
+																										<tr class="@(fieldRowClass)">
+						<td class="text-center">
+							<span id="EditFieldLink_@(fieldModel.Index)">
+								<button id="EditFieldButton_@(fieldModel.Index) " type="button" class="btn btn-xs btn-success" data-toggle="modal" data-target="#FieldEditModal_@(fieldModel.Index)">
+									Field Details
+								</button>
+								@(fieldModel.Index + 1)
+							</span>
+						</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.LabelText, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Name, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.DataTypeString, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.IsRequired, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldResponses.Count, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Order, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldId, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>
+							@{
 						if (fieldModel.IsActiveDirect)
 						{
 								<span class="text-success">ACTIVE</span>
@@ -474,83 +494,83 @@
 						{
 								<span class="text-warning">INACTIVE</span>
 						}
-										}
-									</td>
+							}
+						</td>
 
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.IsPending, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.StartDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
-									<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.EndDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.IsPending, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.StartDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.EndDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
 								</tr>
 					}
-							}
-						</table>
-					</div>
-
-					foreach (WebFormFieldEditViewModel fieldModel in fields)
-					{
-						@Html.DisplayFor(model => fieldModel, "WebFormFieldEditViewModel_HiddenPopup")
 					}
+					</table>
+				</div>
+
+				foreach (WebFormFieldEditViewModel fieldModel in fields)
+				{
+				@Html.DisplayFor(model => fieldModel, "WebFormFieldEditViewModel_HiddenPopup")
 				}
-			}
+				}
+				}
+			</div>
 		</div>
-	</div>
 
-	<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
-		<div class="row form-group text-left-md text-left-lg">
+		<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
+			<div class="row form-group text-left-md text-left-lg">
 
-			<div class="row bg-success">
-				<div class="col-md-offset-3 col-md-7">
-					<h3 class="">Activation</h3>
+				<div class="row bg-success">
+					<div class="col-md-offset-3 col-md-7">
+						<h3 class="">Activation</h3>
+					</div>
 				</div>
+
+				<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+				<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
+
+				<div class="form-group">
+					<label class="text-right control-label col-md-3">Status</label>
+					<div class="col-md-9 text-left">
+						<p style="padding-top: 5px;">
+							<strong class="title-align @(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
+						</p>
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+					<div class="col-md-9 text-left">
+						@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+					<div class="col-md-9 text-left">
+						@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+					<div class="col-md-9 text-left">
+						@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+					</div>
+				</div>
+
+
 			</div>
-
-			<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
-			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
-
-			<div class="form-group">
-				<label class="text-right control-label col-md-3">Status</label>
-				<div class="col-md-9 text-left">
-					<p style="padding-top: 5px;">
-						<strong class="title-align @(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
-					</p>
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
-
-			<div class="form-group">
-				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", disabled = "disabled", @readonly = "readonly" } })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
-
-			<div class="form-group">
-				@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
-
-			<div class="form-group">
-				@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-				<div class="col-md-9 text-left">
-					@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-				</div>
-			</div>
-
-
 		</div>
-	</div>
 
-</div>
+	</div>

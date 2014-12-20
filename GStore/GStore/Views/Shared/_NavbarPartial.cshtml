@@ -11,10 +11,10 @@
 }
 
 <!-- NavBar -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a href="~/" class="navbar-brand">
+			<a id="navbarbrandlink" href="~/" class="navbar-brand">
 				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
 					 src="~/Images/Logo/NavBarTinyLogo.png" alt="@(Html.AttributeEncode(storeFrontName))" title="@(Html.AttributeEncode(storeFrontName))" />
 				@(Html.Encode(storeFrontName))

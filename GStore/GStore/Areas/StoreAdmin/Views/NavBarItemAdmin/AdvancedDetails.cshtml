@@ -1,0 +1,70 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel
+@using GStore.AppHtmlHelpers
+@using GStore.Identity
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-success">Menu Item Details</span><br /><small>'@(Model.Name)' [@(Model.NavBarItemId)]</small>
+	</h1>
+</div>
+<script>
+	function GotoEditTab() {
+		var url = '@(Html.Raw(Url.Action("AdvancedEdit", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager, Tab = "XXXX" }).ToJavaScriptString()))';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		document.location.href = url;
+	}
+</script>
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@{
+			if (Model.ReturnToManager)
+			{
+				@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("OK", "AdvancedManager", null, new { @class = "btn btn-default" })
+			}
+		}
+		@if (Html.UserHasPermission(GStoreAction.NavBarItems_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" class="btn btn-warning" onclick="GotoEditTab();">Edit</a>
+		}
+		@if (Html.UserHasPermission(GStoreAction.NavBarItems_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "AdvancedDelete", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+<hr />
+@Html.DisplayForModel("AdvancedNavBarItemEditAdminViewModel")
+<hr />
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@{
+			if (Model.ReturnToManager)
+			{
+				@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("OK", "AdvancedManager", null, new { @class = "btn btn-default" })
+			}
+		}
+		@if (Html.UserHasPermission(GStoreAction.NavBarItems_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" class="btn btn-warning" onclick="GotoEditTab();">Edit</a>
+		}
+		@if (Html.UserHasPermission(GStoreAction.NavBarItems_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "AdvancedDelete", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+

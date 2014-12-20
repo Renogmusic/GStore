@@ -1,4 +1,4 @@
-﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormAdminManagerViewModel
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormManagerAdminViewModel
 @using GStore.Models
 @using GStore.AppHtmlHelpers
 @using GStore.Data
@@ -59,6 +59,7 @@
 					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Name", "Manager", "Name"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Title", "Manager", "Title"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Responses", "Manager", "Responses"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Update Date Time", "Manager", "UpdateDateTimeUtc"))</small></th>
 					<th class="text-center"><small>@(Html.ActionSortLink("Updated By", "Manager", "UpdatedBy"))</small></th>
 					<th class="text-center">&nbsp;</th>
@@ -92,6 +93,16 @@
 				</td>
 				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
 				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.Title))</small></td>
+				<td onclick="GoToDetails(@(item.WebFormId));">
+					@{
+						int responseCount = 0;
+						if (item.WebFormResponses == null)
+						{
+							responseCount = item.WebFormResponses.Count;
+						}
+					}
+					<small>@(responseCount.ToString("N0"))</small>
+				</td>
 				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
 				<td onclick="GoToDetails(@(item.WebFormId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
 				<td>

@@ -15,7 +15,7 @@ namespace GStore.Models.ViewModels
 		{
 		}
 
-		public WebFormEditViewModel(StoreFront storeFront, UserProfile userProfile, WebForm webForm, string activeTab, bool isStoreAdminEdit = false, bool isReadOnly = false, bool isDeletePage = false, bool isCreatePage = false, string SortBy = "", bool? SortAscending = true)
+		public WebFormEditViewModel(StoreFront storeFront, UserProfile userProfile, WebForm webForm, string activeTab, bool isStoreAdminEdit = false, bool isReadOnly = false, bool isDeletePage = false, bool isCreatePage = false, string sortBy = "", bool? sortAscending = true)
 		{
 			if (storeFront == null)
 			{
@@ -36,8 +36,8 @@ namespace GStore.Models.ViewModels
 			this.IsDeletePage = isDeletePage;
 			this.IsCreatePage = isCreatePage;
 			this.ActiveTab = activeTab;
-			this.SortBy = SortBy;
-			this.SortAscending = SortAscending;
+			this.SortBy = sortBy;
+			this.SortAscending = sortAscending;
 			LoadValues(storeFront, userProfile, webForm);
 		}
 

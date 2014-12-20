@@ -23,15 +23,20 @@ namespace GStore.Models.ViewModels
 			this.UserProfile = userProfile;
 			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 
+			bool isRegistered = false;
+			if (userProfile != null)
+			{
+				isRegistered = true;
+			}
 			if (storeFront != null)
 			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive(userProfile == null);
-				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(userProfile == null);
+				this.CategoryTree = storeFront.CategoryTreeWhereActive(isRegistered);
+				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(isRegistered);
 			}
 			else
 			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive(userProfile == null);
-				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(userProfile == null);
+				this.CategoryTree = storeFront.CategoryTreeWhereActive(isRegistered);
+				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(isRegistered);
 			}
 			this.ShowStoreAdminLink = storeFront.ShowStoreAdminLink(userProfile);
 		}

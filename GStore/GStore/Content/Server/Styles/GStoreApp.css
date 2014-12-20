@@ -1,11 +1,26 @@
-﻿#NavBarTinyLogo {
+﻿#navbarbrandlink{
+	padding-top: 0;
+}
+#NavBarTinyLogo {
+	height: 50px;
+	width: 50px;
+	display: inline-block;
+	vertical-align: central;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+#navbar{
+	min-height: 50px;
+}
+/*#NavBarTinyLogo {
 	height: 42px;
 	width: 42px;
 	display: inline-block;
 	vertical-align: text-top;
 	padding: -10px 0 0 0;
 	margin: -10px 0 0 0;
-}
+}*/
 
 .table-responsive {
   overflow-x: auto;
@@ -282,14 +297,13 @@
 
 body {
 	text-align: center;
-	/*padding-bottom: 20px;*/
+	padding-top: 60px;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
 	padding-left: 15px;
 	padding-right: 15px;
-	padding-top: 3em;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */

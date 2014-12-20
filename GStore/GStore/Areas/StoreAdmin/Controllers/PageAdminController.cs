@@ -20,7 +20,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		{
 			IOrderedQueryable<Page> pages = CurrentStoreFrontOrThrow.Pages.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			PageAdminManagerViewModel viewModel = new PageAdminManagerViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, pages);
+			PageManagerAdminViewModel viewModel = new PageManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, pages);
 			return View("Manager", viewModel);
 		}
 

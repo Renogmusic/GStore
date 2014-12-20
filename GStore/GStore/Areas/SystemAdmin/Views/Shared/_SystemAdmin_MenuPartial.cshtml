@@ -2,10 +2,10 @@
 @using GStore.Models;
 @using GStore.Data;
 <!-- System Admin Menu -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a href="@(Url.Action("Index", "SystemAdmin"))" class="navbar-brand">
+			<a id="navbarbrandlink" href="@(Url.Action("Index", "SystemAdmin"))" class="navbar-brand">
 				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
 					 src="~/Content/Server/Images/Logo/NavBarTinyLogo.png"
 					 alt="GStore System Admin"

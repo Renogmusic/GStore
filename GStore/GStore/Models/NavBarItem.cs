@@ -66,15 +66,15 @@ namespace GStore.Models
 		[Display(Name = "Registered Users Only")]
 		public bool ForRegisteredOnly { get; set; }
 
+		[Display(Name = "Anonymous Users Only")]
+		public bool ForAnonymousOnly { get; set; }
+
 		[Display(Name = "Parent Menu Item Id")]
 		public int? ParentNavBarItemId { get; set; }
 
 		[ForeignKey("ParentNavBarItemId")]
 		[Display(Name = "Parent Menu Item")]
 		public virtual NavBarItem ParentNavBarItem { get; set; }
-
-		[Display(Name = "Menu Item Path")]
-		public string PathString { get; set; }
 
 	}
 }

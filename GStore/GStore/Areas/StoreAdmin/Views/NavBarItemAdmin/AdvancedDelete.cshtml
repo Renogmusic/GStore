@@ -1,0 +1,68 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-danger">Delete Menu Item</span><br /><small>'@(Model.Name)' [@(Model.NavBarItemId)]</small>
+	</h1>
+</div>
+
+<div class="row">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
+		Are you sure you want to delete Menu Item:
+		<br />
+		@Html.DisplayNameFor(model => model.Name) '@(Html.DisplayFor(model => model.Name))' @(Html.DisplayNameFor(model => model.NavBarItemId)) [@(Model.NavBarItemId)]
+		?
+	</h3>
+</div>
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			if (Model.ReturnToManager)
+			{
+				@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("Cancel", "AdvancedManager", null, new { @class = "btn btn-default" })
+			}
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "AdvancedEdit", new { id = Model.NavBarItemId, ReturntoManager = Model.ReturnToManager }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "AdvancedDetails", new { id = Model.NavBarItemId, ReturntoManager = Model.ReturnToManager }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+
+<hr />
+
+
+@Html.DisplayForModel("AdvancedNavBarItemEditAdminViewModel")
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			if (Model.ReturnToManager)
+			{
+				@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("Cancel", "AdvancedManager", null, new { @class = "btn btn-default" })
+			}
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "AdvancedEdit", new { id = Model.NavBarItemId, ReturntoManager = Model.ReturnToManager }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "AdvancedDetails", new { id = Model.NavBarItemId, ReturntoManager = Model.ReturnToManager }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+
