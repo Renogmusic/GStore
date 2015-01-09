@@ -9,11 +9,13 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.AppHtmlHelpers;
 using GStore.Identity;
+using System.Web.Mvc.Html;
+using System.Web.Routing;
 
 namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 {
 	[AuthorizeSystemAdmin]
-	public class SystemAdminBaseController : GStore.Controllers.BaseClass.BaseController
+	public abstract class SystemAdminBaseController : GStore.Controllers.BaseClass.BaseController
 	{
 		public SystemAdminBaseController(IGstoreDb dbContext): base(dbContext)
 		{
@@ -27,6 +29,17 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = false;
 			this._throwErrorIfStoreFrontNotFound = false;
+		}
+
+		protected Func<HtmlHelper, MvcHtmlString> BreadCrumbsFunc = null;
+
+		public virtual MvcHtmlString Breadcrumbs(HtmlHelper htmlHelper)
+		{
+			if (BreadCrumbsFunc == null)
+			{
+				return TopBreadcrumb(htmlHelper, false);
+			}
+			return BreadCrumbsFunc(htmlHelper);
 		}
 
 		protected override string LayoutName
@@ -185,6 +198,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				Value = c.ClientId.ToString(),
 				Text = (c.ClientId == filterId ? "[SELECTED] " : string.Empty) + c.Name + " [" + c.ClientId + "]"
 					+ ((c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow) ? " [INACTIVE]" : string.Empty)
+					+ (" Store Fronts: " + c.StoreFronts.Count())
 			});
 			items.AddRange(clients);
 
@@ -261,288 +275,36 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				});
 			}
 
-			var query = GStoreDb.StoreFronts.All()
-					.Where(sf => filterClientId == -1 || (filterClientId == 0 && filterClientId == null) || sf.ClientId == filterClientId)
-					.OrderBy(sf => sf.Client.Order).ThenBy(sf => sf.ClientId).ThenBy(sf => sf.Order).ThenBy(sf => sf.StoreFrontId);
+			List<StoreFront> storeFronts = GStoreDb.StoreFronts.All()
+					.Where(sf => filterClientId == -1 || (filterClientId == 0 && filterClientId == null) || sf.ClientId == filterClientId).ApplyDefaultSort().ToList();
 
 
-			IQueryable<SelectListItem> storeFronts = query.Select(sf => new SelectListItem
+			List<SelectListItem> storeFrontList = storeFronts.Select(sf => new SelectListItem
 			{
 				Value = sf.StoreFrontId.ToString(),
-				Text = (sf.StoreFrontId == filterStoreFrontId ? "[SELECTED] " : string.Empty) + sf.Name + " [" + sf.StoreFrontId + "]"
+				Text = (sf.StoreFrontId == filterStoreFrontId ? "[SELECTED] " : string.Empty) + (sf.CurrentConfigOrAny() == null ? "" : "'" + sf.CurrentConfigOrAny().Name + "'") + " [" + sf.StoreFrontId + "]"
 					+ " - Client: " + sf.Client.Name + " [" + sf.ClientId + "]"
 					+ ((sf.IsPending || sf.StartDateTimeUtc > DateTime.UtcNow || sf.EndDateTimeUtc < DateTime.UtcNow) ? " [INACTIVE]" : string.Empty),
 				Selected = (sf.StoreFrontId == filterStoreFrontId)
-			});
+			}).ToList();
 
-			items.AddRange(storeFronts);
+			items.AddRange(storeFrontList);
 			return new SelectList(items, "Value", "Text", selectedValue);
-		}
-
-
-		protected SelectList ClientList()
-		{
-			List<SelectListItem> items = new List<SelectListItem>();
-			SelectListItem nullItem = new SelectListItem()
-			{
-				Value = "",
-				Text = "(none)"
-			};
-			items.Add(nullItem);
-
-			var query = GStoreDb.Clients.All().ApplySort(this, null, null);
-			IQueryable<SelectListItem> dbItems = query.Select(c => new SelectListItem
-			{
-				Value = c.ClientId.ToString(),
-				Text = c.Name + " [" + c.ClientId + "]"
-			});
-
-			items.AddRange(dbItems);
-
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontList(int? clientId)
-		{
-			List<SelectListItem> items = new List<SelectListItem>();
-			SelectListItem nullItem = new SelectListItem()
-			{
-				Value = "",
-				Text = "(none)"
-			};
-			items.Add(nullItem);
-
-			IQueryable<StoreFront> query = null;
-			if (clientId.HasValue)
-			{
-				query = GStoreDb.StoreFronts.Where(sf => sf.ClientId == clientId.Value);
-			}
-			else
-			{
-				query = GStoreDb.StoreFronts.All();
-			}
-			IOrderedQueryable<StoreFront> orderedQuery = query.ApplySort(this, null, null);
-
-			IQueryable<SelectListItem> dbItems = orderedQuery.Select(sf => new SelectListItem
-			{
-				Value = sf.StoreFrontId.ToString(),
-				Text = sf.Name + " [" + sf.StoreFrontId + "] Client " + sf.Client.Name + " [" + sf.ClientId + "]"
-			});
-
-			items.AddRange(dbItems);
-
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList UserProfileList(int? clientId, int? storeFrontId)
-		{
-			var query = GStoreDb.UserProfiles.All();
-
-			if (clientId.HasValue)
-			{
-				query = query.Where(p => !p.ClientId.HasValue || p.ClientId.Value == clientId);
-			}
-			if (storeFrontId.HasValue)
-			{
-				query = query.Where(p => !p.StoreFrontId.HasValue || p.StoreFrontId.Value == storeFrontId);
-			}
-			query = query.OrderBy(p => p.Order).ThenBy(p => p.UserProfileId).ThenBy(p => p.UserName);
-
-			IQueryable<SelectListItem> items = query.Select(p => new SelectListItem
-			{
-				Value = p.UserProfileId.ToString(),
-				Text = p.FullName + " <" + p.Email + ">"
-				+ (p.StoreFrontId.HasValue ? " - Store '" + p.StoreFront.Name + "' [" + p.StoreFrontId + "]" : " (no store)")
-				+ (p.ClientId.HasValue ? " - Client '" + p.Client.Name + "' [" + p.ClientId + "]" : " (no client)")
-			});
-
-			return new SelectList(items, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontSuccessPageList(int? clientId, int? storeFrontId)
-		{
-			List<SelectListItem> list = new List<SelectListItem>();
-			if (clientId.HasValue && storeFrontId.HasValue)
-			{
-				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
-				if (dbItems != null)
-				{
-					list.AddRange(dbItems);
-				}
-			}
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontErrorPageList(int? clientId, int? storeFrontId)
-		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Error Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-			if (clientId.HasValue && storeFrontId.HasValue)
-			{
-				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
-				if (dbItems != null)
-				{
-					list.AddRange(dbItems);
-				}
-			}
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList RegisterWebFormList(int? clientId, int? storeFrontId)
-		{
-
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Register Form)";
-
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-			if (clientId.HasValue && storeFrontId.HasValue)
-			{
-				var dbItems = RegisterWebFormListItems(clientId.Value, storeFrontId.Value);
-				if (dbItems != null)
-				{
-					list.AddRange(dbItems);
-				}
-			}
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontRegisterSuccessPageList(int? clientId, int? storeFrontId)
-		{
-
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Register Success Page)";
-
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-			if (clientId.HasValue && storeFrontId.HasValue)
-			{
-				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
-				if (dbItems != null)
-				{
-					list.AddRange(dbItems);
-				}
-			}
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList StoreFrontNotFoundPageList(int? clientId, int? storeFrontId)
-		{
-
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Not Found Page)";
-
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-			if (clientId.HasValue && storeFrontId.HasValue)
-			{
-				var dbItems = StoreFrontPageListItems(clientId.Value, storeFrontId.Value);
-				if (dbItems != null)
-				{
-					list.AddRange(dbItems);
-				}
-			}
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected IEnumerable<SelectListItem> RegisterWebFormListItems(int clientId, int storeFrontId)
-		{
-			List<SelectListItem> list = new List<SelectListItem>();
-
-			SelectListItem itemNone = new SelectListItem();
-			if (clientId == 0 || storeFrontId == 0)
-			{
-				return null;
-			}
-
-			IQueryable<WebForm> query = GStoreDb.WebForms.Where(pg => pg.ClientId == clientId);
-
-			IOrderedQueryable<WebForm> orderedQuery = query.ApplySort(null, null, null);
-			IEnumerable<SelectListItem> items = orderedQuery.Select(wf => new SelectListItem
-			{
-				Value = wf.WebFormId.ToString(),
-				Text = wf.Name + " [" + wf.WebFormId + "]"
-					+ " - Client '" + wf.Client.Name + "' [" + wf.Client.ClientId + "]"
-			});
-
-			return items;
-		}
-
-
-		protected IEnumerable<SelectListItem> StoreFrontPageListItems(int clientId, int storeFrontId)
-		{
-			List<SelectListItem> list = new List<SelectListItem>();
-
-			SelectListItem itemNone = new SelectListItem();
-			if (clientId == 0 || storeFrontId == 0)
-			{
-				return null;
-			}
-
-			IQueryable<Page> query = GStoreDb.Pages.Where(pg => pg.ClientId == clientId)
-				.Where(pg => pg.StoreFrontId == storeFrontId);
-
-			IOrderedQueryable<Page> orderedQuery = query.ApplySort(null, null, null);
-			IEnumerable<SelectListItem> items = orderedQuery.Select(pg => new SelectListItem
-			{
-				Value = pg.PageId.ToString(),
-				Text = pg.Name + " [" + pg.PageId + "]"
-					+ " - Store Front '" + pg.StoreFront.Name + "' [" + pg.StoreFront.StoreFrontId + "]"
-					+ " - Client '" + pg.Client.Name + "' [" + pg.Client.ClientId + "]"
-			});
-
-			return items;
-		}
-
-		protected SelectList ThemeList()
-		{
-			var query = GStoreDb.Themes.All().OrderBy(t => t.Order).ThenBy(t => t.ThemeId);
-			IQueryable<SelectListItem> items = query.Select(t => new SelectListItem
-			{
-				Value = t.ThemeId.ToString(),
-				Text = t.Name + " [" + t.ThemeId + "]"
-			});
-			return new SelectList(items, "Value", "Text");
-		}
-
-		/// <summary>
-		/// Returns a list of theme folders from the file system for selection
-		/// </summary>
-		/// <param name="clientId"></param>
-		/// <returns></returns>
-		protected SelectList ThemeFolderList(int? clientId)
-		{
-			string virtualPath = "~/Content/Server/Themes/";
-			if (!System.IO.Directory.Exists(Server.MapPath(virtualPath)))
-			{
-				throw new ApplicationException("Themes folder does not exist in file system at '" + virtualPath + "'");
-			}
-			System.IO.DirectoryInfo themesFolder = new System.IO.DirectoryInfo(Server.MapPath(virtualPath));
-			IEnumerable<System.IO.DirectoryInfo> themeFolders = themesFolder.EnumerateDirectories("*", System.IO.SearchOption.TopDirectoryOnly);
-
-			IEnumerable<SelectListItem> items = themeFolders.Select(t => new SelectListItem
-			{
-				Value = t.Name,
-				Text = t.Name + " ["+ (System.IO.File.Exists(t.FullName + "\\bootstrap.min.css") ? "bootstrap.min.css OK" : "WARNING: no bootstrap.min.css") + "]"
-			});
-			return new SelectList(items, "Value", "Text");
 		}
 
 		protected void ValidateClientName(Client client)
 		{
-			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).Any())
+			Client conflict = GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).FirstOrDefault();
+			if (conflict != null)
 			{
-				this.ModelState.AddModelError("Name", "Client name '" + client.Name + "' is already in use. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Client name '" + client.Name + "' is already in use for client '" + conflict.Name.ToHtml() + "' [" + conflict.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
+				string oldName = client.Name;
+				int index = 1;
 				while (nameIsDirty)
 				{
-					client.Name = client.Name + "_New";
+					index++;
+					client.Name = oldName + " " + index;
 					nameIsDirty = GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Name.ToLower() == client.Name.ToLower()).Any();
 				}
 				if (ModelState.ContainsKey("Name"))
@@ -556,13 +318,21 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 
 		protected void ValidateClientFolder(Client client)
 		{
-			if (GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Folder.ToLower() == client.Folder.ToLower()).Any())
+			Client conflict = GStoreDb.Clients.Where(c => c.ClientId != client.ClientId && c.Folder.ToLower() == client.Folder.ToLower()).FirstOrDefault();
+			if (conflict != null)
 			{
-				this.ModelState.AddModelError("Folder", "Client folder name '" + client.Folder + "' is already in use. Please choose a new folder");
+				this.ModelState.AddModelError("Folder", "Client folder name '" + client.Folder + "' is already in use for client '" + conflict.Name.ToHtml() + "' [" + conflict.ClientId + "]. Please choose a new folder");
+				string oldName = client.Folder;
 				bool folderIsDirty = true;
+				//try client name
+				client.Folder = client.Name;
+				folderIsDirty = GStoreDb.Clients.Where(c => c.Folder.ToLower() == client.Folder.ToLower()).Any();
+
+				int index = 1;
 				while (folderIsDirty)
 				{
-					client.Folder = client.Folder + "_New";
+					index++;
+					client.Folder = oldName + " " + index;
 					folderIsDirty = GStoreDb.Clients.Where(c => c.Folder.ToLower() == client.Folder.ToLower()).Any();
 				}
 				if (ModelState.ContainsKey("Folder"))
@@ -572,57 +342,21 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			}
 		}
 
-
-		/// <summary>
-		/// Sets ModelState to add errors
-		/// </summary>
-		/// <param name="storeFront"></param>
-		protected void ValidateStoreFrontFolder(StoreFront storeFront)
-		{
-			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Folder.ToLower() == storeFront.Folder.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Folder", "StoreFront Folder name '" + storeFront.Folder + "' is already in use for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please choose a new folder");
-				bool folderIsDirty = true;
-				while (folderIsDirty)
-				{
-					storeFront.Folder = storeFront.Folder + "_New";
-					folderIsDirty = GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Folder.ToLower() == storeFront.Folder.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Folder"))
-				{
-					ModelState["Folder"].Value = new ValueProviderResult(storeFront.Folder, storeFront.Folder, null);
-				}
-			}
-		}
-
-		protected void ValidateStoreFrontName(StoreFront storeFront)
-		{
-			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any())
-			{
-				this.ModelState.AddModelError("Name", "Store Front name '" + storeFront.Name + "' is already in use for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please choose a new name");
-				bool nameIsDirty = true;
-				while (nameIsDirty)
-				{
-					storeFront.Name = storeFront.Name + "_New";
-					nameIsDirty = GStoreDb.StoreFronts.Where(sf => sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any();
-				}
-				if (ModelState.ContainsKey("Name"))
-				{
-					ModelState["Name"].Value = new ValueProviderResult(storeFront.Name, storeFront.Name, null);
-				}
-			}
-		}
-
 		protected void ValidatePageTemplateName(PageTemplate pageTemplate)
 		{
-			if (GStoreDb.PageTemplates.Where(pt => pt.PageTemplateId != pageTemplate.PageTemplateId && pt.ClientId == pageTemplate.ClientId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any())
+			PageTemplate conflict = GStoreDb.PageTemplates.Where(pt => pt.PageTemplateId != pageTemplate.PageTemplateId && pt.ClientId == pageTemplate.ClientId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).FirstOrDefault();
+
+			if (conflict != null)
 			{
-				this.ModelState.AddModelError("Name", "Page Template name '" + pageTemplate.Name + "' is already in use for client '" + pageTemplate.Client.Name.ToHtml() + "' [" + pageTemplate.ClientId + "]. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Page Template name '" + pageTemplate.Name + "' is already in use for page template id [" + conflict.PageTemplateId + "] for client '" + pageTemplate.Client.Name.ToHtml() + "' [" + pageTemplate.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
+				string oldName = pageTemplate.Name;
+				int index = 1;
 				while (nameIsDirty)
 				{
-					pageTemplate.Name = pageTemplate.Name + "_New";
-					nameIsDirty = GStoreDb.PageTemplates.Where(pt => pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any();
+					index++;
+					pageTemplate.Name = oldName + " " + index;
+					nameIsDirty = GStoreDb.PageTemplates.Where(pt => pt.ClientId == pageTemplate.ClientId && pt.Name.ToLower() == pageTemplate.Name.ToLower()).Any();
 				}
 				if (ModelState.ContainsKey("Name"))
 				{
@@ -633,14 +367,28 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 
 		protected void ValidatePageTemplateSectionName(PageTemplateSection pageTemplateSection)
 		{
-			if (GStoreDb.PageTemplateSections.Where(pt => pt.PageTemplateSectionId != pageTemplateSection.PageTemplateSectionId && pt.Name.ToLower() == pageTemplateSection.Name.ToLower()).Any())
+			if (pageTemplateSection == null)
 			{
-				this.ModelState.AddModelError("Name", "Page Template Section Name '" + pageTemplateSection.Name + "' is already in use for client '" + pageTemplateSection.Client.Name.ToHtml() + "' [" + pageTemplateSection.ClientId + "]. Please choose a new name");
+				throw new ArgumentNullException("pageTemplateSection");
+			}
+
+			PageTemplateSection conflict = GStoreDb.PageTemplateSections.Where(
+				pt => (pt.ClientId == pageTemplateSection.ClientId)
+					&& (pt.Name.ToLower() == pageTemplateSection.Name.ToLower())
+					&& (pt.PageTemplateId == pageTemplateSection.PageTemplateId)
+					&& (pt.PageTemplateSectionId != pageTemplateSection.PageTemplateSectionId)
+					).FirstOrDefault();
+			if (conflict != null)
+			{
+				this.ModelState.AddModelError("Name", "Page Template Section Name '" + conflict.Name + "' is already in use for Page Template Section '" + conflict.Name.ToHtml() + "' [" + conflict.PageTemplateSectionId + "] for Page Template '" + conflict.PageTemplate.Name.ToHtml() + "' [" + conflict.PageTemplate.PageTemplateId + "] for client '" + conflict.Client.Name.ToHtml() + "' [" + conflict.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
+				string oldName = pageTemplateSection.Name;
+				int index = 1;
 				while (nameIsDirty)
 				{
-					pageTemplateSection.Name = pageTemplateSection.Name + "_New";
-					nameIsDirty = GStoreDb.PageTemplates.Where(pt => pt.Name.ToLower() == pageTemplateSection.Name.ToLower()).Any();
+					index++;
+					pageTemplateSection.Name = oldName + " " + index;
+					nameIsDirty = conflict.PageTemplate.Sections.Any(pt => pt.Name.ToLower() == pageTemplateSection.Name.ToLower());
 				}
 				if (ModelState.ContainsKey("Name"))
 				{
@@ -651,13 +399,17 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 
 		protected void ValidateThemeName(Theme theme)
 		{
-			if (GStoreDb.Themes.Where(t => t.ThemeId != theme.ThemeId && t.ClientId == theme.ClientId && t.Name.ToLower() == theme.Name.ToLower()).Any())
+			Theme conflict = GStoreDb.Themes.Where(t => t.ThemeId != theme.ThemeId && t.ClientId == theme.ClientId && t.Name.ToLower() == theme.Name.ToLower()).FirstOrDefault();
+			if (conflict != null)
 			{
-				this.ModelState.AddModelError("Name", "Theme name '" + theme.Name + "' is already in use for client '" + theme.Client.Name.ToHtml() + "' [" + theme.ClientId + "]. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Theme name '" + theme.Name + "' is already in use for Theme '" + conflict.Name.ToHtml() + "' [" + conflict.ThemeId + "] for client '" + theme.Client.Name.ToHtml() + "' [" + theme.ClientId + "]. Please choose a new name");
 				bool nameIsDirty = true;
+				string oldName = theme.Name;
+				int index = 1;
 				while (nameIsDirty)
 				{
-					theme.Name = theme.Name + "_New";
+					index++;
+					theme.Name = oldName + " " + index;
 					nameIsDirty = GStoreDb.Themes.Where(t => t.ClientId == theme.ClientId && t.Name.ToLower() == theme.Name.ToLower()).Any();
 				}
 				if (ModelState.ContainsKey("Name"))
@@ -665,6 +417,383 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 					ModelState["Name"].Value = new ValueProviderResult(theme.Name, theme.Name, null);
 				}
 			}
+		}
+
+		protected MvcHtmlString TopBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)
+		{
+			if (ShowAsLink)
+			{
+				return htmlHelper.ActionLink("System Admin", "Index", "SystemAdmin");
+			}
+			else
+			{
+				return new MvcHtmlString("System Admin");
+			}
+		}
+
+		protected MvcHtmlString ClientsBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				TopBreadcrumb(htmlHelper, true).ToHtmlString() 
+				+ " -> " 
+				+ (ShowAsLink ? htmlHelper.ActionLink("Clients", "Index", "ClientSysAdmin").ToHtmlString() : "Clients")
+				);
+		}
+
+		protected MvcHtmlString ClientBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false, string clientIdZeroName = "(none)")
+		{
+
+			Client client = null;
+			string name = "(unknown)";
+			if (clientId.HasValue)
+			{
+				if (clientId.Value == -1)
+				{
+					name = "All";
+				}
+				else if (clientId.Value == 0)
+				{
+					name = clientIdZeroName;
+				}
+				else
+				{
+					client = GStoreDb.Clients.FindById(clientId.Value);
+				}
+			}
+			else
+			{
+				name = "All";
+			}
+			bool showLink = false;
+			RouteValueDictionary routeData = null;
+			if (client != null)
+			{
+				showLink = ShowAsLink;
+				routeData = new RouteValueDictionary(new { id = client.ClientId });
+				name = "'" + client.Name + "' [" + client.ClientId + "]";
+			}
+			return new MvcHtmlString(
+				ClientsBreadcrumb(htmlHelper, true).ToHtmlString() 
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "ClientSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+		
+
+		protected MvcHtmlString StoreFrontsBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ClientBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Store Fronts", "Index", "StoreFrontSysAdmin", new { clientId = clientId }, null).ToHtmlString() : "Store Fronts")
+				);
+		}
+
+		protected MvcHtmlString StoreFrontBreadcrumb(HtmlHelper htmlHelper, int? clientId, int? storeFrontId, bool ShowAsLink = false, string storeFrontIdZeroName = "(none)")
+		{
+			StoreFront storeFront = null;
+			string name = "(unknown)";
+			if (storeFrontId.HasValue)
+			{
+				if (storeFrontId.Value == -1)
+				{
+					name = "All";
+				}
+				else if (storeFrontId.Value == 0)
+				{
+					name = storeFrontIdZeroName;
+				}
+				else
+				{
+					storeFront = GStoreDb.StoreFronts.FindById(storeFrontId.Value);
+					return StoreFrontBreadcrumb(htmlHelper, clientId, storeFront, ShowAsLink);
+				}
+			}
+			else
+			{
+				name = "All";
+			}
+
+			if (storeFront != null)
+			{
+				if (storeFront.StoreFrontId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					StoreFrontConfiguration config = storeFront.CurrentConfigOrAny();
+					name = (config == null ? "id [" + storeFront.StoreFrontId + "]" : "'" + config.Name + "' [" + storeFront.StoreFrontId + "]");
+				}
+			}
+
+			return new MvcHtmlString(
+				StoreFrontsBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ name
+				);
+		}
+
+		protected MvcHtmlString StoreFrontBreadcrumb(HtmlHelper htmlHelper, int? clientId, StoreFront storeFront, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (storeFront != null)
+			{
+				if (storeFront.StoreFrontId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = storeFront.StoreFrontId });
+					StoreFrontConfiguration config = storeFront.CurrentConfigOrAny();
+					name = (config == null ? "id [" + storeFront.StoreFrontId + "]" : "'" + config.Name + "' [" + storeFront.StoreFrontId + "]");
+				}
+			}
+
+			return new MvcHtmlString(
+				StoreFrontsBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "StoreFrontSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString BindingsBreadcrumb(HtmlHelper htmlHelper, int? clientId, StoreFront storeFront, bool ShowAsLink = false)
+		{
+			int? storeFrontId = (storeFront == null ? (int?)null : storeFront.StoreFrontId);
+
+			return new MvcHtmlString(
+				StoreFrontBreadcrumb(htmlHelper, clientId, storeFront, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Bindings", "Index", "BindingsSysAdmin", new { clientId = clientId , storeFrontId = storeFrontId }, null).ToHtmlString() : "Bindings")
+				);
+		}
+
+		protected MvcHtmlString BindingBreadcrumb(HtmlHelper htmlHelper, int? clientId, StoreFront storeFront, StoreBinding storeBinding, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (storeBinding != null)
+			{
+				if (storeBinding.StoreBindingId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = storeBinding.StoreBindingId });
+					name = "Binding [" + storeBinding.StoreBindingId + "]";
+				}
+			}
+
+			return new MvcHtmlString(
+				BindingsBreadcrumb(htmlHelper, clientId, storeFront, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "BindingsSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString PageTemplatesBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ClientBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Page Templates", "Index", "PageTemplateSysAdmin", new { clientId = clientId }, null).ToHtmlString() : "Page Templates")
+				);
+		}
+
+		protected MvcHtmlString PageTemplateBreadcrumb(HtmlHelper htmlHelper, int? clientId, PageTemplate pageTemplate, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (pageTemplate != null)
+			{
+				if (pageTemplate.PageTemplateId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = pageTemplate.PageTemplateId });
+					name = "'" + pageTemplate.Name + "' [" + pageTemplate.PageTemplateId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				PageTemplatesBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "PageTemplateSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString ThemesBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ClientBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Themes", "Index", "ThemeSysAdmin", new { clientId = clientId }, null).ToHtmlString() : "Themes")
+				);
+		}
+
+		protected MvcHtmlString ThemeBreadcrumb(HtmlHelper htmlHelper, int? clientId, Theme theme, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (theme != null)
+			{
+				if (theme.ThemeId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = theme.ThemeId });
+					name = "'" + theme.Name + "' [" + theme.ThemeId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				ThemesBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "ThemeSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString UserProfilesBreadcrumb(HtmlHelper htmlHelper, int? clientId, int? storeFrontId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				StoreFrontBreadcrumb(htmlHelper, clientId, storeFrontId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("User Profiles", "Index", "UserProfileSysAdmin", new { clientId = clientId, storeFrontId = storeFrontId }, null).ToHtmlString() : "User Profiles")
+				);
+		}
+
+		protected MvcHtmlString UserProfileBreadcrumb(HtmlHelper htmlHelper, int? clientId, int? storeFrontId, UserProfile userProfile, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (userProfile != null)
+			{
+				if (userProfile.UserProfileId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = userProfile.UserProfileId });
+					name = "'" + userProfile.FullName + "' <" + userProfile.Email + "> [" + userProfile.UserProfileId + "]";
+				}
+			}
+
+			return new MvcHtmlString(
+				UserProfilesBreadcrumb(htmlHelper, clientId, storeFrontId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "UserProfileSysAdmin", routeData, null).ToHtmlString() : name.ToHtml())
+				);
+		}
+
+		protected MvcHtmlString ValueListsBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ClientBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Value Lists", "Index", "ValueListSysAdmin", new { clientId = clientId }, null).ToHtmlString() : "Value Lists")
+				);
+		}
+
+		protected MvcHtmlString ValueListBreadcrumb(HtmlHelper htmlHelper, int? clientId, ValueList valueList, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (valueList != null)
+			{
+				if (valueList.ValueListId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = valueList.ValueListId });
+					name = "'" + valueList.Name + "' [" + valueList.ValueListId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				ValueListsBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "ValueListSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString WebFormsBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ClientBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Web Forms", "Index", "WebFormSysAdmin", new { clientId = clientId }, null).ToHtmlString() : "Web Forms")
+				);
+		}
+
+		protected MvcHtmlString WebFormBreadcrumb(HtmlHelper htmlHelper, int? clientId, WebForm webForm, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (webForm != null)
+			{
+				if (webForm.WebFormId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = webForm.WebFormId });
+					name = "'" + webForm.Name + "' [" + webForm.WebFormId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				WebFormsBreadcrumb(htmlHelper, clientId, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "Details", "WebFormSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+		}
+
+		protected MvcHtmlString GStoreAboutBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				TopBreadcrumb(htmlHelper, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("GStore", "About", "GStore").ToHtmlString() : "GStore")
+				);
+		}
+
+		protected MvcHtmlString GStoreSystemInfoBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				GStoreAboutBreadcrumb(htmlHelper, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("System Info", "SystemInfo", "GStore").ToHtmlString() : "System Info")
+				);
+		}
+
+		protected MvcHtmlString GStoreSettingsBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				GStoreAboutBreadcrumb(htmlHelper, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Settings", "Settings", "GStore").ToHtmlString() : "Settings")
+				);
 		}
 
 

@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.Areas.StoreAdmin.ViewModels;
 using GStore.AppHtmlHelpers;
+using GStore.Models;
+using GStore.Models.ViewModels;
 
 namespace GStore.Areas.StoreAdmin.Controllers
 {
@@ -15,27 +17,28 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Manager)]
 		public ActionResult Manager()
 		{
-			return View("Manager", this.StoreAdminViewModel);
+			ClientConfigManagerAdminViewModel viewModel = new ClientConfigManagerAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontConfigOrAny, CurrentUserProfileOrThrow);
+			return View("Manager", viewModel);
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
 		public ActionResult ClientView(string Tab)
 		{
-			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientView", viewModel);
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View)]
 		public ActionResult ClientViewNoTabs()
 		{
-			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, null);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, null);
 			return View("ClientViewNoTabs", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_Edit)]
 		public ActionResult ClientEdit(string Tab)
 		{
-			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, Tab);
+			ClientConfigAdminViewModel viewModel = new ClientConfigAdminViewModel(CurrentClientOrThrow, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, Tab);
 			return View("ClientEdit", viewModel);
 		}
 
@@ -69,9 +72,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			return View("ClientEdit", model);
 		}
 
-
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
-		public ActionResult StoreFrontView(int? id, string Tab)
+		public ActionResult StoreFrontView(int? id, int? storeFrontConfigId, string Tab)
 		{
 			//verify the storeFront permissions in case we're operating on a different storefront
 			GStore.Models.StoreFront storeFrontToView = null;
@@ -88,7 +90,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				if (!storeFrontToView.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -97,11 +99,28 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontView", new StoreFrontConfigAdminViewModel(storeFrontToView, CurrentUserProfileOrThrow, Tab));
+			StoreFrontConfiguration storeFrontConfig = null;
+			if (storeFrontConfigId.HasValue)
+			{
+				storeFrontConfig = storeFrontToView.StoreFrontConfigurations.FirstOrDefault(c => c.StoreFrontConfigurationId == storeFrontConfigId.Value);
+				if (storeFrontConfig == null)
+				{
+					AddUserMessage("Configuration not found", "Configuration id [" + storeFrontConfigId.Value  +"] was not found, here is the current store front configuration instead.", UserMessageType.Warning);
+					storeFrontConfig = storeFrontToView.CurrentConfigOrAny();
+				}
+			}
+			else
+			{
+				//show current config if no config id passed in
+				storeFrontConfig = storeFrontToView.CurrentConfigOrAny();
+			}
+			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(storeFrontConfig, CurrentUserProfileOrThrow, Tab, false, false);
+
+			return View("StoreFrontView", viewModel);
 		}
 
 		[AuthorizeGStoreAction(true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View)]
-		public ActionResult StoreFrontViewNoTabs(int? id)
+		public ActionResult StoreFrontViewNoTabs(int? id, int? storeFrontConfigId)
 		{
 			//verify the storeFront permissions in case we're operating on a different storefront
 			GStore.Models.StoreFront storeFrontToView = null;
@@ -118,7 +137,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				if (!storeFrontToView.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to view configuration for store front: " + storeFrontToView.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToView.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -127,11 +146,28 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToView = CurrentStoreFrontOrThrow;
 			}
 
-			return View("StoreFrontViewNoTabs", new StoreFrontConfigAdminViewModel(storeFrontToView, CurrentUserProfileOrThrow, null));
+			StoreFrontConfiguration storeFrontConfig = null;
+			if (storeFrontConfigId.HasValue)
+			{
+				storeFrontConfig = storeFrontToView.StoreFrontConfigurations.FirstOrDefault(c => c.StoreFrontConfigurationId == storeFrontConfigId.Value);
+				if (storeFrontConfig == null)
+				{
+					AddUserMessage("Configuration not found", "Configuration id [" + storeFrontConfigId.Value + "] was not found, here is the current store front configuration instead.", UserMessageType.Warning);
+					storeFrontConfig = storeFrontToView.CurrentConfigOrAny();
+				}
+			}
+			else
+			{
+				//show current config if no config id passed in
+				storeFrontConfig = storeFrontToView.CurrentConfigOrAny();
+			}
+			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(storeFrontConfig, CurrentUserProfileOrThrow, null, false, false);
+
+			return View("StoreFrontViewNoTabs", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
-		public ActionResult StoreFrontEdit(int? id, string Tab)
+		public ActionResult StoreFrontEdit(int? id, int? storeFrontConfigId, string Tab)
 		{
 			if (!id.HasValue)
 			{
@@ -150,9 +186,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					throw new ApplicationException("StoreFrontToEdit cannot be found. It may be cross-client or inactive. StoreFrontId: " + id.Value);
 				}
 
-				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -160,17 +196,32 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			{
 				storeFrontToEdit = CurrentStoreFrontOrThrow;
 			}
+			StoreFrontConfiguration storeFrontConfig = null;
+			if (storeFrontConfigId.HasValue)
+			{
+				storeFrontConfig = storeFrontToEdit.StoreFrontConfigurations.FirstOrDefault(c => c.StoreFrontConfigurationId == storeFrontConfigId.Value);
+				if (storeFrontConfig == null)
+				{
+					AddUserMessage("Configuration not found", "Configuration id [" + storeFrontConfigId.Value + "] was not found, here is the current store front configuration instead.", UserMessageType.Warning);
+					storeFrontConfig = storeFrontToEdit.CurrentConfigOrAny();
+				}
+			}
+			else
+			{
+				//show current config if no config id passed in
+				storeFrontConfig = storeFrontToEdit.CurrentConfigOrAny();
+			}
+			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(storeFrontConfig, CurrentUserProfileOrThrow, Tab, false, false);
+
 
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
-			ViewBag.RegisterSuccessPageList = RegisterSuccessPageList(clientId, storeFrontId); 
-			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
-			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
+			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
+			ViewBag.PageList = PageList(clientId, storeFrontId); 
 
-			return View("StoreFrontEdit", new StoreFrontConfigAdminViewModel(storeFrontToEdit, CurrentUserProfileOrThrow, Tab));
+			return View("StoreFrontEdit", viewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Edit)]
@@ -178,6 +229,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[HttpPost]
 		public ActionResult StoreFrontEdit(StoreFrontConfigAdminViewModel model)
 		{
+			//note: cart edits are done in the cart preview/view/edit pages in /cart
 			if (model == null)
 			{
 				return HttpBadRequest("model is null");
@@ -196,9 +248,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					throw new ApplicationException("StoreFrontToEdit cannot be found. It may be cross-client or inactive. StoreFrontId: " + model.StoreFrontId);
 				}
 
-				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, true, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
-					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
 					return RedirectToAction("Manager");
 				}
 			}
@@ -207,69 +259,447 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				storeFrontToEdit = CurrentStoreFrontOrThrow;
 			}
 
+			if (model.StoreFrontConfigurationId == 0)
+			{
+				throw new ApplicationException("model.StoreFrontConfigurationId == 0. Make sure view sets StoreFrontConfigurationId to a valid configuration");
+			}
+			StoreFrontConfiguration config = storeFrontToEdit.StoreFrontConfigurations.SingleOrDefault(sfc => sfc.StoreFrontConfigurationId == model.StoreFrontConfigurationId);
+			if (config == null)
+			{
+				throw new ApplicationException("store front configuration id [" + model.StoreFrontConfigurationId + "] not found in store front id [" + storeFrontToEdit.StoreFrontId + "] . Make sure view sets StoreFrontConfigurationId to a valid configuration");
+			}
+
 			if (ModelState.IsValid)
 			{
-				storeFrontToEdit.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
-				storeFrontToEdit.AccountLayoutName = model.AccountLayoutName;
-				storeFrontToEdit.AccountThemeId = model.AccountThemeId;
-				storeFrontToEdit.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
-				storeFrontToEdit.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
-				storeFrontToEdit.AdminLayoutName = model.AdminLayoutName;
-				storeFrontToEdit.AdminThemeId = model.AdminThemeId;
-				storeFrontToEdit.CatalogCategoryColLg = model.CatalogCategoryColLg;
-				storeFrontToEdit.CatalogCategoryColMd = model.CatalogCategoryColMd;
-				storeFrontToEdit.CatalogCategoryColSm = model.CatalogCategoryColSm;
-				storeFrontToEdit.CatalogLayoutName = model.CatalogLayoutName;
-				storeFrontToEdit.CatalogThemeId = model.CatalogThemeId;
-				storeFrontToEdit.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
-				storeFrontToEdit.CatalogProductColLg = model.CatalogProductColLg;
-				storeFrontToEdit.CatalogProductColMd = model.CatalogProductColMd;
-				storeFrontToEdit.CatalogProductColSm = model.CatalogProductColSm;
-				storeFrontToEdit.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
-				storeFrontToEdit.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
-				storeFrontToEdit.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
-				storeFrontToEdit.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
-				storeFrontToEdit.HtmlFooter = model.HtmlFooter;
-				storeFrontToEdit.MetaApplicationName = model.MetaApplicationName;
-				storeFrontToEdit.MetaApplicationTileColor = model.MetaApplicationTileColor;
-				storeFrontToEdit.MetaDescription = model.MetaDescription;
-				storeFrontToEdit.MetaKeywords = model.MetaKeywords;
-				storeFrontToEdit.Name = model.Name;
-				storeFrontToEdit.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
-				storeFrontToEdit.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
-				storeFrontToEdit.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
-				storeFrontToEdit.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
-				storeFrontToEdit.Order = model.Order;
-				storeFrontToEdit.Register_WebFormId = model.Register_WebFormId;
-				storeFrontToEdit.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
-				storeFrontToEdit.NotFoundError_PageId = model.NotFoundError_PageId;
-				storeFrontToEdit.NotificationsLayoutName = model.NotificationsLayoutName;
-				storeFrontToEdit.NotificationsThemeId = model.NotificationsThemeId;
-				storeFrontToEdit.ProfileLayoutName = model.ProfileLayoutName;
-				storeFrontToEdit.ProfileThemeId = model.ProfileThemeId;
-				storeFrontToEdit.PublicUrl = model.PublicUrl;
-				storeFrontToEdit.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;
-				storeFrontToEdit.StoreError_PageId = model.StoreError_PageId;
-				storeFrontToEdit.WelcomePerson_UserProfileId = model.WelcomePerson_UserProfileId;
+				config.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
+				config.AccountLayoutName = model.AccountLayoutName;
+				config.AccountThemeId = model.AccountThemeId;
+				config.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
+				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
+				config.AdminLayoutName = model.AdminLayoutName;
+				config.AdminThemeId = model.AdminThemeId;
+				config.CartLayoutName = model.CartLayoutName;
+				config.CartThemeId = model.CartThemeId;
+				config.CheckoutLayoutName = model.CheckoutLayoutName;
+				config.CheckoutThemeId = model.CheckoutThemeId;
+				config.CheckoutLogInOrGuestWebFormId = model.CheckoutLogInOrGuestWebFormId;
+				config.CheckoutDeliveryInfoDigitalOnlyWebFormId = model.CheckoutDeliveryInfoDigitalOnlyWebFormId;
+				config.CheckoutDeliveryInfoShippingWebFormId = model.CheckoutDeliveryInfoShippingWebFormId;
+				config.CheckoutDeliveryMethodWebFormId = model.CheckoutDeliveryMethodWebFormId;
+				config.CheckoutPaymentInfoWebFormId = model.CheckoutPaymentInfoWebFormId;
+				config.CheckoutConfirmOrderWebFormId = model.CheckoutConfirmOrderWebFormId;
+				config.CatalogCategoryColLg = model.CatalogCategoryColLg;
+				config.CatalogCategoryColMd = model.CatalogCategoryColMd;
+				config.CatalogCategoryColSm = model.CatalogCategoryColSm;
+				config.CatalogLayoutName = model.CatalogLayoutName;
+				config.CatalogThemeId = model.CatalogThemeId;
+				config.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
+				config.CatalogProductColLg = model.CatalogProductColLg;
+				config.CatalogProductColMd = model.CatalogProductColMd;
+				config.CatalogProductColSm = model.CatalogProductColSm;
+				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
+				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
+				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
+				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
+				config.HtmlFooter = model.HtmlFooter;
+				config.MetaApplicationName = model.MetaApplicationName;
+				config.MetaApplicationTileColor = model.MetaApplicationTileColor;
+				config.MetaDescription = model.MetaDescription;
+				config.MetaKeywords = model.MetaKeywords;
+				config.Name = model.Name;
+				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
+				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
+				config.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
+				config.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
+				config.Order = model.Order;
+				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
+				config.OrderAdminThemeId = model.OrderAdminThemeId;
+				config.OrderStatusLayoutName = model.OrderStatusLayoutName;
+				config.OrderStatusThemeId = model.OrderStatusThemeId;
+				config.Register_WebFormId = model.Register_WebFormId;
+				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
+				config.NotFoundError_PageId = model.NotFoundError_PageId;
+				config.NotificationsLayoutName = model.NotificationsLayoutName;
+				config.NotificationsThemeId = model.NotificationsThemeId;
+				config.ProfileLayoutName = model.ProfileLayoutName;
+				config.ProfileThemeId = model.ProfileThemeId;
+				config.PublicUrl = model.PublicUrl;
+				config.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;
+				config.StoreError_PageId = model.StoreError_PageId;
+				config.UseShoppingCart = model.UseShoppingCart;
+				config.CartNavShowCartWhenEmpty = model.CartNavShowCartWhenEmpty;
+				config.CartNavShowCartToAnonymous = model.CartNavShowCartToAnonymous;
+				config.CartNavShowCartToRegistered = model.CartNavShowCartToRegistered;
+				config.CartRequireLogin = model.CartRequireLogin;
 
-				GStoreDb.StoreFronts.Update(storeFrontToEdit);
+				config.WelcomePerson_UserProfileId = model.WelcomePerson_UserProfileId;
+
+				config.ConfigurationName = model.ConfigurationName;
+				config.IsPending = model.IsPending;
+				config.StartDateTimeUtc = model.StartDateTimeUtc;
+				config.EndDateTimeUtc = model.EndDateTimeUtc;
+				config = GStoreDb.StoreFrontConfigurations.Update(config);
 				GStoreDb.SaveChanges();
 
-				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front '" + storeFrontToEdit.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
+				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
 
-				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, Tab = model.ActiveTab });
+				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId, Tab = model.ActiveTab });
 			}
 
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
+
 			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
 			ViewBag.ThemeList = ThemeList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFrontId);
-			ViewBag.RegisterSuccessPageList = RegisterSuccessPageList(clientId, storeFrontId); 
-			ViewBag.NotFoundPageList = NotFoundPageList(clientId, storeFrontId);
-			ViewBag.StoreErrorPageList = StoreErrorPageList(clientId, storeFrontId);
+			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
+			ViewBag.PageList = PageList(clientId, storeFrontId); 
 
 			return View("StoreFrontEdit", model);
+		}
+
+		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Create)]
+		public ActionResult StoreFrontNewConfig(int? id, string Tab)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("Store Front Id is null");
+			}
+			//verify the storeFront permissions in case we're operating on a different storefront
+			GStore.Models.StoreFront storeFrontToEdit = null;
+			if (id.HasValue && CurrentStoreFrontOrThrow.StoreFrontId != id.Value)
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow.Client.StoreFronts.AsQueryable()
+					.Where(sf => sf.StoreFrontId == id.Value)
+					.WhereIsActive()
+					.SingleOrDefault();
+				if (storeFrontToEdit == null)
+				{
+					throw new ApplicationException("StoreFrontToEdit cannot be found. It may be cross-client or inactive. StoreFrontId: " + id.Value);
+				}
+
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Create))
+				{
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to edit configuration for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					return RedirectToAction("Manager");
+				}
+			}
+			else
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow;
+			}
+
+			int clientId = storeFrontToEdit.ClientId;
+			int storeFrontId = storeFrontToEdit.StoreFrontId;
+
+			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
+			ViewBag.ThemeList = ThemeList();
+			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
+			ViewBag.PageList = PageList(clientId, storeFrontId); 
+
+			StoreFrontConfiguration configToClone = storeFrontToEdit.CurrentConfigOrAny();
+			StoreFrontConfiguration newStoreFrontConfig = null;
+			if (configToClone != null)
+			{
+				newStoreFrontConfig = GStoreDb.CloneStoreFrontConfiguration(configToClone, CurrentUserProfileOrThrow);
+			}
+			else
+			{
+				newStoreFrontConfig = GStoreDb.StoreFrontConfigurations.Create();
+				newStoreFrontConfig.SetDefaultsForNew(CurrentClientOrThrow);
+				newStoreFrontConfig.StoreFront = storeFrontToEdit;
+				newStoreFrontConfig.StoreFrontId = id.Value;
+				newStoreFrontConfig.ApplyDefaultCartConfig();
+				newStoreFrontConfig.ApplyDefaultCheckoutConfig();
+				newStoreFrontConfig.ApplyDefaultOrderStatusConfig();
+			}
+
+			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(newStoreFrontConfig, CurrentUserProfileOrThrow, Tab, true, false);
+
+			return View("StoreFrontEdit", viewModel);
+		}
+
+		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Create)]
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public ActionResult StoreFrontNewConfig(StoreFrontConfigAdminViewModel model)
+		{
+			if (model == null)
+			{
+				return HttpBadRequest("model is null");
+			}
+
+			model.Client = CurrentClientOrThrow;
+			//verify the storeFront permissions in case we're operating on a different storefront
+			GStore.Models.StoreFront storeFrontToEdit = null;
+			if (model.StoreFrontId != CurrentStoreFrontOrThrow.StoreFrontId)
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow.Client.StoreFronts.AsQueryable()
+					.Where(sf => sf.StoreFrontId == model.StoreFrontId)
+					.WhereIsActive()
+					.SingleOrDefault();
+				if (storeFrontToEdit == null)
+				{
+					throw new ApplicationException("StoreFrontToEdit (create) cannot be found. It may be cross-client or inactive. StoreFrontId: " + model.StoreFrontId);
+				}
+
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				{
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to create a configuration for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					return RedirectToAction("Manager");
+				}
+			}
+			else
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow;
+			}
+
+			ValidateStoreFrontName(model);
+			ValidateStoreFrontConfigName(model);
+
+			if (ModelState.IsValid)
+			{
+				StoreFrontConfiguration config = GStoreDb.StoreFrontConfigurations.Create();
+
+				StoreFrontConfiguration configToCopyFrom = storeFrontToEdit.CurrentConfigOrAny();
+				if (configToCopyFrom == null)
+				{
+					config.ApplyDefaultCartConfig();
+				}
+				else
+				{
+					config.CopyValuesFromCartConfigViewModel(storeFrontToEdit.CurrentConfigOrAny().CartConfigViewModel(false, false));
+				}
+				config.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
+				config.AccountLayoutName = model.AccountLayoutName;
+				config.AccountThemeId = model.AccountThemeId;
+				config.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
+				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
+				config.AdminLayoutName = model.AdminLayoutName;
+				config.AdminThemeId = model.AdminThemeId;
+				config.CartLayoutName = model.CartLayoutName;
+				config.CartThemeId = model.CartThemeId;
+				config.CheckoutLayoutName = model.CheckoutLayoutName;
+				config.CheckoutThemeId = model.CheckoutThemeId;
+				config.CatalogCategoryColLg = model.CatalogCategoryColLg;
+				config.CatalogCategoryColMd = model.CatalogCategoryColMd;
+				config.CatalogCategoryColSm = model.CatalogCategoryColSm;
+				config.CatalogLayoutName = model.CatalogLayoutName;
+				config.CatalogThemeId = model.CatalogThemeId;
+				config.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
+				config.CatalogProductColLg = model.CatalogProductColLg;
+				config.CatalogProductColMd = model.CatalogProductColMd;
+				config.CatalogProductColSm = model.CatalogProductColSm;
+				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
+				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
+				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
+				config.Folder = model.Folder;
+				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
+				config.HtmlFooter = model.HtmlFooter;
+				config.MetaApplicationName = model.MetaApplicationName;
+				config.MetaApplicationTileColor = model.MetaApplicationTileColor;
+				config.MetaDescription = model.MetaDescription;
+				config.MetaKeywords = model.MetaKeywords;
+				config.Name = model.Name;
+				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
+				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
+				config.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
+				config.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
+				config.Order = model.Order;
+				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
+				config.OrderAdminThemeId = model.OrderAdminThemeId;
+				config.OrderStatusLayoutName = model.OrderStatusLayoutName;
+				config.OrderStatusThemeId = model.OrderStatusThemeId;
+				config.Register_WebFormId = model.Register_WebFormId;
+				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
+				config.NotFoundError_PageId = model.NotFoundError_PageId;
+				config.NotificationsLayoutName = model.NotificationsLayoutName;
+				config.NotificationsThemeId = model.NotificationsThemeId;
+				config.ProfileLayoutName = model.ProfileLayoutName;
+				config.ProfileThemeId = model.ProfileThemeId;
+				config.PublicUrl = model.PublicUrl;
+				config.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;
+				config.StoreError_PageId = model.StoreError_PageId;
+				config.UseShoppingCart = model.UseShoppingCart;
+				config.CartNavShowCartWhenEmpty = model.CartNavShowCartWhenEmpty;
+				config.CartNavShowCartToAnonymous = model.CartNavShowCartToAnonymous;
+				config.CartNavShowCartToRegistered = model.CartNavShowCartToRegistered;
+				config.CartRequireLogin = model.CartRequireLogin;
+
+				config.WelcomePerson_UserProfileId = model.WelcomePerson_UserProfileId;
+
+				config.StoreFrontId = model.StoreFrontId;
+				config.ClientId = model.Client.ClientId;
+				config.ConfigurationName = model.ConfigurationName;
+				config.IsPending = model.IsPending;
+				config.StartDateTimeUtc = model.StartDateTimeUtc;
+				config.EndDateTimeUtc = model.EndDateTimeUtc;
+				config = GStoreDb.StoreFrontConfigurations.Add(config);
+				GStoreDb.SaveChanges();
+
+				AddUserMessage("New Store Front Configuration Successful", "New Configuration Created! Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "].", AppHtmlHelpers.UserMessageType.Success);
+
+				if (storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_Manager))
+				{
+					return RedirectToAction("Manager");
+				}
+				else if (storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_View))
+				{
+					return RedirectToAction("StoreFrontView", new { id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId, Tab = model.ActiveTab });
+				}
+				return RedirectToAction("Index", "StoreAdmin");
+			}
+
+			int clientId = storeFrontToEdit.ClientId;
+			int storeFrontId = storeFrontToEdit.StoreFrontId;
+
+			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
+			ViewBag.ThemeList = ThemeList();
+			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
+			ViewBag.PageList = PageList(clientId, storeFrontId); 
+
+			model.IsCreatePage = true;
+			return View("StoreFrontEdit", model);
+		}
+
+		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Delete)]
+		public ActionResult StoreFrontDelete(int? id, int? storeFrontConfigId)
+		{
+			//verify the storeFront permissions in case we're operating on a different storefront
+			GStore.Models.StoreFront storeFrontToEdit = null;
+			if (id.HasValue && CurrentStoreFrontOrThrow.StoreFrontId != id.Value)
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow.Client.StoreFronts.AsQueryable()
+					.Where(sf => sf.StoreFrontId == id.Value)
+					.WhereIsActive()
+					.SingleOrDefault();
+				if (storeFrontToEdit == null)
+				{
+					throw new ApplicationException("StoreFrontToEdit cannot be found. It may be cross-client or inactive. StoreFrontId: " + id.Value);
+				}
+
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				{
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to delete configurations for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					return RedirectToAction("Manager");
+				}
+			}
+			else
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow;
+			}
+			StoreFrontConfiguration storeFrontConfig = null;
+			if (storeFrontConfigId.HasValue)
+			{
+				storeFrontConfig = storeFrontToEdit.StoreFrontConfigurations.FirstOrDefault(c => c.StoreFrontConfigurationId == storeFrontConfigId.Value);
+				if (storeFrontConfig == null)
+				{
+					AddUserMessage("Configuration not found", "Configuration id [" + storeFrontConfigId.Value + "] was not found, here is the current store front configuration instead.", UserMessageType.Warning);
+					storeFrontConfig = storeFrontToEdit.CurrentConfigOrAny();
+				}
+			}
+			else
+			{
+				//show current config if no config id passed in
+				storeFrontConfig = storeFrontToEdit.CurrentConfigOrAny();
+			}
+
+			//make sure this is not the last active config, otherwise NO DELETE!
+
+			if (storeFrontToEdit.StoreFrontConfigurations.AsQueryable().Count() <= 1)
+			{
+				AddUserMessage("Delete Denied", "You cannot delete the last configuration for store front '" + storeFrontConfig.Name.ToHtml() + "' [" + storeFrontConfig.StoreFrontId + "]. Edit this configuration, or create a new configuration, then delete this one. Configuration id: " + storeFrontConfig.StoreFrontConfigurationId, UserMessageType.Danger);
+				return RedirectToAction("Manager");
+			}
+
+			//if no configs are active, go ahead and delete away
+
+			if (storeFrontConfig.IsActiveDirect() && (storeFrontToEdit.StoreFrontConfigurations.AsQueryable().WhereIsActive().Count() == 1))
+			{
+				AddUserMessage("Delete Denied", "You cannot delete the last ACTIVE configuration for a store front. Edit this configuration, or create a new configuration, then delete this one or make this one INACTIVE then delete it. Configuration id: " + storeFrontConfig.StoreFrontConfigurationId, UserMessageType.Danger);
+				return RedirectToAction("Manager");
+			}
+
+			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(storeFrontConfig, CurrentUserProfileOrThrow, null, false, true);
+
+			return View("StoreFrontDelete", viewModel);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[ActionName("StoreFrontDelete")]
+		[AuthorizeGStoreAction(GStoreAction.ClientConfig_StoreFrontConfig_Delete)]
+		public ActionResult StoreFrontDeleteConfirmed(int? id, int? storeFrontConfigId)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("Id (StoreFrontId) == null");
+			}
+			if (!storeFrontConfigId.HasValue)
+			{
+				return HttpBadRequest("storeFrontConfigId == null");
+			}
+
+			//verify the storeFront permissions in case we're operating on a different storefront
+			GStore.Models.StoreFront storeFrontToEdit = null;
+			if (id.HasValue && CurrentStoreFrontOrThrow.StoreFrontId != id.Value)
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow.Client.StoreFronts.AsQueryable()
+					.Where(sf => sf.StoreFrontId == id.Value)
+					.WhereIsActive()
+					.SingleOrDefault();
+				if (storeFrontToEdit == null)
+				{
+					throw new ApplicationException("StoreFrontToEdit cannot be found. It may be cross-client or inactive. StoreFrontId: " + id.Value);
+				}
+
+				if (!storeFrontToEdit.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+				{
+					AddUserMessage("Access denied.", "Sorry, you do not have permission to delete configurations for store front: " + storeFrontToEdit.CurrentConfigOrAny().Name.ToHtml() + " [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Danger);
+					return RedirectToAction("Manager");
+				}
+			}
+			else
+			{
+				storeFrontToEdit = CurrentStoreFrontOrThrow;
+			}
+
+			StoreFrontConfiguration storeFrontConfig = null;
+			storeFrontConfig = storeFrontToEdit.StoreFrontConfigurations.FirstOrDefault(c => c.StoreFrontConfigurationId == storeFrontConfigId.Value);
+			if (storeFrontConfig == null)
+			{
+				AddUserMessage("Configuration not found", "Configuration id [" + storeFrontConfigId.Value + "] was not found. It may have been deleted by another user.", UserMessageType.Warning);
+				return RedirectToAction("Manager");
+			}
+
+			//make sure this is not the last active config, otherwise NO DELETE!
+			if (storeFrontToEdit.StoreFrontConfigurations.AsQueryable().Count() <= 1)
+			{
+				AddUserMessage("Delete Denied", "You cannot delete the last configuration for store front '" + storeFrontConfig.Name.ToHtml() + "' [" + storeFrontConfig.StoreFrontId + "]. Edit this configuration or create a new configuration, then delete this one. Configuration id: " + storeFrontConfig.StoreFrontConfigurationId, UserMessageType.Danger);
+				return RedirectToAction("Manager");
+			}
+
+			//if no configs are active, go ahead and delete away
+			if (storeFrontConfig.IsActiveDirect() && (storeFrontToEdit.StoreFrontConfigurations.AsQueryable().WhereIsActive().Count() == 1))
+			{
+				AddUserMessage("Delete Denied", "You cannot delete the last ACTIVE configuration for a store front. Edit this configuration or create a new configuration, then delete this one or make this one INACTIVE then delete it. Configuration id: " + storeFrontConfig.StoreFrontConfigurationId, UserMessageType.Danger);
+				return RedirectToAction("Manager");
+			}
+
+			string configName = storeFrontConfig.ConfigurationName;
+			int configId = storeFrontConfig.StoreFrontConfigurationId;
+
+			bool result = GStoreDb.StoreFrontConfigurations.Delete(storeFrontConfig);
+			if (result)
+			{
+				AddUserMessage("Configuration Deleted", "Store Front Configuration '" + configName.ToHtml() + "' [" + configId + "] was deleted successfully.", UserMessageType.Success);
+				GStoreDb.SaveChanges();
+			}
+			else
+			{
+				AddUserMessage("Configuration Delete Error", "There was an error deleting Store Front Configuration '" + configName.ToHtml() + "' [" + configId + "].", UserMessageType.Danger);
+			}
+
+			return RedirectToAction("Manager");
 		}
 
 		protected SelectList ThemeList()
@@ -285,53 +715,102 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 		protected SelectList UserProfileList(int clientId, int storeFrontId)
 		{
-			var query = GStoreDb.UserProfiles.All();
+			IQueryable<UserProfile> query = GStoreDb.UserProfiles.All();
 
-			query = query.Where(p => !p.ClientId.HasValue || p.ClientId.Value == clientId)
+			IOrderedQueryable<UserProfile> orderedQuery = query.Where(p => !p.ClientId.HasValue || p.ClientId.Value == clientId)
 				.Where(p => !p.StoreFrontId.HasValue || p.StoreFrontId.Value == storeFrontId)
 				.OrderBy(p => p.Order).ThenBy(p => p.UserProfileId).ThenBy(p => p.UserName);
 
-			IQueryable<SelectListItem> items = query.Select(p => new SelectListItem
+			List<UserProfile> profiles = orderedQuery.ToList();
+
+			IEnumerable<SelectListItem> items = profiles.Select(p => new SelectListItem
 			{
 				Value = p.UserProfileId.ToString(),
 				Text = p.FullName + " <" + p.Email + ">"
-				+ (p.StoreFrontId.HasValue ? " - Store '" + p.StoreFront.Name + "' [" + p.StoreFrontId + "]" : " (no store)")
+				+ (p.StoreFrontId.HasValue ? " - Store '" + p.StoreFront.CurrentConfigOrAny().Name + "' [" + p.StoreFrontId + "]" : " (no store)")
 				+ (p.ClientId.HasValue ? " - Client '" + p.Client.Name + "' [" + p.ClientId + "]" : " (no client)")
 			});
 
 			return new SelectList(items, "Value", "Text");
 		}
 
-		protected void ValidateStoreFrontName(GStore.Models.StoreFront storeFront)
+		protected void ValidateStoreFrontName(GStore.Models.StoreFrontConfiguration storeFrontConfig)
 		{
-			if (GStoreDb.StoreFronts.Where(sf => sf.StoreFrontId != storeFront.StoreFrontId && sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any())
+			if (GStoreDb.StoreFrontConfigurations.Where(sf => sf.StoreFrontId != storeFrontConfig.StoreFrontId && sf.ClientId == storeFrontConfig.ClientId && sf.Name.ToLower() == storeFrontConfig.Name.ToLower()).Any())
 			{
-				this.ModelState.AddModelError("Name", "Store Front name '" + storeFront.Name + "' is already in use. Please choose a new name");
+				this.ModelState.AddModelError("Name", "Store Front name '" + storeFrontConfig.Name + "' is already in use. Please choose a new name");
 				bool nameIsDirty = true;
+				int index = 1;
 				while (nameIsDirty)
 				{
-					storeFront.Name = storeFront.Name + "_New";
-					nameIsDirty = GStoreDb.StoreFronts.Where(sf => sf.ClientId == storeFront.ClientId && sf.Name.ToLower() == storeFront.Name.ToLower()).Any();
+					index++;
+					storeFrontConfig.Name = storeFrontConfig.Name + " " + index;
+					nameIsDirty = GStoreDb.StoreFrontConfigurations.Where(sf => sf.ClientId == storeFrontConfig.ClientId && sf.Name.ToLower() == storeFrontConfig.Name.ToLower()).Any();
 				}
 				if (ModelState.ContainsKey("Name"))
 				{
-					ModelState["Name"].Value = new ValueProviderResult(storeFront.Name, storeFront.Name, null);
+					ModelState["Name"].Value = new ValueProviderResult(storeFrontConfig.Name, storeFrontConfig.Name, null);
 				}
 			}
 		}
 
-		protected SelectList RegisterWebFormList(int clientId, int storeFrontId)
+		protected void ValidateStoreFrontName(StoreFrontConfigAdminViewModel viewModelForCreate)
+		{
+			if (viewModelForCreate == null)
+			{
+				throw new ArgumentNullException("viewModelForCreate");
+			}
+			if (viewModelForCreate.Client == null)
+			{
+				throw new ArgumentNullException("viewModelForCreate.Client");
+			}
+			int clientId = viewModelForCreate.Client.ClientId;
+
+			if (GStoreDb.StoreFrontConfigurations.Where(sf => sf.StoreFrontId != viewModelForCreate.StoreFrontId && sf.ClientId == clientId && sf.Name.ToLower() == viewModelForCreate.Name.ToLower()).Any())
+			{
+				this.ModelState.AddModelError("Name", "Store Front name '" + viewModelForCreate.Name + "' is already in use for another store front. Please choose a new name");
+				bool nameIsDirty = true;
+				int index = 1;
+				while (nameIsDirty)
+				{
+					index++;
+					viewModelForCreate.Name = viewModelForCreate.Name + " " + index;
+					nameIsDirty = GStoreDb.StoreFrontConfigurations.Where(sf => sf.ClientId == viewModelForCreate.Client.ClientId && sf.Name.ToLower() == viewModelForCreate.Name.ToLower()).Any();
+				}
+				if (ModelState.ContainsKey("Name"))
+				{
+					ModelState["Name"].Value = new ValueProviderResult(viewModelForCreate.Name, viewModelForCreate.Name, null);
+				}
+			}
+		}
+
+		protected void ValidateStoreFrontConfigName(StoreFrontConfigAdminViewModel viewModelForCreate)
+		{
+			if (viewModelForCreate == null)
+			{
+				throw new ArgumentNullException("viewModelForCreate");
+			}
+			if (GStoreDb.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == viewModelForCreate.StoreFrontId && sf.ClientId == viewModelForCreate.Client.ClientId && sf.ConfigurationName.ToLower() == viewModelForCreate.ConfigurationName.ToLower()).Any())
+			{
+				this.ModelState.AddModelError("ConfigurationName", "Store Front Configuration Name '" + viewModelForCreate.ConfigurationName + "' is already in use for another configuration. Please choose a new name");
+				bool nameIsDirty = true;
+				int index = 1;
+				while (nameIsDirty)
+				{
+					index++;
+					viewModelForCreate.ConfigurationName = viewModelForCreate.ConfigurationName + " " + index;
+					nameIsDirty = GStoreDb.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == viewModelForCreate.StoreFrontId && sf.ClientId == viewModelForCreate.Client.ClientId && sf.ConfigurationName.ToLower() == viewModelForCreate.ConfigurationName.ToLower()).Any();
+				}
+				if (ModelState.ContainsKey("ConfigurationName"))
+				{
+					ModelState["ConfigurationName"].Value = new ValueProviderResult(viewModelForCreate.ConfigurationName, viewModelForCreate.ConfigurationName, null);
+				}
+			}
+		}
+
+		protected SelectList WebFormList(int clientId, int storeFrontId)
 		{
 			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Registration Form)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-
-			if (CurrentStoreFrontOrNull == null)
-			{
-				return new SelectList(list, "Value", "Text");
-			}
 
 			var query = CurrentClientOrThrow.WebForms.OrderBy(pg => pg.Order).ThenBy(pg => pg.WebFormId);
 			IEnumerable<SelectListItem> items = query.Select(wf => new SelectListItem
@@ -340,89 +819,19 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				Text = wf.Name + " [" + wf.WebFormId + "]"
 			});
 
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
+			return new SelectList(items, "Value", "Text");
 		}
 
-		protected SelectList RegisterSuccessPageList(int clientId, int storeFrontId)
+		protected SelectList PageList(int clientId, int storeFrontId)
 		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Register Success Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-
 			var query = CurrentStoreFrontOrThrow.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
 			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
 			{
 				Value = pg.PageId.ToString(),
 				Text = pg.Name + " [" + pg.PageId + "]"
 			});
-
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
+			return new SelectList(items, "Value", "Text");
 		}
-
-		protected SelectList StoreErrorPageList(int clientId, int storeFrontId)
-		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Error Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-
-			if (CurrentStoreFrontOrNull == null)
-			{
-				return new SelectList(list, "Value", "Text");
-			}
-
-			var query = CurrentStoreFrontOrNull.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
-			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
-			{
-				Value = pg.PageId.ToString(),
-				Text = pg.Name + " [" + pg.PageId + "]"
-			});
-
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
-		}
-
-		protected SelectList NotFoundPageList(int clientId, int storeFrontId)
-		{
-			SelectListItem itemNone = new SelectListItem();
-			itemNone.Value = null;
-			itemNone.Text = "(GStore System Default Not Found Page)";
-			List<SelectListItem> list = new List<SelectListItem>();
-			list.Add(itemNone);
-
-			var query = CurrentStoreFrontOrThrow.Pages.OrderBy(pg => pg.Order).ThenBy(pg => pg.PageId);
-			IEnumerable<SelectListItem> items = query.Select(pg => new SelectListItem
-			{
-				Value = pg.PageId.ToString(),
-				Text = pg.Name + " [" + pg.PageId + "]"
-			});
-
-			if (items.Count() > 0)
-			{
-				list.AddRange(items);
-			}
-
-			return new SelectList(list, "Value", "Text");
-		}
-
-
 
 	}
 }

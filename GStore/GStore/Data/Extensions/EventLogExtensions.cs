@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Data
 {
@@ -105,6 +106,50 @@ namespace GStore.Data
 			}
 
 			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Login Failed", SecurityEventLevel.LoginFailure, false, true, loginAttempted, profile, message, controller);
+		}
+
+		public static void LogSecurityEvent_LoginFailedNoStoreFront(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, UserProfile profile, Controllers.BaseClass.BaseController controller)
+		{
+			string message = "Post Login check failed, No Store Front Found. Logon: " + profile.UserName
+				+ " \n\n-Email: " + profile.Email
+				+ " \n-Name: " + profile.FullName
+				+ " \n-UserId: " + profile.UserId
+				+ " \n-UserProfileId: " + profile.UserProfileId;
+
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Login Failed No StoreFront", SecurityEventLevel.LoginFailureNoStoreFront, false, false, profile.UserName, profile, message, controller);
+		}
+
+		public static void LogSecurityEvent_LoginFailedStoreFrontInactive(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string storeFrontName, int storeFrontId, UserProfile profile, Controllers.BaseClass.BaseController controller)
+		{
+			string message = "Post Login check failed, Store Front '" + storeFrontName + "' [" + storeFrontId + "] is Inactive. Logon: " + profile.UserName
+				+ " \n\n-Email: " + profile.Email
+				+ " \n-Name: " + profile.FullName
+				+ " \n-UserId: " + profile.UserId
+				+ " \n-UserProfileId: " + profile.UserProfileId;
+
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Login Failed StoreFrontInactive", SecurityEventLevel.LoginFailureStoreFrontInactive, false, false, profile.UserName, profile, message, controller);
+		}
+
+		public static void LogSecurityEvent_LoginFailedNoStoreFrontConfig(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, int storeFrontId, UserProfile profile, Controllers.BaseClass.BaseController controller)
+		{
+			string message = "Post Login check failed, No Configuration was found for Store Front Id [" + storeFrontId + "]. Logon: " + profile.UserName
+				+ " \n\n-Email: " + profile.Email
+				+ " \n-Name: " + profile.FullName
+				+ " \n-UserId: " + profile.UserId
+				+ " \n-UserProfileId: " + profile.UserProfileId;
+
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Login Failed StoreFrontConfigInactive", SecurityEventLevel.LoginFailureNoStoreFrontConfig, false, false, profile.UserName, profile, message, controller);
+		}
+
+		public static void LogSecurityEvent_LoginFailedStoreFrontConfigInactive(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string storeFrontName, int storeFrontId, string configurationName, int configurationId, UserProfile profile, Controllers.BaseClass.BaseController controller)
+		{
+			string message = "Post Login check failed, Configuration '" + configurationName + "' [" + configurationId + "] is Inactive for Store Front '" + storeFrontName + "' [" + storeFrontId + "]. Logon: " + profile.UserName
+				+ " \n\n-Email: " + profile.Email
+				+ " \n-Name: " + profile.FullName
+				+ " \n-UserId: " + profile.UserId
+				+ " \n-UserProfileId: " + profile.UserProfileId;
+
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Login Failed StoreFrontConfigInactive", SecurityEventLevel.LoginFailureStoreFrontConfigInactive, false, false, profile.UserName, profile, message, controller);
 		}
 
 		public static void LogSecurityEvent_LoginLockedOut(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string loginAttempted, UserProfile profile, Controllers.BaseClass.BaseController controller)
@@ -232,6 +277,12 @@ namespace GStore.Data
 		{
 			string message = "Forgot Password Failed. No user with Email: " + email;
 			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Forgot Password Failed Unknown User", SecurityEventLevel.ForgotPasswordFailedUnknownUser, false, true, email, null, message, controller);
+		}
+
+		public static void LogSecurityEvent_ForgotPasswordProfileNotFound(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string email, Controllers.BaseClass.BaseController controller)
+		{
+			string message = "Forgot Password Failed. User Profile not found for Email: " + email;
+			ctx.LogSecurityEvent(mvcHttpContext, routeData, "Forgot Password Failed Profile Not Found", SecurityEventLevel.ForgotPasswordFailedProfileNotFound, false, true, email, null, message, controller);
 		}
 
 		public static void LogSecurityEvent_PasswordResetSuccess(this IGstoreDb ctx, HttpContextBase mvcHttpContext, RouteData routeData, string email, UserProfile profile, Controllers.BaseClass.BaseController controller)
@@ -667,12 +718,11 @@ namespace GStore.Data
 			{
 				return "(null)";
 			}
-			string source = routeData.Values["controller"].ToString()
-				+ " -> " + routeData.Values["action"].ToString();
 
-			if (routeData.DataTokens.ContainsKey("area"))
+			string source = routeData.Controller() + " -> " + routeData.Action();
+			if (!string.IsNullOrEmpty(routeData.Area()))
 			{
-				source = routeData.DataTokens["area"].ToString() + " -> " + source;
+				source = routeData.Area() + " -> " + source;
 			}
 			return source;
 		}
@@ -770,6 +820,7 @@ namespace GStore.Data
 			record.Source = source;
 			record.Message = message;
 			record.Anonymous = anonymous;
+			record.SessionId = httpContext.Session.SessionID;
 
 			if (profile == null)
 			{

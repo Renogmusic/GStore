@@ -1,0 +1,32 @@
+﻿@model GStore.Models.Product
+@{
+	bool isPreview = ((ViewData["IsPreview"] ?? false) as bool?).Value;
+	bool isViewConfig = ((ViewData["IsViewConfig"] ?? false) as bool?).Value;
+	bool isEditConfig = ((ViewData["IsEditConfig"] ?? false) as bool?).Value;
+
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else if (isPreview || isViewConfig || isEditConfig)
+	{
+		string mode = (isPreview ? "Preview" : "Configuration");
+		
+		//preview mode
+		<div class="row">
+			<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThis link to view a product does not do anything.\nIt is only here to give you an idea how your cart looks.');">@Model.Name</a>
+		</div>
+		<div class="row">
+			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, true)))" />
+		</div>
+	}
+	else
+	{
+		<div class="row">
+			@(Html.ActionLink(Model.Name, "ViewProductByName", "Catalog", new { urlName = Model.UrlName }, null))
+		</div>
+		<div class="row">
+			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, true)))" />
+		</div>
+	}
+}

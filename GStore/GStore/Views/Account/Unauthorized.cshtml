@@ -1,12 +1,21 @@
-﻿@model GStore.Models.ViewModels.LoginViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Models.ViewModels
-
-@{
+﻿@{
 	ViewBag.Title = "Sorry, you don't have permission to view this page.";
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 
 <div class="row">
 	<h2 class="AccountTitle jumbotron col-xs-12">@ViewBag.Title</h2>
 </div>
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true}, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

@@ -55,31 +55,32 @@ namespace GStore.Data
 			{
 				throw new ApplicationException("Could not determine store front for Web Form. Page = null and User Profile = null, at least one must be valid to process a form.");
 			}
+			StoreFrontConfiguration storeFrontConfiguration = storeFront.CurrentConfig();
+			if (storeFrontConfiguration == null)
+			{
+				throw new ApplicationException("Could not determine current configuration of store front for Web Form. Store Front must be active and have an active configuration to process a form.");
+			}
 
-			string formBodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFront, userProfile, request);
-			string formSubject = BuildFormSubject(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+			string formBodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request, false);
+			string formSubject = BuildFormSubject(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request);
 
 			if (page == null || page.WebFormSaveToDatabase)
 			{
 				//register form always goes to database
-				ProcessWebForm_ToDatabase(db, modelStateDictionary, webForm, page, userProfile, request, storeFront, formSubject, formBodyText);
+				ProcessWebForm_ToDatabase(db, modelStateDictionary, webForm, page, userProfile, request, storeFrontConfiguration, formSubject, formBodyText, isRegisterPage);
 			}
 
-			if (isRegisterPage)
-			{
-				bool registered = ProcessWebForm_Register(modelStateDictionary, webForm, page, userProfile, request);
-			}
-			else
+			if (!isRegisterPage)
 			{
 				bool savedToFile = false;
 				bool emailed = false;
 				if (page.WebFormSaveToFile)
 				{
-					savedToFile = ProcessWebForm_ToFile(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+					savedToFile = ProcessWebForm_ToFile(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request);
 				}
 				if (page.WebFormSendToEmail)
 				{
-					emailed = ProcessWebForm_ToEmail(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+					emailed = ProcessWebForm_ToEmail(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request);
 				}
 			}
 
@@ -87,57 +88,142 @@ namespace GStore.Data
 
 		}
 
-		public static void ValidateFields(ModelStateDictionary modelStateDictionary, WebForm webForm, HttpRequestBase request)
+		public static string BodyTextCustomFieldsOnly(WebForm webForm, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
+			return BuildFormBodyText(null, webForm, null, storeFrontConfiguration, userProfile, request, true);
+
+		}
+
+		public static bool ValidateFields(ModelStateDictionary modelStateDictionary, WebForm webForm, HttpRequestBase request)
+		{
+			bool isValid = true;
 			List<WebFormField> fields = webForm.WebFormFields.AsQueryable().WhereIsActive().ApplySortDefault().ToList();
 			foreach (WebFormField field in fields)
 			{
 				string formFieldName = "Page.WebForm.item." + field.Name;
-				string stringValue = null;
+				string stringValue1 = null;
 				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 				{
-					stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+					stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 				}
-				if (stringValue == null)
+				if (stringValue1 == null)
 				{
 					formFieldName = "WebForm.item." + field.Name;
 					if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 					{
-						stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+						stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 					}
 				}
-				if (stringValue == null)
+				if (stringValue1 == null)
 				{
 					formFieldName = "item." + field.Name;
 					if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 					{
-						stringValue = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+						stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
 					}
 				}
-				
 				if (!modelStateDictionary.ContainsKey(formFieldName))
 				{
-					modelStateDictionary.Add(formFieldName, new ModelState() { Value = new ValueProviderResult(stringValue, stringValue, System.Globalization.CultureInfo.CurrentCulture) });
+					modelStateDictionary.Add(formFieldName, new ModelState() { Value = new ValueProviderResult(stringValue1, stringValue1, System.Globalization.CultureInfo.CurrentCulture) });
+				}
+
+				string formFieldNameValue2 = formFieldName + "_Value2";
+				string stringValue2 = null;
+				stringValue2 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+				if (!modelStateDictionary.ContainsKey(formFieldNameValue2))
+				{
+					modelStateDictionary.Add(formFieldNameValue2, new ModelState() { Value = new ValueProviderResult(stringValue2, stringValue2, System.Globalization.CultureInfo.CurrentCulture) });
 				}
 
 
-				if (field.IsRequired && string.IsNullOrWhiteSpace(stringValue))
+				if (field.IsRequired && string.IsNullOrWhiteSpace(stringValue1))
 				{
+					isValid = false;
 					modelStateDictionary.AddModelError(formFieldName, field.LabelText + " is required.");
 				}
+				else
+				{
+					bool result = false;
+					switch (field.DataType)
+					{
+						case GStoreValueDataType.EmailAddress:
+							result = ValidateEmailAddress(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.Url:
+							result = ValidateUrl(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.SingleLineText:
+							result = ValidateSingleLineText(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.MultiLineText:
+							result = ValidateMultiLineText(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.CheckboxYesNo:
+							result = ValidateCheckboxYesNo(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.ValueListItemDropdown:
+							result = ValidateValueListItemDropdown(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.ValueListItemRadio:
+							result = ValidateValueListItemRadio(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.ValueListItemMultiCheckbox:
+							result = ValidateValueListItemMultiCheckbox(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.Integer:
+							result = ValidateInteger(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.Decimal:
+							result = ValidateDecimal(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.IntegerRange:
+							result = ValidateIntegerRange(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.DecimalRange:
+							result = ValidateDecimalRange(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.Html:
+							result = ValidateHtml(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.ExternalLinkToPage:
+							result = ValidateExternalLinkToPage(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.ExternalLinkToImage:
+							result = ValidateExternalLinkToImage(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.InternalLinkToPageById:
+							result = ValidateInternalLinkToPageById(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.InternalLinkToPageByUrl:
+							result = ValidateInternalLinkToPageByUrl(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						case GStoreValueDataType.InternalLinkToImageByUrl:
+							result = ValidateInternalLinkToImageByUrl(formFieldName, field.LabelText, formFieldNameValue2, stringValue1, stringValue2, modelStateDictionary);
+							break;
+						default:
+							modelStateDictionary.AddModelError("", "Unknown data type: " + field.DataType.ToString() + "[" + (int)field.DataType + "]");
+							break;
+					}
 
+					if (result == false)
+					{
+						isValid = false;
+					}
+				}
 
 			}
 
+			return isValid;
+
 		}
 
-		private static void ProcessWebForm_ToDatabase(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, StoreFront storeFront, string formSubject, string formBodyText)
+		private static void ProcessWebForm_ToDatabase(IGstoreDb db, ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request, StoreFrontConfiguration storeFrontConfiguration, string formSubject, string formBodyText, bool isRegisterPage)
 		{
 			WebFormResponse webFormResponse = db.WebFormResponses.Create();
-			webFormResponse.StoreFrontId = storeFront.StoreFrontId;
-			webFormResponse.StoreFront = storeFront;
-			webFormResponse.ClientId = storeFront.ClientId;
-			webFormResponse.Client = storeFront.Client;
+			webFormResponse.StoreFrontId = storeFrontConfiguration.StoreFrontId;
+			webFormResponse.StoreFront = storeFrontConfiguration.StoreFront;
+			webFormResponse.ClientId = storeFrontConfiguration.ClientId;
+			webFormResponse.Client = storeFrontConfiguration.Client;
 			webFormResponse.PageId = (page == null ? null : (int?)page.PageId);
 			webFormResponse.Page = page;
 			webFormResponse.WebFormId = webForm.WebFormId;
@@ -149,11 +235,17 @@ namespace GStore.Data
 			webFormResponse.Subject = formSubject;
 			webFormResponse.SetDefaults(userProfile);
 
-			FillWebFormResponses(db, webFormResponse, modelStateDictionary, webForm, storeFront, userProfile, request);
+			FillWebFormResponses(db, webFormResponse, modelStateDictionary, webForm, storeFrontConfiguration, userProfile, request);
 
-			db.WebFormResponses.Add(webFormResponse);
+			webFormResponse = db.WebFormResponses.Add(webFormResponse);
 			db.SaveChanges();
 
+			if (isRegisterPage)
+			{
+				userProfile.RegisterWebFormResponseId = webFormResponse.WebFormResponseId;
+				db.UserProfiles.Update(userProfile);
+				db.SaveChangesDirect();
+			}
 		}
 
 		private static bool ProcessWebForm_Register(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, UserProfile userProfile, HttpRequestBase request)
@@ -167,17 +259,17 @@ namespace GStore.Data
 			return true;
 		}
 
-		private static bool ProcessWebForm_ToFile(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static bool ProcessWebForm_ToFile(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
 			if (!modelStateDictionary.IsValid)
 			{
 				return false;
 			}
 
-			string subject = BuildFormSubject(modelStateDictionary, webForm, page, storeFront, userProfile, request);
-			string bodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+			string subject = BuildFormSubject(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request);
+			string bodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request, false);
 
-			string virtualDir = page.StoreFront.StoreFrontVirtualDirectoryToMap(request.ApplicationPath) + "\\Forms\\" + webForm.Name.ToFileName();
+			string virtualDir = storeFrontConfiguration.StoreFront.StoreFrontVirtualDirectoryToMap(request.ApplicationPath) + "\\Forms\\" + webForm.Name.ToFileName();
 			string fileDir = request.RequestContext.HttpContext.Server.MapPath(virtualDir);
 			if (!System.IO.Directory.Exists(fileDir))
 			{
@@ -191,7 +283,7 @@ namespace GStore.Data
 			return true;
 		}
 
-		private static bool ProcessWebForm_ToEmail(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static bool ProcessWebForm_ToEmail(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
 
 			if (!Properties.Settings.Current.AppEnableEmail || !page.StoreFront.Client.UseSendGridEmail)
@@ -203,23 +295,23 @@ namespace GStore.Data
 			string toEmail = page.WebFormEmailToAddress;
 			if (string.IsNullOrWhiteSpace(toEmail))
 			{
-				toEmail = page.StoreFront.RegisteredNotify.Email;
+				toEmail = storeFrontConfiguration.RegisteredNotify.Email;
 			}
 			string toName = page.WebFormEmailToName;
 			if (string.IsNullOrWhiteSpace(toName))
 			{
-				toName = page.StoreFront.RegisteredNotify.FullName;
+				toName = storeFrontConfiguration.RegisteredNotify.FullName;
 			}
 
-			string subject = BuildFormSubject(modelStateDictionary, webForm, page, storeFront, userProfile, request);
-			string bodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFront, userProfile, request);
+			string subject = BuildFormSubject(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request);
+			string bodyText = BuildFormBodyText(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request, false);
 			string bodyHtml = bodyText.ToHtmlLines();
 
 			return AppHtmlHelper.SendEmail(page.Client, toEmail, toName, subject, bodyText, bodyHtml, request.Url.Host);
 
 		}
 
-		private static string BuildFormSubject(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static string BuildFormSubject(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
 			if (webForm == null)
 			{
@@ -234,9 +326,9 @@ namespace GStore.Data
 			return request.Url.Host + " Form '" + webForm.Name + "' [" + webForm.WebFormId + "] submitted at " + DateTime.Now;
 		}
 
-		private static string BuildFormBodyText(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		private static string BuildFormBodyText(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request, bool fieldDataOnly)
 		{
-			if (modelStateDictionary == null)
+			if (!fieldDataOnly && modelStateDictionary == null)
 			{
 				throw new ArgumentNullException("modelStateDictionary");
 			}
@@ -244,13 +336,16 @@ namespace GStore.Data
 			{
 				throw new ArgumentNullException("webForm");
 			}
-			if (!modelStateDictionary.IsValid)
+			if (!fieldDataOnly && !modelStateDictionary.IsValid)
 			{
 				throw new ApplicationException("Model State is invalid. Be sure model state is valid before calling BuildFormBodyText");
 			}
 
 			StringBuilder textBody = new StringBuilder();
-			textBody.AppendLine(BuildFormSubject(modelStateDictionary, webForm, page, storeFront, userProfile, request));
+			if (!fieldDataOnly)
+			{
+				textBody.AppendLine(BuildFormSubject(modelStateDictionary, webForm, page, storeFrontConfiguration, userProfile, request));
+			}
 			textBody.AppendLine();
 
 			List<WebFormField> fields = webForm.WebFormFields.AsQueryable().WhereIsActive().ApplySortDefault().ToList();
@@ -264,26 +359,45 @@ namespace GStore.Data
 				{
 					value1 = "(blank)";
 				}
+				else if (field.DataType == GStoreValueDataType.ValueListItemDropdown || field.DataType == GStoreValueDataType.ValueListItemRadio)
+				{
+					value1 = field.GetValueListItemName(value1);
+				}
+				else if (field.DataType == GStoreValueDataType.ValueListItemMultiCheckbox)
+				{
+					value1 = field.GetValueListItemNameList(value1);
+				}
+
 
 				textBody.AppendLine(field.Name + " = " + value1 + (string.IsNullOrEmpty(value2) ? string.Empty : ", " + value2) + "\n");
 			}
-			textBody.AppendLine();
-			textBody.AppendLine("- - - - - - - -");
-			//header info
-			textBody.AppendLine("User: " + (userProfile == null ? "(anonymous)" : "'" + userProfile.FullName + "' <" + userProfile.Email + ">"));
-			textBody.AppendLine("Url: " + request.Url.ToString());
-			textBody.AppendLine("Store Front: " + storeFront.Name + " [" + storeFront.StoreFrontId + "] Url: " + storeFront.PublicUrl);
-			textBody.AppendLine("Client: " + storeFront.Client.Name + " [" + storeFront.ClientId + "]");
-			textBody.AppendLine("Host: " + request.Url.Host);
-			textBody.AppendLine("Raw Url: " + request.RawUrl);
-			textBody.AppendLine("IP Address: " + request.UserHostAddress);
-			textBody.AppendLine();
+			if (!fieldDataOnly)
+			{
+				textBody.AppendLine();
+				textBody.AppendLine("- - - - - - - -");
+				//header info
+				textBody.AppendLine("User: " + (userProfile == null ? "(anonymous)" : "'" + userProfile.FullName + "' <" + userProfile.Email + ">"));
+				textBody.AppendLine("Url: " + request.Url.ToString());
+				textBody.AppendLine("Store Front: " + storeFrontConfiguration.Name + " [" + storeFrontConfiguration.StoreFrontId + "] Url: " + storeFrontConfiguration.PublicUrl);
+				textBody.AppendLine("Client: " + storeFrontConfiguration.Client.Name + " [" + storeFrontConfiguration.ClientId + "]");
+				textBody.AppendLine("Host: " + request.Url.Host);
+				textBody.AppendLine("Raw Url: " + request.RawUrl);
+				textBody.AppendLine("IP Address: " + request.UserHostAddress);
+				textBody.AppendLine("User Agent: " + request.UserAgent);
+				textBody.AppendLine();
 
+				HttpSessionStateBase session = request.RequestContext.HttpContext.Session;
+				textBody.AppendLine("Session Start Date Time: " + (session.EntryDateTime().HasValue ? session.EntryDateTime().ToString() : "(unknown)"));
+				textBody.AppendLine("Session Entry Raw Url: " + (session.EntryRawUrl() ?? "(unknown)"));
+				textBody.AppendLine("Session Entry Url: " + (session.EntryUrl() ?? "(unknown)"));
+				textBody.AppendLine("Session Referrer: " + (session.EntryReferrer() ?? "(unknown)"));
+				textBody.AppendLine();
+			}
 
 			return textBody.ToString();
 		}
 
-		public static void FillWebFormResponses(IGstoreDb db, WebFormResponse webFormResponse, ModelStateDictionary modelStateDictionary, WebForm webForm, StoreFront storeFront, UserProfile userProfile, HttpRequestBase request)
+		public static void FillWebFormResponses(IGstoreDb db, WebFormResponse webFormResponse, ModelStateDictionary modelStateDictionary, WebForm webForm, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
 			if (db == null)
 			{
@@ -309,10 +423,10 @@ namespace GStore.Data
 				WebFormFieldResponse fieldResponse = db.WebFormFieldResponses.Create();
 				fieldResponse.WebFormField = field;
 				fieldResponse.WebFormFieldId = field.WebFormFieldId;
-				fieldResponse.ClientId = storeFront.ClientId;
-				fieldResponse.Client = storeFront.Client;
-				fieldResponse.StoreFrontId = storeFront.StoreFrontId;
-				fieldResponse.StoreFront = storeFront;
+				fieldResponse.ClientId = storeFrontConfiguration.ClientId;
+				fieldResponse.Client = storeFrontConfiguration.Client;
+				fieldResponse.StoreFrontId = storeFrontConfiguration.StoreFrontId;
+				fieldResponse.StoreFront = storeFrontConfiguration.StoreFront;
 				fieldResponse.DataType = field.DataType;
 				fieldResponse.DataTypeString = field.DataTypeString;
 				fieldResponse.IsPending = false;
@@ -332,20 +446,6 @@ namespace GStore.Data
 				db.WebFormFieldResponses.Add(fieldResponse);
 			}
 
-		}
-
-		private static string ToFileName(this string value)
-		{
-			return value.Replace('/', '_')
-				.Replace('\\', '_')
-				.Replace(':', '_')
-				.Replace('*', '_')
-				.Replace('?', '_')
-				.Replace('"', '_')
-				.Replace('<', '_')
-				.Replace('>', '_')
-				.Replace('|', '_')
-				.Replace('.', '_');
 		}
 
 		public static void SetValueFieldsFromFormValues(this WebFormFieldResponse data, HttpRequestBase request)
@@ -370,9 +470,15 @@ namespace GStore.Data
 
 			data.Value1String = request.GetFormFieldValue1String(data.WebFormField);
 			data.Value2String = request.GetFormFieldValue2String(data.WebFormField);
-			
+
 			switch (data.DataType)
 			{
+				case GStoreValueDataType.EmailAddress:
+				//do nothing string value already set
+
+				case GStoreValueDataType.Url:
+				//do nothing string value already set
+
 				case GStoreValueDataType.CheckboxYesNo:
 					if (!string.IsNullOrWhiteSpace(data.Value1String))
 					{
@@ -471,9 +577,11 @@ namespace GStore.Data
 							if (result != 0)
 							{
 								data.Value1ValueListItemId = result;
+								data.Value1ValueListItemName = data.WebFormField.GetValueListItemName(data.Value1String);
 							}
 						}
 					}
+
 					break;
 				case GStoreValueDataType.ValueListItemRadio:
 					if (!string.IsNullOrWhiteSpace(data.Value1String))
@@ -484,6 +592,7 @@ namespace GStore.Data
 							if (result != 0)
 							{
 								data.Value1ValueListItemId = result;
+								data.Value1ValueListItemName = data.WebFormField.GetValueListItemName(data.Value1String);
 							}
 						}
 					}
@@ -493,7 +602,7 @@ namespace GStore.Data
 					{
 						int result;
 						string[] split = data.Value1String.Split(',');
-						foreach(string value in split)
+						foreach (string value in split)
 						{
 							if (!string.IsNullOrWhiteSpace(value))
 							{
@@ -501,7 +610,16 @@ namespace GStore.Data
 								{
 									if (result != 0)
 									{
-										data.Value1ValueListItemId = result;
+										if (!string.IsNullOrEmpty(data.Value1ValueListItemIdList))
+										{
+											data.Value1ValueListItemIdList += ",";
+										}
+										if (!string.IsNullOrEmpty(data.Value1ValueListItemNameList))
+										{
+											data.Value1ValueListItemNameList += ",";
+										}
+										data.Value1ValueListItemIdList += result;
+										data.Value1ValueListItemNameList += data.WebFormField.GetValueListItemName(value);
 									}
 								}
 							}
@@ -513,9 +631,6 @@ namespace GStore.Data
 					break;
 				case GStoreValueDataType.ExternalLinkToImage:
 					//do nothing link url will be value 1, link text will be value 2
-					break;
-				case GStoreValueDataType.InternalLinkToAction:
-					//do nothing route values will be value 1, link text will be value 2
 					break;
 				case GStoreValueDataType.InternalLinkToPageById:
 					if (!string.IsNullOrWhiteSpace(data.Value1String))
@@ -545,27 +660,284 @@ namespace GStore.Data
 		public static string GetFormFieldValue1String(this HttpRequestBase request, WebFormField webFormField)
 		{
 			string formFieldName = "Page.WebForm.item." + webFormField.Name;
-
-			string value1 = string.Empty;
-			if (request.Form.AllKeys.Contains(formFieldName))
+			string stringValue1 = null;
+			if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 			{
-				value1 = request.Unvalidated.Form.Get(formFieldName);
+				stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+			}
+			if (stringValue1 == null)
+			{
+				formFieldName = "WebForm.item." + webFormField.Name;
+				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
+				{
+					stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+				}
+			}
+			if (stringValue1 == null)
+			{
+				formFieldName = "item." + webFormField.Name;
+				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
+				{
+					stringValue1 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+				}
 			}
 
-			return value1;
+			return stringValue1;
+
 		}
 
 		public static string GetFormFieldValue2String(this HttpRequestBase request, WebFormField webFormField)
 		{
-			string formFieldName = "Page.WebForm.item." + webFormField.Name;
-
-			string value2 = string.Empty;
-			if (request.Form.AllKeys.Contains(formFieldName + "_Value2"))
+			string formFieldName = "Page.WebForm.item." + webFormField.Name + "_Value2";
+			string stringValue2 = null;
+			if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
 			{
-				value2 = request.Unvalidated.Form.Get(formFieldName + "_Value2");
+				stringValue2 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+			}
+			if (stringValue2 == null)
+			{
+				formFieldName = "WebForm.item." + webFormField.Name + "_Value2"; ;
+				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
+				{
+					stringValue2 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+				}
+			}
+			if (stringValue2 == null)
+			{
+				formFieldName = "item." + webFormField.Name + "_Value2"; ;
+				if (request.Unvalidated.Form.AllKeys.Contains(formFieldName))
+				{
+					stringValue2 = request.Unvalidated.Form.Get(formFieldName) ?? string.Empty;
+				}
 			}
 
-			return value2;
+			return stringValue2;
+
+		}
+
+		#region Validation Routines
+
+		private static bool ValidateEmailAddress(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = new EmailAddressAttribute().IsValid(stringValue1);
+			if (!isValid)
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid Email Address.");
+			}
+			return isValid;
+		}
+		private static bool ValidateUrl(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = new UrlAttribute().IsValid(stringValue1);
+			if (!isValid)
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid URL.");
+			}
+			return isValid;
+		}
+		private static bool ValidateSingleLineText(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateMultiLineText(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateCheckboxYesNo(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateValueListItemDropdown(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateValueListItemRadio(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateValueListItemMultiCheckbox(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateInteger(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			if (string.IsNullOrEmpty(stringValue1))
+			{
+				return true;
+			}
+			int value;
+			if (int.TryParse(stringValue1, out value))
+			{
+				return true;
+			}
+
+			modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid whole number.");
+			return false;
+		}
+		private static bool ValidateDecimal(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			if (string.IsNullOrEmpty(stringValue1))
+			{
+				return true;
+			}
+			decimal value;
+			if (decimal.TryParse(stringValue1, out value))
+			{
+				return true;
+			}
+
+			modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid decimal number.");
+			return false;
+		}
+		private static bool ValidateIntegerRange(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = true;
+			if (!string.IsNullOrEmpty(stringValue1))
+			{
+				int value;
+				if (!int.TryParse(stringValue1, out value))
+				{
+					isValid = false;
+					modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid whole number.");
+				}
+			}
+			if (!string.IsNullOrEmpty(stringValue2))
+			{
+				int value2;
+				if (!int.TryParse(stringValue2, out value2))
+				{
+					isValid = false;
+					modelStateDictionary.AddModelError(formFieldNameValue2, labelText + " value '" + stringValue2 + "' is invalid. You must enter a valid whole number.");
+				}
+			}
+			return isValid;
+		}
+		private static bool ValidateDecimalRange(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = true;
+			if (!string.IsNullOrEmpty(stringValue1))
+			{
+				decimal value;
+				if (!decimal.TryParse(stringValue1, out value))
+				{
+					isValid = false;
+					modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid decimal number.");
+				}
+			}
+			if (!string.IsNullOrEmpty(stringValue2))
+			{
+				decimal value2;
+				if (!decimal.TryParse(stringValue2, out value2))
+				{
+					isValid = false;
+					modelStateDictionary.AddModelError(formFieldNameValue2, labelText + " value '" + stringValue2 + "' is invalid. You must enter a valid decimal number.");
+				}
+			}
+			return isValid;
+		}
+		private static bool ValidateHtml(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			return true;
+		}
+		private static bool ValidateExternalLinkToPage(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = new UrlAttribute().IsValid(stringValue1);
+			if (!isValid)
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid URL.");
+			}
+			return isValid;
+		}
+		private static bool ValidateExternalLinkToImage(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			bool isValid = new UrlAttribute().IsValid(stringValue1);
+			if (!isValid)
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid URL.");
+			}
+			return isValid;
+		}
+		private static bool ValidateInternalLinkToPageById(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			if (string.IsNullOrEmpty(stringValue1))
+			{
+				return true;
+			}
+			int value;
+			if (int.TryParse(stringValue1, out value))
+			{
+				return true;
+			}
+			modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. You must enter a valid page Id.");
+			return false;
+		}
+		private static bool ValidateInternalLinkToPageByUrl(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			if (string.IsNullOrEmpty(stringValue1))
+			{
+				return true;
+			}
+			if (!stringValue1.StartsWith("/"))
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. Internal URL must start with a slash character.");
+				return false;
+			}
+			return true;
+		}
+		private static bool ValidateInternalLinkToImageByUrl(string formFieldName, string labelText, string formFieldNameValue2, string stringValue1, string stringValue2, ModelStateDictionary modelStateDictionary)
+		{
+			if (string.IsNullOrEmpty(stringValue1))
+			{
+				return true;
+			}
+			if (!stringValue1.StartsWith("/"))
+			{
+				modelStateDictionary.AddModelError(formFieldName, labelText + " value '" + stringValue1 + "' is invalid. Internal URL must start with a slash character.");
+				return false;
+			}
+			return true;
+		}
+
+		#endregion
+
+		private static string GetValueListItemName(this WebFormField field, string stringValue)
+		{
+			//convert id value to text
+			int value;
+			if (!int.TryParse(stringValue, out value))
+			{
+				return "invalid value (not int): '" + stringValue + "'";
+			}
+			if (value == 0)
+			{
+				return "invalid value: " + stringValue;
+			}
+			if (field.ValueList == null)
+			{
+				return "unknown value (no value list): '" + stringValue + "'";
+			}
+			ValueListItem listItem = field.ValueList.ValueListItems.AsQueryable().WhereIsActive().SingleOrDefault(vli => vli.ValueListItemId == value);
+			if (listItem == null)
+			{
+				return "unknown value (not found): '" + stringValue + "'";
+			}
+			return "'" + listItem.Name + "'";
+		}
+
+		private static string GetValueListItemNameList(this WebFormField field, string valueIdList)
+		{
+			//convert id values to text
+			string[] stringValues = valueIdList.Split(',');
+			string returnString = string.Empty;
+			foreach (string value in stringValues)
+			{
+				if (!string.IsNullOrEmpty(returnString))
+				{
+					returnString += ",";
+				}
+				returnString += field.GetValueListItemName(value);
+			}
+			return returnString;
 		}
 
 	}

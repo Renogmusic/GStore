@@ -19,6 +19,11 @@ namespace GStore.Identity
 		ClientConfig_Edit = 2300,
 		ClientConfig_StoreFrontConfig_View = 2400,
 		ClientConfig_StoreFrontConfig_Edit = 2500,
+		ClientConfig_StoreFrontConfig_Create = 2600,
+		ClientConfig_StoreFrontConfig_Delete = 2700,
+		ClientConfig_StoreFrontConfig_Cart_View = 2800,
+		ClientConfig_StoreFrontConfig_Cart_Edit = 2810,
+		ClientConfig_StoreFrontConfig_Cart_Preview = 2820,
 
 		Pages_StoreAdminMenuItem = 3000,
 		Pages_Manager = 3010,
@@ -40,6 +45,13 @@ namespace GStore.Identity
 		WebForms_Create = 3530,
 		WebForms_Edit = 3540,
 		WebForms_Delete = 3550,
+
+		ValueLists_StoreAdminMenu = 7000,
+		ValueLists_Manager = 3510,
+		ValueLists_View = 3520,
+		ValueLists_Create = 3530,
+		ValueLists_Edit = 3540,
+		ValueLists_Delete = 3550,
 
 //items below are not implemented yet //
 		Catalog_StoreAdminMenuItem = 4000,
@@ -73,17 +85,6 @@ namespace GStore.Identity
 		ClientRole_User_EditClaims = 6320,
 		ClientRole_User_Delete = 6330,
 		ClientRole_User_AssignUsers = 6340,
-
-		ValueList_StoreAdminMenu = 7000,
-		ValueList_Manager = 7100,
-		ValueList_Add = 7210,
-		ValueList_View = 7220,
-		ValueList_Edit = 7230,
-		ValueList_Delete = 7240,
-		ValueList_AddValue = 7310,
-		ValueList_ViewValue = 7320,
-		ValueList_EditValue = 7330,
-		ValueList_DeleteValue = 7340,
 
 		Orders_StoreAdminMenuItem = 8000,
 		Orders_Manager = 8100,

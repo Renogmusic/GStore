@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 namespace GStore.Models
 {
-	[Table("SystemEvents")]
+	[Table("SystemEvent")]
 	public class SystemEvent : BaseClasses.EventLogBase
 	{
 		public int SystemEventID { get; set; }
@@ -17,7 +17,7 @@ namespace GStore.Models
 		public string BaseExceptionToString { get; set; }
 	}
 
-	[Table("SecurityEvents")]
+	[Table("SecurityEvent")]
 	public class SecurityEvent : BaseClasses.EventLogBase
 	{
 		public int SecurityEventID { get; set; }
@@ -29,13 +29,13 @@ namespace GStore.Models
 
 	}
 
-	[Table("PageViewEvents")]
+	[Table("PageViewEvent")]
 	public class PageViewEvent : BaseClasses.EventLogBase
 	{
 		public int PageViewEventID { get; set; }
 	}
 
-	[Table("UserActionEvents")]
+	[Table("UserActionEvent")]
 	public class UserActionEvent : BaseClasses.EventLogBase
 	{
 		public int UserActionEventID { get; set; }
@@ -57,7 +57,7 @@ namespace GStore.Models
 		public int FileNotFoundLogId { get; set; }
 	}
 
-	[Table("BadRequests")]
+	[Table("BadRequest")]
 	public class BadRequest : BaseClasses.EventLogBase
 	{
 		public int BadRequestId { get; set; }
@@ -78,6 +78,10 @@ namespace GStore.Models
 	{
 		LoginSuccess = 100,
 		LoginFailure = 200,
+		LoginFailureNoStoreFront = 205,
+		LoginFailureStoreFrontInactive = 207,
+		LoginFailureNoStoreFrontConfig = 210,
+		LoginFailureStoreFrontConfigInactive = 211,
 		LoginNeedsVerification = 220,
 		LogOff = 230,
 		VerificationCodeSent = 250,
@@ -93,6 +97,7 @@ namespace GStore.Models
 		ForgotPasswordSuccess = 700,
 		ForgotPasswordFailed = 710,
 		ForgotPasswordFailedUnknownUser = 710,
+		ForgotPasswordFailedProfileNotFound = 720,
 		PasswordResetSuccess = 800,
 		PasswordResetFailed = 810,
 		PasswordResetFailedUnknownUser = 820,

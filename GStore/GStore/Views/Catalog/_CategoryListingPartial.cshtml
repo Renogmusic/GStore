@@ -1,8 +1,4 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Data;
-@using GStore.Models;
-
 @{
 	List<TreeNode<ProductCategory>> categoryNodes = null;
 	string catalogTopLinkText = string.Empty;
@@ -23,7 +19,7 @@
 
 	<div class="row">
 		<div class="col-xs-12 text-left-lg col-lg-offset-4 col-lg-8 text-center">
-			<h1>@Model.StoreFront.Name Product Catalog</h1>
+			<h1>@Model.StoreFrontConfig.Name Product Catalog</h1>
 		</div>
 	</div>
 
@@ -41,7 +37,7 @@
 		}
 		foreach (TreeNode<ProductCategory> childCategory in categoryNode.ChildNodes)
 		{
-			@:<div class="CategoryListItem col-sm-@(Model.StoreFront.CatalogCategoryColSm) col-md-@(Model.StoreFront.CatalogCategoryColMd) col-lg-@(Model.StoreFront.CatalogCategoryColLg)">
+			@:<div class="CategoryListItem col-sm-@(Model.StoreFrontConfig.CatalogCategoryColSm) col-md-@(Model.StoreFrontConfig.CatalogCategoryColMd) col-lg-@(Model.StoreFrontConfig.CatalogCategoryColLg)">
 			string url = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
 			string imageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath);
 

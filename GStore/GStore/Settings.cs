@@ -159,14 +159,6 @@
 			}
 		}
 
-		public string AppDefaultThemeFolderName
-		{
-			get
-			{
-				return EnvironmentOrAppSettingString("AppDefaultThemeFolderName") ?? _projectSettings.AppDefaultThemeFolderName;
-			}
-		}
-
 		public bool AppEnableBindingAutoMapCatchAll
 		{
 			get
@@ -196,6 +188,22 @@
 			get
 			{
 				return EnvironmentOrAppSettingBool("AppEnableStoresVirtualFolders") ?? _projectSettings.AppEnableStoresVirtualFolders;
+			}
+		}
+
+		public bool AppDoNotSeedDatabase
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppDoNotSeedDatabase") ?? _projectSettings.AppDoNotSeedDatabase;
+			}
+		}
+
+		public string AppDefaultThemeFolderName
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppDefaultThemeFolderName") ?? _projectSettings.AppDefaultThemeFolderName;
 			}
 		}
 

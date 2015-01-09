@@ -1,8 +1,4 @@
 ﻿@model GStore.Models.WebFormField
-@using GStore.Models
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using System.ComponentModel.DataAnnotations
 @{
 	int labelMdColspan = Model.WebForm.LabelMdColSpan;
 	int fieldMdColspan = Model.WebForm.FieldMdColSpan;
@@ -17,7 +13,7 @@
 
 	string prefix = Html.NameForModel().ToHtmlString();
 	string textValue = (Html.GetModelStateValue(prefix + Model.Name.ToHtmlAttribute(), typeof(string)) ?? string.Empty).ToString();
-	
+
 	string fieldId = "Page_WebForm_item_" + Model.Name.ToHtmlAttribute().Replace(' ', '_');
 	string fieldName = Model.Name.ToHtmlAttribute();
 
@@ -37,6 +33,10 @@
 
 			switch (Model.DataType)
 			{
+				case GStoreValueDataType.EmailAddress:
+					break;
+				case GStoreValueDataType.Url:
+					break;
 				case GStoreValueDataType.CheckboxYesNo:
 					break;
 				case GStoreValueDataType.Integer:
@@ -61,25 +61,105 @@
 					{
 						rows = Model.TextAreaColumns.Value;
 					}
-					@Html.TextArea(fieldName , textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
+					@Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.Html:
-					@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
-					<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
+				@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
+				<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.ValueListItemDropdown:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						if (!string.IsNullOrEmpty(Model.ValueListNullText))
+						{
+							selectList = Model.ValueList.ToSelectListWithNull(null, Model.ValueListNullText);
+						}
+						else
+						{
+							selectList = Model.ValueList.ToSelectList(null);
+						}
+						if (selectList.Any(sl => sl.Value != ""))
+						{
+							@Html.DropDownList(fieldName, selectList, new { @class = "form-control" })
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
 					break;
 				case GStoreValueDataType.ValueListItemRadio:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						selectList = Model.ValueList.ToSelectList(null);
+						if (selectList.Count != 0)
+						{
+							foreach (SelectListItem item in selectList)
+							{
+								@(Html.RadioButton(fieldName, item.Value, item.Selected, new { id = (fieldName + "_" + item.Value.ToHtmlAttribute()) }))
+								@:&nbsp;<label for="@(fieldName + "_" + item.Value.ToHtmlAttribute())">@(item.Text)</label><br />
+							}
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
 					break;
 				case GStoreValueDataType.ValueListItemMultiCheckbox:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						selectList = Model.ValueList.ToSelectList(null);
+						if (selectList.Count != 0)
+						{
+							object modelStateValue = Html.GetModelStateValue("Page.WebForm.item." + fieldName, typeof(string));
+							string[] values = null;
+							if (modelStateValue != null)
+							{
+								values = modelStateValue.ToString().Split(',');
+							}
+
+							foreach (SelectListItem item in selectList)
+							{
+								bool isSelected = false;
+								if (values != null && values.Any(v => v.ToLower() == item.Value.ToLower()))
+								{
+									isSelected = true;
+								}
+								//check if item is selected in modelstate
+								<input type="checkbox" name="Page.WebForm.item.@(fieldName)" id="@(fieldName + "_" + item.Value.ToHtmlAttribute())" value="@(item.Value)" @(isSelected ? "checked='checked'" : "") />
+								<label for="@(fieldName + "_" + item.Value.ToHtmlAttribute())">@(item.Text)</label><br />
+							}
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
 					break;
 				case GStoreValueDataType.ExternalLinkToPage:
 					break;
 				case GStoreValueDataType.ExternalLinkToImage:
-					break;
-				case GStoreValueDataType.InternalLinkToAction:
 					break;
 				case GStoreValueDataType.InternalLinkToPageById:
 					break;
@@ -93,7 +173,7 @@
 
 			if (!usedCustomDisplay)
 			{
-		<!-- Default text box -->
+				<!-- Default text box -->
 				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align })
 			}
 		}

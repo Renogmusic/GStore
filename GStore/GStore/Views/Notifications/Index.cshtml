@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<GStore.Models.Notification>
-@using GStore.AppHtmlHelpers;
 @{
 	ViewBag.Title = "My Messages";
 	int unread = Model.AsQueryable().Count(msg => msg.Read == false);

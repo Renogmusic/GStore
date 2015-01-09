@@ -1,7 +1,5 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-@using GStore.Data;
+
 <!-- Store Admin Menu -->
 <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
@@ -9,9 +7,9 @@
 			<a id="navbarbrandlink" href="@(Url.Action("Index", "StoreAdmin"))" class="navbar-brand">
 				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
 					 src="~/Images/Logo/NavBarTinyLogo.png"
-					 alt="@(Html.AttributeEncode(Model.StoreFront.Name))"
-					 title="@(Html.AttributeEncode(Model.StoreFront.Name))" />
-				@(Html.Encode(Model.StoreFront.Name)) - Admin
+					 alt="@(Html.AttributeEncode(Model.StoreFrontConfig.Name))"
+					 title="@(Html.AttributeEncode(Model.StoreFrontConfig.Name))" />
+				@(Html.Encode(Model.StoreFrontConfig.Name)) - Admin
 			</a>
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>

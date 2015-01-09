@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.StoreBinding
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no store binding)
@@ -19,5 +18,6 @@ else
 		@(Html.DisplayNameFor(model => model.UseUrlStoreName)) '@(Html.DisplayFor(model => model.UseUrlStoreName))'
 		@(Html.DisplayNameFor(model => model.UrlStoreName)) '@(Html.DisplayFor(model => model.UrlStoreName))'
 	</span>
-	@: - @(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront, "StoreFrontNoLinks"))
+	<br />
+	@(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront, "StoreFrontNoLinks"))
 }

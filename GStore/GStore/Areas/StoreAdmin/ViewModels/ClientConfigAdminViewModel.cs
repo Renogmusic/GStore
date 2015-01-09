@@ -15,7 +15,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 	{
 		public ClientConfigAdminViewModel() { }
 
-		public ClientConfigAdminViewModel(Client client, StoreFront storeFront, UserProfile userProfile, string activeTab): base(storeFront, userProfile)
+		public ClientConfigAdminViewModel(Client client, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, string activeTab): base(storeFrontConfig, userProfile)
 		{
 			this.ActiveTab = activeTab;
 			this.ClientId = client.ClientId;

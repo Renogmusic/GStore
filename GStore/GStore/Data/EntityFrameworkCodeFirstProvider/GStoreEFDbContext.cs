@@ -12,16 +12,23 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 	using GStore.Models;
 	using GStore.Data;
 	using System.Data.Entity.ModelConfiguration.Conventions;
+	using GStore.Models.BaseClasses;
 
 	public partial class GStoreEFDbContext : DbContext, IGstoreDb
 	{
-		#region Table DBSets and repository interface
+		#region Table DBSets and generic repository interfaces
 
 		//Tables: note table name is used from attribute on class model to create tables
 		//Interface; for repository if new tables are added, be sure to add them to repository interface
 
 		public virtual DbSet<BadRequest> BadRequestsTable { get; set; }
 		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreEFEntity<Models.BadRequest>(this); } }
+
+		public virtual DbSet<Cart> CartsTable { get; set; }
+		public IGStoreRepository<Models.Cart> Carts { get { return new GenericGStoreEFEntity<Models.Cart>(this); } }
+
+		public virtual DbSet<CartItem> CartItemsTable { get; set; }
+		public IGStoreRepository<Models.CartItem> CartItems { get { return new GenericGStoreEFEntity<Models.CartItem>(this); } }
 
 		public virtual DbSet<Client> ClientsTable { get; set; }
 		public IGStoreRepository<Models.Client> Clients { get { return new GenericGStoreEFEntity<Models.Client>(this); } }
@@ -34,7 +41,16 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		
 		public virtual DbSet<ClientUserRole> ClientUserRolesTable { get; set; }
 		public IGStoreRepository<Models.ClientUserRole> ClientUserRoles { get { return new GenericGStoreEFEntity<Models.ClientUserRole>(this); } }
-		
+
+		public virtual DbSet<DeliveryInfoDigital> DeliveryInfoDigitalsTable { get; set; }
+		public IGStoreRepository<Models.DeliveryInfoDigital> DeliveryInfoDigitals { get { return new GenericGStoreEFEntity<Models.DeliveryInfoDigital>(this); } }
+
+		public virtual DbSet<DeliveryInfoShipping> DeliveryInfoShippingsTable { get; set; }
+		public IGStoreRepository<Models.DeliveryInfoShipping> DeliveryInfoShippings { get { return new GenericGStoreEFEntity<Models.DeliveryInfoShipping>(this); } }
+
+		public virtual DbSet<Discount> DiscountTable { get; set; }
+		public IGStoreRepository<Models.Discount> Discounts { get { return new GenericGStoreEFEntity<Models.Discount>(this); } }
+
 		public virtual DbSet<FileNotFoundLog> FileNotFoundLogsTable { get; set; }
 		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreEFEntity<Models.FileNotFoundLog>(this); } }
 		
@@ -46,7 +62,13 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		
 		public virtual DbSet<NotificationLink> NotificationLinksTable { get; set; }
 		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreEFEntity<Models.NotificationLink>(this); } }
-		
+
+		public virtual DbSet<Order> OrdersTable { get; set; }
+		public IGStoreRepository<Models.Order> Orders { get { return new GenericGStoreEFEntity<Models.Order>(this); } }
+
+		public virtual DbSet<OrderItem> OrderItemsTable { get; set; }
+		public IGStoreRepository<Models.OrderItem> OrderItems { get { return new GenericGStoreEFEntity<Models.OrderItem>(this); } }
+
 		public virtual DbSet<Page> PagesTable { get; set; }
 		public IGStoreRepository<Models.Page> Pages { get { return new GenericGStoreEFEntity<Models.Page>(this); } }
 		
@@ -61,13 +83,19 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		
 		public virtual DbSet<PageViewEvent> PageViewEventsTable { get; set; }
 		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreEFEntity<Models.PageViewEvent>(this); } }
-		
+
+		public virtual DbSet<Payment> PaymentsTable { get; set; }
+		public IGStoreRepository<Models.Payment> Payments { get { return new GenericGStoreEFEntity<Models.Payment>(this); } }
+
 		public virtual DbSet<Product> ProductsTable { get; set; }
 		public IGStoreRepository<Models.Product> Products { get { return new GenericGStoreEFEntity<Models.Product>(this); } }
 		
 		public virtual DbSet<ProductCategory> ProductCategoriesTable { get; set; }
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreEFEntity<Models.ProductCategory>(this); } }
-		
+
+		public virtual DbSet<ProductReview> ProductReviewsTable { get; set; }
+		public IGStoreRepository<Models.ProductReview> ProductReviews { get { return new GenericGStoreEFEntity<Models.ProductReview>(this); } }
+
 		public virtual DbSet<SecurityEvent> SecurityEventsTable { get; set; }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreEFEntity<Models.SecurityEvent>(this); } }
 
@@ -76,6 +104,9 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		public virtual DbSet<StoreFront> StoreFrontsTable { get; set; }
 		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreEFEntity<Models.StoreFront>(this); } }
+
+		public virtual DbSet<StoreFrontConfiguration> StoreFrontConfigurationsTable { get; set; }
+		public IGStoreRepository<Models.StoreFrontConfiguration> StoreFrontConfigurations { get { return new GenericGStoreEFEntity<Models.StoreFrontConfiguration>(this); } }
 
 		public virtual DbSet<SystemEvent> SystemEventsTable { get; set; }
 		public IGStoreRepository<Models.SystemEvent> SystemEvents { get { return new GenericGStoreEFEntity<Models.SystemEvent>(this); } }
@@ -111,9 +142,14 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		#region IGStoreDb Repository Interface
 
+		public void Initialize(bool force)
+		{
+			this.Database.Initialize(force);
+		}
+
 		public IGstoreDb NewContext()
 		{
-			return new GStoreEFDbContext(UserName, CachedStoreFront, CachedUserProfile);
+			return new GStoreEFDbContext(UserName, CachedStoreFront, CachedStoreFrontConfig, CachedUserProfile);
 		}
 
 		/// <summary>
@@ -123,7 +159,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		/// <returns></returns>
 		public IGstoreDb NewContext(string userName)
 		{
-			return new GStoreEFDbContext(userName, CachedStoreFront, null);
+			return new GStoreEFDbContext(userName, CachedStoreFront, CachedStoreFrontConfig, null);
 		}
 
 		/// <summary>
@@ -133,9 +169,9 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		/// <param name="cachedStoreFront"></param>
 		/// <param name="cachedUserProfile"></param>
 		/// <returns></returns>
-		public IGstoreDb NewContext(string userName, Models.StoreFront cachedStoreFront, Models.UserProfile cachedUserProfile)
+		public IGstoreDb NewContext(string userName, Models.StoreFront cachedStoreFront, Models.StoreFrontConfiguration cachedStoreFrontConfig, Models.UserProfile cachedUserProfile)
 		{
-			return new GStoreEFDbContext(userName, cachedStoreFront, cachedUserProfile);
+			return new GStoreEFDbContext(userName, cachedStoreFront, cachedStoreFrontConfig, cachedUserProfile);
 		}
 
 		public IGstoreDb GStoreDb { get { return this; } }
@@ -164,6 +200,8 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		protected string _userName = string.Empty;
 
 		public Models.StoreFront CachedStoreFront { get; set; }
+
+		public Models.StoreFrontConfiguration CachedStoreFrontConfig { get; set; }
 
 		private UserProfile _cachedUserProfile = null;
 		public Models.UserProfile CachedUserProfile 
@@ -196,11 +234,12 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			this.UserName = userName;
 		}
 
-		public GStoreEFDbContext(string userName, StoreFront cachedStoreFront, UserProfile cachedUserProfile)
+		public GStoreEFDbContext(string userName, StoreFront cachedStoreFront, StoreFrontConfiguration cachedstoreFrontConfig, UserProfile cachedUserProfile)
 			: base("name=GStore.Properties.Settings.GStoreDB")
 		{
 			this.UserName = userName;
 			this.CachedStoreFront = cachedStoreFront;
+			this.CachedStoreFrontConfig = cachedstoreFrontConfig;
 			this.CachedUserProfile = cachedUserProfile;
 		}
 
@@ -289,7 +328,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			catch (DbEntityValidationException ex)
 			{
 
-				string errorDetails = "Error saving to database.";
+				string errorDetails = "DbEntityValidationException Error saving to database.";
 				if (ex.EntityValidationErrors != null && ex.EntityValidationErrors.Count() > 0)
 				{
 					errorDetails += "\nEntity Errors: " + ex.EntityValidationErrors.Count();
@@ -298,12 +337,21 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						DbEntityEntry errorRow = valError.Entry;
 						if (errorRow != null)
 						{
-							errorDetails += "\n\tEntity:" + errorRow.Entity.ToString();
+							GStoreEntity entity = errorRow.Entity as GStoreEntity;
+							if (entity != null)
+							{
+								errorDetails += "\n\tGStore Entity: " + entity.GetPocoType().FullName;
+							}
+							else
+							{
+								errorDetails += "\n\tMisc Entity: " + errorRow.Entity.ToString();
+							}
 						}
 						else
 						{
 							errorDetails += "\n\tUnknown Entity";
 						}
+
 						errorDetails += " (" + errorRow.State.ToString() + ")";
 						errorDetails += " Errors: " + valError.ValidationErrors.Count();
 
@@ -316,7 +364,16 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						{
 							object fieldObjectValue = valError.Entry.CurrentValues[propName];
 							string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
-							errorDetails += "\n\t\t" + propName + " = " + fieldValue;
+							errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
+							if (errorRow.State == EntityState.Modified)
+							{
+								if ((valError.Entry.OriginalValues != null) && (valError.Entry.OriginalValues.PropertyNames.Contains(propName)))
+								{
+									object originalValueObject = valError.Entry.OriginalValues[propName];
+									string originalValue = originalValueObject.ToString();
+									errorDetails += " Original Value: '" + originalValue + "'";
+								}
+							}
 						}
 					}
 				}
@@ -327,21 +384,46 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			}
 			catch (DbUpdateException exUpdate)
 			{
-				string errorDetails = "Error updating database.";
+				
+				string errorDetails = "DBUpdateException Error updating database.";
 				if (exUpdate.Entries != null && exUpdate.Entries.Count() > 0)
 				{
-					errorDetails += "\nEntity Error Entries: " + exUpdate.Entries.Count();
+					errorDetails += "\nEntity DB Update Exception Error Entries: " + exUpdate.Entries.Count();
 					foreach (DbEntityEntry errorEntry in exUpdate.Entries)
 					{
 						if (errorEntry.Entity != null)
 						{
-							errorDetails += "\n\tEntity:" + errorEntry.Entity.ToString();
+							GStoreEntity entity = errorEntry.Entity as GStoreEntity;
+							if (entity != null)
+							{
+								errorDetails += "\n\tGStore Entity: " + entity.GetPocoType().FullName;
+							}
+							else
+							{
+								errorDetails += "\n\tMisc Entity: " + errorEntry.Entity.ToString();
+							}
 						}
 						else
 						{
 							errorDetails += "\n\tUnknown Entity";
 						}
-						errorDetails += " (" + errorEntry.State.ToString() + ")";
+						errorDetails += " (Entity State: " + errorEntry.State.ToString() + ")";
+
+						foreach (string propName in errorEntry.CurrentValues.PropertyNames)
+						{
+							object fieldObjectValue = errorEntry.CurrentValues[propName];
+							string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
+							errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
+							if (errorEntry.State == EntityState.Modified)
+							{
+								if ((errorEntry.OriginalValues != null) && (errorEntry.OriginalValues.PropertyNames.Contains(propName)))
+								{
+									object originalValueObject = errorEntry.OriginalValues[propName];
+									string originalValue = originalValueObject.ToString();
+									errorDetails += " Original Value: '" + originalValue + "'";
+								}
+							}
+						}
 					}
 
 				}
@@ -382,10 +464,6 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			return returnValue;
 
 		}
-
-		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigAdminViewModel> StoreFrontConfigViewModels { get; set; }
-
-		public System.Data.Entity.DbSet<GStore.Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel> NavBarItemEditAdminViewModels { get; set; }
 
 	}
 }

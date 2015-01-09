@@ -1,0 +1,10 @@
+﻿@model ValueList
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = "col-md-2 title-align-right" })
+	<div class="col-md-10 title-align">
+		@Html.DropDownListForModel(Html.ValueListSelect())
+		@Html.HelpLabelPopoverForModel()
+		<br />
+		@Html.ValidationMessageForModel()
+	</div>
+</div>

@@ -1,6 +1,9 @@
 ﻿@{
 	ViewBag.Title = "GStore System Information";
 }
+<hr/>
+@Html.ActionLink("OK", "About", "GStore", null, new { @class = "btn btn-default" })
+<hr/>
 <div class="row" style="padding-top: 1em;">
 	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
 		@Html.Partial("_SystemInformationPartial")
@@ -9,3 +12,5 @@
 		@Html.Partial("_AboutGStorePartial")
 	</div>
 </div>
+<hr />
+@Html.ActionLink("OK", "About", "GStore", null, new { @class = "btn btn-default" })

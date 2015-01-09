@@ -126,8 +126,9 @@ namespace GStore.Models.ViewModels
 
 		[AllowHtml]
 		[Display(Name="HTML")]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
+		[DataType(DataType.Html)]
 		public string RawHtml { get; set; }
+
 		public DateTime StartDateTimeUtc { get; set; }
 		public DateTime EndDateTimeUtc { get; set; }
 

@@ -26,7 +26,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.DefaultNewPageLayoutName;
+				return CurrentStoreFrontConfigOrThrow.DefaultNewPageLayoutName;
 			}
 		}
 
@@ -34,7 +34,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.DefaultNewPageTheme.FolderName;
 			}
 		}
 

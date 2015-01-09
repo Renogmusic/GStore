@@ -1,0 +1,43 @@
+﻿@model Order
+
+<h1>Order Status</h1>
+
+@{
+	if (!Model.StatusOrderAccepted)
+	{
+		<span class="btn btn-default disabled">Order Awaiting Processing</span>
+	}
+	if (Model.StatusOrderAccepted)
+	{
+		<span class="btn btn-default disabled">Order Processed</span>
+	}
+	if (Model.StatusPaymentProcessed)
+	{
+		<span class="btn btn-default disabled">Payment Processed</span>
+	}
+	if (Model.StatusOrderShipped)
+	{
+		<span class="btn btn-default disabled">Shipped</span>
+	}
+	if (Model.StatusOrderDelivered)
+	{
+		<span class="btn btn-default disabled">Delivered</span>
+	}
+	if (Model.StatusOrderItemsReturned)
+	{
+		<span class="btn btn-default disabled">Items Returned</span>
+	}
+	if (Model.StatusOrderCancelledByMerchant)
+	{
+		<span class="btn btn-default disabled">Canceled by Seller</span>
+	}
+	if (Model.StatusOrderCancelledByUser)
+	{
+		<span class="btn btn-default disabled">Canceled by Buyer</span>
+	}
+	if (Model.StatusFeedbackReceived)
+	{
+		<span class="btn btn-default disabled">Feedback Received</span>
+	}
+}
+@{ Html.RenderPartial("_OrderFullInfoPartial", Model); }

@@ -1,0 +1,24 @@
+﻿@model string
+@{
+	//if CKEditor is not in ViewData, add script for it and set viewdata flag
+	bool hasCkEditor = (ViewData["CKEditor"] as bool?) ?? false;
+	{
+		if (!hasCkEditor)
+		{
+			<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+			ViewData["CKEditor"] = true;
+		}
+
+	}
+
+}
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = "col-md-2 title-align-right" })
+	<div class="col-md-10 title-align">
+		@Html.TextAreaWithWatermarkForModel()
+		@Html.HelpLabelPopoverForModel()
+		<br />
+		@Html.ValidationMessageForModel()
+		<script>$(document).ready(function () { CKEDITOR.replace('@(Html.FieldNameForModel().ToHtmlString().ToJavaScriptMvcString())'); });</script>
+	</div>
+</div>

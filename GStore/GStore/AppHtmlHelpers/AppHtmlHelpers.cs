@@ -15,6 +15,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using System.Web.Routing;
 
 namespace GStore.AppHtmlHelpers
 {
@@ -70,6 +71,21 @@ namespace GStore.AppHtmlHelpers
 			}
 			return controller.CurrentClientOrNull;
 		}
+
+		public static StoreFrontConfiguration CurrentStoreFrontConfig(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
+		{
+			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
+			if (controller == null)
+			{
+				throw new ApplicationException("Controller not found. Make sure controller inherits from Controllers.BaseClass.BaseController or a descendant");
+			}
+			if (throwErrorIfNotFound)
+			{
+				return controller.CurrentStoreFrontConfigOrThrow;
+			}
+			return controller.CurrentStoreFrontConfigOrNull;
+		}
+
 
 		public static UserProfile CurrentUserProfile(this HtmlHelper htmlHelper, bool throwErrorIfNotFound)
 		{
@@ -155,6 +171,11 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
+		/// <summary>
+		/// Returns the current theme folder for the controller, or the system default if error
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
 		public static string ThemeFolderName(this HtmlHelper htmlHelper)
 		{
 			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
@@ -536,7 +557,7 @@ namespace GStore.AppHtmlHelpers
 		internal static MvcHtmlString HelpLabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string labelText = null, IDictionary<string, object> htmlAttributes = null)
 		{
 			string resolvedLabelText = labelText ?? metadata.Description;
-			if (String.IsNullOrEmpty(resolvedLabelText))
+			if (string.IsNullOrEmpty(resolvedLabelText))
 			{
 				return MvcHtmlString.Empty;
 			}
@@ -548,6 +569,75 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
 		}
 
+		/// <summary>
+		/// Displays a help label (Description attribute) in a pop-over triggered by focus anchored to the body tag with help label inside and displayname as the title
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="label"></param>
+		/// <param name="topLineText"></param>
+		/// <param name="bottomLineText"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelPopoverForModel(this HtmlHelper htmlHelper, string label = "?", string topLineText = "", string bottomLineText = "")
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			if (string.IsNullOrEmpty(metadata.Description))
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			string message = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
+				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
+				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
+
+			string html = "<a href=\"javascript://\" tabindex=\"100\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" "
+				+ "data-container=\"body\" onclick=\"return false;\""
+				+ "title=\"" + propertyName.ToHtmlAttribute() + "\" "
+				+ "data-content=\"" + message.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() + "</a>";
+			return new MvcHtmlString(html);
+		}
+
+		/// <summary>
+		/// Displays a help label (Description attribute) in a pop-over triggered by focus anchored to the body tag with help label inside and displayname as the title
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="label"></param>
+		/// <param name="topLineText"></param>
+		/// <param name="bottomLineText"></param>
+		/// <returns></returns>
+		public static MvcHtmlString HelpLabelPopoverFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string label = "?", string topLineText = "", string bottomLineText = "")
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+			if (string.IsNullOrEmpty(metadata.Description))
+			{
+				return MvcHtmlString.Empty;
+			}
+
+			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			string message = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
+				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
+				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
+
+			string html = "<a href=\"javascript://\" tabindex=\"0\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" " 
+				+ "data-container=\"body\" onclick=\"return false;\""
+				+ "title=\"" + propertyName.ToHtmlAttribute() + "\" " 
+				+ "data-content=\"" + message.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() +"</a>";
+			return new MvcHtmlString(html);
+		}
+
+		/// <summary>
+		/// Returns a display description (help text) for a model property, empty string if no description
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
 		public static MvcHtmlString DisplayDescriptionFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
 		{
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -557,6 +647,474 @@ namespace GStore.AppHtmlHelpers
 				return new MvcHtmlString(string.Empty);
 			}
 			return new MvcHtmlString(metadata.Description);
+		}
+
+		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, bool addTextDangerClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			return htmlHelper.ValidationMessageForModel(null, addTextDangerClass);
+		}
+
+		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool addTextDangerClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metadata.PropertyName;
+
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (addTextDangerClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "text-danger " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs.Add("class", "text-danger");
+				}
+			}
+
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			return htmlHelper.ValidationMessage(fieldName, htmlAttribs);
+		}
+
+		/// <summary>
+		/// Returns a dropdownlist with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel = null, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			return htmlHelper.EnumDropDownListForModel(optionLabel, null,  addFormControlClass, removeHtmlFieldPrefix);
+		}
+
+		/// <summary>
+		/// Returns a dropdownlist with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel, object htmlAttributes, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metadata.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
+			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
+			{
+				return null;
+			}
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (addFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+
+			List<EnumInfoValue> orderedEnumValues = enumInfo.Values.OrderBy(v => v.Order).ThenBy(v => v.Name).ToList();
+			IEnumerable<SelectListItem> options = orderedEnumValues.Select(v => new SelectListItem() { Value = v.Value.ToString(), Text = v.DisplayName, Selected = v.Value == htmlHelper.ViewData.Model });
+			return htmlHelper.DropDownList(fieldName, options, optionLabel, htmlAttribs);
+		}
+
+		/// <summary>
+		/// Returns a radio button list with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
+		{
+			return htmlHelper.EnumRadioButtonListForModel(null, htmlSeparator, selectFirst, addFormControlClass, removeHtmlFieldPrefix);
+		}
+
+		/// <summary>
+		/// Returns a radio button list with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, object htmlAttributes, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metadata.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
+			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
+			{
+				return null;
+			}
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (addFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			List<EnumInfoValue> orderedEnumValues = enumInfo.Values.OrderBy(v => v.Order).ThenBy(v => v.Name).ToList();
+			List<SelectListItem> options = orderedEnumValues.Select(v => new SelectListItem() { Value = v.Value.ToString(), Text = v.DisplayName }).ToList();
+
+			if (htmlHelper.ViewData.Model == null)
+			{
+				if (selectFirst)
+				{
+					//null model select first item
+					options.First().Selected = true;
+				}
+			}
+			else
+			{
+				SelectListItem firstMatch = options.FirstOrDefault(o => o.Value == htmlHelper.ViewData.Model.ToString());
+				if (firstMatch == null)
+				{
+					if (selectFirst)
+					{
+						//no match select first item
+						options.First().Selected = true;
+					}
+				}
+				else
+				{
+					firstMatch.Selected = true;
+				}
+			}
+
+			StringBuilder html = new StringBuilder();
+			
+			foreach (SelectListItem option in options)
+			{
+				string id = fieldName + "_" + option.Value;
+				htmlAttribs["id"] = id;
+				html.AppendLine(htmlHelper.RadioButton(fieldName, option.Value, option.Selected, htmlAttribs).ToHtmlString());
+				html.AppendLine("<label for=\"" + id + "\">" + option.Text.ToHtml() + "</label>");
+				html.AppendLine(htmlSeparator);
+			}
+			return new MvcHtmlString(html.ToString());
+		}
+
+		/// <summary>
+		/// Returns a watermark for the current field. Gets data from Prompt display attribute
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static string WatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+
+			if (string.IsNullOrEmpty(metadata.Watermark))
+			{
+				return metadata.DisplayName ?? metadata.PropertyName;
+			}
+			return metadata.Watermark;
+		}
+
+		/// <summary>
+		/// Returns a watermark for the current field. Gets data from Prompt display attribute
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
+		public static string WatermarkForModel(this HtmlHelper htmlHelper)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			if (string.IsNullOrEmpty(metadata.Watermark))
+			{
+				return metadata.DisplayName ?? metadata.PropertyName;
+			}
+			return metadata.Watermark;
+		}
+
+		/// <summary>
+		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString TextBoxWithWatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
+		{
+			return htmlHelper.TextBoxWithWatermarkFor(expression, null);
+		}
+
+		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper)
+		{
+			return htmlHelper.LabelWithRequiredForModel(null);
+		}
+
+		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper, object htmlAttributes)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string label = metaData.DisplayName ?? metaData.PropertyName;
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (metaData.IsRequired)
+			{
+				label += " *";
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "text-required " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs["class"] = "text-required";
+				}
+			}
+			return htmlHelper.LabelForModel(label, htmlAttribs);
+		}
+
+		public static MvcHtmlString RequiredForModel(this HtmlHelper htmlHelper)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			if (metaData.IsRequired)
+			{
+				return new MvcHtmlString("<span class=\"text-required\">(*)</span>");
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString TextBoxWithWatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+		{
+			string watermark = htmlHelper.WatermarkFor(expression);
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			htmlAttribs.Add("placeholder", watermark);
+			return htmlHelper.TextBoxFor(expression, htmlAttribs);
+		}
+
+
+		/// <summary>
+		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			return htmlHelper.TextBoxWithWatermarkForModel(null, setSizeToMaxLength, removeHtmlFieldPrefix, doNotAddFormControlClass);
+		}
+
+		/// <summary>
+		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
+		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metaData.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
+
+			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName));
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			
+			htmlAttribs.Add("placeholder", watermark);
+
+			if (!doNotAddFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			int? maxLength = htmlHelper.MaxLengthAttributeForModel();
+			if (maxLength.HasValue)
+			{
+				htmlAttribs["maxlength"] = maxLength.Value;
+				if (setSizeToMaxLength)
+				{
+					htmlAttribs["size"] = maxLength.Value;
+				}
+			}
+
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			
+			return htmlHelper.TextBox(fieldName, htmlHelper.ViewData.Model, null, htmlAttribs);
+		}
+
+		public static MvcHtmlString TextAreaWithWatermarkForModel(this HtmlHelper htmlHelper, int cols = 40, int rows = 10, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			return htmlHelper.TextAreaWithWatermarkForModel(null, cols, rows, removeHtmlFieldPrefix, doNotAddFormControlClass);
+		}
+
+		/// <summary>
+		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <returns></returns>
+		public static MvcHtmlString TextAreaWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, int cols = 40, int rows = 10, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metaData.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
+
+			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName));
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			htmlAttribs.Add("placeholder", watermark);
+
+			if (!doNotAddFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+
+			return htmlHelper.TextArea(fieldName, htmlHelper.ViewData.Model as string, rows, cols, htmlAttribs);
+		}
+
+		public static MvcHtmlString FieldNameForModel(this HtmlHelper htmlHelper)
+		{
+			return new MvcHtmlString(htmlHelper.ViewData.ModelMetadata.PropertyName);
+		}
+
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true)
+		{
+			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, removeHtmlFieldPrefix, doNotAddFormControlClass, addIdToPropertyName);
+		}
+
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList,  object htmlAttributes, string optionLabel = null, bool allowNull = false, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metaData.PropertyName;
+			if (addIdToPropertyName)
+			{
+				fieldName += "Id";
+			}
+			
+			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
+
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			if (!doNotAddFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			if (allowNull)
+			{
+				htmlAttribs.Add("data-val", "false");
+			}
+
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+
+			if (selectList == null)
+			{
+				selectList = new List<SelectListItem>();
+			}
+			return htmlHelper.DropDownList(fieldName, selectList, optionLabel, htmlAttribs);
+		}
+
+
+		public static MvcHtmlString CheckboxForModel(this HtmlHelper htmlHelper, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			return htmlHelper.CheckboxForModel(null, removeHtmlFieldPrefix, doNotAddFormControlClass);
+		}
+
+		public static MvcHtmlString CheckboxForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metaData.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
+
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+
+			if (!doNotAddFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+
+			return htmlHelper.CheckBox(fieldName, (htmlHelper.ViewData.Model as bool?) ?? false, htmlAttribs);
+		}
+
+
+		public static int? MaxLengthAttributeForModel(this HtmlHelper htmlHelper)
+		{
+			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
+			string propertyName = metaData.PropertyName;
+			Type containerType = metaData.ContainerType;
+
+			MaxLengthAttribute[] maxLengthAttribs = containerType.GetProperty(propertyName).GetCustomAttributes<MaxLengthAttribute>(false).ToArray();
+			if (maxLengthAttribs == null || maxLengthAttribs.Length == 0)
+			{
+				return null;
+			}
+			return maxLengthAttribs[0].Length;
 		}
 
 
@@ -712,14 +1270,14 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="htmlHelper"></param>
 		/// <param name="storeFront"></param>
 		/// <returns></returns>
-		public static MvcHtmlString GoogleAnalyticsWebPropertyIdValueJs(this HtmlHelper htmlHelper, StoreFront storeFront)
+		public static MvcHtmlString GoogleAnalyticsWebPropertyIdValueJs(this HtmlHelper htmlHelper, StoreFrontConfiguration storeFrontConfig)
 		{
-			if (storeFront == null || !storeFront.EnableGoogleAnalytics)
+			if (storeFrontConfig == null || !storeFrontConfig.EnableGoogleAnalytics)
 			{
 				return new MvcHtmlString("null");
 			}
 
-			string value = "'" + htmlHelper.JavaScriptEncode(storeFront.GoogleAnalyticsWebPropertyId, false) + "'";
+			string value = "'" + htmlHelper.JavaScriptEncode(storeFrontConfig.GoogleAnalyticsWebPropertyId, false) + "'";
 			return new MvcHtmlString(value);
 		}
 
@@ -841,7 +1399,7 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns a set of meta data about a field in the model, use overload for enum models
+		/// Returns a set of meta data about a field in the model, use overload for ienumerable models
 		/// </summary>
 		/// <typeparam name="TModel"></typeparam>
 		/// <typeparam name="TValue"></typeparam>
@@ -856,7 +1414,7 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns a set of meta data about a field in the model, this is for enum models
+		/// Returns a set of meta data about a field in the model, this is for ienumerable models
 		/// </summary>
 		/// <typeparam name="TModel"></typeparam>
 		/// <typeparam name="TValue"></typeparam>
@@ -1590,14 +2148,14 @@ namespace GStore.AppHtmlHelpers
 		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue)
 		{
 			Client client = htmlHelper.CurrentClient(false);
-			StoreFront storeFront = htmlHelper.CurrentStoreFront(false);
+			StoreFrontConfiguration storeFront = htmlHelper.CurrentStoreFrontConfig(false);
 			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
 			Page page = htmlHelper.CurrentPage(false);
 
 			return text.ReplaceVariables(nullValue, client, storeFront, userProfile, page);
 		}
 
-		public static string ReplaceVariables(this string text, string nullValue, Client client, StoreFront storeFront, UserProfile userProfile, Page page)
+		public static string ReplaceVariables(this string text, string nullValue, Client client, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, Page page)
 		{
 			if (nullValue == null)
 			{
@@ -1619,20 +2177,20 @@ namespace GStore.AppHtmlHelpers
 				.Replace("::client.twiliosmsfromname::", clientNullValue ?? client.TwilioSmsFromName);
 			
 			string storeFrontNullValue = null;
-			if (storeFront == null)
+			if (storeFrontConfig == null)
 			{
 				storeFrontNullValue = nullValue;
 			}
-			text = text.Replace("::storefront.name::", storeFrontNullValue ?? storeFront.Name)
-				.Replace("::storefront.clientid::", storeFrontNullValue ?? storeFront.StoreFrontId.ToString())
-				.Replace("::storefront.accountadmin.fullname::", storeFrontNullValue ?? storeFront.AccountAdmin.FullName)
-				.Replace("::storefront.accountadmin.email::", storeFrontNullValue ?? storeFront.AccountAdmin.Email)
-				.Replace("::storefront.registerednotify.fullname::", storeFrontNullValue ?? storeFront.RegisteredNotify.FullName)
-				.Replace("::storefront.registerednotify.email::", storeFrontNullValue ?? storeFront.RegisteredNotify.Email)
-				.Replace("::storefront.welcomeperson.fullname::", storeFrontNullValue ?? storeFront.WelcomePerson.FullName)
-				.Replace("::storefront.welcomeperson.email::", storeFrontNullValue ?? storeFront.WelcomePerson.Email)
-				.Replace("::storefront.publicurl::", storeFrontNullValue ?? storeFront.PublicUrl)
-				.Replace("::storefront.htmlfooter::", storeFrontNullValue ?? storeFront.HtmlFooter);
+			text = text.Replace("::storefront.name::", storeFrontNullValue ?? storeFrontConfig.Name)
+				.Replace("::storefront.clientid::", storeFrontNullValue ?? storeFrontConfig.StoreFrontId.ToString())
+				.Replace("::storefront.accountadmin.fullname::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.FullName)
+				.Replace("::storefront.accountadmin.email::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.Email)
+				.Replace("::storefront.registerednotify.fullname::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.FullName)
+				.Replace("::storefront.registerednotify.email::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.Email)
+				.Replace("::storefront.welcomeperson.fullname::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.FullName)
+				.Replace("::storefront.welcomeperson.email::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.Email)
+				.Replace("::storefront.publicurl::", storeFrontNullValue ?? storeFrontConfig.PublicUrl)
+				.Replace("::storefront.htmlfooter::", storeFrontNullValue ?? storeFrontConfig.HtmlFooter);
 
 			string userProfileNullValue = null;
 			if (userProfile == null)
@@ -1666,7 +2224,8 @@ namespace GStore.AppHtmlHelpers
 
 		public static MvcHtmlString DisplayPageForm<TModel>(this HtmlHelper<TModel> htmlHelper) where TModel: PageViewModel
 		{
-			if (!htmlHelper.ViewData.Model.Page.WebFormId.HasValue)
+			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
+			if (pageViewModel.ForTemplateSyncOnly || pageViewModel == null || pageViewModel.Page == null || pageViewModel.Page.WebFormId == null)
 			{
 				return new MvcHtmlString(string.Empty);
 			}
@@ -1675,9 +2234,9 @@ namespace GStore.AppHtmlHelpers
 		}
 
 
-		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFront storeFront, UserProfile userProfile)
+		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile)
 		{
-			return new MenuViewModel(storeFront, userProfile);
+			return new MenuViewModel(storeFrontConfiguration, userProfile, htmlHelper.ViewContext.HttpContext.Session.SessionID);
 		}
 
 		public static MvcHtmlString LogFolderFileCount(this HtmlHelper htmlHelper, string logfolder)
@@ -1698,6 +2257,93 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
+		/// Returns a string, or the default value if the string is null or empty
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string OrDefault(this string value, string defaultValue)
+		{
+			if (value == null || string.IsNullOrEmpty(value))
+			{
+				return defaultValue;
+			}
+			return value;
+		}
+
+		public static string IfMatch(this string value, string valueToMatch, string returnIfMatch, string returnIfNoMatch = "", bool caseInsensitive = true)
+		{
+			if (value == null || string.IsNullOrEmpty(value))
+			{
+				if (string.IsNullOrEmpty(valueToMatch))
+				{
+					return returnIfMatch;
+				}
+				else
+				{
+					return returnIfNoMatch;
+				}
+			}
+
+			valueToMatch = valueToMatch ?? string.Empty;
+			if (caseInsensitive)
+			{
+				value = value.ToLower();
+				valueToMatch = valueToMatch.ToLower();
+			}
+			if (value == valueToMatch)
+			{
+				return returnIfMatch;
+			}
+			return returnIfNoMatch;
+		}
+
+		public static string IfNoMatch(this string value, string valueToMatch, string returnIfMatch, string returnIfNoMatch = "", bool caseInsensitive = true)
+		{
+			//reverse returns to make the opposite of a match
+			return value.IfMatch(valueToMatch, returnIfNoMatch, returnIfMatch, caseInsensitive);
+		}
+
+		/// <summary>
+		/// Returns a delimiter if string is not null or empty
+		/// Converts a null string into string.empty
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string DelimiterIfNotEmpty(this string value, string delimiter)
+		{
+			if (value == null || string.IsNullOrEmpty(value))
+			{
+				return string.Empty;
+			}
+			return delimiter;
+		}
+
+		/// <summary>
+		/// Returns the original string plus a delimiter if string is not null or empty
+		/// Converts a null string into string.empty
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string AndDelimiter(this string value, string delimiter)
+		{
+			if (value == null || string.IsNullOrEmpty(value))
+			{
+				return string.Empty;
+			}
+			return value + delimiter;
+		}
+
+		/// <summary>
+		/// Returns HTML Encoded character
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string ToHtml(this char value)
+		{
+			return HttpUtility.HtmlEncode(value);
+		}
+
+		/// <summary>
 		/// Returns HTML Encoded string
 		/// </summary>
 		/// <param name="value"></param>
@@ -1714,7 +2360,7 @@ namespace GStore.AppHtmlHelpers
 		/// <returns></returns>
 		public static string ToHtmlLines(this string value)
 		{
-			return HttpUtility.HtmlEncode(value).Replace("\n", "<br/>\n");
+			return HttpUtility.HtmlEncode(value).Replace("\n", "<br/>");
 		}
 
 		/// <summary>
@@ -1733,9 +2379,20 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="value"></param>
 		/// <param name="addDoubleQuotes"></param>
 		/// <returns></returns>
+		public static MvcHtmlString ToJavaScriptMvcString(this string value, bool addDoubleQuotes = false)
+		{
+			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes).Replace("\n", "\\n"));
+		}
+
+		/// <summary>
+		/// Returns JavaScript String Encoded string
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="addDoubleQuotes"></param>
+		/// <returns></returns>
 		public static string ToJavaScriptString(this string value, bool addDoubleQuotes = false)
 		{
-			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes);
+			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes).Replace("\n", "\\n");
 		}
 
 		/// <summary>
@@ -1793,45 +2450,6 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns the display name of a enum value, using the Display attribute, or the enum name
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToDisplayName(this Enum value)
-		{
-			if (value == null)
-			{
-				return "(blank)";
-			}
-
-			var fieldInfo = value.GetType().GetField(value.ToString());
-			if (fieldInfo == null)
-			{
-				//field not found
-				return "(blank)";
-			}
-			var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
-			if (descriptionAttributes == null)
-			{
-				return value.ToString();
-			}
-
-			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Name : value.ToString();
-		}
-
-		public static string ToDisplayDescriptionOrBlankIfNone(this Enum value)
-		{
-			var fieldInfo = value.GetType().GetField(value.ToString());
-			var descriptionAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
-			if (descriptionAttributes == null)
-			{
-				return string.Empty;
-			}
-
-			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Description : string.Empty;
-		}
-
-		/// <summary>
 		/// Gets a display attribute for an object without using HTML Helper
 		/// works for any object, if display attribute is not found, will return property name
 		/// </summary>
@@ -1862,6 +2480,100 @@ namespace GStore.AppHtmlHelpers
 
 			return prop.Name;
 		}
+
+		/// <summary>
+		/// Date and time of start of visit to site for this session
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public static DateTime? EntryDateTime(this HttpSessionStateBase session)
+		{
+			if (session == null)
+			{
+				throw new ArgumentNullException("session");
+			}
+			return session["entryDateTimeUtc"] as DateTime?;
+		}
+
+		/// <summary>
+		/// Raw Url for the first page on the site visited with this session
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public static string EntryRawUrl(this HttpSessionStateBase session)
+		{
+			if (session == null)
+			{
+				throw new ArgumentNullException("session");
+			}
+			return session["entryRawUrl"] as string;
+		}
+
+		/// <summary>
+		/// Url for the first page on the site visited with this session
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public static string EntryUrl(this HttpSessionStateBase session)
+		{
+			if (session == null)
+			{
+				throw new ArgumentNullException("session");
+			}
+			return session["entryUrl"] as string;
+		}
+
+		/// <summary>
+		/// URL Referrer for the first page on the site visited with this session
+		/// </summary>
+		/// <param name="session"></param>
+		/// <returns></returns>
+		public static string EntryReferrer(this HttpSessionStateBase session)
+		{
+			if (session == null)
+			{
+				throw new ArgumentNullException("session");
+			}
+			return session["entryReferrer"] as string;
+		}
+
+		public static string ToFileName(this string value)
+		{
+			return HttpUtility.UrlEncode(value);
+		}
+
+		public static string Action(this RouteData routeData)
+		{
+			if (routeData == null)
+			{
+				return null;
+			}
+			return routeData.Values["action"].ToString();
+		}
+
+		public static string Controller(this RouteData routeData)
+		{
+			if (routeData == null)
+			{
+				return null;
+			}
+			return routeData.Values["controller"].ToString();
+		}
+
+		public static string Area(this RouteData routeData)
+		{
+			if (routeData == null)
+			{
+				return null;
+			}
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				return routeData.DataTokens["area"].ToString();
+			}
+			return null;
+		}
+
+
 
 	}
 }

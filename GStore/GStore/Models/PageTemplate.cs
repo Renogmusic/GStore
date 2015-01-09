@@ -7,7 +7,7 @@ using System.Web;
 
 namespace GStore.Models
 {
-	[Table("PageTemplates")]
+	[Table("PageTemplate")]
 	public class PageTemplate : BaseClasses.ClientRecord
 	{
 		[Key]
@@ -35,10 +35,10 @@ namespace GStore.Models
 		public string ViewName { get; set; }
 
 		/// <summary>
-		/// Always "Bootstrap" until we have more layout master pages
+		/// Always "Default" until we have more layout master pages
 		/// </summary>
 		[Required]
-		[Display(Name="Layout Name (always 'Bootstrap')", ShortName="'Bootstrap'")]
+		[Display(Name = "Layout Name (always 'Default')", ShortName = "'Default'")]
 		public string LayoutName { get; set; }
 
 		public virtual ICollection<PageTemplateSection> Sections { get; set; }

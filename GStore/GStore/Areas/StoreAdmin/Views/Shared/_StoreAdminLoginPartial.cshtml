@@ -1,33 +1,38 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel
-@using Microsoft.AspNet.Identity
-@using GStore.Identity
-@using GStore.Models
-@using GStore.Data
 @{
 	using (Html.BeginForm("LogOff", "Account", new {Area = ""}, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
 	{
 		@Html.AntiForgeryToken()
 
-		<ul class="nav navbar-nav navbar-right">
+	<ul class="nav navbar-nav navbar-right">
+		<li>
+			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
+				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
+			</a>
+		</li>
+		<li>
+			@{
+		if (Model.StoreFrontConfig.IsActiveDirect())
+		{
+			<a href="~/">Back to Site</a>
+		}
+		else
+		{
+			<a href="~/" class="text-danger"><span class="text-danger"><strong>Back to INACTIVE Site</strong></span></a>
+		}
+}
+		</li>
+		@if (Model.IsSystemAdmin)
+		{
 			<li>
-				<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
-					<small>( @User.Identity.GetUserName() )</small>
+				<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" title="System Admin">
+					System Admin
 				</a>
 			</li>
-			<li>
-				<a href="~/">Back to Site</a>
-			</li>
-			@if (Model.IsSystemAdmin)
-			{
-				<li>
-					<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" title="System Admin">
-						System Admin
-					</a>
-				</li>
-			}
-			
-			<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
-		</ul>
+		}
+
+		<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+	</ul>
 	}
 }
 

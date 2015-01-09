@@ -31,6 +31,31 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 			#region Fix-up navigation properties
 
+			modelBuilder.Entity<Cart>()
+				.HasOptional(c => c.DeliveryInfoDigital)
+				.WithRequired(o => o.Cart)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Cart>()
+				.HasOptional(c => c.DeliveryInfoShipping)
+				.WithRequired(o => o.Cart)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Cart>()
+				.HasOptional(c => c.Payment)
+				.WithRequired(o => o.Cart)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Cart>()
+				.HasOptional(c => c.Order)
+				.WithRequired(o => o.Cart)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Cart>()
+				.HasMany(c => c.CartItems)
+				.WithRequired(ci => ci.Cart)
+				.WillCascadeOnDelete(true);
+
 			modelBuilder.Entity<UserProfile>()
 				.HasOptional(up => up.UpdatedBy)
 				.WithMany()
@@ -58,57 +83,57 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				.HasForeignKey(fk => fk.ClientId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.AccountAdmin)
-				.WithMany(u => u.AccountAdminStoreFronts)
+				.WithMany(u => u.AccountAdminStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.AccountAdmin_UserProfileId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.RegisteredNotify)
-				.WithMany(u => u.RegisteredNotifyStoreFronts)
+				.WithMany(u => u.RegisteredNotifyStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.RegisteredNotify_UserProfileId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.WelcomePerson)
-				.WithMany(u => u.WelcomeStoreFronts)
+				.WithMany(u => u.WelcomeStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.WelcomePerson_UserProfileId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.AccountTheme)
-				.WithMany(u => u.AccountStoreFronts)
+				.WithMany(u => u.AccountStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.AccountThemeId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.AdminTheme)
-				.WithMany(u => u.AdminStoreFronts)
+				.WithMany(u => u.AdminStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.AdminThemeId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.CatalogTheme)
-				.WithMany(u => u.CatalogStoreFronts)
+				.WithMany(u => u.CatalogStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.CatalogThemeId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.DefaultNewPageTheme)
-				.WithMany(u => u.DefaultNewPageStoreFronts)
+				.WithMany(u => u.DefaultNewPageStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.DefaultNewPageThemeId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.NotificationsTheme)
-				.WithMany(u => u.NotificationsStoreFronts)
+				.WithMany(u => u.NotificationsStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.NotificationsThemeId)
 				.WillCascadeOnDelete(false);
 
-			modelBuilder.Entity<StoreFront>()
+			modelBuilder.Entity<StoreFrontConfiguration>()
 				.HasRequired(s => s.ProfileTheme)
-				.WithMany(u => u.ProfileStoreFronts)
+				.WithMany(u => u.ProfileStoreFrontConfigurations)
 				.HasForeignKey(fk => fk.ProfileThemeId)
 				.WillCascadeOnDelete(false);
 
@@ -134,6 +159,12 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				.HasRequired(n => n.FromUserProfile)
 				.WithMany(u => u.NotificationsSent)
 				.HasForeignKey(fk => fk.FromUserProfileId)
+				.WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<Order>()
+				.HasOptional(o => o.UserProfile)
+				.WithMany(u => u.Orders)
+				.HasForeignKey(fk => fk.UserProfileId)
 				.WillCascadeOnDelete(false);
 
 			#endregion

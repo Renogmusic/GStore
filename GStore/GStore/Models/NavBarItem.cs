@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("NavBarItems")]
+	[Table("NavBarItem")]
 	public class NavBarItem : BaseClasses.StoreFrontRecord
 	{
 		[Key]

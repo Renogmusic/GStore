@@ -42,6 +42,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			IOrderedQueryable<Theme> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.ThemesBreadcrumb(htmlHelper, clientId, false);
 			return View(queryOrdered.ToList());
 		}
 
@@ -57,17 +58,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, theme.ClientId, theme, false);
 			return View(theme);
 		}
 
 		public ActionResult Create(int? clientId)
 		{
-			ViewBag.UserProfileList = UserProfileList(clientId, null);
-			ViewBag.ClientList = ClientList();
-			ViewBag.ThemeFolderList = ThemeFolderList(clientId);
+			Client client = null;
+			if (clientId.HasValue)
+			{
+				client = GStoreDb.Clients.FindById(clientId.Value);
+			}
 
 			Theme model = GStoreDb.Themes.Create();
-			model.SetDefaultsForNew(clientId);
+			model.SetDefaultsForNew(client);
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, clientId, model, false);
 			return View(model);
 		}
 
@@ -94,10 +99,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				clientId = theme.ClientId;
 			}
 
-			ViewBag.UserProfileList = UserProfileList(clientId, null);
-			ViewBag.ClientList = ClientList();
-			ViewBag.ThemeFolderList = ThemeFolderList(clientId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, theme.ClientId, theme, false);
 			return View(theme);
 		}
 
@@ -113,10 +115,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
-			ViewBag.UserProfileList = UserProfileList(theme.ClientId, null);
-			ViewBag.ClientList = ClientList();
-			ViewBag.ThemeFolderList = ThemeFolderList(theme.ClientId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, theme.ClientId, theme, false);
 			return View(theme);
 		}
 
@@ -135,10 +134,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				return RedirectToAction("Index");
 			}
-			ViewBag.UserProfileList = UserProfileList(theme.ClientId, null);
-			ViewBag.ClientList = ClientList();
-			ViewBag.ThemeFolderList = ThemeFolderList(theme.ClientId);
 
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, theme.ClientId, theme, false);
 			return View(theme);
 		}
 
@@ -165,6 +162,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.ThemeBreadcrumb(htmlHelper, theme.ClientId, theme, false);
 			return View(theme);
 		}
 

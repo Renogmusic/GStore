@@ -10,8 +10,12 @@ namespace GStore.Data
 {
 	public static class SeedDataExtensions
 	{
-		public static void AddSeedData(this IGstoreDb storeDb)
+		public static void AddSeedData(this IGstoreDb storeDb, bool force = false)
 		{
+			if (Properties.Settings.Current.AppDoNotSeedDatabase && !force)
+			{
+				return;
+			}
 
 			string adminUserName = "admin@domain.com";
 			string adminEmail = "admin@domain.com";
@@ -38,7 +42,7 @@ namespace GStore.Data
 			}
 
 			Identity.AspNetIdentityContext ctx = new Identity.AspNetIdentityContext();
-			ctx.Database.Initialize(false);
+			ctx.Database.Initialize(true);
 			ctx.CreateRoleIfNotExists("AccountAdmin");
 			ctx.CreateRoleIfNotExists("NotificationAdmin");
 			ctx.CreateRoleIfNotExists("StoreAdmin");
@@ -60,7 +64,7 @@ namespace GStore.Data
 
 			if (storeDb.Clients.IsEmpty())
 			{
-				Client newClient = storeDb.CreateSeedClient("New Company", "StarterClient");
+				Client newClient = storeDb.CreateSeedClient("Sample Company", "SampleClient");
 			}
 			Client firstClient = storeDb.Clients.All().First();
 
@@ -85,12 +89,20 @@ namespace GStore.Data
 
 			if (storeDb.StoreFronts.IsEmpty())
 			{
-				string storeFrontName = "New Storefront";
-				string storeFrontFolder = "StarterStoreFront";
-				StoreFront newStoreFront = storeDb.CreateSeedStoreFront(storeFrontName, storeFrontFolder, firstClient, adminProfile, selectedTheme, layout);
+				StoreFront newStoreFront = storeDb.CreateSeedStoreFront(firstClient, adminProfile);
 			}
 			StoreFront firstStoreFront = storeDb.StoreFronts.All().First();
 			storeDb.CachedStoreFront = firstStoreFront;
+
+			//config
+			StoreFrontConfiguration firstStoreFrontConfig = firstStoreFront.CurrentConfigOrAny();
+			if (firstStoreFrontConfig == null)
+			{
+				string storeFrontName = "Sample Storefront";
+				string storeFrontFolder = "SampleStoreFront";
+				firstStoreFrontConfig = storeDb.CreateSeedStoreFrontConfig(firstStoreFront, storeFrontName, storeFrontFolder, adminProfile, selectedTheme, layout);
+			}
+
 			firstClient = firstStoreFront.Client;
 
 			if (storeDb.StoreBindings.IsEmpty())
@@ -107,18 +119,18 @@ namespace GStore.Data
 
 			if (storeDb.Pages.IsEmpty())
 			{
-				Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, firstStoreFront, firstPageTemplate);
+				Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, firstStoreFrontConfig, firstPageTemplate);
 
-				Page aboutUsPage = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, firstStoreFront, firstPageTemplate);
+				Page aboutUsPage = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, firstStoreFrontConfig, firstPageTemplate);
 				NavBarItem aboutLink = storeDb.CreateSeedNavBarItem("About Us", aboutUsPage.PageId, false, null, firstStoreFront);
 
-				Page contactUsPage = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, firstStoreFront, firstPageTemplate);
+				Page contactUsPage = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, firstStoreFrontConfig, firstPageTemplate);
 				NavBarItem contactUsLink = storeDb.CreateSeedNavBarItem("Contact Us", contactUsPage.PageId, false, null, firstStoreFront);
 
-				Page answersPage = storeDb.CreateSeedPage("Answers", "Answers", "/Answers", 400, firstStoreFront, firstPageTemplate);
+				Page answersPage = storeDb.CreateSeedPage("Answers", "Answers", "/Answers", 400, firstStoreFrontConfig, firstPageTemplate);
 				NavBarItem answersLink = storeDb.CreateSeedNavBarItem("Questions?", answersPage.PageId, false, null, firstStoreFront);
 
-				Page locationPage = storeDb.CreateSeedPage("Location", "Location", "/Location", 500, firstStoreFront, firstPageTemplate);
+				Page locationPage = storeDb.CreateSeedPage("Location", "Location", "/Location", 500, firstStoreFrontConfig, firstPageTemplate);
 				NavBarItem locationLink = storeDb.CreateSeedNavBarItem("Location", locationPage.PageId, false, null, firstStoreFront);
 
 				if (storeDb.WebForms.IsEmpty())
@@ -129,24 +141,33 @@ namespace GStore.Data
 
 					WebForm contactForm = storeDb.CreateSeedWebForm("Sample Contact Form", "Sample Contact Form", firstClient);
 					WebFormField contactName = storeDb.CreateSeedWebFormField(contactForm, "Your Name", 100, isRequired: true, helpLabelBottomText: "Please enter your Name");
-					WebFormField contactEmail = storeDb.CreateSeedWebFormField(contactForm, "Your Email Address", 101, isRequired: true, helpLabelBottomText: "Please enter your Email Address");
+					WebFormField contactEmail = storeDb.CreateSeedWebFormField(contactForm, "Your Email Address", 101, isRequired: true, helpLabelBottomText: "Please enter your Email Address", dataType: GStoreValueDataType.EmailAddress);
 					WebFormField contactPhone = storeDb.CreateSeedWebFormField(contactForm, "Phone (optional)", 102, isRequired: false, helpLabelTopText: "If you would like us to reach you by phone, please enter your phone number below.");
 					WebFormField contactMessage = storeDb.CreateSeedWebFormField(contactForm, "Message", 103, dataType: GStoreValueDataType.MultiLineText, isRequired: true, helpLabelTopText: "Enter a message below");
 
 					contactUsPage.WebForm = contactForm;
 					contactUsPage.WebFormId = contactForm.WebFormId;
-					firstStoreFront.Register_WebFormId = registerForm.WebFormId;
-					firstStoreFront.RegisterWebForm = registerForm;
+					contactUsPage.WebFormSaveToDatabase = true;
+					contactUsPage.WebFormSaveToFile = true;
+					contactUsPage.WebFormSuccessPageId = homePage.PageId;
+					contactUsPage = storeDb.Pages.Update(contactUsPage);
+
+					firstStoreFrontConfig.Register_WebFormId = registerForm.WebFormId;
+					firstStoreFrontConfig.RegisterWebForm = registerForm;
+					firstStoreFrontConfig = storeDb.StoreFrontConfigurations.Update(firstStoreFrontConfig);
 					storeDb.SaveChangesEx(true, false, false, false);
 
 				}
-
 			}
 
+			//add sample discount codes
+			if (storeDb.Discounts.IsEmpty())
+			{
+				Discount test1 = storeDb.CreateSeedDiscount("test1", 0, null, false, 0, 0, 10, firstStoreFront);
+				Discount test2 = storeDb.CreateSeedDiscount("test2", 0, null, false, 0, 0, 10, firstStoreFront);
+				Discount test3 = storeDb.CreateSeedDiscount("test3", 0, null, false, 0, 0, 10, firstStoreFront);
 
-
-
-
+			}
 
 			//add browser user
 			UserProfile browserProfile = browserUser.GetUserProfile(storeDb, false);
@@ -157,13 +178,16 @@ namespace GStore.Data
 
 			if (loadSampleProducts && storeDb.ProductCategories.IsEmpty())
 			{
-				ProductCategory topCat = storeDb.CreateSeedProductCategory("Computers and Tablets", "Computers_And_Tablets", 100, false, null, firstStoreFront);
-				ProductCategory notebooks = storeDb.CreateSeedProductCategory("Notebooks", "Notebooks", 200, false, topCat, firstStoreFront);
+				ProductCategory topCatComputers = storeDb.CreateSeedProductCategory("Computers and Tablets", "Computers_And_Tablets", 100, false, null, firstStoreFront);
+
+				ProductCategory topCatTvs = storeDb.CreateSeedProductCategory("TV's", "TVs", 110, false, null, firstStoreFront);
+				ProductCategory topCatCameras = storeDb.CreateSeedProductCategory("Cameras", "Cameras", 110, false, null, firstStoreFront);
+				ProductCategory notebooks = storeDb.CreateSeedProductCategory("Notebooks", "Notebooks", 200, false, topCatComputers, firstStoreFront);
 
 				ProductCategory studentNotebooks = storeDb.CreateSeedProductCategory("Student Notebooks", "Student_Notebooks", 220, false, notebooks, firstStoreFront);
 				
 				ProductCategory gamingNotebooks = storeDb.CreateSeedProductCategory("Gaming Notebooks", "Gaming_Notebooks", 230, false, notebooks, firstStoreFront);
-				ProductCategory desktops = storeDb.CreateSeedProductCategory("Desktops", "Desktops", 300, false, topCat, firstStoreFront);
+				ProductCategory desktops = storeDb.CreateSeedProductCategory("Desktops", "Desktops", 300, false, topCatComputers, firstStoreFront);
 				ProductCategory gamingDesktops = storeDb.CreateSeedProductCategory("Gaming Desktops", "Gaming_Desktops", 350, false, desktops, firstStoreFront);
 				ProductCategory officeDesktops = storeDb.CreateSeedProductCategory("Office Desktops", "Office_Desktops", 380, false, desktops, firstStoreFront);
 				ProductCategory valueDesktops = storeDb.CreateSeedProductCategory("Value Desktops", "Value_Desktops", 390, false, desktops, firstStoreFront);
@@ -172,30 +196,34 @@ namespace GStore.Data
 				ProductCategory offLeaseDesktops = storeDb.CreateSeedProductCategory("Off-Lease Desktops", "Off_Lease_Desktops", 398, false, refurbishedDesktops, firstStoreFront);
 				ProductCategory manufacturerRefurbishedDesktops = storeDb.CreateSeedProductCategory("Manufacturer Refurbished", "Manufacturer_Refurbished_Desktops", 399, false, refurbishedDesktops, firstStoreFront);
 
-				ProductCategory tablets = storeDb.CreateSeedProductCategory("Tablets", "Tablets", 400, false, topCat, firstStoreFront);
+				ProductCategory tablets = storeDb.CreateSeedProductCategory("Tablets", "Tablets", 400, false, topCatComputers, firstStoreFront);
 
 				//Defer category count updating until the whole set of products is loaded instead of one by one to save cpu cycles
-				Product productA1 = storeDb.CreateSeedProduct("Toshiba A205", "Toshiba_A205", 100, gamingNotebooks, firstStoreFront, false);
-				Product productA2 = storeDb.CreateSeedProduct("Lenovo B512A", "Levovo_B512A", 200, gamingNotebooks, firstStoreFront, false);
-				Product productA3 = storeDb.CreateSeedProduct("Acer A512A", "Acer_A512A", 300, gamingNotebooks, firstStoreFront, false);
+				Product productA1 = storeDb.CreateSeedProduct("Toshiba A205", "Toshiba_A205", 100, 9, gamingNotebooks, firstStoreFront, false);
+				Product productA2 = storeDb.CreateSeedProduct("Lenovo B512A", "Levovo_B512A", 200, 9, gamingNotebooks, firstStoreFront, false);
+				Product productA3 = storeDb.CreateSeedProduct("Acer A512A", "Acer_A512A", 300, 9, gamingNotebooks, firstStoreFront, false);
 
-				Product productB1 = storeDb.CreateSeedProduct("Toshiba A205-S", "Toshiba_A205_S", 100, studentNotebooks, firstStoreFront, false);
-				Product productB2 = storeDb.CreateSeedProduct("Lenovo B512B", "Levovo_B512B", 200, studentNotebooks, firstStoreFront, false);
-				Product productB3 = storeDb.CreateSeedProduct("Acer A512B", "Acer_A512B", 300, studentNotebooks, firstStoreFront, false);
+				Product productB1 = storeDb.CreateSeedProduct("Toshiba A205-S", "Toshiba_A205_S", 100, 9, studentNotebooks, firstStoreFront, false);
+				Product productB2 = storeDb.CreateSeedProduct("Lenovo B512B", "Levovo_B512B", 200, 3, studentNotebooks, firstStoreFront, false);
+				Product productB3 = storeDb.CreateSeedProduct("Acer A512B", "Acer_A512B", 300, 2, studentNotebooks, firstStoreFront, false);
 
-				Product productC1 = storeDb.CreateSeedProduct("HP Pavillion B11212", "HP_Pavillion_B11212", 990, offLeaseDesktops, firstStoreFront, false);
-				Product productC2 = storeDb.CreateSeedProduct("HP Pavillion B666", "HP_Pavillion_B666", 300, offLeaseDesktops, firstStoreFront, false);
+				Product productC1 = storeDb.CreateSeedProduct("HP Pavillion B11212", "HP_Pavillion_B11212", 990, 3, offLeaseDesktops, firstStoreFront, false);
+				Product productC2 = storeDb.CreateSeedProduct("HP Pavillion B666", "HP_Pavillion_B666", 300, 9, offLeaseDesktops, firstStoreFront, false);
 
+				Product productTv1 = storeDb.CreateSeedProduct("RCA 56\" LCD TV", "RCA_56_LCD", 100, 1, topCatTvs, firstStoreFront, false);
+				Product productTv2 = storeDb.CreateSeedProduct("Samsung 13\" DVD-Combo", "Samsung_13_DVD", 200, 99, topCatTvs, firstStoreFront, false);
+
+				Product productCamera1 = storeDb.CreateSeedProduct("Canon Powershot G6", "Canon_Powershot_G6", 100, 20, topCatCameras, firstStoreFront, false);
+				Product productCamera2 = storeDb.CreateSeedProduct("Canon Powershot G5", "Canon_Powershot_G5", 200, 20, topCatCameras, firstStoreFront, false);
+				Product productCamera3 = storeDb.CreateSeedProduct("Canon Powershot G4", "Canon_Powershot_G4", 300, 20, topCatCameras, firstStoreFront, false);
 
 				//run defered category calc
 				storeDb.RecalculateProductCategoryActiveCount(firstStoreFront);
 				
 			}
 
-			
-
-
 		}
+
 
 		public static UserProfile CreateSeedAdminProfile(this IGstoreDb storeDb, string adminUserId, string adminUserName, string adminEmail, string adminFullName)
 		{
@@ -214,6 +242,10 @@ namespace GStore.Data
 			adminProfile.UserName = adminUserName;
 			adminProfile.IsPending = false;
 			adminProfile.Order = 1;
+			adminProfile.EntryDateTime = DateTime.UtcNow;
+			adminProfile.EntryRawUrl = "";
+			adminProfile.EntryReferrer= "";
+			adminProfile.EntryUrl = "";
 			adminProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			adminProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 
@@ -231,6 +263,10 @@ namespace GStore.Data
 			profile.ClientId = storeFront.ClientId;
 			profile.AllowUsersToSendSiteMessages = true;
 			profile.Email = email;
+			profile.EntryDateTime = DateTime.UtcNow;
+			profile.EntryRawUrl = "";
+			profile.EntryReferrer = "";
+			profile.EntryUrl = "";
 			profile.FullName = fullName;
 			profile.NotifyAllWhenLoggedOn = true;
 			profile.NotifyOfSiteUpdatesToEmail = true;
@@ -305,54 +341,79 @@ namespace GStore.Data
 			return client;
 		}
 
-		public static StoreFront CreateSeedStoreFront(this IGstoreDb storeDb, string storeFrontName, string storeFrontFolder, Client client, UserProfile adminProfile, Theme selectedTheme, string layout)
+		public static StoreFront CreateSeedStoreFront(this IGstoreDb storeDb, Client client, UserProfile adminProfile)
 		{
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+
 			StoreFront storeFront = storeDb.StoreFronts.Create();
+			storeFront.SetDefaultsForNew(client);
+			storeDb.StoreFronts.Add(storeFront);
+			storeDb.SaveChangesEx(true, false, false, false);
 
-			storeFront.Name = storeFrontName;
-			storeFront.Folder = storeFrontFolder;
-			storeFront.IsPending = false;
-			storeFront.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
-			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-			storeFront.Client = client;
-			storeFront.Order = 100;
-			storeFront.AccountAdmin = adminProfile;
-			storeFront.RegisteredNotify = adminProfile;
-			storeFront.WelcomePerson = adminProfile;
-			storeFront.MetaApplicationName = storeFrontName;
-			storeFront.MetaApplicationTileColor = "#880088";
-			storeFront.MetaDescription = "New GStore Storefront " + storeFrontName;
-			storeFront.MetaKeywords = "GStore Storefront " + storeFrontName;
-			storeFront.AdminLayoutName = layout;
-			storeFront.AdminTheme = selectedTheme; 
-			storeFront.AccountLayoutName = layout;
-			storeFront.AccountTheme = selectedTheme; 
-			storeFront.ProfileLayoutName = layout;
-			storeFront.ProfileTheme = selectedTheme;
-			storeFront.NotificationsLayoutName = layout;
-			storeFront.NotificationsTheme = selectedTheme;
-			storeFront.CatalogLayoutName = layout;
-			storeFront.CatalogTheme = selectedTheme;
-			storeFront.DefaultNewPageLayoutName = layout;
-			storeFront.DefaultNewPageTheme = selectedTheme;
-			storeFront.CatalogPageInitialLevels = 6;
-			storeFront.NavBarCatalogMaxLevels = 6;
-			storeFront.NavBarItemsMaxLevels = 6;
-			storeFront.CatalogCategoryColLg = 3;
-			storeFront.CatalogCategoryColMd = 4;
-			storeFront.CatalogCategoryColSm = 6;
-			storeFront.CatalogProductColLg = 2;
-			storeFront.CatalogProductColMd = 3;
-			storeFront.CatalogProductColSm = 6;
-			storeFront.HtmlFooter = storeFrontName;
-			storeFront.NavBarShowRegisterLink = true;
-			storeFront.NavBarRegisterLinkText = "Sign-Up";
-			storeFront.AccountLoginShowRegisterLink = true;
-			storeFront.AccountLoginRegisterLinkText = "Sign-up";
+			return storeFront;
 
+		}
+
+		public static StoreFrontConfiguration CreateSeedStoreFrontConfig(this IGstoreDb storeDb, StoreFront storeFront, string storeFrontName, string storeFrontFolder, UserProfile adminProfile, Theme selectedTheme, string layout)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+
+			StoreFrontConfiguration storeFrontConfig = storeDb.StoreFrontConfigurations.Create();
+
+			storeFrontConfig.StoreFront = storeFront;
+			storeFrontConfig.StoreFrontId = storeFront.StoreFrontId;
+			storeFrontConfig.Name = storeFrontName;
+			storeFrontConfig.ConfigurationName = "Default";
+			storeFrontConfig.Folder = storeFrontFolder;
+			storeFrontConfig.IsPending = false;
+			storeFrontConfig.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
+			storeFrontConfig.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			storeFrontConfig.Client = storeFront.Client;
+			storeFrontConfig.ClientId = storeFront.ClientId;
+			storeFrontConfig.Order = storeFront.StoreFrontConfigurations.Count == 0 ? 100 : storeFront.StoreFrontConfigurations.Max(sf => sf.Order) + 10;
+			storeFrontConfig.AccountAdmin = adminProfile;
+			storeFrontConfig.RegisteredNotify = adminProfile;
+			storeFrontConfig.WelcomePerson = adminProfile;
+			storeFrontConfig.MetaApplicationName = storeFrontName;
+			storeFrontConfig.MetaApplicationTileColor = "#880088";
+			storeFrontConfig.MetaDescription = "New GStore Storefront " + storeFrontName;
+			storeFrontConfig.MetaKeywords = "GStore Storefront " + storeFrontName;
+			storeFrontConfig.AdminLayoutName = layout;
+			storeFrontConfig.AdminTheme = selectedTheme;
+			storeFrontConfig.AccountLayoutName = layout;
+			storeFrontConfig.AccountTheme = selectedTheme;
+			storeFrontConfig.ProfileLayoutName = layout;
+			storeFrontConfig.ProfileTheme = selectedTheme;
+			storeFrontConfig.NotificationsLayoutName = layout;
+			storeFrontConfig.NotificationsTheme = selectedTheme;
+			storeFrontConfig.CatalogLayoutName = layout;
+			storeFrontConfig.CatalogTheme = selectedTheme;
+			storeFrontConfig.DefaultNewPageLayoutName = layout;
+			storeFrontConfig.DefaultNewPageTheme = selectedTheme;
+			storeFrontConfig.CatalogPageInitialLevels = 6;
+			storeFrontConfig.NavBarCatalogMaxLevels = 6;
+			storeFrontConfig.NavBarItemsMaxLevels = 6;
+			storeFrontConfig.CatalogCategoryColLg = 3;
+			storeFrontConfig.CatalogCategoryColMd = 4;
+			storeFrontConfig.CatalogCategoryColSm = 6;
+			storeFrontConfig.CatalogProductColLg = 2;
+			storeFrontConfig.CatalogProductColMd = 3;
+			storeFrontConfig.CatalogProductColSm = 6;
+			storeFrontConfig.HtmlFooter = storeFrontName;
+			storeFrontConfig.NavBarShowRegisterLink = true;
+			storeFrontConfig.NavBarRegisterLinkText = "Sign-Up";
+			storeFrontConfig.AccountLoginShowRegisterLink = true;
+			storeFrontConfig.AccountLoginRegisterLinkText = "Sign-up";
+			
 			if (HttpContext.Current == null)
 			{
-				storeFront.PublicUrl = "http://localhost:55520/";
+				storeFrontConfig.PublicUrl = "http://localhost:55520/";
 			}
 			else
 			{
@@ -364,12 +425,21 @@ namespace GStore.Data
 					publicUrl += ":" + url.Port;
 				}
 				publicUrl += HttpContext.Current.Request.ApplicationPath;
-				storeFront.PublicUrl = publicUrl;
+				storeFrontConfig.PublicUrl = publicUrl;
 			}
-			storeDb.StoreFronts.Add(storeFront);
+
+			storeFrontConfig.ApplyDefaultCartConfig();
+			storeFrontConfig.CheckoutLayoutName = layout;
+			storeFrontConfig.CheckoutTheme = selectedTheme;
+			storeFrontConfig.OrderStatusLayoutName = layout;
+			storeFrontConfig.OrderStatusTheme = selectedTheme;
+			storeFrontConfig.OrderAdminLayoutName = layout;
+			storeFrontConfig.OrderAdminTheme = selectedTheme;
+
+			storeDb.StoreFrontConfigurations.Add(storeFrontConfig);
 			storeDb.SaveChangesEx(true, false, false, false);
 
-			return storeFront;
+			return storeFrontConfig;
 
 		}
 
@@ -384,10 +454,10 @@ namespace GStore.Data
 			UserProfile profile = storeDb.SeedAutoMapUserBestGuess();
 			StoreFront storeFront = storeDb.SeedAutoMapStoreFrontBestGuess();
 
-			IGstoreDb systemDb = storeDb.NewContext(profile.UserName, storeFront, profile);
+			IGstoreDb systemDb = storeDb.NewContext(profile.UserName, storeFront, storeFront.CurrentConfigOrAny(), profile);
 			StoreBinding binding = systemDb.CreateSeedStoreBindingToCurrentUrl(storeFront);
 
-			string message = "--Bindings auto-mapped to StoreFront '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId + "]"
+			string message = "--Bindings auto-mapped to StoreFront '" + binding.StoreFront.CurrentConfigOrAny().Name + "' [" + binding.StoreFront.StoreFrontId + "]"
 				+ " For HostName: " + binding.HostName + " Port: " + binding.Port + " RootPath: " + binding.RootPath
 				+ " UseUrlStoreName: " + binding.UseUrlStoreName.ToString() + " UrlStoreName: " + binding.UrlStoreName.ToString()
 				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
@@ -414,7 +484,7 @@ namespace GStore.Data
 
 			HttpRequestBase request = baseController.Request;
 
-			string message = "--Bindings Catch-All auto-mapped to StoreFront '" + binding.StoreFront.Name + "' [" + binding.StoreFront.StoreFrontId + "]"
+			string message = "--Bindings Catch-All auto-mapped to StoreFront '" + binding.StoreFront.CurrentConfigOrAny().Name + "' [" + binding.StoreFront.StoreFrontId + "]"
 				+ " For HostName: " + request.BindingHostName() + " Port: " + request.BindingPort() + " RootPath: " + request.BindingRootPath() + " UrlStoreName: " + request.BindingUrlStoreName()
 				+ " UseUrlStoreName: " + binding.UseUrlStoreName.ToString() + " UrlStoreName: " + binding.UrlStoreName
 				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
@@ -560,8 +630,8 @@ namespace GStore.Data
 		public static PageTemplate CreateSeedPageTemplate(this IGstoreDb storeDb, string name, string layout, string viewName, Client client)
 		{
 			PageTemplate pageTemplate = storeDb.PageTemplates.Create();
-			pageTemplate.Name = "Auto-generated Page Template";
-			pageTemplate.Description = "Auto-generated Page Template";
+			pageTemplate.Name = name;
+			pageTemplate.Description = name;
 			pageTemplate.LayoutName = layout;
 			pageTemplate.ViewName = viewName;
 			pageTemplate.IsPending = false;
@@ -578,7 +648,7 @@ namespace GStore.Data
 		public static WebForm CreateSeedWebForm(this IGstoreDb storeDb, string name, string description, Client client)
 		{
 			WebForm webForm = storeDb.WebForms.Create();
-			webForm.SetDefaultsForNew(client.ClientId);
+			webForm.SetDefaultsForNew(client);
 			webForm.Client = client;
 			webForm.Name = name;
 			webForm.Description = description;
@@ -622,7 +692,7 @@ namespace GStore.Data
 			return webFormField;
 		}
 
-		public static Page CreateAutoHomePage(this IGstoreDb db, HttpRequestBase request, StoreFront storeFront, Controllers.BaseClass.BaseController baseController)
+		public static Page CreateAutoHomePage(this IGstoreDb db, HttpRequestBase request, StoreFrontConfiguration storeFrontConfig, Controllers.BaseClass.BaseController baseController)
 		{
 
 			UserProfile userProfile = db.SeedAutoMapUserBestGuess();
@@ -634,7 +704,7 @@ namespace GStore.Data
 			if (!db.PageTemplates.IsEmpty())
 			{
 				//look for match for storefront default new page layout name
-				pageTemplate = db.PageTemplates.All().Where(pt => pt.LayoutName == storeFront.DefaultNewPageLayoutName).OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
+				pageTemplate = db.PageTemplates.All().Where(pt => pt.LayoutName == storeFrontConfig.DefaultNewPageLayoutName).OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
 				if (pageTemplate == null)
 				{
 					pageTemplate = db.PageTemplates.All().OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
@@ -642,13 +712,15 @@ namespace GStore.Data
 			}
 			else
 			{
-				//no page templates in database, create a seed one
-				pageTemplate = db.CreateSeedPageTemplate(storeFront.DefaultNewPageLayoutName + " Template", storeFront.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultPageTemplateViewName, storeFront.Client);
+				//no page templates in database, create two seed ones
+				pageTemplate = db.CreateSeedPageTemplate(storeFrontConfig.DefaultNewPageLayoutName + " Template", storeFrontConfig.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultPageTemplateViewName, storeFrontConfig.Client);
+
+				PageTemplate pageTemplate2 = db.CreateSeedPageTemplate("Simple 3x3 With Jumbo Tron", storeFrontConfig.DefaultNewPageLayoutName, "Simple3x3WithJumboTron", storeFrontConfig.Client);
 			}
 
-			Page page = db.CreateSeedPage(storeFront.Name, storeFront.Name, "/", 1000, storeFront, pageTemplate);
+			Page page = db.CreateSeedPage(storeFrontConfig.Name, storeFrontConfig.Name, "/", 1000, storeFrontConfig, pageTemplate);
 
-			string message = "--Auto-Created Home Page for StoreFront '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "]"
+			string message = "--Auto-Created Home Page for StoreFront '" + storeFrontConfig.Name + "' [" + storeFrontConfig.StoreFrontId + "]"
 				+ " For HostName: " + request.BindingHostName() + " Port: " + request.BindingPort() + " RootPath: " + request.BindingRootPath()
 				+ " From RawUrl: " + request.RawUrl + " QueryString: " + request.QueryString + " ContentLength: " + request.ContentLength
 				+ " HTTPMethod: " + request.HttpMethod + " Client IP: " + request.UserHostAddress;
@@ -660,21 +732,22 @@ namespace GStore.Data
 			return page;
 		}
 
-		public static Page CreateSeedPage(this IGstoreDb storeDb, string name, string pageTitle, string url, int order, StoreFront storeFront, PageTemplate pageTemplate)
+		public static Page CreateSeedPage(this IGstoreDb storeDb, string name, string pageTitle, string url, int order, StoreFrontConfiguration storeFrontConfig, PageTemplate pageTemplate)
 		{
 			Page page = storeDb.Pages.Create();
-			page.ClientId = storeFront.ClientId;
+			page.ClientId = storeFrontConfig.ClientId;
 			page.PageTemplateId = pageTemplate.PageTemplateId;
-			page.Theme = storeFront.DefaultNewPageTheme;
-			page.ThemeId = storeFront.DefaultNewPageThemeId;
+			page.Theme = storeFrontConfig.DefaultNewPageTheme;
+			page.ThemeId = storeFrontConfig.DefaultNewPageThemeId;
 			page.Order = order;
 			page.Name = name;
 			page.PageTitle = pageTitle;
+			page.ForAnonymousOnly = false;
 			page.ForRegisteredOnly = false;
 			page.IsPending = false;
 			page.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-			page.StoreFrontId = storeFront.StoreFrontId;
+			page.StoreFrontId = storeFrontConfig.StoreFrontId;
 			page.Url = url;
 			storeDb.Pages.Add(page);
 			storeDb.SaveChangesEx(true, false, false, false);
@@ -765,7 +838,7 @@ namespace GStore.Data
 			return category;
 		}
 
-		public static Product CreateSeedProduct(this IGstoreDb storeDb, string name, string urlName, int order, ProductCategory category, StoreFront storeFront, bool updateCategoryCounts = true)
+		public static Product CreateSeedProduct(this IGstoreDb storeDb, string name, string urlName, int order, int maxQuantityPerOrder, ProductCategory category, StoreFront storeFront, bool updateCategoryCounts = true)
 		{
 			Product product = storeDb.Products.Create();
 			product.Client = storeFront.Client;
@@ -773,6 +846,7 @@ namespace GStore.Data
 			product.Name = name;
 			product.UrlName = urlName;
 			product.Order = order;
+			product.MaxQuantityPerOrder = maxQuantityPerOrder;
 			product.IsPending = false;
 			product.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			product.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -782,6 +856,30 @@ namespace GStore.Data
 			storeDb.SaveChangesEx(true, false, false, updateCategoryCounts);
 
 			return product;
+		}
+
+		public static Discount CreateSeedDiscount(this IGstoreDb storeDb, string code, decimal flatDiscount, Product freeProductOrNull, bool freeShipping, int maxUsesZeroForNoLimit, decimal minSubTotal, decimal percentOff, StoreFront storeFront)
+		{
+			Discount record = storeDb.Discounts.Create();
+			record.Client = storeFront.Client;
+			record.StoreFront = storeFront;
+			record.Code = code;
+			record.FlatDiscount = flatDiscount;
+			record.FreeProduct = freeProductOrNull;
+			record.FreeShipping = freeShipping;
+			record.MaxUses = maxUsesZeroForNoLimit;
+			record.MinSubtotal = minSubTotal;
+			record.Order = (storeDb.Discounts.IsEmpty() ? 100 : storeDb.Discounts.All().Max(d => d.Order) + 10);
+			record.PercentOff = percentOff;
+			record.UseCount = 0;
+			record.IsPending = false;
+			record.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			record.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			storeDb.Discounts.Add(record);
+			storeDb.SaveChangesEx(true, false, false, false);
+
+			return record;
 		}
 	}
 }

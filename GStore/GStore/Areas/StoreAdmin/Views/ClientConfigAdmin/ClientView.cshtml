@@ -1,7 +1,4 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.ClientConfigAdminViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Identity
 
 @{
 	string tabBasicActive = string.Empty;
@@ -82,7 +79,7 @@
 
 		<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
 			<div class="row">
-				<h3 class="col-md-offset-3 col-md-6 bg-info">Basic Info</h3>
+				<h3 class="col-md-offset-3 col-md-6 bg-success">Basic Info</h3>
 			</div>
 
 			<dl class="dl-horizontal">
@@ -101,7 +98,7 @@
 
 		<div id="sectionEmail" class="tab-pane fade in @(tabEmailActive)">
 			<div class="row">
-				<h3 class="col-md-offset-3 col-md-6 bg-info">Email</h3>
+				<h3 class="col-md-offset-3 col-md-6 bg-success">Email</h3>
 			</div>
 
 			@{
@@ -120,7 +117,7 @@
 				else
 				{
 					<div class="row">
-						<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+						<div class="col-md-offset-3 col-md-6 bg-danger">
 							<h3>Email System is disabled in web server settings.</h3>
 							<p>
 								These settings below will only take effect when Email is enabled for the web server.<br />
@@ -178,7 +175,7 @@
 
 		<div id="sectionSms" class="tab-pane fade in @(tabSmsActive)">
 			<div class="row">
-				<h3 class="col-md-offset-3 col-md-6 bg-info">SMS / Text Messages</h3>
+				<h3 class="col-md-offset-3 col-md-6 bg-success">SMS / Text Messages</h3>
 			</div>
 
 			@{
@@ -197,7 +194,7 @@
 				else
 				{
 					<div class="row">
-						<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+						<div class="col-md-offset-3 col-md-6 bg-danger">
 							<h3>SMS/Text Message System is disabled in web server settings.</h3>
 							<p>
 								These settings below will only take effect when SMS/Text Messaging is enabled for the web server.<br />
@@ -267,7 +264,7 @@
 
 		<div id="sectionAdvanced" class="tab-pane fade in @(tabAdvancedActive)">
 			<div class="row">
-				<h3 class="col-md-offset-3 col-md-6 bg-info">Advanced Settings</h3>
+				<h3 class="col-md-offset-3 col-md-6 bg-success">Advanced Settings</h3>
 			</div>
 
 			<dl class="dl-horizontal">

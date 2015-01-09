@@ -1,14 +1,11 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Models;
-@using GStore.Data;
 @if (Model.EditMode)
 {
-	@Html.Partial("_EditModeTopPartial", Model)
+	Html.RenderPartial("_EditModeTopPartial", Model);
 }
 else if (Model.ShowEditPageLink)
 {
-	@Html.Partial("_EditLinkTopPartial", Model)
+	Html.RenderPartial("_EditLinkTopPartial", Model);
 }
 <div id="PageContent">
 	@Html.DisplayPageSection("Headline1", 1, "Headline 1", "<h1>::page.title::</h1>", false, false)
@@ -23,9 +20,9 @@ else if (Model.ShowEditPageLink)
 
 @if (Model.EditMode)
 {
-	@Html.Partial("_EditModeBottomPartial", Model)
+	Html.RenderPartial("_EditModeBottomPartial", Model);
 }
 else if (Model.ShowEditPageLink)
 {
-	@Html.Partial("_EditLinkBottomPartial", Model)
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
 }

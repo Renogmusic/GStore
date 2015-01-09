@@ -1,8 +1,22 @@
 ﻿@{
 	ViewBag.Title = "Login Failure";
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 
 <hgroup>
 	<h2>@ViewBag.Title.</h2>
 	<h3 class="text-danger">Unsuccessful login with service.</h3>
 </hgroup>
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

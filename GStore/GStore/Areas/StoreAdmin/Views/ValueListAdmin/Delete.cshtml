@@ -1,2 +1,77 @@
-﻿<h2>Value List Delete Coming Soon</h2>
+﻿@model GStore.Areas.StoreAdmin.ViewModels.ValueListEditAdminViewModel
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8 text-danger">
+		Delete Value List<br /><small>'@(Model.Name)' [@(Model.ValueListId)]</small>
+	</h1>
+</div>
+<script>
+	function JumpToDetailsTab() {
+		var url = '@(Url.Action("Details", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+	function JumpToEditTab() {
+		var url = '@(Url.Action("Edit", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+	function JumpToDeleteTab() {
+		var url = '@(Url.Action("Delete", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+</script>
+
+<div class="row">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
+		Are you sure you want to delete Value List:
+		<br />
+		@Html.DisplayNameFor(model => model.Name) '@(Html.DisplayFor(model => model.Name))' @(Html.DisplayNameFor(model => model.ValueListId)) [@(Model.ValueListId)]
+		?
+	</h3>
+</div>
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToEditTab();" class="btn btn-warning">Edit</a>
+		}
+	</div>
+</div>
+
+<hr />
+
+
+@Html.DisplayForModel()
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToEditTab();" class="btn btn-warning">Edit</a>
+		}
+	</div>
+</div>
 

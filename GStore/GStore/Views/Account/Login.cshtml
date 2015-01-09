@@ -1,17 +1,19 @@
 ﻿@model GStore.Models.ViewModels.LoginViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Models.ViewModels
-
 @{
-	StoreFront storeFront = Html.CurrentStoreFront(false);
-	if (storeFront == null)
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+	if (storeFrontConfig == null)
 	{
 		ViewBag.Title = "Log in to GStore";
 	}
 	else
 	{
-		ViewBag.Title = "Log in to " + storeFront.Name;
+		ViewBag.Title = "Log in to " + storeFrontConfig.Name;
+	}
+	bool checkingOut = Model.CheckingOut ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
 	}
 }
 
@@ -22,11 +24,21 @@
 @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.CheckingOut)
 	<div class="row">
 		<div class="form-validation col-md-offset-2 col-md-8">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 		</div>
 	</div>
+	
+	if (checkingOut)
+	{
+		<div class="row">
+			<div class="form-group col-xs-12">
+				@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true}, new { @class = "btn btn-info" })
+			</div>
+		</div>
+	}
 
 	<div class="form-horizontal">
 		<div class="form-group">
@@ -59,28 +71,27 @@
 	<hr />
 	
 	<div class="form-actions row">
-		<div class="col-md-offset-2 col-md-8">
+		<div class="col-md-offset-2 col-md-6">
 			<input type="submit" value="Log in" class="btn btn-primary" />
-
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			@{
 				string linkText = string.Empty;
-				if (storeFront != null && !string.IsNullOrEmpty(storeFront.NavBarRegisterLinkText))
+				if (storeFrontConfig != null && !string.IsNullOrEmpty(storeFrontConfig.NavBarRegisterLinkText))
 				{
-					linkText = storeFront.AccountLoginRegisterLinkText;
+					linkText = storeFrontConfig.AccountLoginRegisterLinkText;
 				}
 				else
 				{
 					linkText = "Sign-Up as a new user";
 				}
 
-				if (storeFront != null && storeFront.AccountLoginShowRegisterLink)
+				if (storeFrontConfig != null && storeFrontConfig.AccountLoginShowRegisterLink)
 				{
-					@Html.ActionLink(linkText, "Register", null, new { @class = "btn btn-warning" })
-					@:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink(linkText, "Register", routeValues, new { @class = "btn btn-warning" })
 				}
-
-				@Html.ActionLink("Forgot your password?", "ForgotPassword", null, new { @class="btn btn-danger" } )
+				<span class="hidden-xs hidden-sm">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+				<div class="row hidden-md hidden-lg">&nbsp;</div>
+				@Html.ActionLink("Forgot your password?", "ForgotPassword", routeValues, new { @class="btn btn-danger" } )
 			}
 		</div>
 	</div>

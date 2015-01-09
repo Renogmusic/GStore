@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.ValueListItem
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no Value List)
@@ -20,5 +19,6 @@ else
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "ListItemDetails", "ValueListSysAdmin", new { id = Model.ValueListItemId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayFor(m => m.ValueList))
+	<br/>
+	@(Html.DisplayFor(m => m.ValueList))
 }

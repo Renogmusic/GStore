@@ -1,0 +1,10 @@
+﻿@model Int64?
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = "col-md-2 title-align-right" })
+	<div class="col-md-10 title-align">
+		@Html.TextBoxWithWatermarkForModel()
+		@Html.HelpLabelPopoverForModel()
+		<br />
+		@Html.ValidationMessageForModel()
+	</div>
+</div>

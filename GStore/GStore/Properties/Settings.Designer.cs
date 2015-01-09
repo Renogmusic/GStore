@@ -26,8 +26,8 @@ namespace GStore.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\mssqllocaldb;Initial Catalog=GStore;Integrated Security=Tru" +
-            "e;MultipleActiveResultSets=True;Application Name=EntityFramework")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\mssqllocaldb;Initial Catalog=GStoreV1.3;Integrated Security" +
+            "=True;MultipleActiveResultSets=True;Application Name=EntityFramework")]
         public string GStoreDB {
             get {
                 return ((string)(this["GStoreDB"]));
@@ -100,6 +100,24 @@ namespace GStore.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AppDoNotSeedDatabase {
+            get {
+                return ((bool)(this["AppDoNotSeedDatabase"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SpaceLab")]
+        public string AppDefaultThemeFolderName {
+            get {
+                return ((string)(this["AppDefaultThemeFolderName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool AppSeedSampleProducts {
             get {
                 return ((bool)(this["AppSeedSampleProducts"]));
@@ -243,7 +261,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Bootstrap")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
         public string AppDefaultLayoutName {
             get {
                 return ((string)(this["AppDefaultLayoutName"]));
@@ -391,15 +409,6 @@ namespace GStore.Properties {
         public bool IdentityEnableTwoFactorAuth {
             get {
                 return ((bool)(this["IdentityEnableTwoFactorAuth"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SpaceLab")]
-        public string AppDefaultThemeFolderName {
-            get {
-                return ((string)(this["AppDefaultThemeFolderName"]));
             }
         }
     }

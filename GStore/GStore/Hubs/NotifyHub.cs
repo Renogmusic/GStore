@@ -10,7 +10,29 @@ namespace GStore.Hubs
 {
 	public class NotifyHub : Hub
 	{
-		public static Int64 activeUsers = 0;
+		public Int64 ActiveUsers()
+		{
+			return _activeUsers;
+		}
+
+		public static void IncrementActiveUsers()
+		{
+			lock (_lockObject)
+			{
+				_activeUsers++;
+			}
+		}
+
+		public static void DecrementActiveUsers()
+		{
+			lock (_lockObject)
+			{
+				_activeUsers--;
+			}
+		}
+
+		private static Int64 _activeUsers = 0;
+		private static object _lockObject = new object();
 
 		[Authorize(Roles = "SystemAdmin")]
 		public void SendMessage(string message)
@@ -43,11 +65,6 @@ namespace GStore.Hubs
 			Clients.Group(guestName).addNewMessageToPage(title, message);
 		}
 
-		public Int64 ActiveUsers()
-		{
-			return activeUsers;
-		}
-
 		public override System.Threading.Tasks.Task OnConnected()
 		{
 			//string title = "New user";
@@ -65,19 +82,18 @@ namespace GStore.Hubs
 
 			Groups.Add(Context.ConnectionId, name);
 
-			activeUsers++;
+			IncrementActiveUsers();
 			return base.OnConnected();
 		}
 
 		public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
 		{
-			activeUsers--;
+			DecrementActiveUsers();
 			return base.OnDisconnected(stopCalled);
 		}
 
 		public override System.Threading.Tasks.Task OnReconnected()
 		{
-			//activeUsers++;
 			return base.OnReconnected();
 		}
 

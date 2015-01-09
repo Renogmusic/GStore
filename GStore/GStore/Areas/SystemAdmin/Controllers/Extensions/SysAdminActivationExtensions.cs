@@ -58,7 +58,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			controller.GStoreDb.StoreFronts.Update(storeFront);
 			controller.GStoreDb.SaveChanges();
-			controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.ClientId + "]" + " - Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+			controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + (storeFront.CurrentConfig() == null ? "" : storeFront.CurrentConfig().Name.ToHtml()) + "' [" + storeFront.ClientId + "]" + " - Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
@@ -84,17 +84,60 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			controller.GStoreDb.StoreBindings.Update(binding);
 			controller.GStoreDb.SaveChanges();
 			controller.AddUserMessage("Activated Store Front", "Activated Store Binding [" + binding.StoreBindingId + "] "
-				+ " Store Front: '" + binding.StoreFront.Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]" + " - Client '" + binding.Client.Name.ToHtml() + "' [" + binding.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+				+ " Store Front: '" + binding.StoreFront.CurrentConfigOrAny().Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]" + " - Client '" + binding.Client.Name.ToHtml() + "' [" + binding.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+
+			return true;
+		}
+
+		public static bool ActivateStoreFrontConfigOnly(this BaseClasses.SystemAdminBaseController controller, int storeConfigId)
+		{
+			StoreFrontConfiguration config = controller.GStoreDb.StoreFrontConfigurations.FindById(storeConfigId);
+			if (config == null)
+			{
+				controller.AddUserMessage("Activate Store Config Failed!", "Store Config not found by id: " + storeConfigId, AppHtmlHelpers.UserMessageType.Danger);
+				return false;
+			}
+
+			if (config.IsActiveDirect())
+			{
+				controller.AddUserMessage("Store Config is already active.", "Store Config is already active. id: " + storeConfigId, AppHtmlHelpers.UserMessageType.Info);
+				return false;
+			}
+
+			config.IsPending = false;
+			config.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			config.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			config = controller.GStoreDb.StoreFrontConfigurations.Update(config);
+			controller.GStoreDb.SaveChanges();
+			controller.AddUserMessage("Activated Store Config", "Activated Store Config '" + config.ConfigurationName + "' [" + config.StoreFrontConfigurationId + "] for Store Front: '" + config.Name.ToHtml() + "' [" + config.StoreFrontId + "]" + " - Client '" + config.Client.Name.ToHtml() + "' [" + config.Client.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 
 			return true;
 		}
 
 
-		public static bool ActivateStoreFrontClientAndBinding(this BaseClasses.SystemAdminBaseController controller, StoreBinding binding)
+		public static bool ActivateStoreFrontClientBindingAndConfig(this BaseClasses.SystemAdminBaseController controller, StoreBinding binding)
 		{
 			if (controller == null)
 			{
 				throw new NullReferenceException("controller");
+			}
+
+			if (binding.StoreFront.CurrentConfigOrAny() == null)
+			{
+				controller.AddUserMessage("Store Front Config Not Found", "No Configuration was found for Store Front Id: " + binding.StoreFrontId, AppHtmlHelpers.UserMessageType.Warning);
+			}
+			else
+			{
+				StoreFrontConfiguration config = binding.StoreFront.CurrentConfigOrAny();
+				if (!config.IsActiveDirect())
+				{
+					config.IsPending = false;
+					config.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+					config.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+					config = controller.GStoreDb.StoreFrontConfigurations.Update(config);
+					controller.GStoreDb.SaveChanges();
+					controller.AddUserMessage("Activated Store Config", "Activated Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId +"]", AppHtmlHelpers.UserMessageType.Info);
+				}
 			}
 
 			if (!binding.IsActiveDirect())
@@ -126,7 +169,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 				controller.GStoreDb.StoreFronts.Update(storeFront);
 				controller.GStoreDb.SaveChanges();
-				controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
+				controller.AddUserMessage("Activated Store Front", "Activated Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Info);
 			}
 
 			return true;
@@ -349,18 +392,22 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				message = " to current Url";
 			}
-			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message.ToHtml() + " store binding to best guess store front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message.ToHtml() + " store binding to best guess store front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 			return binding;
 		}
 
+		/// <summary>
+		/// Creates storefront folders if they don't exist. Uses physical file path as BasePath parameter
+		/// </summary>
+		/// <param name="basePath"></param>
 		public static void CreateStoreFrontFolders(string basePath)
 		{
 			CreateFolderIfNotExists(basePath + "\\ErrorPages");
 			CreateFolderIfNotExists(basePath + "\\Fonts");
+			CreateFolderIfNotExists(basePath + "\\Forms");
 			CreateFolderIfNotExists(basePath + "\\Images");
 			CreateFolderIfNotExists(basePath + "\\Scripts");
-			CreateFolderIfNotExists(basePath + "\\StoreFronts");
 			CreateFolderIfNotExists(basePath + "\\Styles");
 		}
 

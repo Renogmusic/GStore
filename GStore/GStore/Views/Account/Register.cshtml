@@ -1,17 +1,19 @@
 ﻿@model GStore.Models.ViewModels.RegisterViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Models
-@using GStore.Models.ViewModels
 @{
-	StoreFront storeFront = Html.CurrentStoreFront(false);
-	if (storeFront == null)
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+	if (storeFrontConfig == null)
 	{
 		ViewBag.Title = "Register for GStore";
 	}
 	else
 	{
-		ViewBag.Title = storeFront.NavBarRegisterLinkText + " for " + storeFront.Name;
+		ViewBag.Title = storeFrontConfig.NavBarRegisterLinkText + " for " + storeFrontConfig.Name;
+	}
+	bool checkingOut = Model.CheckingOut ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
 	}
 }
 
@@ -22,10 +24,16 @@
 @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.CheckingOut)
 	<div class="row">
 		<h4 class="title-align col-md-offset-2 col-md-7">Please register to get site updates and full access to the site.</h4>
 	</div>
 	
+	if (checkingOut)
+	{
+		@Html.ActionLink("Return to Checkout as a Guest", "Index", "Checkout", routeValues, new { @class = "btn btn-info" })
+	}
+
 	<hr />
 	
 	<div class="row">
@@ -97,18 +105,18 @@
 		</div>
 	</div>
 
-	if ((storeFront != null) && (storeFront.RegisterWebForm != null) && storeFront.RegisterWebForm.IsActiveBubble())
+	if ((storeFrontConfig != null) && (storeFrontConfig.RegisterWebForm != null) && storeFrontConfig.RegisterWebForm.IsActiveBubble())
 	{
-		@Html.Partial("_RegisterWebFormFieldsPartial", Model);
+		Html.RenderPartial("_RegisterWebFormFieldsPartial", Model);
 	}
 	
 	<div class="row">
 		<div class="form-actions row col-md-offset-2 col-md-7">
 			@{
 				string linkText = "Register";
-				if (storeFront != null)
+				if (storeFrontConfig != null)
 				{
-					linkText = storeFront.NavBarRegisterLinkText;
+					linkText = storeFrontConfig.NavBarRegisterLinkText;
 				}
 			}
 			<input type="submit" class="btn btn-primary" value="@linkText" />

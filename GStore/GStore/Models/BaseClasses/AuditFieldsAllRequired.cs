@@ -18,20 +18,21 @@ namespace GStore.Models.BaseClasses
 		/// </summary>
 		[DataType(DataType.DateTime)]
 		[Editable(false)]
-		[Display(Name = "Created On")]
 		[UIHint("DateTimeUtcToLocal")]
 		[Required]
+		[Display(Name = "Created On", Description = "Date and Time in UTC time this record was created")]
 		public DateTime CreateDateTimeUtc { get; set; }
 
 		/// <summary>
 		/// UserID or "unknown" who created this record
 		/// </summary>
 		[Editable(false)]
-		[Display(Name = "Created By Id")]
 		[Required]
+		[Display(Name = "Created By Id", Description = "User Profile Id of the user that created this record.")]
 		public int CreatedBy_UserProfileId { get; set; }
-		[Display(Name = "Created By")]
+
 		[ForeignKey("CreatedBy_UserProfileId")]
+		[Display(Name = "Created By", Description = "User Profile of the user that created this record.")]
 		public virtual UserProfile CreatedBy { get; set; }
 
 		/// <summary>
@@ -39,20 +40,21 @@ namespace GStore.Models.BaseClasses
 		/// </summary>
 		[DataType(DataType.DateTime)]
 		[Editable(false)]
-		[Display(Name = "Updated On")]
 		[UIHint("DateTimeUtcToLocal")]
 		[Required]
+		[Display(Name = "Updated On", Description = "Date and Time in UTC time this record was last updated.")]
 		public DateTime UpdateDateTimeUtc { get; set; }
 
 		/// <summary>
 		/// UserID or "unknown" who last updated this record
 		/// </summary>
 		[Editable(false)]
-		[Display(Name = "Updated By Id")]
 		[Required]
+		[Display(Name = "Updated By Id", Description = "User Profile Id of the user that last updated this record.")]
 		public int UpdatedBy_UserProfileId { get; set; }
-		[Display(Name = "Updated By")]
+
 		[ForeignKey("UpdatedBy_UserProfileId")]
+		[Display(Name = "Updated By", Description = "User Profile of the user that last updated this record.")]
 		public virtual UserProfile UpdatedBy { get; set; }
 
 	}

@@ -18,7 +18,6 @@ namespace GStore.Models.BaseClasses
 		[Display(Name = "Value Data Type String")]
 		public string DataTypeString { get; set; }
 
-
 		[Display(Name = "Value 1 String")]
 		public string Value1String { get; set; }
 
@@ -45,6 +44,15 @@ namespace GStore.Models.BaseClasses
 
 		[Display(Name = "Value 1 Value List Item Id")]
 		public int? Value1ValueListItemId { get; set; }
+
+		[Display(Name = "Value 1 Value List Item Name")]
+		public string Value1ValueListItemName { get; set; }
+
+		[Display(Name = "Value 1 Value List Item Id List")]
+		public string Value1ValueListItemIdList { get; set; }
+
+		[Display(Name = "Value 1 Value List Item Name List")]
+		public string Value1ValueListItemNameList { get; set; }
 
 		[ForeignKey("Value1ValueListItemId")]
 		[Display(Name = "Value 1 Value List Item")]

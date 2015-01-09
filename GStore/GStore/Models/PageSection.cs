@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("PageSections")]
+	[Table("PageSection")]
 	public class PageSection : BaseClasses.StoreFrontRecord
 	{
 		[Key]

@@ -1,16 +1,18 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-@using GStore.Data;
 @{
 	ViewBag.Title = "Index";
 	Product product = Model.CurrentProductOrNull;
+	bool showAddToCart = false;
+	string addToCartText = "";
+	if (Model.StoreFrontConfig != null)
+	{
+		showAddToCart = true;
+		addToCartText = Model.StoreFrontConfig.UseShoppingCart ? "Add to Cart" : "Buy Now";
+	}
 }
-
-
 <div class="row">
 	<div class="col-xs-12 text-left-lg col-lg-offset-4 col-lg-8 text-center">
-		<h1>@Model.StoreFront.Name Product Catalog</h1>
+		<h1>@(Model.StoreFrontConfig.Name) Product Catalog</h1>
 		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true)
 	</div>
 </div>
@@ -26,6 +28,9 @@ Feature 2: sample<br />
 
 Feature 3: sample<br />
 
-
+@if (showAddToCart)
+{
+	@Html.ActionLink(addToCartText, "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-success" })
+}
 
 

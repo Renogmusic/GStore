@@ -1,0 +1,66 @@
+﻿@model CheckoutViewModelBase
+@{
+	Cart cart = Model.Cart;
+}
+
+@{
+	if (cart.CartItems.Count > 0)
+	{
+		<div class="table-responsive">
+			<table class="table table-striped  table-condensed">
+				<tr>
+					<th class="text-center">
+						@Model.Config.CartItemColumnLabel.OrDefault("Item")
+					</th>
+					@if (Model.Config.CartItemQuantityColumnShow)
+					{
+						<th class="text-center">
+							@Model.Config.CartItemQuantityColumnLabel.OrDefault("Quantity")
+						</th>
+					}
+					@if (Model.Config.CartItemTotalColumnShow)
+					{
+						<th class="text-center">
+							@Model.Config.CartItemTotalColumnLabel.OrDefault("Total")
+						</th>
+					}
+				</tr>
+					@{
+		foreach (CartItem item in cart.CartItems)
+		{
+			<tr>
+				<td class="text-center">@item.Product.Name</td>
+				@if (Model.Config.CartItemQuantityColumnShow)
+				{
+					<td class="text-center">@item.Quantity</td>
+				}
+				@if (Model.Config.CartItemTotalColumnShow)
+				{
+					<td class="text-center">@item.LineTotal</td>
+				}
+			</tr>
+		}
+					}
+				</table>
+
+		</div>
+	}
+}
+
+<div class="table-responsive col-lg-offset-6">
+	<table class="table table-striped table-condensed">
+		<tr>
+			<td class="text-right-md text-right-lg">
+				<strong>
+					@Model.Config.CartOrderTotalLabel.OrDefault("Order Total")
+				</strong>
+			</td>
+			<td class="title-align">
+				<strong>
+					@Html.DisplayFor(model => model.Cart.Total)
+				</strong>
+			</td>
+		</tr>
+	</table>
+</div>
+

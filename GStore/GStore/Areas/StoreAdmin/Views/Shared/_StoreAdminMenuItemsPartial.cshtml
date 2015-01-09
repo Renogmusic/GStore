@@ -1,9 +1,4 @@
-﻿@using GStore.AppHtmlHelpers;
-@using GStore.Identity;
-@using GStore.Models;
-@using GStore.Data;
-
-<ul class="nav navbar-nav">
+﻿<ul class="nav navbar-nav">
 	<!-- Dynamic Store Admin Menu -->
 	@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreAdminMenuItem))
 	{
@@ -44,8 +39,28 @@
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
 						@Html.ActionLink("Edit Store Front Configuration", "StoreFrontEdit", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
 					</li>
+					<li class="nav-divider"></li>
 				}
-
+				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_Preview))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Cart Preview (new window to site)", "Preview", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target="_blank" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_View))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Cart Configuration View (new window to site)", "ViewConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_Edit))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Cart Configuration Edit (new window to site)", "EditConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank" })
+					</li>
+				}
 			</ul>
 		</li>
 	}
@@ -127,6 +142,28 @@
 		</li>
 	}
 
+	@if (Html.UserHasPermission(GStoreAction.ValueLists_StoreAdminMenu))
+	{
+	<!-- ValueList Menu Item -->
+		<li class="AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Value Lists">Value Lists<span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.ValueLists_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Value List Manager", "Manager", "ValueListAdmin")
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.ValueLists_Create))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Create a new Value List", "Create", "ValueListAdmin")
+					</li>
+				}
+			</ul>
+		</li>
+	}
 
 	@if (Html.UserHasPermission(GStoreAction.Orders_StoreAdminMenuItem))
 	{
@@ -309,28 +346,6 @@
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
 						@Html.ActionLink("Manage Product Images", "ProductImages", "CatalogAdmin")
-					</li>
-				}
-			</ul>
-		</li>
-	}
-	@if (Html.UserHasPermission(GStoreAction.ValueList_StoreAdminMenu))
-	{
-	<!-- ValueList Menu Item -->
-		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Value Lists (coming soon)"><small class="text-warning">Value Lists</small><span class="caret"></span></a>
-			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-				@if (Html.UserHasPermission(GStoreAction.ValueList_Manager))
-				{
-					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Value List Manager", "Manager", "ValueListAdmin")
-					</li>
-					<li class="nav-divider"></li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.ValueList_Add))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Create a new Value List", "ValueListAdmin", "Create")
 					</li>
 				}
 			</ul>

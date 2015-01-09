@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace GStore.Models
 {
-	[Table("Clients")]
+	[Table("Client")]
 	public class Client : BaseClasses.AuditFieldsAllRequired
 	{
 		[Key]
@@ -85,8 +85,6 @@ namespace GStore.Models
 
 		[Display(Name = "Client Roles")]
 		public virtual ICollection<ClientRole> ClientRoles { get; set; }
-
-
 
 	}
 }

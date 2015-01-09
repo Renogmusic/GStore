@@ -1,8 +1,15 @@
 ﻿@model GStore.Models.WebFormField
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Data
-
+@{
+	Client client = Html.GStoreDb().Clients.FindById(Model.ClientId);
+	List<ValueList> valueLists = null;
+	List<SelectListItem> valueListSelect = null;
+	if (client != null)
+	{
+		valueLists = client.ValueLists.AsQueryable().ApplyDefaultSort().ToList();
+		valueListSelect = valueLists.Select(vl =>
+			new SelectListItem() { Value = vl.ValueListId.ToString(), Text = vl.Name + " [" + vl.ValueListId + "]" + (vl.IsActiveBubble() ? "" : " [INACTIVE]") }).ToList();
+	}
+}
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
@@ -34,61 +41,13 @@
 
 	<div class="form-horizontal">
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.LabelText, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.LabelText, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.LabelText, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.HelpLabelTopText, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.HelpLabelTopText, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.HelpLabelTopText, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.HelpLabelBottomText, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.HelpLabelBottomText, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.HelpLabelBottomText, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsRequired, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsRequired, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsRequired, "", new { @class = "text-danger" })
-			</div>
-		</div>
+		@Html.EditorFor(model => model.Name)
+		@Html.EditorFor(model => model.Order)
+		@Html.EditorFor(model => model.Description)
+		@Html.EditorFor(model => model.LabelText)
+		@Html.EditorFor(model => model.HelpLabelTopText)
+		@Html.EditorFor(model => model.HelpLabelBottomText)
+		@Html.EditorFor(model => model.IsRequired)
 
 		<div class="form-group">
 			@Html.LabelFor(model => model.DataType, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -99,45 +58,20 @@
 		</div>
 
 
+		@Html.EditorFor(model => model.TextAreaRows)
+		@Html.EditorFor(model => model.TextAreaColumns)
+
 		<div class="form-group">
-			@Html.LabelFor(model => model.TextAreaRows, htmlAttributes: new { @class = "control-label col-md-2" })
+			@Html.LabelFor(model => model.ValueList, htmlAttributes: new { @class = "control-label col-md-2" })
 			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.TextAreaRows, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.TextAreaRows, "", new { @class = "text-danger" })
+				@Html.DropDownListFor(model => model.ValueListId, valueListSelect, "(no value list)", new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ValueList, "", new { @class = "text-danger" })
 			</div>
 		</div>
 
-		<div class="form-group">
-			@Html.LabelFor(model => model.TextAreaColumns, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.TextAreaColumns, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.TextAreaColumns, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
-			</div>
-		</div>
+		@Html.EditorFor(model => model.IsPending)
+		@Html.EditorFor(model => model.StartDateTimeUtc)
+		@Html.EditorFor(model => model.EndDateTimeUtc)
 	</div>
 
 	<div class="row">

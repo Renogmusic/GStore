@@ -1,0 +1,14 @@
+﻿@model DateTime?
+@if (Model.HasValue)
+{
+	@Model.Value.ToLocalTime().ToString()
+	if (Model.HasValue && Model.Value > DateTime.MinValue)
+	{
+		<small style="white-space: nowrap">(Local Time: @(Model.Value.ToLocalTime())) - </small>
+	}
+	<small style="white-space: nowrap">(Current UTC Time: @DateTime.UtcNow.ToString())</small>
+}
+else
+{
+	@:(blank)
+}

@@ -1,13 +1,9 @@
 ﻿@model IEnumerable<GStore.Models.ValueList>
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Areas.SystemAdmin
 
 @{
 	bool isFiltered = Html.ClientIsFiltered();
 	int? filterClientId = Html.FilterClientId();
 }
-
 <style>
 	table th {
 		text-align: center;
@@ -19,6 +15,9 @@
 </style>
 
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">Value List Manager</h2>
+<hr />
+@Html.ActionLink("OK", "Index", "ClientSysAdmin", null, new { @class = "btn btn-default" })
+<hr/>
 
 <p>
 	@Html.ActionLink("Create New", "Create", new { clientId = filterClientId }, new { @class = "btn btn-info" })
@@ -71,15 +70,6 @@ else
 					@Html.ActionSortLinkFor(model => model.Order, "Index")
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.AllowEdit, "Index")
-				</th>
-				<th class="small">
-					@Html.ActionSortLinkFor(model => model.AllowDelete, "Index")
-				</th>
-				<th class="small">
-					@Html.ActionSortLinkFor(model => model.IsMultiSelect, "Index")
-				</th>
-				<th class="small">
 					@Html.ActionSortLink("Status", "Index", "Status")
 				</th>
 				<th class="small">
@@ -115,7 +105,9 @@ else
 
 				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.ValueListId }))');">
 					<td>
-						@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn-sm btn-success" })
+						@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 					<td class="small">
 						@Html.DisplayFor(modelItem => item.ClientId)
@@ -143,15 +135,6 @@ else
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => item.Order)
-					</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.AllowEdit)
-					</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.AllowDelete)
-					</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.IsMultiSelect)
 					</td>
 					<td>
 						@if (valueListIsActive)
@@ -187,10 +170,9 @@ else
 						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
 					</td>
 					<td>
-						<span style="white-space: nowrap">
-							@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn-sm btn-warning" })
-							@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn-sm btn-danger" })
-						</span>
+						@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 				</tr>
 		}
@@ -198,3 +180,5 @@ else
 		</table>
 	</div>
 }
+<hr />
+@Html.ActionLink("OK", "Index", "ClientSysAdmin", null, new { @class = "btn btn-default" })

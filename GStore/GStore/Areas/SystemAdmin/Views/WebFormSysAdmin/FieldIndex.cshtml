@@ -1,7 +1,4 @@
 ﻿@model GStore.Models.WebForm
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-
 <style>
 	table th {
 		text-align: center;
@@ -99,7 +96,9 @@ else
 
 				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("FieldDetails", new { @id = item.WebFormFieldId }))');">
 					<td>
-						@Html.ActionLink("Details", "FieldDetails", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-success" })
+						@Html.ActionLink("Details", "FieldDetails", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "FieldEdit", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "FieldDelete", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => item.WebFormFieldId)
@@ -150,10 +149,9 @@ else
 						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
 					</td>
 					<td>
-						<span style="white-space: nowrap">
-							@Html.ActionLink("Edit", "FieldEdit", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-warning" })
-							@Html.ActionLink("Delete", "FieldDelete", new { id = item.WebFormFieldId }, new { @class = "btn-sm btn-danger" })
-						</span>
+						@Html.ActionLink("Details", "FieldDetails", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "FieldEdit", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "FieldDelete", new { id = item.WebFormFieldId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 				</tr>
 		}

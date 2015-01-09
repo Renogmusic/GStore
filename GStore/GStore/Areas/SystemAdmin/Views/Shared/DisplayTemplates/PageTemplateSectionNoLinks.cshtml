@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.PageTemplateSection
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no Page Template Section)
@@ -13,5 +12,6 @@ else
 		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.PageTemplateSectionId))]
 		@(isActiveDirect ? string.Empty : " [INACTIVE]")
 	</span>
-	@: - @(Html.DisplayFor(m => m.PageTemplate, "PageTemplateNoLinks"))
+	<br />
+	@(Html.DisplayFor(m => m.PageTemplate, "PageTemplateNoLinks"))
 }

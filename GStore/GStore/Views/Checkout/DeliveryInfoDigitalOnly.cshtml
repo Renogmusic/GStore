@@ -1,0 +1,16 @@
+﻿@model CheckoutDeliveryInfoDigitalOnlyViewModel
+<h1>Digital Delivery Information</h1>
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+
+<h3>Your will receive a link to download your items after checkout.</h3>
+<h4>Enter your Email address for order confirmation and to receive the download link for your items.</h4>
+@using (Html.BeginForm("DeliveryInfoDigitalOnly", "Checkout"))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	@Html.EditorFor(model => model.EmailAddress)
+	Html.RenderPartial("_CheckoutWebFormFieldsPartial", new Tuple<CheckoutViewModelBase, WebForm>(Model, Model.Config.CheckoutDeliveryInfoDigitalOnlyWebForm));
+	
+	<input type="submit" class="btn btn-success" Value="Continue &raquo;" />
+}

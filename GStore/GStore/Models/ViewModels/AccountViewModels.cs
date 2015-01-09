@@ -8,11 +8,13 @@ namespace GStore.Models.ViewModels
 		[Required]
 		[Display(Name = "Email", Description="Enter your Email Address")]
 		public string Email { get; set; }
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class ExternalLoginListViewModel
 	{
 		public string ReturnUrl { get; set; }
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class SendCodeViewModel
@@ -21,6 +23,7 @@ namespace GStore.Models.ViewModels
 		public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
 		public string ReturnUrl { get; set; }
 		public bool RememberMe { get; set; }
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class VerifyCodeViewModel
@@ -37,6 +40,7 @@ namespace GStore.Models.ViewModels
 		public bool RememberBrowser { get; set; }
 
 		public bool RememberMe { get; set; }
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class ForgotViewModel
@@ -44,6 +48,7 @@ namespace GStore.Models.ViewModels
 		[Required]
 		[Display(Name = "Email", Description = "Enter your Email Address")]
 		public string Email { get; set; }
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class LoginViewModel
@@ -60,6 +65,8 @@ namespace GStore.Models.ViewModels
 
 		[Display(Name = "Remember me", Description = "Check this box to remember your login")]
 		public bool RememberMe { get; set; }
+
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class RegisterViewModel
@@ -94,7 +101,7 @@ namespace GStore.Models.ViewModels
 		[DataType(DataType.MultilineText)]
 		public string SignupNotes { get; set; }
 
-
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class ResetPasswordViewModel
@@ -116,6 +123,8 @@ namespace GStore.Models.ViewModels
 		public string ConfirmPassword { get; set; }
 
 		public string Code { get; set; }
+
+		public bool? CheckingOut { get; set; }
 	}
 
 	public class ForgotPasswordViewModel
@@ -124,5 +133,7 @@ namespace GStore.Models.ViewModels
 		[EmailAddress]
 		[Display(Name = "Email", Description="Enter your Email address")]
 		public string Email { get; set; }
+
+		public bool? CheckingOut { get; set; }
 	}
 }

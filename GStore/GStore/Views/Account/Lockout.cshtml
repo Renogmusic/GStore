@@ -1,7 +1,11 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
-
-@{
+﻿@{
 	ViewBag.Title = "Locked Out";
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 
 <hgroup>
@@ -11,5 +15,14 @@
 <p class="text-danger">
 	For security reasons, this account has been locked out for 5 minutes.<br />
 	Please try again later, or
-	@Html.ActionLink("click here to reset your password", "ForgotPassword", "Account")
+	@Html.ActionLink("Click here to reset your password", "ForgotPassword", "Account", routeValues, null)
 </p>
+
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

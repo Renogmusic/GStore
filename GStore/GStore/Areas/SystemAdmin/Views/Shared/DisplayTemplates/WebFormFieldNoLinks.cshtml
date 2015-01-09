@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.WebFormField
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no Web Form Field)
@@ -13,5 +12,6 @@ else
 		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.WebFormFieldId))]
 		@(isActiveDirect ? string.Empty : " [INACTIVE]")
 	</span>
-	@: - @(Html.DisplayFor(m => m.WebForm, "WebFormNoLinks"))
+	<br/>
+	@(Html.DisplayFor(m => m.WebForm, "WebFormNoLinks"))
 }

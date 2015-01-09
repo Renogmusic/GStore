@@ -13,21 +13,25 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 	{
 		public StoreAdminViewModel() { }
 
-		public StoreAdminViewModel(StoreFront currentStoreFront, UserProfile userProfile)
+		public StoreAdminViewModel(StoreFrontConfiguration currentStoreFrontConfig, UserProfile userProfile)
 		{
-			if (currentStoreFront == null)
+			if (currentStoreFrontConfig == null)
 			{
-				throw new ApplicationException("StoreAdminMenuViewModel: currentStoreFront is null, StoreFront must be specified.");
+				throw new ApplicationException("StoreAdminMenuViewModel: currentStoreFrontConfig is null, currentStoreFrontConfig must be specified.");
 			}
 			if (userProfile == null)
 			{
 				throw new ApplicationException("StoreAdminMenuViewModel: userProfile is null, UserProfile must be specified.");
 			}
-			this.StoreFront = currentStoreFront;
+			this.StoreFrontConfig = currentStoreFrontConfig;
+			this.StoreFront = currentStoreFrontConfig.StoreFront;
 			this.UserProfile = userProfile;
-			this.Client = currentStoreFront.Client;
+			this.Client = currentStoreFrontConfig.Client;
 			this.IsSystemAdmin = this.UserProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 		}
+
+		[Display(Name = "Store Front Configuration")]
+		public StoreFrontConfiguration StoreFrontConfig { get; set; }
 
 		[Display(Name = "Store Front")]
 		public StoreFront StoreFront { get; set; }
@@ -37,6 +41,9 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		[Display(Name = "User Profile")]
 		public UserProfile UserProfile { get; set; }
+
+		[Display(Name = "Is Active")]
+		public bool IsActiveDirect { get; set; }
 
 		[Display(Name = "Is System Admin")]
 		public bool IsSystemAdmin { get; set; }

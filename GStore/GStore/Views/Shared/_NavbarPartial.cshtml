@@ -1,12 +1,9 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-@using GStore.Data;
 @{
 	string storeFrontName = "GStore";
 	if (Model.StoreFront != null)
 	{
-		storeFrontName = Model.StoreFront.Name;
+		storeFrontName = Model.StoreFrontConfig.Name;
 	}
 }
 
@@ -28,11 +25,11 @@
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				@Html.Partial("_NavBarCatalogPartial", Model)
-				@Html.Partial("_NavBarMenuPartial", Model)
+				@{Html.RenderPartial("_NavBarCatalogPartial", Model); }
+				@{Html.RenderPartial("_NavBarMenuPartial", Model);}
 				<li>@(Html.ActionLink("About GStore", "About", "GStore"))</li>
 			</ul>
-			@Html.Partial("_LoginPartial")
+			@{Html.RenderPartial("_LoginPartial");}
 		</div>
 	</div>
 </div>

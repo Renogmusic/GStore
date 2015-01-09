@@ -1,4 +1,8 @@
-﻿$(window).resize(function () {
+﻿$(function () {
+	$('[data-toggle="popover"]').popover()
+})
+
+$(window).resize(function () {
 	$('body').css('padding-top', parseInt($('#navbar').css("height")) + 10);
 });
 
@@ -179,7 +183,7 @@ function DateToString(dateTime)
 		curr_min = "0" + curr_min;
 	}
 
-	return dateTime.getMonth() + "/" + dateTime.getDate() + "/" + dateTime.getFullYear()
+	return (dateTime.getMonth() + 1) + "/" + dateTime.getDate() + "/" + dateTime.getFullYear()
 		+ " " + curr_hour + ":" + curr_min + " " + a_p
 
 }

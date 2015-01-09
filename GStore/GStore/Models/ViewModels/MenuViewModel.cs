@@ -10,45 +10,84 @@ namespace GStore.Models.ViewModels
 {
 	public class MenuViewModel
 	{
-		public StoreFront StoreFront { get; set; }
-		public List<TreeNode<ProductCategory>> CategoryTree { get; set; }
-		public List<TreeNode<NavBarItem>> NavBarItemTree { get; set; }
-		public UserProfile UserProfile { get; set; }
-		public bool ShowStoreAdminLink { get; set; }
-		public bool ShowSystemAdminLink { get; set; }
+		public StoreFront StoreFront { get; protected set; }
+		public StoreFrontConfiguration StoreFrontConfig { get; protected set; }
+		public List<TreeNode<ProductCategory>> CategoryTree { get; protected set; }
+		public List<TreeNode<NavBarItem>> NavBarItemTree { get; protected set; }
+		public UserProfile UserProfile { get; protected set; }
+		public bool ShowStoreAdminLink { get; protected set; }
+		public bool ShowSystemAdminLink { get; protected set; }
+		public bool ShowCart { get; protected set; }
+		public Cart Cart { get; protected set; }
 
-		public MenuViewModel(StoreFront storeFront, UserProfile userProfile)
+		/// <summary>
+		/// this constructor will internally call functions to create the navbar tree and category tree for menus
+		/// </summary>
+		/// <param name="storeFrontConfig"></param>
+		/// <param name="userProfile"></param>
+		/// <param name="sessionId"></param>
+		public MenuViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, string sessionId)
 		{
-			this.StoreFront = storeFront;
-			this.UserProfile = userProfile;
-			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
-
 			bool isRegistered = false;
 			if (userProfile != null)
 			{
 				isRegistered = true;
 			}
-			if (storeFront != null)
+
+			this.StoreFront = (storeFrontConfig == null ? null : storeFrontConfig.StoreFront);
+			this.StoreFrontConfig = storeFrontConfig;
+			this.CategoryTree = this.StoreFront.CategoryTreeWhereActive(isRegistered);
+			this.NavBarItemTree = this.StoreFront.NavBarTreeWhereActive(isRegistered);
+			this.UserProfile = userProfile;
+			this.ShowStoreAdminLink = this.StoreFront.ShowStoreAdminLink(userProfile);
+			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
+
+			this.ShowCart = false;
+			if ((storeFrontConfig != null) && (storeFrontConfig.UseShoppingCart))
 			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive(isRegistered);
-				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(isRegistered);
+				this.Cart = this.StoreFront.GetCart(sessionId, userProfile);
+				if (userProfile == null && storeFrontConfig.CartNavShowCartToAnonymous)
+				{
+					this.ShowCart = (storeFrontConfig.CartNavShowCartWhenEmpty || Cart.ItemCount > 0);
+				}
+				else if (userProfile != null && storeFrontConfig.CartNavShowCartToRegistered)
+				{
+					this.ShowCart = (storeFrontConfig.CartNavShowCartWhenEmpty || Cart.ItemCount > 0);
+				}
 			}
-			else
-			{
-				this.CategoryTree = storeFront.CategoryTreeWhereActive(isRegistered);
-				this.NavBarItemTree = storeFront.NavBarTreeWhereActive(isRegistered);
-			}
-			this.ShowStoreAdminLink = storeFront.ShowStoreAdminLink(userProfile);
+
 		}
 
-		public MenuViewModel(StoreFront storeFront, List<TreeNode<ProductCategory>> categoryTree, List<TreeNode<NavBarItem>> navBarItemTree, UserProfile userProfile)
+		/// <summary>
+		/// this constructor will use parameters passed in for navbar tree and category tree for menus
+		/// </summary>
+		/// <param name="storeFrontConfig"></param>
+		/// <param name="categoryTree"></param>
+		/// <param name="navBarItemTree"></param>
+		/// <param name="userProfile"></param>
+		/// <param name="sessionId"></param>
+		public MenuViewModel(StoreFrontConfiguration storeFrontConfig, List<TreeNode<ProductCategory>> categoryTree, List<TreeNode<NavBarItem>> navBarItemTree, UserProfile userProfile, string sessionId)
 		{
-			this.StoreFront = storeFront;
+			this.StoreFront = (storeFrontConfig == null ? null : storeFrontConfig.StoreFront);
 			this.CategoryTree = categoryTree;
 			this.NavBarItemTree = navBarItemTree;
 			this.UserProfile = userProfile;
-			this.ShowStoreAdminLink = storeFront.ShowStoreAdminLink(userProfile);
+			this.ShowStoreAdminLink = this.StoreFront.ShowStoreAdminLink(userProfile);
 			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
+
+			this.ShowCart = false;
+			if ((storeFrontConfig != null) && (storeFrontConfig.UseShoppingCart))
+			{
+				this.Cart = this.StoreFront.GetCart(sessionId, userProfile);
+				if (userProfile == null && storeFrontConfig.CartNavShowCartToAnonymous)
+				{
+					this.ShowCart = (storeFrontConfig.CartNavShowCartWhenEmpty || Cart.ItemCount > 0);
+				}
+				else if (userProfile != null && storeFrontConfig.CartNavShowCartToRegistered)
+				{
+					this.ShowCart = (storeFrontConfig.CartNavShowCartWhenEmpty || Cart.ItemCount > 0);
+				}
+			}
 		}
 	}
 }

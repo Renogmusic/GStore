@@ -1,13 +1,10 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-@using GStore.Data;
 <!-- NavBar Catalog Menu-->
 @{
 	int navBarCatalogMaxLevels = 6;
 	if (Model.StoreFront != null)
 	{
-		navBarCatalogMaxLevels = Model.StoreFront.NavBarCatalogMaxLevels;
+		navBarCatalogMaxLevels = Model.StoreFrontConfig.NavBarCatalogMaxLevels;
 	}
 
 	if (navBarCatalogMaxLevels > 6)

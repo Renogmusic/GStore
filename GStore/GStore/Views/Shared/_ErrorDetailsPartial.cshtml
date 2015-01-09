@@ -1,7 +1,4 @@
 ﻿@model GStore.Exceptions.GStoreErrorInfo
-@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-@using GStore.Data;
 <div class="text-left">
 	<h1>GStore System Admin Error Details</h1>
 	<hr />
@@ -22,7 +19,7 @@
 			do
 			{
 				//run partial for inner exceptions down to the end
-				@Html.Partial("_ExceptionDetails", ex)
+				Html.RenderPartial("_ExceptionDetails", ex);
 				@:<hr /><hr />
 				ex = ex.InnerException;
 			} while (ex != null);

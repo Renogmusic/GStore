@@ -9,8 +9,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 {
 	public class WebFormManagerAdminViewModel : StoreAdminViewModel
 	{
-		public WebFormManagerAdminViewModel(StoreFront storeFront, UserProfile userProfile, IOrderedQueryable<WebForm> webForms)
-			: base(storeFront, userProfile)
+		public WebFormManagerAdminViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, IOrderedQueryable<WebForm> webForms)
+			: base(storeFrontConfig, userProfile)
 		{
 			this.WebForms = webForms;
 		}

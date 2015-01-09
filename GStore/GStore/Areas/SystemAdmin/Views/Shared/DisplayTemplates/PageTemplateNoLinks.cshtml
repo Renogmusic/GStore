@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.PageTemplate
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no page template)
@@ -16,6 +15,7 @@ else
 	<span class="@className" style="white-space:nowrap">
 		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.PageTemplateId)]@(inactiveText)
 	</span>
-	@: &nbsp; - @(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
+	<br />
+	@(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
 }
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("WebFormFieldResponses")]
+	[Table("WebFormFieldResponse")]
 	public class WebFormFieldResponse : BaseClasses.StoreFrontDataValueRecord
 	{
 		[Key]

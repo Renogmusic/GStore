@@ -1,0 +1,14 @@
+﻿@model CheckoutDeliveryMethodShippingViewModel
+<h1>Shipping Method</h1>
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+	@Html.EditorFor(model => model.ShippingDeliveryMethod, "EnumRadio")
+	Html.RenderPartial("_CheckoutWebFormFieldsPartial", new Tuple<CheckoutViewModelBase, WebForm>(Model, Model.Config.CheckoutDeliveryMethodWebForm));
+
+	<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+}

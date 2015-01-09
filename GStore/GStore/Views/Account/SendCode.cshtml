@@ -1,6 +1,12 @@
 ﻿@model GStore.Models.ViewModels.SendCodeViewModel
 @{
 	ViewBag.Title = "Send";
+	bool checkingOut = Model.CheckingOut ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 
 <h2>@ViewBag.Title.</h2>
@@ -9,8 +15,18 @@
 {
 	@Html.AntiForgeryToken()
 	@Html.Hidden("rememberMe", @Model.RememberMe)
+	@Html.HiddenFor(model => model.CheckingOut)
+
 	<h4>Send verification code</h4>
 	<hr />
+	if (checkingOut)
+	{
+		<div class="row">
+			<div class="form-group col-xs-12">
+				@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true }, new { @class = "btn btn-info" })
+			</div>
+		</div>
+	}
 	<div class="row">
 		<div class="col-md-8">
 			Select Two-Factor Authentication Provider:

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using GStore.AppHtmlHelpers;
+using System.Web;
 
 namespace GStore.Data
 {
@@ -27,14 +28,40 @@ namespace GStore.Data
 			return false;
 		}
 
-		public static string ClientVirtualDirectoryToMap(this Client client)
+		public static string ClientVirtualDirectoryToMap(this Client client, string applicationPath)
 		{
-			return "/Content/Clients/" + System.Web.HttpUtility.UrlEncode(client.Folder);
+			if (string.IsNullOrEmpty(applicationPath))
+			{
+				throw new ArgumentNullException("applicationPath");
+			}
+			applicationPath = applicationPath.Trim('/');
+			if (!string.IsNullOrEmpty(applicationPath))
+			{
+				applicationPath += "/";
+			}
+			return "/" + applicationPath + "Content/Clients/" + client.Folder.ToFileName();
 		}
 
-		public static void SetDefaultsForNew(this Client client)
+		public static void SetDefaultsForNew(this Client client, IGstoreDb db)
 		{
-			client.Name = "New Client " + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+			client.Name = "New Client";
+			client.Order = 1000;
+			if (!db.Clients.IsEmpty())
+			{
+				client.Order = db.Clients.All().Max(c => c.ClientId) + 10;
+				if (db.Clients.All().Any(c => c.Name.ToLower() == client.Name.ToLower()))
+				{
+					bool nameIsDirty = true;
+					int counter = 1;
+					do
+					{
+						counter++;
+						client.Name = "New Client " + counter;
+						nameIsDirty = db.Clients.All().Any(c => c.Name.ToLower() == client.Name.ToLower());
+					} while (nameIsDirty);
+				}
+			}
+
 			client.Folder = client.Name;
 			client.IsPending = false;
 			client.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -45,16 +72,30 @@ namespace GStore.Data
 			client.UseTwilioSms = false;
 		}
 
-		public static void SetDefaultsForNew(this PageTemplate pageTemplate, int? clientId)
+		public static void SetDefaultsForNew(this PageTemplate pageTemplate, Client client)
 		{
-			if (clientId.HasValue)
-			{
-				pageTemplate.ClientId = clientId.Value;
-			}
+			pageTemplate.Order = 100;
+
 			pageTemplate.Name = "New Page Template";
-			pageTemplate.Description = string.Empty;
-			pageTemplate.LayoutName = "Bootstrap";
-			pageTemplate.Order = 1000;
+			if (client != null)
+			{
+				pageTemplate.Client = client;
+				pageTemplate.ClientId = client.ClientId;
+				pageTemplate.Order = client.PageTemplates.Count == 0 ? 100 : client.PageTemplates.Max(vl => vl.Order) + 10;
+				if (client.PageTemplates.Any(pt => pt.Name.ToLower() == pageTemplate.Name.ToLower()))
+				{
+					bool nameIsDirty = true;
+					int index = 1;
+					do
+					{
+						index++;
+						pageTemplate.Name = "New Page Template " + index;
+						nameIsDirty = client.PageTemplates.Any(pt => pt.Name.ToLower() == pageTemplate.Name.ToLower());
+					} while (nameIsDirty);
+				}
+			}
+			pageTemplate.Description = pageTemplate.Name;
+			pageTemplate.LayoutName = "Default";
 			pageTemplate.ViewName = string.Empty;
 			pageTemplate.IsPending = false;
 			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -64,24 +105,55 @@ namespace GStore.Data
 		public static void SetDefaultsForNew(this PageTemplateSection pageTemplateSection, PageTemplate pageTemplate)
 		{
 			pageTemplateSection.Name = "New Page Template Section";
-			pageTemplateSection.Order = 1000;
-			pageTemplateSection.PageTemplateId = (pageTemplate == null ? 0 : pageTemplate.PageTemplateId);
-			pageTemplateSection.PageTemplate = pageTemplate;
+			pageTemplateSection.Order = 100;
+			if (pageTemplate != null)
+			{
+				pageTemplateSection.ClientId = pageTemplate.ClientId;
+				pageTemplateSection.Client = pageTemplate.Client;
+				pageTemplateSection.PageTemplateId = pageTemplate.PageTemplateId;
+				pageTemplateSection.PageTemplate = pageTemplate;
+				pageTemplateSection.Order = pageTemplate.Sections.Count == 0 ? 100 : pageTemplate.Sections.Max(vl => vl.Order) + 10;
+				if (pageTemplate.Sections.Any(pts => pts.Name.ToLower() == pageTemplateSection.Name.ToLower()))
+				{
+					bool nameIsDirty = true;
+					int index = 1;
+					do
+					{
+						index++;
+						pageTemplateSection.Name = "New Page Template Section " + index;
+						nameIsDirty = pageTemplate.Sections.Any(pts => pts.Name.ToLower() == pageTemplateSection.Name.ToLower());
+					} while (nameIsDirty);
+				}
+			}
+
+			pageTemplateSection.Description = pageTemplateSection.Name;
 			pageTemplateSection.IsPending = false;
 			pageTemplateSection.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			pageTemplateSection.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-			pageTemplateSection.ClientId = (pageTemplate == null ? 0 : pageTemplate.ClientId);
 		}
 
-		public static void SetDefaultsForNew(this ValueList valueList, int? clientId)
+		public static void SetDefaultsForNew(this ValueList valueList, Client client)
 		{
-			valueList.AllowDelete = true;
-			valueList.AllowEdit = true;
-			valueList.IsMultiSelect = true;
-			if (clientId.HasValue)
+			valueList.Name = "New Value List";
+			if (client != null)
 			{
-				valueList.ClientId = clientId.Value;
+				valueList.ClientId = client.ClientId;
+				valueList.Client = client;
+				valueList.Order = valueList.Client.ValueLists.Count == 0 ? 100 : valueList.Client.ValueLists.Max(vl => vl.Order) + 10;
+				if (client.ValueLists.Any(vl => vl.Name.ToLower() == valueList.Name.ToLower()))
+				{
+					bool nameIsDirty = true;
+					int index = 1;
+					do
+					{
+						index ++;
+						valueList.Name = "New Value List " + index;
+						nameIsDirty = client.ValueLists.Any(vl => vl.Name.ToLower() == valueList.Name.ToLower());
+					} while (nameIsDirty);
+				}
 			}
+
+			valueList.Description = valueList.Name;
 			valueList.IsPending = false;
 			valueList.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			valueList.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -89,24 +161,62 @@ namespace GStore.Data
 
 		public static void SetDefaultsForNew(this ValueListItem valueListItem, ValueList valueList)
 		{
+			valueListItem.Name = "New Value";
+			valueListItem.Order = 100;
 			if (valueList != null)
 			{
 				valueListItem.ValueList = valueList;
 				valueListItem.ValueListId = valueList.ValueListId;
 				valueListItem.ClientId = valueList.ClientId;
+				valueListItem.Client = valueList.Client;
+				valueListItem.Order = (valueList.ValueListItems.Count == 0) ? 100 : valueList.ValueListItems.Max(vl => vl.Order) + 10;
+				if (valueList.ValueListItems.Any(vl => vl.Name.ToLower() == valueListItem.Name.ToLower()))
+				{
+					int index = 1;
+					do
+					{
+						index++;
+						valueListItem.Name = "New Value " + index;
+
+					} while (valueList.ValueListItems.Any(vl => vl.Name.ToLower() == valueListItem.Name.ToLower()));
+				}
 			}
 
+			valueListItem.Description = valueListItem.Name;
 			valueListItem.IsPending = false;
 			valueListItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			valueListItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
-		public static void SetDefaultsForNew(this WebForm webForm, int? clientId)
+		public static void SetDefaultsForNew(this WebForm webForm, Client client)
 		{
-			if (clientId.HasValue)
+
+			webForm.Order = 100;
+			if (client != null)
 			{
-				webForm.ClientId = clientId.Value;
+				webForm.Client = client;
+				webForm.ClientId = client.ClientId;
+				webForm.Order = client.WebForms.Count == 0 ? 100 : client.WebForms.Max(wf => wf.Order) + 10;
+				webForm.Name = "New Web Form";
+				if (client.WebForms.Any(wf => wf.Name.ToLower() == webForm.Name.ToLower()))
+				{
+					bool nameIsDirty = true;
+					int index = 1;
+					do
+					{
+						index++;
+						webForm.Name = "New Web Form " + index;
+						webForm.Description = "New Web Form " + index;
+						nameIsDirty = client.WebForms.Any(wf => wf.Name.ToLower() == webForm.Name.ToLower());
+					} while (nameIsDirty);
+
+				}
 			}
+			else
+			{
+				webForm.Name = "New Web Form";
+			}
+
 			webForm.DisplayTemplateName = "WebForm";
 			webForm.LabelMdColSpan = 2;
 			webForm.FieldMdColSpan = 10;
@@ -116,6 +226,7 @@ namespace GStore.Data
 			webForm.IsPending = false;
 			webForm.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			webForm.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			webForm.Description = webForm.Name;
 		}
 
 		public static void SetDefaultsForNew(this WebFormField webFormField, WebForm webForm)
@@ -125,6 +236,19 @@ namespace GStore.Data
 				webFormField.WebForm = webForm;
 				webFormField.WebFormId = webForm.WebFormId;
 				webFormField.ClientId = webForm.ClientId;
+				webForm.Order = webForm.WebFormFields.Count == 0 ? 100 : webForm.WebFormFields.Max(wf => wf.Order) + 10;
+				webFormField.Name = "New Field";
+				bool nameIsDirty = webForm.WebFormFields.Any(wf => wf.Name.ToLower() == webFormField.Name.ToLower());
+				int counter = 1;
+				do
+				{
+					counter++;
+					webFormField.Name = "New Field " + counter;
+					nameIsDirty = webForm.WebFormFields.Any(wf => wf.Name.ToLower() == webFormField.Name.ToLower());
+				} while (nameIsDirty);
+
+				webFormField.LabelText = webFormField.Name;
+				webFormField.Description = webFormField.Name;
 			}
 			webFormField.DataType = GStoreValueDataType.SingleLineText;
 			webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
@@ -133,34 +257,83 @@ namespace GStore.Data
 			webFormField.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
-		public static void SetDefaultsForNew(this Theme theme, int? clientId)
+		public static void SetDefaultsForNew(this Theme theme, Client client)
 		{
-			if (clientId.HasValue)
+			if (client != null)
 			{
-				theme.ClientId = clientId.Value;
+				theme.Client = client;
+				theme.ClientId = client.ClientId;
+				theme.Order = client.Themes.Count == 0 ? 100 : client.Themes.Max(wf => wf.Order) + 10;
+				theme.Name = "New Theme";
+				bool nameIsDirty = client.Themes.Any(t => t.Name.ToLower() == theme.Name.ToLower());
+				if (nameIsDirty)
+				{
+					int index = 1;
+					do
+					{
+						index++;
+						theme.Name = "New Theme " + index;
+						nameIsDirty = client.Themes.Any(t => t.Name.ToLower() == theme.Name.ToLower());
+					} while (nameIsDirty);
+				}
 			}
-			theme.Name = "New Theme " + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
-			theme.Order = 1000;
+			else
+			{
+				theme.Name = "New Theme";
+				theme.Order = 100;
+			}
+			theme.Description = theme.Name;
 			theme.IsPending = false;
 			theme.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			theme.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 		}
 
-		public static void SetDefaultsForNew(this Page page, StoreFront storeFront)
+		public static void SetDefaultsForNew(this Page page, StoreFrontConfiguration storeFrontConfig)
 		{
-			if (storeFront == null)
+			if (storeFrontConfig == null)
 			{
-				throw new ArgumentNullException("storeFront");
+				throw new ArgumentNullException("storeFrontConfig");
 			}
+			StoreFront storeFront = storeFrontConfig.StoreFront;
+
+			string pageName = "New Page";
+			string url = "/NewUrl";
+			int order = 1000;
+
+			if (storeFront.Pages != null && storeFront.Pages.Count != 0)
+			{
+				order = storeFront.Pages.Max(pg => pg.Order) + 10;
+
+				if (storeFront.Pages.Any(pg => pg.Name.ToLower() == pageName.ToLower()))
+				{
+					int index = 1;
+					do
+					{
+						index++;
+						pageName = "New Page " + index;
+					} while (storeFront.Pages.Any(pg => pg.Name.ToLower() == pageName.ToLower()));
+				}
+
+				if (storeFront.Pages.Any(pg => pg.Url.ToLower() == url.ToLower()))
+				{
+					int index = 1;
+					do
+					{
+						index++;
+						url = "/NewUrl" + index;
+					} while (storeFront.Pages.Any(pg => pg.Url.ToLower() == url.ToLower()));
+				}
+			}
+
 			page.ClientId = storeFront.ClientId;
 			page.Client = storeFront.Client;
 			page.StoreFrontId = storeFront.StoreFrontId;
 			page.StoreFront = storeFront;
-			page.ThemeId = storeFront.DefaultNewPageThemeId;
-			page.Url = "/NewUrl";
-			page.PageTitle = "New Page";
-			page.Name = "New Page";
-			page.Order = 9000;
+			page.ThemeId = storeFrontConfig.DefaultNewPageThemeId;
+			page.PageTitle = pageName;
+			page.Name = pageName;
+			page.Url = url;
+			page.Order = order;
 			page.IsPending = false;
 			page.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			page.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -274,6 +447,43 @@ namespace GStore.Data
 			List<SelectListItem> items = new List<SelectListItem>();
 			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedValueListId.HasValue) });
 			items.AddRange(valueLists.ToSelectList(selectedValueListId));
+
+			return items;
+		}
+
+		/// <summary>
+		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem
+		/// returns active records only
+		/// </summary>
+		/// <param name="pageTemplates"></param>
+		/// <param name="selectedPageTemplateId"></param>
+		/// <returns></returns>
+		public static List<SelectListItem> ToSelectList(this ValueList valueList, int? selectedValueListItemId)
+		{
+			if (!valueList.IsActiveBubble())
+			{
+				return new List<SelectListItem>();
+			}
+
+			IOrderedQueryable<ValueListItem> orderedListItems = valueList.ValueListItems.AsQueryable().WhereIsActive().ApplyDefaultSort();
+
+			int valueListItemId = selectedValueListItemId ?? 0;
+
+			List<SelectListItem> items = orderedListItems.Select(vl => new SelectListItem
+			{
+				Value = vl.ValueListItemId.ToString(),
+				Text = (vl.ValueListItemId == valueListItemId ? "[SELECTED] " : string.Empty) + vl.Name,
+				Selected = vl.ValueListItemId == valueListItemId
+			}).ToList();
+
+			return items;
+		}
+
+		public static List<SelectListItem> ToSelectListWithNull(this ValueList valueList, int? selectedValueListItemId, string nullString = "(select a value)")
+		{
+			List<SelectListItem> items = new List<SelectListItem>();
+			items.Add(new SelectListItem() { Value = "", Text = nullString, Selected = (!selectedValueListItemId.HasValue) });
+			items.AddRange(valueList.ToSelectList(selectedValueListItemId));
 
 			return items;
 		}

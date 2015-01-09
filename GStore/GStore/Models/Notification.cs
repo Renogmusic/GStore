@@ -5,7 +5,7 @@ using System.Web.Mvc;
 
 namespace GStore.Models
 {
-	[Table("Notifications")]
+	[Table("Notification")]
 	public class Notification : BaseClasses.StoreFrontRecord
 	{
 		[Key]
@@ -33,9 +33,9 @@ namespace GStore.Models
 		[Required]
 		public string Importance { get; set;}
 
-		[DataType(DataType.MultilineText)]
 		[AllowHtml]
 		[Required]
+		[DataType(DataType.Html)]
 		public string Message { get; set; }
 
 		[Display(Name = "Read")]

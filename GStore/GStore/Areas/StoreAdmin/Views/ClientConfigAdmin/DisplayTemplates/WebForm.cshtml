@@ -1,0 +1,9 @@
+﻿@model GStore.Models.WebForm
+@if (Model == null)
+{
+	@:(no custom fields selected)
+}
+else
+{
+	@:@(Model.Name) [@(Model.WebFormId)] (@(Model.WebFormFields.Count) field@(Model.WebFormFields.Count == 1 ? "" : "s"))
+}

@@ -1,6 +1,4 @@
 ﻿@model GStore.Models.PageTemplate
-@using GStore.AppHtmlHelpers
-@using GStore.Data
 
 <style>
 	table th {
@@ -90,7 +88,9 @@ else
 
 				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("SectionDetails", new { @id = item.PageTemplateSectionId }))');">
 					<td>
-						@Html.ActionLink("Details", "SectionDetails", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-success" })
+						@Html.ActionLink("Details", "SectionDetails", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "SectionEdit", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "SectionDelete", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => item.PageTemplateSectionId)
@@ -135,10 +135,9 @@ else
 						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
 					</td>
 					<td>
-						<span style="white-space: nowrap">
-							@Html.ActionLink("Edit", "SectionEdit", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-warning" })
-							@Html.ActionLink("Delete", "SectionDelete", new { id = item.PageTemplateSectionId }, new { @class = "btn-sm btn-danger" })
-						</span>
+						@Html.ActionLink("Details", "SectionDetails", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "SectionEdit", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "SectionDelete", new { id = item.PageTemplateSectionId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 				</tr>
 		}

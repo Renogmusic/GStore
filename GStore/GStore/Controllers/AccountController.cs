@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using GStore.AppHtmlHelpers;
 using GStore.Models;
 using GStore.Data;
+using GStore.Identity;
 using GStore.Models.ViewModels;
 
 namespace GStore.Controllers
@@ -29,7 +30,8 @@ namespace GStore.Controllers
 			_useInactiveStoreFrontAsActive = false;
 		}
 
-		public AccountController(GStore.Data.IGstoreDb dbContext) : base(dbContext)
+		public AccountController(GStore.Data.IGstoreDb dbContext)
+			: base(dbContext)
 		{
 			_throwErrorIfStoreFrontNotFound = false;
 			_throwErrorIfUserProfileNotFound = false;
@@ -52,7 +54,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.AccountLayoutName;
+				return CurrentStoreFrontConfigOrThrow.AccountLayoutName;
 			}
 		}
 
@@ -60,7 +62,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.AccountTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.AccountTheme.FolderName;
 			}
 		}
 
@@ -79,27 +81,16 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/Login
 		[AllowAnonymous]
-		public ActionResult Login(string returnUrl)
+		public ActionResult Login(string returnUrl, bool? checkingOut)
 		{
-			if (CurrentStoreFrontOrThrow == null)
+			if (CurrentStoreFrontOrNull == null)
 			{
-				//client is inactive or not found
 				System.Diagnostics.Debug.WriteLine("No active storefront");
 			}
 
+			LoginViewModel viewModel = new LoginViewModel() { CheckingOut = checkingOut };
 			ViewBag.ReturnUrl = returnUrl;
-			return View("Login");
-		}
-
-		private ApplicationSignInManager _signInManager;
-
-		public ApplicationSignInManager SignInManager
-		{
-			get
-			{
-				return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-			}
-			private set { _signInManager = value; }
+			return View("Login", viewModel);
 		}
 
 		//
@@ -121,12 +112,22 @@ namespace GStore.Controllers
 				case SignInStatus.Success:
 					Identity.AspNetIdentityUser user = SignInManager.UserManager.Users.Single(u => u.UserName.ToLower() == model.Email.ToLower());
 					string userId = user.Id;
-
 					UserProfile profile = GStoreDb.GetUserProfileByEmail(user.Email);
+					if (!PostLoginAuthCheck(profile))
+					{
+						return RedirectToAction("Login", new { CheckingOut = model.CheckingOut });
+					}
+
 					profile.LastLogonDateTimeUtc = DateTime.UtcNow;
 					GStoreDb.SaveChangesDirect();
 					GStoreDb.LogSecurityEvent_LoginSuccess(this.HttpContext, this.RouteData, profile, this);
 
+					StoreFront storeFront = CurrentStoreFrontOrNull;
+					if (storeFront != null)
+					{
+						Cart cart = storeFront.GetCart(Session.SessionID, null);
+						cart = storeFront.MigrateCartToProfile(GStoreDb, cart, profile, this);
+					}
 					if (profile.NotifyAllWhenLoggedOn)
 					{
 						string title = user.UserName;
@@ -142,7 +143,10 @@ namespace GStore.Controllers
 						hubCtx.Clients.All.addNewMessageToPage(title, message);
 					}
 
-
+					if (model.CheckingOut ?? false)
+					{
+						return RedirectToAction("Index", "Checkout", new { ContinueAsLogin = true });
+					}
 					return RedirectToLocal(returnUrl);
 
 				case SignInStatus.LockedOut:
@@ -151,11 +155,13 @@ namespace GStore.Controllers
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
 					string forgotPasswordUrl = Request.Url.Host + (Request.Url.IsDefaultPort ? string.Empty : ":" + Request.Url.Port) + Url.Action("ForgotPassword", "Account");
 					CurrentStoreFrontOrThrow.HandleLockedOutNotification(GStoreDb, Request, profileLockout, notificationBaseUrl, forgotPasswordUrl);
+					ViewBag.CheckingOut = model.CheckingOut;
 					return View("Lockout");
 				case SignInStatus.RequiresVerification:
+					//allow pass-through even if storefront config is inactive because user may be an admin
 					UserProfile profileVerify = GStoreDb.GetUserProfileByEmail(model.Email);
 					GStoreDb.LogSecurityEvent_LoginNeedsVerification(this.HttpContext, RouteData, model.Email, profileVerify, this);
-					return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+					return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe, CheckingOut = model.CheckingOut });
 				case SignInStatus.Failure:
 				default:
 					UserProfile userProfileFailure = GStoreDb.GetUserProfileByEmail(model.Email, false);
@@ -178,14 +184,20 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/Register
 		[AllowAnonymous]
-		public ActionResult Register()
+		public ActionResult Register(bool? CheckingOut)
 		{
-			return View();
+			if (CurrentStoreFrontOrNull == null)
+			{
+				AddUserMessage("Store is Inactive.", "Sorry, this store is inactive. You cannot register until it is activated.", UserMessageType.Danger);
+			}
+			RegisterViewModel viewModel = new RegisterViewModel() { CheckingOut = CheckingOut };
+			return View(viewModel);
 		}
 
 		[AllowAnonymous]
-		public ActionResult Unauthorized()
+		public ActionResult Unauthorized(bool? checkingOut)
 		{
+			ViewBag.CheckingOut = checkingOut;
 			return View("Unauthorized");
 		}
 
@@ -197,9 +209,10 @@ namespace GStore.Controllers
 		public async Task<ActionResult> Register(RegisterViewModel model)
 		{
 			StoreFront storeFront = CurrentStoreFrontOrNull;
-			if ((storeFront != null) && (storeFront.RegisterWebForm != null) && storeFront.RegisterWebForm.IsActiveBubble())
+			StoreFrontConfiguration storeFrontConfig = CurrentStoreFrontConfigOrNull;
+			if ((storeFront != null) && (storeFrontConfig != null) && (storeFrontConfig.RegisterWebForm != null) && storeFrontConfig.RegisterWebForm.IsActiveBubble())
 			{
-				FormProcessorExtensions.ValidateFields(this.ModelState, storeFront.RegisterWebForm, Request);
+				FormProcessorExtensions.ValidateFields(this.ModelState, storeFrontConfig.RegisterWebForm, Request);
 			}
 
 			if (ModelState.IsValid)
@@ -211,7 +224,7 @@ namespace GStore.Controllers
 				{
 					result = await UserManager.CreateAsync(user, model.Password);
 				}
-				catch(System.Data.Entity.Validation.DbEntityValidationException exDbEx)
+				catch (System.Data.Entity.Validation.DbEntityValidationException exDbEx)
 				{
 					foreach (System.Data.Entity.Validation.DbEntityValidationResult valResult in exDbEx.EntityValidationErrors)
 					{
@@ -247,28 +260,39 @@ namespace GStore.Controllers
 					newProfile.SignupNotes = model.SignupNotes;
 					newProfile.NotifyAllWhenLoggedOn = true;
 					newProfile.IsPending = false;
-					newProfile.Order = 1000;
+					newProfile.Order = CurrentStoreFrontOrThrow.UserProfiles.Max(up => up.Order) + 10;
+					newProfile.EntryDateTime = Session.EntryDateTime().Value;
+					newProfile.EntryRawUrl = Session.EntryRawUrl();
+					newProfile.EntryReferrer = Session.EntryReferrer();
+					newProfile.EntryUrl = Session.EntryUrl();
 					newProfile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 					newProfile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 					newProfile.StoreFrontId = CurrentStoreFrontOrThrow.StoreFrontId;
+					newProfile.StoreFront = CurrentStoreFrontOrThrow;
 					newProfile.ClientId = this.CurrentClientOrThrow.ClientId;
-					ctx.UserProfiles.Add(newProfile);
+					newProfile.Client = this.CurrentClientOrThrow;
+					newProfile = ctx.UserProfiles.Add(newProfile);
 					ctx.SaveChanges();
 
 					ctx.UserName = user.UserName;
 					ctx.CachedUserProfile = null;
 
-					if (CurrentStoreFrontOrThrow.RegisterWebForm != null)
+					string customFields = string.Empty;
+					if (storeFrontConfig != null && storeFrontConfig.RegisterWebForm != null && storeFrontConfig.RegisterWebForm.IsActiveBubble())
 					{
-						if (CurrentStoreFrontOrThrow.RegisterWebForm.IsActiveBubble())
-						{
-							FormProcessorExtensions.ProcessWebForm(GStoreDb, this.ModelState, CurrentStoreFrontOrThrow.RegisterWebForm, null, CurrentUserProfileOrThrow, Request, true);
-						}
+						FormProcessorExtensions.ProcessWebForm(GStoreDb, this.ModelState, storeFrontConfig.RegisterWebForm, null, CurrentUserProfileOrThrow, Request, true);
+						customFields = FormProcessorExtensions.BodyTextCustomFieldsOnly(storeFrontConfig.RegisterWebForm, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, Request);
 					}
 
 					ctx.LogSecurityEvent_NewRegister(this.HttpContext, RouteData, newProfile, this);
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
-					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl, true, true);
+					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl, true, true, customFields);
+
+					if (storeFront != null)
+					{
+						Cart cart = storeFront.GetCart(Session.SessionID, null);
+						cart = storeFront.MigrateCartToProfile(GStoreDb, cart, newProfile, this);
+					}
 
 					if (Properties.Settings.Current.IdentityEnableNewUserRegisteredBroadcast && CurrentClientOrThrow.EnableNewUserRegisteredBroadcast)
 					{
@@ -278,9 +302,14 @@ namespace GStore.Controllers
 						hubCtx.Clients.All.addNewMessageToPage(title, message);
 					}
 
-					if (storeFront.RegisterSuccess_PageId.HasValue)
+					if (model.CheckingOut ?? false)
 					{
-						return Redirect(storeFront.RegisterSuccessPage.UrlResolved(this.Url));
+						return RedirectToAction("LoginOrGuest", "Checkout", new { ContinueAsLogin = true });
+					}
+
+					if (storeFrontConfig != null && storeFrontConfig.RegisterSuccess_PageId.HasValue)
+					{
+						return Redirect(storeFrontConfig.RegisterSuccessPage.UrlResolved(this.Url));
 					}
 					return View("RegisterSuccess", newProfile);
 				}
@@ -299,6 +328,7 @@ namespace GStore.Controllers
 		{
 			if (User.Identity.IsAuthenticated)
 			{
+
 				UserProfile profile = GStoreDb.GetCurrentUserProfile(false, true);
 				if (profile == null || profile.NotifyAllWhenLoggedOn)
 				{
@@ -321,7 +351,7 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/VerifyCode
 		[AllowAnonymous]
-		public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
+		public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe, bool? checkingOut)
 		{
 			// Require that the user has already logged in via username/password or external login
 			if (!await SignInManager.HasBeenVerifiedAsync())
@@ -333,7 +363,7 @@ namespace GStore.Controllers
 			{
 				var code = await UserManager.GenerateTwoFactorTokenAsync(user.Id, provider);
 			}
-			return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
+			return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe, CheckingOut = checkingOut });
 		}
 
 		//
@@ -356,10 +386,45 @@ namespace GStore.Controllers
 			switch (result)
 			{
 				case SignInStatus.Success:
-					GStoreDb.LogSecurityEvent_VerificationCodeSuccess(HttpContext, RouteData, model.Code, model.Provider, model.ReturnUrl, null, this);
+					UserProfile profile = CurrentUserProfileOrThrow;
+					if (!PostLoginAuthCheck(profile))
+					{
+						return RedirectToAction("Login", new { CheckingOut = model.CheckingOut });
+					}
+
+					profile.LastLogonDateTimeUtc = DateTime.UtcNow;
+					GStoreDb.SaveChangesDirect();
+					GStoreDb.LogSecurityEvent_VerificationCodeSuccess(HttpContext, RouteData, model.Code, model.Provider, model.ReturnUrl, profile, this);
+
+					StoreFront storeFront = CurrentStoreFrontOrNull;
+					if (storeFront != null)
+					{
+						Cart cart = storeFront.GetCart(Session.SessionID, null);
+						cart = storeFront.MigrateCartToProfile(GStoreDb, cart, profile, this);
+					}
+					if (profile.NotifyAllWhenLoggedOn)
+					{
+						string title = User.Identity.Name;
+						if (profile != null)
+						{
+							title = profile.FullName;
+
+						}
+						string message = "Logged on";
+
+
+						Microsoft.AspNet.SignalR.IHubContext hubCtx = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<GStore.Hubs.NotifyHub>();
+						hubCtx.Clients.All.addNewMessageToPage(title, message);
+					}
+
+					if (model.CheckingOut.HasValue && model.CheckingOut.Value)
+					{
+						return RedirectToAction("Index", "Cart");
+					}
 					return RedirectToLocal(model.ReturnUrl);
 				case SignInStatus.LockedOut:
 					GStoreDb.LogSecurityEvent_VerificationCodeFailedLockedOut(HttpContext, RouteData, model.Code, model.Provider, model.ReturnUrl, null, this);
+					ViewBag.CheckingOut = model.CheckingOut;
 					return View("Lockout");
 				case SignInStatus.Failure:
 				default:
@@ -371,7 +436,7 @@ namespace GStore.Controllers
 
 		// GET: /Account/ConfirmEmail
 		[AllowAnonymous]
-		public async Task<ActionResult> ConfirmEmail(string userId, string code)
+		public async Task<ActionResult> ConfirmEmail(string userId, string code, bool? CheckingOut)
 		{
 			if (userId == null || code == null)
 			{
@@ -394,6 +459,7 @@ namespace GStore.Controllers
 			{
 				UserProfile profile = GStoreDb.GetUserProfileByAspNetUserId(userId);
 				GStoreDb.LogSecurityEvent_EmailConfirmed(HttpContext, RouteData, profile, this);
+				ViewBag.CheckingOut = CheckingOut;
 				return View();
 			}
 
@@ -409,9 +475,10 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/ForgotPassword
 		[AllowAnonymous]
-		public ActionResult ForgotPassword()
+		public ActionResult ForgotPassword(bool? checkingOut)
 		{
-			return View();
+			ForgotPasswordViewModel viewModel = new ForgotPasswordViewModel() { CheckingOut = checkingOut };
+			return View(viewModel);
 		}
 
 		//
@@ -424,7 +491,6 @@ namespace GStore.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = await UserManager.FindByNameAsync(model.Email);
-				//if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
 				if (user == null)
 				{
 					//todo: user not found; email the person to get them to sign up, or do nothing?
@@ -432,7 +498,13 @@ namespace GStore.Controllers
 					return View("ForgotPasswordNoUser", model);
 				}
 
-				UserProfile profile = GStoreDb.GetUserProfileByEmail(model.Email);
+				UserProfile profile = GStoreDb.GetUserProfileByEmail(model.Email, false);
+				if (profile == null)
+				{
+					GStoreDb.LogSecurityEvent_ForgotPasswordProfileNotFound(HttpContext, RouteData, model.Email, this);
+					return View("ForgotPasswordNoUser", model);
+				}
+
 				GStoreDb.LogSecurityEvent_ForgotPasswordSuccess(HttpContext, RouteData, model.Email, profile, this);
 
 				// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -445,7 +517,7 @@ namespace GStore.Controllers
 				string messageHtml = Data.StoreFrontExtensions.ForgotPasswordMessageHtml(storeFront, callbackUrl, Request.Url);
 
 				await UserManager.SendEmailAsync(user.Id, subject, messageHtml);
-				return RedirectToAction("ForgotPasswordConfirmation", "Account");
+				return RedirectToAction("ForgotPasswordConfirmation", "Account", new { CheckingOut = model.CheckingOut });
 
 			}
 
@@ -456,21 +528,23 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/ForgotPasswordConfirmation
 		[AllowAnonymous]
-		public ActionResult ForgotPasswordConfirmation()
+		public ActionResult ForgotPasswordConfirmation(bool? checkingOut)
 		{
+			ViewBag.CheckingOut = checkingOut;
 			return View();
 		}
 
 		//
 		// GET: /Account/ResetPassword
 		[AllowAnonymous]
-		public ActionResult ResetPassword(string code)
+		public ActionResult ResetPassword(string code, bool? checkingOut)
 		{
 			if (code == null)
 			{
 				return HttpBadRequest("ResetPassword code = null");
 			}
-			return View();
+			ResetPasswordViewModel viewModel = new ResetPasswordViewModel() { CheckingOut = checkingOut };
+			return View(viewModel);
 		}
 
 		//
@@ -488,9 +562,9 @@ namespace GStore.Controllers
 			if (user == null)
 			{
 				GStoreDb.LogSecurityEvent_PasswordResetFailedUnknownUser(HttpContext, RouteData, model.Email, this);
-				
+
 				// Don't reveal that the user does not exist
-				return RedirectToAction("ResetPasswordConfirmation", "Account");
+				return RedirectToAction("ResetPasswordConfirmation", "Account", new { CheckingOut = model.CheckingOut});
 			}
 			var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
 			if (result.Succeeded)
@@ -498,21 +572,24 @@ namespace GStore.Controllers
 				UserProfile profile = GStoreDb.GetUserProfileByEmail(model.Email, false);
 				GStoreDb.LogSecurityEvent_PasswordResetSuccess(HttpContext, RouteData, model.Email, profile, this);
 
-				return RedirectToAction("ResetPasswordConfirmation", "Account");
+				return RedirectToAction("ResetPasswordConfirmation", "Account", new { CheckingOut = model.CheckingOut });
 			}
 
 			UserProfile profileFailed = GStoreDb.GetUserProfileByEmail(model.Email, false);
 			GStoreDb.LogSecurityEvent_PasswordResetFailed(HttpContext, RouteData, model.Email, result.Errors, profileFailed, this);
 
 			AddErrors(result);
-			return View();
+
+			ResetPasswordViewModel viewModel = new ResetPasswordViewModel() { CheckingOut = model.CheckingOut };
+			return View(viewModel);
 		}
 
 		//
 		// GET: /Account/ResetPasswordConfirmation
 		[AllowAnonymous]
-		public ActionResult ResetPasswordConfirmation()
+		public ActionResult ResetPasswordConfirmation(bool? checkingOut)
 		{
+			ViewBag.CheckingOut = checkingOut;
 			return View();
 		}
 
@@ -530,16 +607,17 @@ namespace GStore.Controllers
 		//
 		// GET: /Account/SendCode
 		[AllowAnonymous]
-		public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
+		public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe, bool? checkingOut)
 		{
 			var userId = await SignInManager.GetVerifiedUserIdAsync();
 			if (userId == null)
 			{
 				return HttpBadRequest("SendCode SignInManager.GetVerifiedUserIdAsync failed");
 			}
+			ViewBag.CheckingOut = checkingOut;
 			var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
 			var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-			return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
+			return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe, CheckingOut = checkingOut });
 		}
 
 		//
@@ -551,7 +629,8 @@ namespace GStore.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return View();
+				SendCodeViewModel viewModel = new SendCodeViewModel() { CheckingOut = model.CheckingOut };
+				return View(viewModel);
 			}
 
 			// Generate the token and send it
@@ -561,8 +640,8 @@ namespace GStore.Controllers
 			}
 
 			GStoreDb.LogSecurityEvent_VerificationCodeSent(HttpContext, RouteData, model.ReturnUrl, model.SelectedProvider, null, this);
-			
-			return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+
+			return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe, CheckingOut = model.CheckingOut });
 		}
 
 		//
@@ -641,7 +720,111 @@ namespace GStore.Controllers
 			return View();
 		}
 
+		/// <summary>
+		/// Checks if user is allowed to log in. Mostly for inactive storefront bounce after login
+		/// </summary>
+		/// <param name="profile"></param>
+		/// <returns></returns>
+		protected bool PostLoginAuthCheck(UserProfile profile)
+		{
+			if (profile == null)
+			{
+				throw new ArgumentNullException("profile");
+			}
+
+			if (profile.AspNetIdentityUserIsInRoleSystemAdmin())
+			{
+				return true;
+			}
+
+			StoreFront currentStoreFront = CurrentStoreFrontOrNull;
+			if (currentStoreFront != null)
+			{
+				return true;
+			}
+
+			//storefront is null. Inactive StoreFront record (nobody but sys admin can log in) or Config inactive (only storeadmins can log in)
+			StoreFront testSF = null;
+			try
+			{
+				testSF = GStoreDb.GetCurrentStoreFront(Request, false, true, true);
+			}
+			catch (Exception)
+			{
+			}
+
+			if (testSF == null)
+			{
+				//store front not found (no matching bindings or other reason)
+				AuthenticationManager.SignOut();
+				GStoreDb.LogSecurityEvent_LoginFailedNoStoreFront(this.HttpContext, this.RouteData, profile, this);
+				AddUserMessage("Login Error", "This Store Front is not activated. Login is limited to System Admins only.", UserMessageType.Danger);
+				return false;
+			}
+
+			int storeFrontId = testSF.StoreFrontId;
+
+
+			if (!testSF.IsActiveBubble())
+			{
+				//store front inactive (no matching bindings or other reason)
+				AuthenticationManager.SignOut();
+				string inactiveStoreFrontName = testSF.CurrentConfigOrAny() == null ? "(unknown)" : testSF.CurrentConfigOrAny().Name;
+				GStoreDb.LogSecurityEvent_LoginFailedStoreFrontInactive(this.HttpContext, this.RouteData, inactiveStoreFrontName, storeFrontId, profile, this);
+				AddUserMessage("Login Error", "This Store Front is inactive. Login is limited to System Admins only.", UserMessageType.Danger);
+				return false;
+			}
+
+			StoreFrontConfiguration testConfig = testSF.CurrentConfigOrAny();
+
+			if (testConfig == null)
+			{
+				//no config found; only users with store admin access can log in
+				if (testSF.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
+				{
+					return true;
+				}
+				AuthenticationManager.SignOut();
+				GStoreDb.LogSecurityEvent_LoginFailedNoStoreFrontConfig(this.HttpContext, this.RouteData, storeFrontId, profile, this);
+				AddUserMessage("Login Error", "This Store Front Configuration is not activated. Login is limited to Site Administrators only.", UserMessageType.Danger);
+				return false;
+			}
+
+			if (!testConfig.IsActiveBubble())
+			{
+				//all configs are inactive
+				//no config found; only users with store admin access can log in
+				if (testSF.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
+				{
+					return true;
+				}
+				AuthenticationManager.SignOut();
+
+				string storeFrontName = testConfig.Name;
+				string configName = testConfig.ConfigurationName;
+				int configurationId = testConfig.StoreFrontConfigurationId;
+
+				GStoreDb.LogSecurityEvent_LoginFailedStoreFrontConfigInactive(this.HttpContext, this.RouteData, storeFrontName, storeFrontId, configName, configurationId, profile, this);
+				AddUserMessage("Login Error", "This Store Front Configuration is inactive. Login is limited to Site Administrators only.", UserMessageType.Danger);
+				return false;
+			}
+
+			return true;
+
+		}
+
 		#region Helpers
+		private ApplicationSignInManager _signInManager;
+
+		public ApplicationSignInManager SignInManager
+		{
+			get
+			{
+				return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+			}
+			private set { _signInManager = value; }
+		}
+
 		// Used for XSRF protection when adding external logins
 		private const string XsrfKey = "XsrfId";
 
@@ -665,7 +848,7 @@ namespace GStore.Controllers
 			string subject = Data.StoreFrontExtensions.EmailConfirmationCodeSubject(storeFront, callbackUrl, Request.Url);
 			string messageHtml = Data.StoreFrontExtensions.EmailConfirmationCodeMessageHtml(storeFront, callbackUrl, Request.Url);
 
-			await UserManager.SendEmailAsync(userId, "Confirm your account for " + CurrentStoreFrontOrThrow.Name, messageHtml);
+			await UserManager.SendEmailAsync(userId, "Confirm your account for " + CurrentStoreFrontConfigOrThrow.Name, messageHtml);
 		}
 
 
@@ -677,13 +860,29 @@ namespace GStore.Controllers
 			}
 		}
 
+		/// <summary>
+		/// redirects to a local url, adds "Login=true" to the url in case the returning page needs to handle referrer issues
+		/// </summary>
+		/// <param name="returnUrl"></param>
+		/// <returns></returns>
 		private ActionResult RedirectToLocal(string returnUrl)
 		{
-			if (Url.IsLocalUrl(returnUrl))
+			if (!string.IsNullOrEmpty(returnUrl))
 			{
-				return Redirect(returnUrl);
+				if (Url.IsLocalUrl(returnUrl))
+				{
+					if (returnUrl.Contains('?'))
+					{
+						returnUrl += "&status=login";
+					}
+					else
+					{
+						returnUrl += "?status=login";
+					}
+					return Redirect(returnUrl);
+				}
 			}
-			return Redirect("~/");
+			return Redirect("~/?status=login");
 		}
 
 		public class ChallengeResult : HttpUnauthorizedResult

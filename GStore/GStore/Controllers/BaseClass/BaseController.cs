@@ -8,6 +8,7 @@ using GStore.Data;
 using GStore.Models;
 using GStore.AppHtmlHelpers;
 using GStore.Exceptions;
+using GStore.Identity;
 
 namespace GStore.Controllers.BaseClass
 {
@@ -25,12 +26,33 @@ namespace GStore.Controllers.BaseClass
 		protected bool _throwErrorIfUserProfileNotFound = false;
 		protected bool _throwErrorIfAnonymous = false;
 		protected bool _useInactiveStoreFrontAsActive = false;
+		protected bool _useInactiveStoreFrontConfigAsActive = false;
 
 		protected bool _currentStoreFrontError = false;
 
 		public void SetErrorContext()
 		{
 			_throwErrorIfStoreFrontNotFound = false;
+		}
+
+		protected override void Initialize(System.Web.Routing.RequestContext requestContext)
+		{
+			if (requestContext.HttpContext.Session["entryDateTimeUtc"] == null)
+			{
+				requestContext.HttpContext.Session["entryRawUrl"] = requestContext.HttpContext.Request.RawUrl;
+				requestContext.HttpContext.Session["entryUrl"] = requestContext.HttpContext.Request.Url.ToString();
+				if (requestContext.HttpContext.Request.UrlReferrer != null)
+				{
+					requestContext.HttpContext.Session["entryReferrer"] = requestContext.HttpContext.Request.UrlReferrer.ToString();
+				}
+				requestContext.HttpContext.Session["entryDateTimeUtc"] = DateTime.UtcNow;
+			}
+
+			if (!string.IsNullOrEmpty(requestContext.HttpContext.Request.QueryString["DiscountCode"]))
+			{
+				requestContext.HttpContext.Session["DiscountCode"] = requestContext.HttpContext.Request.QueryString["DiscountCode"];
+			}
+			base.Initialize(requestContext);
 		}
 
 		/// <summary>
@@ -49,12 +71,12 @@ namespace GStore.Controllers.BaseClass
 					catch (Exceptions.DynamicPageInactiveException dpiEx)
 					{
 						//dynamic page is inactive, return storefront default layout
-						return dpiEx.StoreFront.DefaultNewPageLayoutName;
+						return dpiEx.StoreFront.CurrentConfigOrAny().DefaultNewPageLayoutName;
 					}
 					catch (Exceptions.DynamicPageNotFoundException dpnfEx)
 					{
 						//dynamic page not found, return storefront default layout
-						return dpnfEx.StoreFront.DefaultNewPageLayoutName;
+						return dpnfEx.StoreFront.CurrentConfigOrAny().DefaultNewPageLayoutName;
 					}
 					catch (Exceptions.NoMatchingBindingException)
 					{
@@ -74,7 +96,7 @@ namespace GStore.Controllers.BaseClass
 							//couldn't get storefront, use app default layout
 							return Properties.Settings.Current.AppDefaultLayoutName;
 						}
-						return CurrentStoreFrontOrThrow.DefaultNewPageLayoutName;
+						return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageLayoutName;
 					}
 				}
 				catch (Exception)
@@ -98,12 +120,12 @@ namespace GStore.Controllers.BaseClass
 					catch (Exceptions.DynamicPageInactiveException dpiEx)
 					{
 						//dynamic page is inactive, return storefront default theme
-						return dpiEx.StoreFront.DefaultNewPageTheme.FolderName;
+						return dpiEx.StoreFront.CurrentConfigOrAny().DefaultNewPageTheme.FolderName;
 					}
 					catch (Exceptions.DynamicPageNotFoundException dpnfEx)
 					{
 						//dynamic page not found, return storefront default theme
-						return dpnfEx.StoreFront.DefaultNewPageTheme.FolderName;
+						return dpnfEx.StoreFront.CurrentConfigOrAny().DefaultNewPageTheme.FolderName;
 					}
 					catch (Exceptions.NoMatchingBindingException)
 					{
@@ -123,12 +145,12 @@ namespace GStore.Controllers.BaseClass
 							//couldn't get storefront, use app default layout
 							return Properties.Settings.Current.AppDefaultThemeFolderName;
 						}
-						return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+						return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageTheme.FolderName;
 					}
 				}
 				catch (Exception)
 				{
-					return CurrentStoreFrontOrThrow.DefaultNewPageTheme.FolderName;
+					return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageTheme.FolderName;
 				}
 			}
 		}
@@ -208,13 +230,14 @@ namespace GStore.Controllers.BaseClass
 					string rawUrl = Request.RawUrl;
 					string url = Request.Url.ToString();
 
-					return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive);
+					return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive, _useInactiveStoreFrontConfigAsActive);
 				}
 				catch (Exceptions.StoreFrontInactiveException exSFI)
 				{
 					if (_useInactiveStoreFrontAsActive)
 					{
 						GStoreDb.CachedStoreFront = exSFI.StoreFront;
+						GStoreDb.CachedStoreFrontConfig = exSFI.StoreFront.CurrentConfigOrAny();
 						return exSFI.StoreFront;
 					}
 					_currentStoreFrontError = true;
@@ -222,15 +245,34 @@ namespace GStore.Controllers.BaseClass
 				}
 				catch (Exceptions.NoMatchingBindingException exNMB)
 				{
+					if (GStoreDb.StoreFronts.IsEmpty())
+					{
+						AspNetIdentityContext identityCtx = GStore.Identity.AspNetIdentityContext.Create();
+						identityCtx.Initialize(true);
+						GStoreDb.Initialize(true);
+						GStoreDb.SeedDatabase();
+					}
+					if (GStoreDb.StoreFronts.IsEmpty())
+					{
+						throw new NoMatchingBindingException("No Store Fronts in database. Be sure database is seeded. You can log into system admin section and create a storefront or run the seed database command.\n" + exNMB.Message, exNMB.Uri);
+					}
 					if (!Properties.Settings.Current.AppEnableBindingAutoMapToFirstStoreFront)
 					{
 						_currentStoreFrontError = true;
 						throw new NoMatchingBindingException("No Store Front found matching current site, and auto-map is disabled. Either this site is invalid or wrong bindings exist in database. Turn on Auto-Binding-Map by setting Settings.AppEnableBindingAutoMapToFirstStoreFront to true \n" + exNMB.Message, exNMB.Uri);
 					}
-					StoreBinding binding = GStoreDb.AutoMapBinding(this);
 					try
 					{
-						return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive);
+						StoreBinding binding = GStoreDb.AutoMapBinding(this);
+					}
+					catch (Exception)
+					{
+						_currentStoreFrontError = true;
+						throw new NoMatchingBindingException("Auto-Map failed. You will have to log into the system admin section and set a binding manually for this url.\n" + exNMB.Message, exNMB.Uri);
+					}
+					try
+					{
+						return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive, _useInactiveStoreFrontConfigAsActive);
 					}
 					catch (Exception)
 					{
@@ -240,6 +282,16 @@ namespace GStore.Controllers.BaseClass
 				}
 				catch (Exceptions.DatabaseErrorException dbEx)
 				{
+					if (!_databaseErrorRetry)
+					{
+						AspNetIdentityContext identityCtx = GStore.Identity.AspNetIdentityContext.Create();
+						identityCtx.Initialize(true);
+						GStoreDb.Initialize(true);
+						GStoreDb.SeedDatabase();
+						_databaseErrorRetry = true;
+						return CurrentStoreFrontOrThrow;
+					}
+
 					System.Diagnostics.Trace.WriteLine("--Database Error in CurrentStoreFront: " + dbEx.Message);
 					System.Diagnostics.Trace.Indent();
 					System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
@@ -254,6 +306,81 @@ namespace GStore.Controllers.BaseClass
 				}
 			}
 		}
+		private bool _databaseErrorRetry = false;
+
+		public virtual StoreFrontConfiguration CurrentStoreFrontConfigOrNull
+		{
+			get
+			{
+				if (_currentStoreFrontError)
+				{
+					return null;
+				}
+				try
+				{
+					if (_useInactiveStoreFrontConfigAsActive)
+					{
+						return CurrentStoreFrontConfigOrAny;
+					}
+					else
+					{
+						return CurrentStoreFrontConfigOrThrow;
+					}
+				}
+				catch (Exception)
+				{
+					return null;
+				}
+			}
+		}
+
+		public virtual StoreFrontConfiguration CurrentStoreFrontConfigOrAny
+		{
+			get
+			{
+				if (_currentStoreFrontError)
+				{
+					return null;
+				}
+				try
+				{
+					StoreFront storeFront = CurrentStoreFrontOrNull;
+					if (storeFront == null)
+					{
+						return null;
+					}
+
+					return storeFront.CurrentConfigOrAny();
+				}
+				catch (Exception)
+				{
+					return null;
+				}
+			}
+		}
+
+		public virtual StoreFrontConfiguration CurrentStoreFrontConfigOrThrow
+		{
+			get
+			{
+				if (_currentstoreFrontConfiguration != null)
+				{
+					return _currentstoreFrontConfiguration;
+				}
+				StoreFront storeFront = CurrentStoreFrontOrThrow;
+				_currentstoreFrontConfiguration = storeFront.CurrentConfig();
+				if (_currentstoreFrontConfiguration == null && _useInactiveStoreFrontConfigAsActive)
+				{
+					_currentstoreFrontConfiguration = CurrentStoreFrontConfigOrAny;
+				}
+				if (_currentstoreFrontConfiguration == null)
+				{
+					throw new ApplicationException("Active StoreFront Configuration not found for store front id [" + storeFront.StoreFrontId + "] Client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]");
+				}
+				return _currentstoreFrontConfiguration;
+			}
+		}
+		protected StoreFrontConfiguration _currentstoreFrontConfiguration = null;
 
 		/// <summary>
 		/// Used only in exception handler
@@ -393,29 +520,25 @@ namespace GStore.Controllers.BaseClass
 				if (filterContext.Exception.GetBaseException() is DynamicPageInactiveException)
 				{
 					DynamicPageInactiveException exDPI = filterContext.Exception.GetBaseException() as DynamicPageInactiveException;
-					Exceptions.ExceptionHandler.HandleDynamicPageInactiveException(exDPI, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleDynamicPageInactiveException(exDPI, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception.GetBaseException() is DynamicPageNotFoundException)
 				{
 					DynamicPageNotFoundException exDPNF = filterContext.Exception.GetBaseException() as DynamicPageNotFoundException;
-					Exceptions.ExceptionHandler.HandleDynamicPageNotFoundException(exDPNF, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleDynamicPageNotFoundException(exDPNF, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception.GetBaseException() is NoMatchingBindingException)
 				{
 					NoMatchingBindingException exNMB = filterContext.Exception.GetBaseException() as NoMatchingBindingException;
-					Exceptions.ExceptionHandler.HandleNoMatchingBindingException(exNMB, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleNoMatchingBindingException(exNMB, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception.GetBaseException() is StoreFrontInactiveException)
 				{
 					StoreFrontInactiveException exSFI = filterContext.Exception.GetBaseException() as StoreFrontInactiveException;
-					Exceptions.ExceptionHandler.HandleStoreFrontInactiveException(exSFI, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleStoreFrontInactiveException(exSFI, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception is HttpCompileException || filterContext.Exception.GetBaseException() is HttpCompileException)
@@ -429,8 +552,7 @@ namespace GStore.Controllers.BaseClass
 					{
 						httpCompileEx = filterContext.Exception.GetBaseException() as HttpCompileException;
 					}
-					Exceptions.ExceptionHandler.HandleHttpCompileException(httpCompileEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleHttpCompileException(httpCompileEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 
 				}
@@ -445,8 +567,7 @@ namespace GStore.Controllers.BaseClass
 					{
 						httpParseEx = filterContext.Exception.GetBaseException() as HttpParseException;
 					}
-					Exceptions.ExceptionHandler.HandleHttpParseException(httpParseEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleHttpParseException(httpParseEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception is HttpException || filterContext.Exception.GetBaseException() is HttpException)
@@ -460,15 +581,13 @@ namespace GStore.Controllers.BaseClass
 					{
 						httpEx = filterContext.Exception.GetBaseException() as HttpException;
 					}
-					Exceptions.ExceptionHandler.HandleHttpException(httpEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleHttpException(httpEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception is ApplicationException)
 				{
 					ApplicationException appEx = filterContext.Exception as ApplicationException;
-					Exceptions.ExceptionHandler.HandleAppException(appEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleAppException(appEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 				else if (filterContext.Exception is InvalidOperationException || filterContext.Exception.GetBaseException() is InvalidOperationException)
@@ -482,16 +601,14 @@ namespace GStore.Controllers.BaseClass
 					{
 						ioEx = filterContext.Exception.GetBaseException() as InvalidOperationException;
 					}
-					Exceptions.ExceptionHandler.HandleInvalidOperationException(ioEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-					filterContext.ExceptionHandled = true;
+					filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleInvalidOperationException(ioEx, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 					return;
 				}
 
 				//Unknown exception handler
 				//exceptions that are expected or common should hit the above exception handlers.
 				Exception ex = filterContext.Exception;
-				Exceptions.ExceptionHandler.HandleUnknownException(ex, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
-				filterContext.ExceptionHandled = true;
+				filterContext.ExceptionHandled = Exceptions.ExceptionHandler.HandleUnknownException(ex, false, filterContext.HttpContext.ApplicationInstance.Context, RouteData, this);
 				return;
 
 			}
@@ -506,13 +623,16 @@ namespace GStore.Controllers.BaseClass
 				string actionName = (RouteData.Values.ContainsKey("action") ? RouteData.Values["action"].ToString() : "(unknown action)");
 				string ipAddress = this.Request.UserHostAddress;
 				StoreFront currentStoreFrontOrNull = null;
+				StoreFrontConfiguration currentStoreFrontConfigOrNull = null;
 				_throwErrorIfAnonymous = false;
 				_throwErrorIfStoreFrontNotFound = false;
 				_throwErrorIfUserProfileNotFound = false;
 				_useInactiveStoreFrontAsActive = true;
+				_useInactiveStoreFrontConfigAsActive = true;
 				try
 				{
 					currentStoreFrontOrNull = CurrentStoreFrontOrNull;
+					currentStoreFrontConfigOrNull = CurrentStoreFrontConfigOrNull;
 				}
 				catch (Exception)
 				{
@@ -527,6 +647,22 @@ namespace GStore.Controllers.BaseClass
 				}
 
 				string errorViewName = Enum.GetName(typeof(Exceptions.ErrorPage), errorPage);
+
+				if (string.IsNullOrEmpty(Request["NotFound"]) && errorPage == ErrorPage.Error_NotFound && CurrentStoreFrontIdOrNull != null && currentStoreFrontConfigOrNull.NotFoundErrorPage != null && currentStoreFrontConfigOrNull.NotFoundErrorPage.IsActiveBubble())
+				{
+					string urlRedirect = currentStoreFrontConfigOrNull.NotFoundErrorPage.UrlResolved(Url) + "?NotFound=1";
+					AddUserMessage("Page Not Found", "Sorry, the URL you were looking for was not found. '" + Request.Url.ToString().ToHtml() + "'", UserMessageType.Danger);
+					new RedirectResult(urlRedirect, false).ExecuteResult(this.ControllerContext);
+					return true;
+				}
+
+				if (string.IsNullOrEmpty(Request["StoreError"]) && (errorPage == ErrorPage.Error_AppError || errorPage == ErrorPage.Error_BadRequest || errorPage == ErrorPage.Error_HttpError || errorPage == ErrorPage.Error_InvalidOperation || errorPage == ErrorPage.Error_UnknownError) && CurrentStoreFrontIdOrNull != null && currentStoreFrontConfigOrNull.StoreErrorPage != null && currentStoreFrontConfigOrNull.StoreErrorPage.IsActiveBubble())
+				{
+					string urlRedirect = currentStoreFrontConfigOrNull.StoreErrorPage.UrlResolved(Url) + "?StoreError=1";
+					AddUserMessage("Server Error", "Sorry, there was a server error processing your request for URL '" + Request.Url.ToString().ToHtml() + "'", UserMessageType.Danger);
+					new RedirectResult(urlRedirect, false).ExecuteResult(this.ControllerContext);
+					return true;
+				}
 
 				GStoreErrorInfo model = new GStoreErrorInfo(errorPage, ex, RouteData, controllerName, actionName, ipAddress, currentStoreFrontOrNull, Request.RawUrl, Request.Url.ToString());
 				View(errorViewName, model).ExecuteResult(this.ControllerContext);

@@ -70,9 +70,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				{
 					query = query.Where(sb => sb.StoreFrontId == storeFrontId.Value);
 				}
+
 			}
 
 			IOrderedQueryable<UserProfile> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfilesBreadcrumb(htmlHelper, clientId, storeFrontId, false);
 			return View(queryOrdered.ToList());
 		}
 
@@ -88,14 +90,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, profile.ClientId, profile.StoreFrontId, profile, false);
 			return View(profile);
 		}
 
 		public ActionResult Create(int? clientId, int? storeFrontId)
 		{
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(clientId);
 			ViewData.Add("CreateLoginAndIdentity", true);
 			ViewData.Add("Password", string.Empty);
 			ViewData.Add("SendWelcomeMessage", true);
@@ -103,12 +103,13 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			UserProfile model = GStoreDb.UserProfiles.Create();
 			model.SetDefaultsForNew(clientId, storeFrontId);
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, clientId, storeFrontId, model, false);
 			return View(model);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(UserProfile profile, string Password, bool? CreateLoginAndIdentity, bool? SendUserWelcome, bool? SendRegisteredNotify)
+		public ActionResult Create(UserProfile profile, string Password, bool? CreateLoginAndIdentity, bool? SendUserWelcome, bool? SendRegisteredNotify, bool? clientIdChanged)
 		{
 			ViewData.Add("CreateLoginAndIdentity", CreateLoginAndIdentity);
 			ViewData.Add("Password", Password);
@@ -117,7 +118,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			Identity.AspNetIdentityUser identityUser = null;
 
-			if (ModelState.IsValid)
+			if (ModelState.IsValid && !(clientIdChanged ?? false))
 			{
 				Identity.AspNetIdentityContext identityCtx = new Identity.AspNetIdentityContext();
 				
@@ -154,7 +155,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				
 			}
 
-			if (ModelState.IsValid)
+			if (ModelState.IsValid && !(clientIdChanged ?? false))
 			{
 				UserProfile newProfile = GStoreDb.UserProfiles.Create(profile);
 				newProfile.UpdateAuditFields(CurrentUserProfileOrThrow);
@@ -174,7 +175,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				if ((SendUserWelcome ?? true) || (SendRegisteredNotify ?? true))
 				{
 					string notificationBaseUrl = Url.Action("Details", "Notifications", new { id = "" });
-					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl, SendUserWelcome ?? true, SendRegisteredNotify ?? true);
+					CurrentStoreFrontOrThrow.HandleNewUserRegisteredNotifications(this.GStoreDb, Request, newProfile, notificationBaseUrl, SendUserWelcome ?? true, SendRegisteredNotify ?? true, string.Empty);
 				}
 
 				return RedirectToAction("Index");
@@ -191,10 +192,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFrontId = profile.StoreFrontId;
 			}
 
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(clientId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, profile.ClientId, profile.StoreFrontId, profile, false);
 			return View(profile);
 		}
 
@@ -210,18 +208,15 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
-			ViewBag.UserProfileList = UserProfileList(profile.ClientId, profile.StoreFrontId);
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(profile.ClientId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, profile.ClientId, profile.StoreFrontId, profile, false);
 			return View(profile);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(UserProfile profile)
+		public ActionResult Edit(UserProfile profile, bool? clientIdChanged)
 		{
-			if (ModelState.IsValid)
+			if (ModelState.IsValid && !(clientIdChanged ?? false))
 			{
 				profile.UpdateAuditFields(CurrentUserProfileOrThrow);
 				profile = GStoreDb.UserProfiles.Update(profile);
@@ -230,10 +225,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				return RedirectToAction("Index");
 			}
-			ViewBag.UserProfileList = UserProfileList(profile.ClientId, profile.StoreFrontId);
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(profile.ClientId);
 
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, profile.ClientId, profile.StoreFrontId, profile, false);
 			return View(profile);
 		}
 
@@ -259,6 +252,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, profile.ClientId, profile.StoreFrontId, profile, false);
 			return View(profile);
 		}
 

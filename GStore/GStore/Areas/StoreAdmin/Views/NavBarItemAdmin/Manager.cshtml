@@ -1,17 +1,11 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.NavBarItemManagerAdminViewModel
-@using GStore.Models
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Identity
-@using GStore.Areas.StoreAdmin.ViewModels
+
 @{
 
 	UserProfile profile = Html.CurrentUserProfile(true);
 	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Create);
 	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit);
 	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Delete);
-
-	string leftArrowUrl = Url.GStoreLocalUrl("/Images/Utility/LeftUpArrow.png");
 
 }
 <div class="row">
@@ -143,81 +137,91 @@
 			{
 				int level2IdInt = level2Item.Entity.NavBarItemId;
 				string level2Id = "'" + level2Item.Entity.NavBarItemId + "'";
-				<div class="col-xs-1"><img class="hidden-md hidden-sm hidden-xs" src="@(leftArrowUrl)" draggable="false" style="width: 100%; height:40px" /></div>
-				<div id="NavBarItemId_@(level2Item.Entity.NavBarItemId)" class="well col-xs-11 text-left borderLevel2" onclick="clickitem(@(level2Id));" draggable="true" ondragover="dragover(event, @(level2Id));" ondragstart="dragstart(event, @(level2Id));" ondrop="drop(event, @(level2Id));">
-					@Html.DisplayFor(model => level2Item, "NavBarItemTreeNode")
-					&nbsp;-&nbsp;
-					<a href="@(Url.Action("MoveUp", new { id = level2IdInt} ))"><small>Move Up</small></a>
-					&nbsp;-&nbsp;
-					<a href="@(Url.Action("MoveDown", new { id = level2IdInt} ))"><small>Move Down</small></a>
-					&nbsp;-&nbsp;
-					<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level2IdInt, returnToManager = true} ))">Edit</a>
-					&nbsp;-&nbsp;
-					<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level2IdInt, returnToManager = true} ))">Delete</a>
+				<div class="row">
+					<div class="col-xs-1"></div>
+					<div id="NavBarItemId_@(level2Item.Entity.NavBarItemId)" class="well col-xs-11 text-left borderLevel2" onclick="clickitem(@(level2Id));" draggable="true" ondragover="dragover(event, @(level2Id));" ondragstart="dragstart(event, @(level2Id));" ondrop="drop(event, @(level2Id));">
+						@Html.DisplayFor(model => level2Item, "NavBarItemTreeNode")
+						&nbsp;-&nbsp;
+						<a href="@(Url.Action("MoveUp", new { id = level2IdInt} ))"><small>Move Up</small></a>
+						&nbsp;-&nbsp;
+						<a href="@(Url.Action("MoveDown", new { id = level2IdInt} ))"><small>Move Down</small></a>
+						&nbsp;-&nbsp;
+						<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level2IdInt, returnToManager = true} ))">Edit</a>
+						&nbsp;-&nbsp;
+						<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level2IdInt, returnToManager = true} ))">Delete</a>
+					</div>
 				</div>
 				foreach (var level3Item in level2Item.ChildNodes)
 				{
 					int level3IdInt = level3Item.Entity.NavBarItemId;
 					string level3Id = "'" + level3Item.Entity.NavBarItemId + "'";
-					<div class="col-xs-offset-1 col-xs-1"><img class="hidden-md hidden-sm hidden-xs" src="@(leftArrowUrl)" draggable="false" style="width: 100%; height:40px" /></div>
-					<div id="NavBarItemId_@(level3Item.Entity.NavBarItemId)" class="well text-left col-xs-10 borderLevel3" onclick="clickitem(@(level3Id));" draggable="true" ondragover="dragover(event, @(level3Id));" ondragstart="dragstart(event, @(level3Id));" ondrop="drop(event, @(level3Id));">
-						@Html.DisplayFor(model => level3Item, "NavBarItemTreeNode")
-						&nbsp;-&nbsp;
-						<a href="@(Url.Action("MoveUp", new { id = level3IdInt} ))"><small>Move Up</small></a>
-						&nbsp;-&nbsp;
-						<a href="@(Url.Action("MoveDown", new { id = level3IdInt} ))"><small>Move Down</small></a>
-						&nbsp;-&nbsp;
-						<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level3IdInt, returnToManager = true} ))">Edit</a>
-						&nbsp;-&nbsp;
-						<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level3IdInt, returnToManager = true} ))">Delete</a>
+					<div class="row">
+						<div class="col-xs-offset-1 col-xs-1"></div>
+						<div id="NavBarItemId_@(level3Item.Entity.NavBarItemId)" class="well text-left col-xs-10 borderLevel3" onclick="clickitem(@(level3Id));" draggable="true" ondragover="dragover(event, @(level3Id));" ondragstart="dragstart(event, @(level3Id));" ondrop="drop(event, @(level3Id));">
+							@Html.DisplayFor(model => level3Item, "NavBarItemTreeNode")
+							&nbsp;-&nbsp;
+							<a href="@(Url.Action("MoveUp", new { id = level3IdInt} ))"><small>Move Up</small></a>
+							&nbsp;-&nbsp;
+							<a href="@(Url.Action("MoveDown", new { id = level3IdInt} ))"><small>Move Down</small></a>
+							&nbsp;-&nbsp;
+							<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level3IdInt, returnToManager = true} ))">Edit</a>
+							&nbsp;-&nbsp;
+							<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level3IdInt, returnToManager = true} ))">Delete</a>
+						</div>
 					</div>
 					foreach (var level4Item in level3Item.ChildNodes)
 					{
 						int level4IdInt = level4Item.Entity.NavBarItemId;
 						string level4Id = "'" + level4Item.Entity.NavBarItemId + "'";
-						<div class="col-xs-offset-2 col-xs-1"><img class="hidden-md hidden-sm hidden-xs" src="@(leftArrowUrl)" draggable="false" style="width: 100%; height:40px" /></div>
-						<div id="NavBarItemId_@(level4Item.Entity.NavBarItemId)" class="well text-left col-xs-9 borderLevel4" onclick="clickitem(@(level4Id));" draggable="true" ondragover="dragover(event, @(level4Id));" ondragstart="dragstart(event, @(level4Id));" ondrop="drop(event, @(level4Id));">
-							@Html.DisplayFor(model => level4Item, "NavBarItemTreeNode")
-							&nbsp;-&nbsp;
-							<a href="@(Url.Action("MoveUp", new { id = level4IdInt} ))"><small>Move Up</small></a>
-							&nbsp;-&nbsp;
-							<a href="@(Url.Action("MoveDown", new { id = level4IdInt} ))"><small>Move Down</small></a>
-							&nbsp;-&nbsp;
-							<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level4IdInt, returnToManager = true} ))">Edit</a>
-							&nbsp;-&nbsp;
-							<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level4IdInt, returnToManager = true} ))">Delete</a>
+						<div class="row">
+							<div class="col-xs-offset-2 col-xs-1"></div>
+							<div id="NavBarItemId_@(level4Item.Entity.NavBarItemId)" class="well text-left col-xs-9 borderLevel4" onclick="clickitem(@(level4Id));" draggable="true" ondragover="dragover(event, @(level4Id));" ondragstart="dragstart(event, @(level4Id));" ondrop="drop(event, @(level4Id));">
+								@Html.DisplayFor(model => level4Item, "NavBarItemTreeNode")
+								&nbsp;-&nbsp;
+								<a href="@(Url.Action("MoveUp", new { id = level4IdInt} ))"><small>Move Up</small></a>
+								&nbsp;-&nbsp;
+								<a href="@(Url.Action("MoveDown", new { id = level4IdInt} ))"><small>Move Down</small></a>
+								&nbsp;-&nbsp;
+								<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level4IdInt, returnToManager = true} ))">Edit</a>
+								&nbsp;-&nbsp;
+								<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level4IdInt, returnToManager = true} ))">Delete</a>
+							</div>
 						</div>
 						foreach (var level5Item in level4Item.ChildNodes)
 						{
 							int level5IdInt = level5Item.Entity.NavBarItemId;
 							string level5Id = "'" + level5Item.Entity.NavBarItemId + "'";
-							<div class="col-xs-offset-3 col-xs-1"><img class="hidden-md hidden-sm hidden-xs" src="@(leftArrowUrl)" draggable="false" style="width: 100%; height:40px" /></div>
-							<div id="NavBarItemId_@(level5Item.Entity.NavBarItemId)" class="well text-left col-xs-8 borderLevel5" onclick="clickitem(@(level5Id));" draggable="true" ondragover="dragover(event, @(level5Id));" ondragstart="dragstart(event, @(level5Id));" ondrop="drop(event, @(level5Id));">
-								@Html.DisplayFor(model => level5Item, "NavBarItemTreeNode")
-								&nbsp;-&nbsp;
-								<a href="@(Url.Action("MoveUp", new { id = level5IdInt} ))"><small>Move Up</small></a>
-								&nbsp;-&nbsp;
-								<a href="@(Url.Action("MoveDown", new { id = level5IdInt} ))"><small>Move Down</small></a>
-								&nbsp;-&nbsp;
-								<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level5IdInt, returnToManager = true} ))">Edit</a>
-								&nbsp;-&nbsp;
-								<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level5IdInt, returnToManager = true} ))">Delete</a>
+							<div class="row">
+								<div class="col-xs-offset-3 col-xs-1"></div>
+								<div id="NavBarItemId_@(level5Item.Entity.NavBarItemId)" class="well text-left col-xs-8 borderLevel5" onclick="clickitem(@(level5Id));" draggable="true" ondragover="dragover(event, @(level5Id));" ondragstart="dragstart(event, @(level5Id));" ondrop="drop(event, @(level5Id));">
+									@Html.DisplayFor(model => level5Item, "NavBarItemTreeNode")
+									&nbsp;-&nbsp;
+									<a href="@(Url.Action("MoveUp", new { id = level5IdInt} ))"><small>Move Up</small></a>
+									&nbsp;-&nbsp;
+									<a href="@(Url.Action("MoveDown", new { id = level5IdInt} ))"><small>Move Down</small></a>
+									&nbsp;-&nbsp;
+									<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level5IdInt, returnToManager = true} ))">Edit</a>
+									&nbsp;-&nbsp;
+									<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level5IdInt, returnToManager = true} ))">Delete</a>
+								</div>
 							</div>
 							foreach (var level6Item in level5Item.ChildNodes)
 							{
 								int level6IdInt = level6Item.Entity.NavBarItemId;
 								string level6Id = "'" + level6Item.Entity.NavBarItemId + "'";
-								<div class="col-xs-offset-4 col-xs-1"><img class="hidden-md hidden-sm hidden-xs" src="@(leftArrowUrl)" draggable="false" style="width: 100%; height:40px" /></div>
-								<div id="NavBarItemId_@(level6Item.Entity.NavBarItemId)" class="well text-left col-xs-7 borderLevel6" onclick="clickitem(@(level6Id));" draggable="true" ondragstart="dragstart(event, @(level6Id));">
-									@Html.DisplayFor(model => level6Item, "NavBarItemTreeNode")
-									&nbsp;-&nbsp;
-									<a href="@(Url.Action("MoveUp", new { id = level6IdInt} ))"><small>Move Up</small></a>
-									&nbsp;-&nbsp;
-									<a href="@(Url.Action("MoveDown", new { id = level6IdInt} ))"><small>Move Down</small></a>
-									&nbsp;-&nbsp;
-									<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level6IdInt, returnToManager = true} ))">Edit</a>
-									&nbsp;-&nbsp;
-									<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level6IdInt, returnToManager = true} ))">Delete</a>
+								<div class="row">
+									<div class="col-xs-offset-4 col-xs-1"></div>
+									<div id="NavBarItemId_@(level6Item.Entity.NavBarItemId)" class="well text-left col-xs-7 borderLevel6" onclick="clickitem(@(level6Id));" draggable="true" ondragstart="dragstart(event, @(level6Id));">
+										@Html.DisplayFor(model => level6Item, "NavBarItemTreeNode")
+										&nbsp;-&nbsp;
+										<a href="@(Url.Action("MoveUp", new { id = level6IdInt} ))"><small>Move Up</small></a>
+										&nbsp;-&nbsp;
+										<a href="@(Url.Action("MoveDown", new { id = level6IdInt} ))"><small>Move Down</small></a>
+										&nbsp;-&nbsp;
+										<a class="btn btn-xs btn-warning" href="@(Url.Action("AdvancedEdit", new { id = level6IdInt, returnToManager = true} ))">Edit</a>
+										&nbsp;-&nbsp;
+										<a class="btn btn-xs btn-danger" href="@(Url.Action("AdvancedDelete", new { id = level6IdInt, returnToManager = true} ))">Delete</a>
+									</div>
 								</div>
 							}
 						}

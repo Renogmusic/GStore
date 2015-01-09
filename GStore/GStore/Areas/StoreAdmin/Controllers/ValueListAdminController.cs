@@ -15,42 +15,41 @@ namespace GStore.Areas.StoreAdmin.Controllers
 {
 	public class ValueListAdminController : BaseClasses.StoreAdminBaseController
 	{
-		[AuthorizeGStoreAction(GStoreAction.WebForms_Manager)]
+		[AuthorizeGStoreAction(GStoreAction.ValueLists_Manager)]
 		public ActionResult Manager(string SortBy, bool? SortAscending)
 		{
-			IOrderedQueryable<WebForm> webForms = CurrentClientOrThrow.WebForms.AsQueryable().ApplySort(this, SortBy, SortAscending);
+			IOrderedQueryable<ValueList> valueLists = CurrentClientOrThrow.ValueLists.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			//ValueListManagerAdminViewModel viewModel = new ValueListManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForms);
-			//return View("Manager", viewModel);
-			return View("Manager");
+			ValueListManagerAdminViewModel viewModel = new ValueListManagerAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, valueLists);
+			return View("Manager", viewModel);
 		}
 
-		[AuthorizeGStoreAction(GStoreAction.WebForms_Create)]
+		[AuthorizeGStoreAction(GStoreAction.ValueLists_Create)]
 		public ActionResult Create(string Tab)
 		{
-			Models.WebForm webForm = GStoreDb.WebForms.Create();
-			webForm.SetDefaultsForNew(CurrentClientOrThrow.ClientId);
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, isStoreAdminEdit: true, isCreatePage: true);
+			Models.ValueList valueList = GStoreDb.ValueLists.Create();
+			valueList.SetDefaultsForNew(CurrentClientOrThrow);
+			ValueListEditAdminViewModel viewModel = new ValueListEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, valueList, Tab, isStoreAdminEdit: true, isCreatePage: true);
 			return View("Create", viewModel);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.WebForms_Create)]
-		public virtual ActionResult Create(WebFormEditViewModel webFormEditViewModel)
+		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.ValueLists_Create)]
+		public virtual ActionResult Create(ValueListEditAdminViewModel viewModel)
 		{
 
 			Client client = CurrentClientOrThrow;
-			bool nameIsValid = GStoreDb.ValidateWebFormName(this, webFormEditViewModel.Name, CurrentClientOrThrow.ClientId, null);
+			bool nameIsValid = GStoreDb.ValidateValueListName(this, viewModel.Name, CurrentClientOrThrow.ClientId, null);
 
 			if (nameIsValid && ModelState.IsValid)
 			{
 				try
 				{
-					WebForm webForm = null;
-					webForm = GStoreDb.CreateWebForm(webFormEditViewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
-					AddUserMessage("Web Form Created!", "Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "] was created successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
-					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.WebForms_Manager))
+					ValueList valueList = null;
+					valueList = GStoreDb.CreateValueList(viewModel, CurrentClientOrThrow, CurrentUserProfileOrThrow);
+					AddUserMessage("Value List Created!", "Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "] was created successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
+					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ValueLists_Manager))
 					{
 						return RedirectToAction("Manager");
 					}
@@ -58,233 +57,236 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while Creating Web Form '" + webFormEditViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] \nError: " + ex.GetType().FullName;
+					string errorMessage = "An error occurred while Creating Value List '" + viewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] \nError: " + ex.GetType().FullName;
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
 						errorMessage += " \nException.ToString(): " + ex.ToString();
 					}
-					AddUserMessage("Error Creating Web Form!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Error Creating Value List!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
 					ModelState.AddModelError("Ajax", errorMessage);
 				}
 			}
 			else
 			{
-				AddUserMessage("Web Form Create Error", "There was an error with your entry for new Web Form '" + webFormEditViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Value List Create Error", "There was an error with your entry for new Value List '" + viewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
 			}
-			webFormEditViewModel.IsStoreAdminEdit = true;
-			webFormEditViewModel.IsCreatePage = true;
-			webFormEditViewModel.IsActiveDirect = !(webFormEditViewModel.IsPending || (webFormEditViewModel.StartDateTimeUtc > DateTime.UtcNow) || (webFormEditViewModel.EndDateTimeUtc < DateTime.UtcNow));
+			viewModel.IsStoreAdminEdit = true;
+			viewModel.IsCreatePage = true;
+			viewModel.IsActiveDirect = !(viewModel.IsPending || (viewModel.StartDateTimeUtc > DateTime.UtcNow) || (viewModel.EndDateTimeUtc < DateTime.UtcNow));
 
-			return View("Create", webFormEditViewModel);
+			return View("Create", viewModel);
 		}
 
-		[AuthorizeGStoreAction(GStoreAction.WebForms_Edit)]
-		public ActionResult Edit(int? id, string Tab, string SortBy, bool? SortAscending)
+		[AuthorizeGStoreAction(GStoreAction.ValueLists_Edit)]
+		public ActionResult Edit(int? id, string Tab, string SortBy, bool? SortAscending, int? valueListItemId)
 		{
 			if (!id.HasValue)
 			{
-				return HttpBadRequest("WebFormId = null");
+				return HttpBadRequest("ValueListId = null");
 			}
 
 			Client client = CurrentClientOrThrow;
-			Models.WebForm webForm = client.WebForms.Where(p => p.WebFormId == id.Value).SingleOrDefault();
-			if (webForm == null)
+			Models.ValueList valueList = client.ValueLists.Where(p => p.ValueListId == id.Value).SingleOrDefault();
+			if (valueList == null)
 			{
-				AddUserMessage("Web Form not found", "Sorry, the Web Form you are trying to edit cannot be found. Web Form id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
+				AddUserMessage("Value List not found", "Sorry, the Value List you are trying to edit cannot be found. Value List id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
 				return RedirectToAction("Manager");
 
 			}
 
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			ValueListEditAdminViewModel viewModel = new ValueListEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, valueList, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+
+			ViewData["ValueListItemId"] = valueListItemId;
 			return View("Edit", viewModel);
-		}
-
-		[AuthorizeGStoreAction(true, GStoreAction.WebForms_View, GStoreAction.WebForms_Edit)]
-		public ActionResult Details(int? id, string Tab, string SortBy, bool? SortAscending)
-		{
-			if (!id.HasValue)
-			{
-				return HttpBadRequest("WebFormId = null");
-			}
-
-			Client client = CurrentClientOrThrow;
-			Models.WebForm webForm = client.WebForms.Where(p => p.WebFormId == id.Value).SingleOrDefault();
-			if (webForm == null)
-			{
-				AddUserMessage("Web Form not found", "Sorry, the Web Form you are trying to view cannot be found. Web Form id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
-				return RedirectToAction("Manager");
-
-			}
-
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
-			return View("Details", viewModel);
-		}
-
-
-		[AuthorizeGStoreAction(true, GStoreAction.WebForms_View, GStoreAction.WebForms_Delete)]
-		public ActionResult Delete(int? id, string Tab, string SortBy, bool? SortAscending)
-		{
-			if (!id.HasValue)
-			{
-				return HttpBadRequest("WebFormId = null");
-			}
-
-			Client client = CurrentClientOrThrow;
-			Models.WebForm webForm = client.WebForms.Where(p => p.WebFormId == id.Value).SingleOrDefault();
-			if (webForm == null)
-			{
-				AddUserMessage("Web Form not found", "Sorry, the Web Form you are trying to Delete cannot be found. Web Form id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
-				return RedirectToAction("Manager");
-
-			}
-
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
-			return View("Delete", viewModel);
-		}
-
-		[HttpPost]
-		[ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		[AuthorizeGStoreAction(GStoreAction.WebForms_Delete)]
-		public ActionResult DeleteConfirmed(int? id)
-		{
-			if (!id.HasValue)
-			{
-				return HttpBadRequest("Web Form Id = null");
-			}
-
-			Client client = CurrentClientOrThrow;
-			Models.WebForm webForm = client.WebForms.Where(p => p.WebFormId == id.Value).SingleOrDefault();
-			if (webForm == null)
-			{
-				AddUserMessage("Web Form not found", "Sorry, the Web Form you are trying to Delete cannot be found. It may have been deleted already. Web Form id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
-				return RedirectToAction("Manager");
-
-			}
-
-			string webFormName = webForm.Name;
-			try
-			{
-				List<WebFormField> webFormFieldsToDelete = webForm.WebFormFields.ToList();
-				foreach (WebFormField field in webFormFieldsToDelete)
-				{
-					GStoreDb.WebFormFields.Delete(field);
-				}
-				bool deleted = GStoreDb.WebForms.DeleteById(id.Value);
-				GStoreDb.SaveChanges();
-				if (deleted)
-				{
-					AddUserMessage("Web Form Deleted", "Web Form '" + webFormName.ToHtml() + "' [" + id + "] was deleted successfully. Web Form Fields deleted: " + webFormFieldsToDelete.Count + ".", AppHtmlHelpers.UserMessageType.Success);
-					return RedirectToAction("Manager");
-				}
-				AddUserMessage("Web Form Delete Error", "There was an error deleting Web Form '" + webFormName.ToHtml() + "' [" + id + "]. It may have already been deleted.", AppHtmlHelpers.UserMessageType.Warning);
-				return RedirectToAction("Manager");
-
-			}
-			catch (Exception ex)
-			{
-				string errorMessage = "There was an error deleting Web Form '" + webFormName + "' [" + id + "]. <br/>Error: '" + ex.GetType().FullName + "'";
-				if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
-				{
-					errorMessage += " \nException.ToString(): " + ex.ToString();
-				}
-				AddUserMessage("Web Form Delete Error", errorMessage.ToHtml(), AppHtmlHelpers.UserMessageType.Danger);
-				return RedirectToAction("Manager");
-			}
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.WebForms_Edit)]
-		public virtual PartialViewResult UpdateWebFormAjax(int? id, WebFormEditViewModel webFormEditViewModel, WebFormFieldEditViewModel[] WebFormFields, string FastAddField)
+		public virtual PartialViewResult UpdateValueListAjax(int? id, ValueListEditAdminViewModel valueListViewModel, ValueListItemEditAdminViewModel[] listItems, string fastAddValueListItem)
 		{
 			if (!id.HasValue)
 			{
 				return HttpBadRequestPartial("id is null");
 			}
 
-			if (webFormEditViewModel.WebFormId == 0)
+			if (valueListViewModel.ValueListId == 0)
 			{
-				return HttpBadRequestPartial("Web Form Id in view model is 0");
+				return HttpBadRequestPartial("Value List Id in view model is 0");
 			}
 
-			if (webFormEditViewModel.WebFormId != id.Value)
+			if (valueListViewModel.ValueListId != id.Value)
 			{
-				return HttpBadRequestPartial("Web Form Id mismatch. Parameter value: '" + id.Value + "' != view model value: " + webFormEditViewModel.WebFormId);
+				return HttpBadRequestPartial("Value List Id mismatch. Parameter value: '" + id.Value + "' != view model value: " + valueListViewModel.ValueListId);
 			}
 
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
-			WebForm webFormToUpdate = storeFront.Client.WebForms.SingleOrDefault(wf => wf.WebFormId == webFormEditViewModel.WebFormId);
+			Client client = CurrentClientOrThrow;
+			ValueList valueListToUpdate = client.ValueLists.SingleOrDefault(vl => vl.ValueListId == valueListViewModel.ValueListId);
 
-			if (webFormToUpdate == null)
+			if (valueListToUpdate == null)
 			{
-				throw new ApplicationException("Web Form not found in client web forms. WebFormId: " + webFormEditViewModel.WebFormId + " Client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]");
+				throw new ApplicationException("Value List not found in client Value Lists. Value List Id: " + valueListToUpdate.ValueListId + " Client '" + client.Name + "' [" + client.ClientId + "]");
 			}
 
-			bool nameIsValid = GStoreDb.ValidateWebFormName(this, webFormEditViewModel.Name, storeFront.ClientId, webFormEditViewModel.WebFormId);
+			bool nameIsValid = GStoreDb.ValidateValueListName(this, valueListToUpdate.Name, client.ClientId, valueListToUpdate.ValueListId);
 			bool fastAddIsValid = false;
-			if (!string.IsNullOrWhiteSpace(FastAddField))
+			if (!string.IsNullOrWhiteSpace(fastAddValueListItem))
 			{
-				fastAddIsValid = GStoreDb.ValidateWebFormFieldName(this, FastAddField, storeFront.ClientId, webFormEditViewModel.WebFormId, null);
+				fastAddIsValid = GStoreDb.ValidateValueListFastAddItemName(this, fastAddValueListItem, valueListToUpdate, null);
 			}
 
 			if (nameIsValid && ModelState.IsValid)
 			{
-
-				WebForm webForm = null;
+				ValueList valueList = null;
 				try
 				{
-					webForm = GStoreDb.UpdateWebForm(webFormEditViewModel, storeFront, CurrentUserProfileOrThrow);
+					valueList = GStoreDb.UpdateValueList(valueListViewModel, client, CurrentUserProfileOrThrow);
 
-					if (WebFormFields != null && WebFormFields.Count() > 0)
+					if (listItems != null && listItems.Count() > 0)
 					{
-						foreach (WebFormFieldEditViewModel field in WebFormFields)
+						foreach (ValueListItemEditAdminViewModel listItem in listItems)
 						{
-							GStoreDb.UpdateWebFormField(field, storeFront, CurrentUserProfileOrThrow);
+							if (listItem.ValueListId != id.Value)
+							{
+								throw new ApplicationException("ValueListId mismatch for list item. ValueList id: " + id.Value + " listItem.ValueListId: " + listItem.ValueListId);
+							}
+							ValueListItem listItemUpdated = GStoreDb.UpdateValueListItem(listItem, client, CurrentUserProfileOrThrow);
 						}
 					}
+					valueListViewModel = new ValueListEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, valueList, isStoreAdminEdit: true, activeTab: valueListViewModel.ActiveTab, sortBy: valueListViewModel.SortBy, sortAscending: valueListViewModel.SortAscending);
 
 					if (fastAddIsValid)
 					{
-						WebFormField newField = GStoreDb.CreateWebFormFieldFastAdd(webFormEditViewModel, FastAddField, storeFront, CurrentUserProfileOrThrow);
-						AddUserMessage("Field Created!", "Field '" + newField.Name.ToHtml() + "' [" + newField.WebFormFieldId + "] created successfully.", UserMessageType.Success);
-						ModelState.Remove("FastAddField");
+						ValueListItem newItem = GStoreDb.CreateValueListItemFastAdd(valueListViewModel, fastAddValueListItem, client, CurrentUserProfileOrThrow);
+						AddUserMessage("Value List Item Created!", "Value List Item '" + newItem.Name.ToHtml() + "' [" + newItem.ValueListItemId + "] created successfully.", UserMessageType.Success);
+						ModelState.Remove("fastAddValueListItem");
 					}
 
-					AddUserMessage("Web Form Changes Saved!", "Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "] saved successfully for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Value List Changes Saved!", "Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "] saved successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
+
 					this.ModelState.Clear();
-					webFormEditViewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, isStoreAdminEdit: true, activeTab: webFormEditViewModel.ActiveTab, sortBy: webFormEditViewModel.SortBy, sortAscending: webFormEditViewModel.SortAscending);
-					return PartialView("_WebFormEditPartial", webFormEditViewModel);
+					return PartialView("_ValueListEditPartial", valueListViewModel);
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while saving your changes to Web Form '" + webFormEditViewModel.Name + "' [" + webFormEditViewModel.WebFormId + "] for Client: '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "] \nError: '" + ex.GetType().FullName + "'";
+					string errorMessage = "An error occurred while saving your changes to Value List '" + valueListViewModel.Name + "' [" + valueListViewModel.ValueListId + "] for Client: '" + client.Name + "' [" + client.ClientId + "] \nError: '" + ex.GetType().FullName + "'";
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
 						errorMessage += " \nException.ToString(): '" + ex.ToString() + "'";
 					}
-					AddUserMessage("Error Saving Web Form!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
+					AddUserMessage("Error Saving Value List!", errorMessage.ToHtmlLines(), AppHtmlHelpers.UserMessageType.Danger);
 					ModelState.AddModelError("Ajax", errorMessage);
 				}
 			}
 			else
 			{
-				AddUserMessage("Web Form Edit Error", "There was an error with your entry for Web Form " + webFormEditViewModel.Name.ToHtml() + " [" + webFormEditViewModel.WebFormId + "] for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Value List Edit Error", "There was an error with your entry for Value List " + valueListViewModel.Name.ToHtml() + " [" + valueListViewModel.ValueListId + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
-			foreach (string key in this.ModelState.Keys.Where(k => k.StartsWith("WebFormFields[")).ToList())
+			foreach (string key in this.ModelState.Keys.Where(k => k.StartsWith("ValueListItems[")).ToList())
 			{
 				this.ModelState.Remove(key);
 			}
 
 
-			webFormEditViewModel.FillFieldsFromViewModel(webFormToUpdate, WebFormFields);
-			webFormEditViewModel.IsStoreAdminEdit = true;
-			return PartialView("_WebFormEditPartial", webFormEditViewModel);
+			valueListViewModel.IsStoreAdminEdit = true;
+			return PartialView("_ValueListEditPartial", valueListViewModel);
+		}
+
+		[AuthorizeGStoreAction(true, GStoreAction.ValueLists_View, GStoreAction.ValueLists_Edit)]
+		public ActionResult Details(int? id, string Tab, string SortBy, bool? SortAscending)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("ValueListId = null");
+			}
+
+			Client client = CurrentClientOrThrow;
+			Models.ValueList valueList = client.ValueLists.Where(p => p.ValueListId == id.Value).SingleOrDefault();
+			if (valueList == null)
+			{
+				AddUserMessage("Value List not found", "Sorry, the Value List you are trying to view cannot be found. Value List id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
+				return RedirectToAction("Manager");
+
+			}
+
+			ValueListEditAdminViewModel viewModel = new ValueListEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, valueList, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			return View("Details", viewModel);
 		}
 
 
+		[AuthorizeGStoreAction(true, GStoreAction.ValueLists_View, GStoreAction.ValueLists_Delete)]
+		public ActionResult Delete(int? id, string Tab, string SortBy, bool? SortAscending)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("ValueListId = null");
+			}
+
+			Client client = CurrentClientOrThrow;
+			Models.ValueList valueList = client.ValueLists.Where(p => p.ValueListId == id.Value).SingleOrDefault();
+			if (valueList == null)
+			{
+				AddUserMessage("Value List not found", "Sorry, the Value List you are trying to Delete cannot be found. Value List id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
+				return RedirectToAction("Manager");
+
+			}
+
+			ValueListEditAdminViewModel viewModel = new ValueListEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, valueList, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			return View("Delete", viewModel);
+		}
+
+		[HttpPost]
+		[ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		[AuthorizeGStoreAction(GStoreAction.ValueLists_Delete)]
+		public ActionResult DeleteConfirmed(int? id)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("Value List Id = null");
+			}
+
+			Client client = CurrentClientOrThrow;
+			Models.ValueList valueList = client.ValueLists.Where(p => p.ValueListId == id.Value).SingleOrDefault();
+			if (valueList == null)
+			{
+				AddUserMessage("Value List not found", "Sorry, the Value List you are trying to Delete cannot be found. It may have been deleted already. Value List id: [" + id.Value + "] for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", UserMessageType.Danger);
+				return RedirectToAction("Manager");
+
+			}
+
+			string valueListName = valueList.Name;
+			try
+			{
+				List<ValueListItem> valueListItemsToDelete = valueList.ValueListItems.ToList();
+				foreach (ValueListItem listItem in valueListItemsToDelete)
+				{
+					GStoreDb.ValueListItems.Delete(listItem);
+				}
+				bool deleted = GStoreDb.ValueLists.DeleteById(id.Value);
+				GStoreDb.SaveChanges();
+				if (deleted)
+				{
+					AddUserMessage("Value List Deleted", "Value List '" + valueListName.ToHtml() + "' [" + id + "] was deleted successfully. Value List Items deleted: " + valueListItemsToDelete.Count + ".", AppHtmlHelpers.UserMessageType.Success);
+					return RedirectToAction("Manager");
+				}
+				AddUserMessage("Value List Delete Error", "There was an error deleting Value List '" + valueListName.ToHtml() + "' [" + id + "]. It may have already been deleted.", AppHtmlHelpers.UserMessageType.Warning);
+				return RedirectToAction("Manager");
+
+			}
+			catch (Exception ex)
+			{
+				string errorMessage = "There was an error deleting Value List '" + valueListName + "' [" + id + "]. <br/>Error: '" + ex.GetType().FullName + "'";
+				if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
+				{
+					errorMessage += " \nException.ToString(): " + ex.ToString();
+				}
+				AddUserMessage("Value List Delete Error", errorMessage.ToHtml(), AppHtmlHelpers.UserMessageType.Danger);
+				return RedirectToAction("Manager");
+			}
+		}
 	}
 }

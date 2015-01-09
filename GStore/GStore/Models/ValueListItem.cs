@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("ValueListItems")]
+	[Table("ValueListItem")]
 	public class ValueListItem : BaseClasses.ClientRecord
 	{
 		[Key]

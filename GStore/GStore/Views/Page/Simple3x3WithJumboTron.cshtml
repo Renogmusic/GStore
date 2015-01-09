@@ -1,51 +1,48 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Models;
-@using GStore.Data;
 @if (Model.EditMode)
 {
-	@Html.Partial("_EditModeTopPartial", Model)
+	Html.RenderPartial("_EditModeTopPartial", Model);
 }
 else if (Model.ShowEditPageLink)
 {
-	@Html.Partial("_EditLinkTopPartial", Model)
+	Html.RenderPartial("_EditLinkTopPartial", Model);
 }
 <div class="row">
 	<div class="jumbotron">
-		@Html.DisplayPageSection("Jumbotron", 1, "Jumbotron", string.Empty, false, false)
+		@Html.DisplayPageSection("Jumbotron", 1, "Jumbotron", "Jumbotron", false, false)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col1", 2, "Row 1 Column 1", string.Empty, false, false)
+		@Html.DisplayPageSection("Row1Col1", 2, "Row 1 Column 1", "Row 1 Column 1", false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col2", 3, "Row 1 Column 2", string.Empty, false, false)
+		@Html.DisplayPageSection("Row1Col2", 3, "Row 1 Column 2", "Row 1 Column 2", false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row1Col3", 4, "Row 1 Column 3", string.Empty, false, false)
-	</div>
-</div>
-<div class="row">
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col1", 5, "Row 2 Column 1", string.Empty, false, false)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col2", 6, "Row 2 Column 2", string.Empty, false, false)
-	</div>
-	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row2Col3", 7, "Row 2 Column 3", string.Empty, false, false)
+		@Html.DisplayPageSection("Row1Col3", 4, "Row 1 Column 3", "Row 1 Column 3", false, false)
 	</div>
 </div>
 <div class="row">
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col1", 8, "Row 3 Column 1", string.Empty, false, false)
+		@Html.DisplayPageSection("Row2Col1", 5, "Row 2 Column 1", "Row 2 Column 1", false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col2", 9, "Row 3 Column 2", string.Empty, false, false)
+		@Html.DisplayPageSection("Row2Col2", 6, "Row 2 Column 2", "Row 2 Column 2", false, false)
 	</div>
 	<div class="col-sm-4">
-		@Html.DisplayPageSection("Row3Col3", 10, "Row 3 Column 3", string.Empty, false, false)
+		@Html.DisplayPageSection("Row2Col3", 7, "Row 2 Column 3", "Row 2 Column 3", false, false)
+	</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col1", 8, "Row 3 Column 1", "Row 3 Column 1", false, false)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col2", 9, "Row 3 Column 2", "Row 3 Column 2", false, false)
+	</div>
+	<div class="col-sm-4">
+		@Html.DisplayPageSection("Row3Col3", 10, "Row 3 Column 3", "Row 3 Column 3", false, false)
 	</div>
 </div>
 
@@ -53,9 +50,9 @@ else if (Model.ShowEditPageLink)
 
 @if (Model.EditMode)
 {
-	@Html.Partial("_EditModeBottomPartial", Model)
+	Html.RenderPartial("_EditModeBottomPartial", Model);
 }
 else if (Model.ShowEditPageLink)
 {
-	@Html.Partial("_EditLinkBottomPartial", Model)
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
 }

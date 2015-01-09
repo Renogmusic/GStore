@@ -1,8 +1,27 @@
-﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Identity
+﻿@model GStore.Areas.StoreAdmin.ViewModels.ClientConfigManagerAdminViewModel
 
+<script>
+	function UpdateConfigLinks(storeFrontId) {
+
+		var viewUrl = '@(Html.Raw(Url.Action("StoreFrontView", new { id = "XXXX", storeFrontConfigId = "YYYY"}).ToJavaScriptString()))';
+		var editUrl = '@(Html.Raw(Url.Action("StoreFrontEdit", new { id = "XXXX", storeFrontConfigId = "YYYY"}).ToJavaScriptString()))';
+		var deleteUrl = '@(Html.Raw(Url.Action("StoreFrontDelete", new { id = "XXXX", storeFrontConfigId = "YYYY"}).ToJavaScriptString()))';
+
+		var storeFrontConfigDropdown = document.getElementById("StoreFrontConfiguration_" + storeFrontId);
+
+		viewUrl = viewUrl.replace("XXXX", storeFrontId).replace("YYYY", storeFrontConfigDropdown.value);
+		editUrl = editUrl.replace("XXXX", storeFrontId).replace("YYYY", storeFrontConfigDropdown.value);
+		deleteUrl = deleteUrl.replace("XXXX", storeFrontId).replace("YYYY", storeFrontConfigDropdown.value);
+
+		var viewLinkTag = document.getElementById("StoreFrontView_" + storeFrontId);
+		var editLinkTag = document.getElementById("StoreFrontEdit_" + storeFrontId);
+		var deleteLinkTag = document.getElementById("StoreFrontDelete_" + storeFrontId);
+
+		if (viewLinkTag) viewLinkTag.href = viewUrl;
+		if (editLinkTag) editLinkTag.href = editUrl;
+		if (deleteLinkTag) deleteLinkTag.href = deleteUrl;
+	}
+</script>
 <div class="row">
 	<h2 class="jumbotron StoreAdminIndexPageTitle col-md-offset-2 col-md-8 text-center text-success">Client Configuration Manager</h2>
 </div>
@@ -14,19 +33,33 @@
 			<h2>Client Configuration</h2>
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="col-md-offset-3 col-md-6 text-danger">
 			<p><strong>Applies to all Store Fronts</strong></p>
 		</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="col-md-5 title-align-right">
 			<h2>Client</h2>
 		</div>
 		<div class="col-md-7 title-align">
-			<h3>@Html.ActionLink("View/Edit Client Configuration", "ClientView", null, new { @class = "btn btn-warning" })</h3>
+			<h3>
+				@{
+					if (Html.UserHasPermission(GStoreAction.ClientConfig_View))
+					{
+						@Html.ActionLink("View Client Configuration", "ClientView", null, new { @class = "btn btn-success" })
+					}
+					if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
+					{
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Edit Client Configuration", "ClientEdit", null, new { @class = "btn btn-warning" })
+					}
+				}
+			</h3>
+
+
 		</div>
 	</div>
 
@@ -36,7 +69,7 @@
 }
 
 @{int counter = 0;}
-@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
+@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Create))
 {
 	<div class="row">
 		<div class="col-xs-12 bg-primary table-bordered col-md-offset-3 col-md-6">
@@ -45,21 +78,60 @@
 	</div>
 
 	GStore.Models.StoreFront currentStoreFront = Html.CurrentStoreFront(true);
-	foreach (GStore.Models.StoreFront storeFront in currentStoreFront.Client.StoreFronts.AsQueryable().WhereIsActive().ApplySort(null, null, null))
+	foreach (GStore.Models.StoreFront storeFront in currentStoreFront.Client.StoreFronts.AsQueryable().ApplySort(null, null, null))
 	{
-		if (storeFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
+		
+		if (storeFront.Authorization_IsAuthorized(Model.UserProfile, true, GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View, GStoreAction.ClientConfig_StoreFrontConfig_Create))
 		{
 			counter++;
-			<div class="row">
-				<div class="col-md-6 title-align-right">
-					<h2>@(storeFront.Name + " [" + storeFront.StoreFrontId + "]")</h2>
+			List<SelectListItem> configList = Model.StoreFrontConfigList(storeFront);
+			string currentConfig = string.Empty;
+			if (configList.Count > 0)
+			{
+				currentConfig = configList.First().Value;
+			}
+			bool isCurrent = (storeFront.StoreFrontId == currentStoreFront.StoreFrontId);
+			<div class="row@(isCurrent ? " bg-selected" : "")">
+				<div class="col-md-5 title-align-right">
+					<h2>
+						@((storeFront.CurrentConfigOrAny() == null ? "" : "'" + storeFront.CurrentConfigOrAny().Name + "'") + " [" + storeFront.StoreFrontId + "]")
+					</h2>
+					@(Html.Raw(isCurrent ? "<h5>* Current Store Front</h5>" : ""))
 				</div>
-				<div class="col-md-6 title-align">
-					<h3>@Html.ActionLink("View/Edit Store Front Configuration", "StoreFrontView", new { id = storeFront.StoreFrontId }, new { @class = "btn btn-primary" } )</h3>
+				<div class="col-md-2">
+					<h2>
+						@Html.DropDownList("StoreFrontConfigurationId", configList, new { id = "StoreFrontConfiguration_" + storeFront.StoreFrontId, @class = "form-control", onchange = "UpdateConfigLinks(" + storeFront.StoreFrontId + ");" })
+					</h2>
+				</div>
+				<div class="col-md-5 title-align">
+					<h3>
+						@{
+							if (storeFront.Authorization_IsAuthorized(Model.UserProfile, GStoreAction.ClientConfig_StoreFrontConfig_View))
+							{
+								@Html.ActionLink("View", "StoreFrontView", new { id = storeFront.StoreFrontId, storeFrontConfigId = currentConfig }, new { id = "StoreFrontView_" + storeFront.StoreFrontId, @class = "btn btn-sm btn-success" })
+							}
+							if (storeFront.Authorization_IsAuthorized(Model.UserProfile, GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+							{
+								@:&nbsp;|&nbsp;
+								@Html.ActionLink("Edit", "StoreFrontEdit", new { id = storeFront.StoreFrontId, storeFrontConfigId = currentConfig }, new { id = "StoreFrontEdit_" + storeFront.StoreFrontId, @class = "btn btn-sm btn-warning" })
+							}
+							if (storeFront.Authorization_IsAuthorized(Model.UserProfile, GStoreAction.ClientConfig_StoreFrontConfig_Create))
+							{
+								@:&nbsp;|&nbsp;
+								@Html.ActionLink("New", "StoreFrontNewConfig", new { id = storeFront.StoreFrontId }, new { @class = "btn btn-sm btn-info" })
+							}
+							if (storeFront.Authorization_IsAuthorized(Model.UserProfile, GStoreAction.ClientConfig_StoreFrontConfig_Delete))
+							{
+								@:&nbsp;|&nbsp;
+								@Html.ActionLink("Delete", "StoreFrontDelete", new { id = storeFront.StoreFrontId, storeFrontConfigId = currentConfig }, new { id="StoreFrontDelete_" + storeFront.StoreFrontId , @class = "btn btn-sm btn-danger" })
+							}
+						}
+					</h3>
 				</div>
 			</div>
 		}
 	}
+
 	if (counter == 0)
 	{
 		<div class="row">

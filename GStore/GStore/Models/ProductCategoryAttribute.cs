@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("ProductCategoryAttributes")]
+	[Table("ProductCategoryAttribute")]
 	public class ProductCategoryAttribute : BaseClasses.StoreFrontRecord
 	{
 		[Key]

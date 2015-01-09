@@ -7,7 +7,7 @@ using System.Web;
 
 namespace GStore.Models
 {
-	[Table("PageTemplateSections")]
+	[Table("PageTemplateSection")]
 	public class PageTemplateSection : BaseClasses.ClientRecord
 	{
 		[Key]

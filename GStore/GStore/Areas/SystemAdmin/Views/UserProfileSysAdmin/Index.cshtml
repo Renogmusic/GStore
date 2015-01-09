@@ -1,14 +1,18 @@
 ﻿@model IEnumerable<GStore.Models.UserProfile>
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Data
-@using GStore.Areas.SystemAdmin
 
 @{
 	bool isFiltered = Html.ClientIsFiltered();
 	int? filterClientId = Html.FilterClientId();
 	bool hideStoreFrontFilter = (isFiltered && !filterClientId.HasValue) ? true : false;
 	IEnumerable<SelectListItem> storeFrontFilterList = ViewBag.StoreFrontFilterList as IEnumerable<SelectListItem>;
+
+	int? filterStoreFrontId = null;
+	var selectedStoreFrontItem = storeFrontFilterList.Where(l => l.Selected).FirstOrDefault();
+	if (selectedStoreFrontItem != null && !string.IsNullOrEmpty(selectedStoreFrontItem.Value))
+	{
+		isFiltered = true;
+		filterStoreFrontId = int.Parse(selectedStoreFrontItem.Value);
+	}
 
 }
 
@@ -23,18 +27,15 @@
 </style>
 
 <h2 class="jumbotron SysAdminIndexPageTitle col-md-12">User Manager</h2>
+<hr />
+@Html.ActionLink("OK", "Index", "StoreFrontSysAdmin", new { id = filterStoreFrontId }, new { @class = "btn btn-default" })
+<hr />
+
 
 <p>
 	@{
-		int? filterStoreFrontId = null;
 		using (Html.BeginForm("Index", "UserProfileSysAdmin", FormMethod.Post, new { name = "storefrontfilterform", style = "display: inline" }))
 		{
-			var selectedStoreFrontItem = storeFrontFilterList.Where(l => l.Selected).FirstOrDefault();
-			if (selectedStoreFrontItem != null && !string.IsNullOrEmpty(selectedStoreFrontItem.Value))
-			{
-				isFiltered = true;
-				filterStoreFrontId = int.Parse(selectedStoreFrontItem.Value);
-			}
 
 			@Html.ActionLink("Create New", "Create", new { clientId = filterClientId, storeFrontId = filterStoreFrontId }, new { @class = "btn btn-info" })
 
@@ -68,60 +69,62 @@
 }
 else
 {
+	UserProfile nullModel = new UserProfile();
+	
 	<div class="table-responsive">
 		<table class="table table-hover table-striped">
 			<tr>
 				<th>@Html.ActionSortLink("Default Sort", "Index", string.Empty)</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.ClientId, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.ClientId, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.Client, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.Client, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.StoreFrontId, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.StoreFrontId, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.StoreFront.Name, "Index")
+					@Html.ActionSortLink("Store Front Name", "Index", "StoreFront.Name")
 				</th>
 				<th>
-					@Html.ActionSortLinkFor(model => model.UserProfileId, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.UserProfileId, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.UserName, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.UserName, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.Email, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.Email, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.FullName, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.FullName, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.LastLogonDateTimeUtc, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.LastLogonDateTimeUtc, "Index", true)
 				</th>
 				<th class="small">
 					@Html.ActionSortLink("Status", "Index", "Status")
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.IsPending, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.IsPending, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.StartDateTimeUtc, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.StartDateTimeUtc, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.EndDateTimeUtc, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.EndDateTimeUtc, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.CreateDateTimeUtc, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.CreateDateTimeUtc, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.CreatedBy, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.CreatedBy, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.UpdateDateTimeUtc, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.UpdateDateTimeUtc, "Index", true)
 				</th>
 				<th class="small">
-					@Html.ActionSortLinkFor(model => model.UpdatedBy, "Index")
+					@Html.ActionSortLinkForItem(model => nullModel.UpdatedBy, "Index", true)
 				</th>
 				<th class="small"></th>
 			</tr>
@@ -133,7 +136,9 @@ else
 				string rowClass = (isAllActive ? "" : "text-warning");
 				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("Details", new { @id = item.UserProfileId }))');">
 					<td>
-						@Html.ActionLink("Details", "Details", new { id = item.UserProfileId }, new { @class = "btn-sm btn-success" })
+						@Html.ActionLink("Details", "Details", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "Edit", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "Delete", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 
 					<td>
@@ -146,8 +151,27 @@ else
 						@Html.DisplayFor(modelItem => item.StoreFrontId)
 					</td>
 					<td>
-						@Html.DisplayFor(modelItem => item.StoreFront.Name)
+						@{
+							if (item.StoreFront == null)
+							{
+								@:(blank)
+							}
+							else
+							{
+								if (item.StoreFront.CurrentConfigOrAny() == null)
+								{
+									@("Store Front Id " + item.StoreFront.CurrentConfigOrAny().Name)
+								}
+								else
+								{
+									@item.StoreFront.CurrentConfigOrAny().Name
+								}
+							}
+						}
 					</td>
+
+
+
 					<td>
 						@Html.DisplayFor(modelItem => item.UserProfileId)
 					</td>
@@ -198,13 +222,14 @@ else
 						<small>@Html.DisplayFor(modelItem => item.UpdatedBy.UserName)</small>
 					</td>
 					<td>
-						<span style="white-space: nowrap">
-							@Html.ActionLink("Edit", "Edit", new { id = item.UserProfileId }, new { @class = "btn-sm btn-warning" })
-							@Html.ActionLink("Delete", "Delete", new { id = item.UserProfileId }, new { @class = "btn-sm btn-danger" })
-						</span>
+						@Html.ActionLink("Details", "Details", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "Edit", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "Delete", new { id = item.UserProfileId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 				</tr>
 			}
 		</table>
 	</div>
 }
+<hr />
+@Html.ActionLink("OK", "Index", "StoreFrontSysAdmin", new { id = filterStoreFrontId }, new { @class = "btn btn-default" })

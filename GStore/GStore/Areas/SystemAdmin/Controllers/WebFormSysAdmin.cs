@@ -42,6 +42,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			IOrderedQueryable<WebForm> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormsBreadcrumb(htmlHelper, clientId);
 			return View(queryOrdered.ToList());
 		}
 
@@ -56,15 +57,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Web Form not found. Web Form id: " + id);
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webForm);
 		}
 
 		public ActionResult Create(int? clientId)
 		{
-			ViewBag.ClientList = ClientList();
-
+			Client client = null;
+			if (clientId.HasValue)
+			{
+				client = GStoreDb.Clients.FindById(clientId.Value);
+			}
 			WebForm model = GStoreDb.WebForms.Create();
-			model.SetDefaultsForNew(clientId);
+			model.SetDefaultsForNew(client);
+
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, clientId, model);
 			return View(model);
 		}
 
@@ -72,6 +79,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Create(WebForm webForm)
 		{
+			Client client = GStoreDb.Clients.FindById(webForm.ClientId);
+			if (client.WebForms.Any(wf => wf.Name.ToLower() == webForm.Name.ToLower()))
+			{
+				ModelState.AddModelError("Name", "A Web Form with the name '" + webForm.Name + "' already exists. Change the name here or edit the conflicting web form.");
+			}
+
 			if (ModelState.IsValid)
 			{
 				webForm = GStoreDb.WebForms.Create(webForm);
@@ -87,8 +100,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				clientId = webForm.ClientId;
 			}
 
-			ViewBag.ClientList = ClientList();
-
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webForm);
 		}
 
@@ -103,8 +115,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webForm);
 		}
 
@@ -120,7 +132,9 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Web Form Updated", "Changes saved successfully to Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "]", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
-			ViewBag.ClientList = ClientList();
+
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
+			var errors = this.ModelState.Where(v => v.Value.Errors.Any());
 
 			return View(webForm);
 		}
@@ -159,6 +173,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webForm);
 		}
 
@@ -213,6 +228,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form not found. Web Form id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webForm);
 		}
 
@@ -231,6 +247,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			WebFormField model = GStoreDb.WebFormFields.Create();
 			model.SetDefaultsForNew(webForm);
+
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(model);
 		}
 
@@ -250,6 +268,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form not found. Web Form id: " + webFormField.WebFormId);
 			}
 
+			if (webForm.WebFormFields.Any(f => f.Name.ToLower() == (webFormField.Name ?? "").ToLower()))
+			{
+				ModelState.AddModelError("Name", "A field with the name '" + webFormField.Name + "' already exists. Choose a new name or edit the original.");
+			}
+
 			if (ModelState.IsValid)
 			{
 				webFormField.ClientId = webForm.ClientId;
@@ -261,6 +284,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("FieldIndex", new { id = webFormField.WebFormId });
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
 			return View(webFormField);
 		}
 
@@ -276,8 +300,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
 			return View(webFormField);
 		}
 
@@ -285,6 +309,23 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult FieldEdit(WebFormField webFormField)
 		{
+
+			WebFormField webFormFieldOriginal = GStoreDb.WebFormFields.FindById(webFormField.WebFormFieldId);
+			if (webFormFieldOriginal == null)
+			{
+				return HttpBadRequest("webFormField not found by id: " + webFormField.WebFormFieldId);
+			}
+
+			string originalName = webFormFieldOriginal.Name;
+			if (originalName != webFormField.Name)
+			{
+				//validate new name is not taken
+				if (webFormFieldOriginal.WebForm.WebFormFields.Any(f => (f.WebFormFieldId != webFormField.WebFormFieldId) && (f.Name.ToLower() == (webFormField.Name ?? "").ToLower())))
+				{
+					ModelState.AddModelError("Name", "A field with the name '" + webFormField.Name + "' already exists. Choose a new name or edit the original.");
+				}
+			}
+
 			if (ModelState.IsValid)
 			{
 				webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
@@ -295,8 +336,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("FieldIndex", new { id = webFormField.WebFormId });
 			}
 			webFormField.WebForm = GStoreDb.WebForms.Single(wf => wf.WebFormId == webFormField.WebFormId);
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
 			return View(webFormField);
 		}
 
@@ -313,6 +354,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
 			return View(webFormField);
 		}
 
@@ -329,6 +371,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
 			return View(webFormField);
 		}
 

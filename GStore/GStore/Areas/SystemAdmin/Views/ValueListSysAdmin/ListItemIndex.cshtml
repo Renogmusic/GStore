@@ -1,6 +1,4 @@
 ﻿@model GStore.Models.ValueList
-@using GStore.AppHtmlHelpers
-@using GStore.Data
 
 <style>
 	table th {
@@ -102,7 +100,9 @@ else
 
 				<tr class="@(rowClass)" onclick="GoToUrl('@Html.JavaScriptEncode(Url.Action("ListItemDetails", new { @id = item.ValueListItemId }))');">
 					<td>
-						@Html.ActionLink("Details", "ListItemDetails", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-success" })
+						@Html.ActionLink("Details", "ListItemDetails", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "ListItemEdit", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "ListItemDelete", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => item.ValueListItemId)
@@ -157,10 +157,9 @@ else
 						@Html.DisplayFor(modelItem => item.UpdatedBy.UserId)
 					</td>
 					<td>
-						<span style="white-space: nowrap">
-							@Html.ActionLink("Edit", "ListItemEdit", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-warning" })
-							@Html.ActionLink("Delete", "ListItemDelete", new { id = item.ValueListItemId }, new { @class = "btn-sm btn-danger" })
-						</span>
+						@Html.ActionLink("Details", "ListItemDetails", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-success" })
+						@Html.ActionLink("Edit", "ListItemEdit", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-warning" })
+						@Html.ActionLink("Delete", "ListItemDelete", new { id = item.ValueListItemId }, new { @class = "btn btn-sm btn-danger" })
 					</td>
 				</tr>
 		}

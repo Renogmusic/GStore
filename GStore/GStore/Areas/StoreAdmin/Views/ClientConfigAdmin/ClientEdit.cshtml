@@ -1,6 +1,5 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.ClientConfigAdminViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Identity
+
 @{
 	string tabBasicActive = string.Empty;
 	string tabEmailActive = string.Empty;
@@ -117,7 +116,7 @@
 	else
 	{
 		<div class="row">
-			<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+			<div class="col-md-offset-3 col-md-6 bg-danger">
 				<h3>Email System is disabled in web server settings.</h3>
 				<p>
 					These settings below will only take effect when Email is enabled for the web server.<br />
@@ -195,7 +194,7 @@
 					else
 					{
 						<div class="row">
-							<div class="col-md-offset-3 col-md-6 bg-danger text-danger">
+							<div class="col-md-offset-3 col-md-6 bg-danger">
 								<h3>SMS/Text Message System is disabled in web server settings.</h3>
 								<p>
 									These settings below will only take effect when SMS/Text Messaging is enabled for the web server.<br />

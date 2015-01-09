@@ -9,6 +9,11 @@ namespace GStore.Areas.StoreAdmin.Controllers
 {
     public class ClientRoleAdminController : BaseClasses.StoreAdminBaseController
     {
+		public ActionResult AA_Status_Incomplete()
+		{
+			throw new NotImplementedException();
+		}
+
 		[AuthorizeGStoreAction(GStoreAction.ClientRole_Manager)]
 		public ActionResult Manager()
         {

@@ -12,32 +12,29 @@ namespace GStore.Models.ViewModels
 		public int ToUserProfileId { get; set; }
 
 		[Required]
-		[AllowHtml]
 		public string Subject { get; set; }
 
 		[Display(Name = "Priority")]
 		[Required]
 		public string Importance { get; set; }
 
-		[DataType(DataType.MultilineText)]
 		[AllowHtml]
 		[Required]
+		[DataType(DataType.Html)]
 		public string Message { get; set; }
 
-		[AllowHtml]
 		public string Link1Text { get; set; }
 
 		public string Link1Url { get; set; }
 
-		[AllowHtml]
 		public string Link2Text { get; set; }
+
 		public string Link2Url { get; set; }
 
-		[AllowHtml]
 		public string Link3Text { get; set; }
+
 		public string Link3Url { get; set; }
 
-		[AllowHtml]
 		public string Link4Text { get; set; }
 		public string Link4Url { get; set; }
 

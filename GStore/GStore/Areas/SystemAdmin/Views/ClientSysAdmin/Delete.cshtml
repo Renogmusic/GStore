@@ -1,6 +1,5 @@
 ﻿@model GStore.Models.Client
-@using GStore.AppHtmlHelpers
-@using GStore.Data
+
 <div class="row">
 	<h2 class="col-md-offset-3 col-md-6 jumbotron SysAdminDeletePageTitle text-danger">Confirm Client Delete</h2>
 </div>
@@ -14,7 +13,9 @@
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
-			<input type="submit" value="Delete" class="btn btn-danger" />
+			<input type="submit" value="Simple Delete" name="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Seek and Destroy", "SeekAndDestroy", new { id = Model.ClientId }, new { @class = "btn btn-danger" })
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
@@ -232,7 +233,9 @@
 		@using (Html.BeginForm())
 		{
 			@Html.AntiForgeryToken()
-			<input type="submit" value="Delete" class="btn btn-danger" />
+			<input type="submit" value="Simple Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Seek and Destroy", "SeekAndDestroy", new { id = Model.ClientId }, new { @class = "btn btn-danger" })
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;

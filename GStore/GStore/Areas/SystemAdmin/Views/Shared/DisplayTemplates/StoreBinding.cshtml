@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.StoreBinding
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no store binding)
@@ -24,6 +23,6 @@ else
 	</span>
 	@: &nbsp;
 	@(Html.ActionLink(linkText, "Details", "StoreFrontSysAdmin", new { id = Model.StoreBindingId }, new { @class = viewLinkClass }))
-
-	@: - @(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront))
+	<br />
+	@(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront))
 }

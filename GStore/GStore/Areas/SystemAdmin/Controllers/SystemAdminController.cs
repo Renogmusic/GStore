@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using GStore.Models;
 using System.Collections.Generic;
 using GStore.AppHtmlHelpers;
+using System.Linq;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -20,29 +21,39 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				GStoreDb.SaveChangesDirect();
 			}
 
-
 			bool hasErrorMessage = false;
 			Models.StoreFront storeFront = null;
 			try
 			{
-				 storeFront = GStoreDb.GetCurrentStoreFront(Request, true, false);
+				 storeFront = GStoreDb.GetCurrentStoreFront(Request, true, false, false);
 			}
 			catch(Exceptions.StoreFrontInactiveException exSFI)
 			{
 				hasErrorMessage = true;
 				string sfiMessageHtml = "StoreFront is inactive.\n"
-					+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + exSFI.StoreFront.Name.ToHtml() + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
+					+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + (exSFI.StoreFront.CurrentConfigOrAny() == null ? "" : exSFI.StoreFront.CurrentConfigOrAny().Name.ToHtml()) + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
 					+ exSFI.Message.ToHtml();
 				AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
 			}
 			catch(Exceptions.NoMatchingBindingException exNMB)
 			{
 				hasErrorMessage = true;
-				StoreFront guessStoreFront = GStoreDb.SeedAutoMapStoreFrontBestGuess();
-				string nmbMessageHtml = "No store front found for this Url.\n"
-					+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + guessStoreFront.Name.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
-					+ exNMB.Message.ToHtml();
-				AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
+				if (GStoreDb.StoreFronts.IsEmpty())
+				{
+					string nosfMessage = "There are no No Store Fronts in the database.\n"
+						+ "<a href=\"" + this.Url.Action("ForceSeed") + "\">Click here to Create Force a Seed of the Database</a>\n"
+						+ exNMB.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: No matching bindings", nosfMessage, AppHtmlHelpers.UserMessageType.Danger);
+				}
+				else
+				{
+					StoreFront guessStoreFront = GStoreDb.SeedAutoMapStoreFrontBestGuess();
+					string nmbMessageHtml = "No store front found for this Url.\n"
+						+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + guessStoreFront.CurrentConfigOrAny().Name.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+						+ exNMB.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, AppHtmlHelpers.UserMessageType.Danger);
+				}
+				
 			}
 			catch (Exception ex)
 			{
@@ -58,6 +69,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			ViewBag.StoreFrontFilterList = StoreFrontFilterListWithAllAndNull(clientId, storeFrontId);
 
+			this.BreadCrumbsFunc = ((html => this.TopBreadcrumb(html, false)));
 			return View("Index");
         }
 
@@ -109,9 +121,9 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			StoreBinding binding = inactiveBindings[0];
-			this.ActivateStoreFrontClientAndBinding(binding);
+			this.ActivateStoreFrontClientBindingAndConfig(binding);
 
-			AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+			AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.CurrentConfigOrAny().Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 			return RedirectToAction("Index");
 		}
@@ -126,6 +138,13 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			AddUserMessage("BindSeedBestGuessStoreFront Success!", "Auto-mapped Binding successfully!", AppHtmlHelpers.UserMessageType.Success);
+			return RedirectToAction("Index");
+		}
+
+		public ActionResult ForceSeed()
+		{
+			GStoreDb.SeedDatabase(true);
+			AddUserMessage("Database Seeded!", "The Database has been seeded successfully!", AppHtmlHelpers.UserMessageType.Success);
 			return RedirectToAction("Index");
 		}
 	}

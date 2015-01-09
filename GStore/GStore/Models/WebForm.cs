@@ -5,7 +5,7 @@ using System.Web.Mvc;
 
 namespace GStore.Models
 {
-	[Table("WebForms")]
+	[Table("WebForm")]
 	public class WebForm : BaseClasses.ClientRecord
 	{
 		[Key]
@@ -31,14 +31,17 @@ namespace GStore.Models
 		public string Title { get; set; }
 
 		[AllowHtml]
+		[DataType(DataType.Html)]
 		[Display(Name = "Form Header Html")]
 		public string FormHeaderHtml { get; set; }
 
 		[AllowHtml]
+		[DataType(DataType.Html)]
 		[Display(Name = "Form Footer Before Submit Button Html")]
 		public string FormFooterBeforeSubmitHtml { get; set; }
 
 		[AllowHtml]
+		[DataType(DataType.Html)]
 		[Display(Name = "Form Footer After Submit Button Html")]
 		public string FormFooterAfterSubmitHtml { get; set; }
 

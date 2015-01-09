@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("WebFormFields")]
+	[Table("WebFormField")]
 	public class WebFormField : BaseClasses.ClientRecord
 	{
 		[Key]
@@ -66,6 +66,9 @@ namespace GStore.Models
 		[ForeignKey("ValueListId")]
 		[Display(Name = "Value List")]
 		public virtual ValueList ValueList { get; set; }
+
+		[Display(Name = "Value List Null Text")]
+		public string ValueListNullText { get; set; }
 
 		[Display(Name = "Text Area Rows")]
 		public int? TextAreaRows { get; set; }

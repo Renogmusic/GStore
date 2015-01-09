@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using GStore.Data;
 using GStore.Identity;
 using System.Web.Mvc;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Models.ViewModels
 {
@@ -28,7 +29,7 @@ namespace GStore.Models.ViewModels
 			this.IsDeletePage = isDeletePage;
 			this.IsCreatePage = isCreatePage;
 			this.ActiveTab = activeTab;
-
+			this.CreateMenuItemWithPage = isCreatePage;
 			SetDefaults(page);
 		}
 
@@ -57,6 +58,7 @@ namespace GStore.Models.ViewModels
 			this.PageTemplateId = page.PageTemplateId;
 			this.PageTemplateName = (page.PageTemplate == null ? null : page.PageTemplate.Name);
 			this.PageTitle = page.PageTitle;
+			this.ForAnonymousOnly = page.ForAnonymousOnly;
 			this.ForRegisteredOnly = page.ForRegisteredOnly;
 			this.ThemeId = page.ThemeId;
 			this.Url = page.Url;
@@ -141,6 +143,9 @@ namespace GStore.Models.ViewModels
 		[Display(Name = "Active Tab")]
 		[Editable(false)]
 		public string ActiveTab { get; set; }
+
+		[Display(Name = "Add to Site Menu", Description="Check this box to add this page to the site menu.")]
+		public bool CreateMenuItemWithPage { get; set; }
 
 
 		[Editable(false)]
@@ -278,10 +283,13 @@ namespace GStore.Models.ViewModels
 		[MaxLength(250)]
 		public string Url { get; set; }
 
-		[Display(Name = "Registered Users Only", Description="Check this box below to allow Only Registered Users to view this page")]
+		[Display(Name = "Anonymous Users Only", Description = "Check this box below to allow Only Anonymous Users to view this page")]
+		public bool ForAnonymousOnly { get; set; }
+
+		[Display(Name = "Registered Users Only", Description = "Check this box below to allow Only Registered Users to view this page")]
 		public bool ForRegisteredOnly { get; set; }
 
-		[Display(Name = "Page Title in Browser and Favorites", Description="Page title in the browser, also used when page is added to bookmarks or home screen" )]
+		[Display(Name = "Page Title in Browser and Favorites", Description = "Page title in the browser, also used when page is added to bookmarks or home screen")]
 		[MaxLength(200)]
 		public string PageTitle { get; set; }
 
@@ -302,13 +310,13 @@ namespace GStore.Models.ViewModels
 		public string MetaApplicationTileColor { get; set; }
 
 		[AllowHtml]
-		[DataType(DataType.MultilineText)]
+		[DataType(DataType.Html)]
 		[Display(Name = "Page Top Script Tags", Description = "Scripts tags on the top portion of the page. Be careful here because bad HTML here can cause problems with your page. Tags should include the <script> and </script> elements.\nLeave blank to use your Store Front default.")]
 		[MaxLength(10000)]
 		public string BodyTopScriptTag { get; set; }
 
 		[AllowHtml]
-		[DataType(DataType.MultilineText)]
+		[DataType(DataType.Html)]
 		[Display(Name = "Page Bottom Script Tags", Description = "Scripts tags on the bottom portion of the page. Be careful here because bad HTML here can cause problems with your page. Tags should include the <script> and </script> elements.\nLeave blank to use your Store Front default.")]
 		[MaxLength(10000)]
 		public string BodyBottomScriptTag { get; set; }
@@ -347,18 +355,28 @@ namespace GStore.Models.ViewModels
 	
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
+			List<ValidationResult> result = new List<ValidationResult>();
+
+			if (this.ForAnonymousOnly && this.ForRegisteredOnly)
+			{
+				string registeredLabel = this.GetDisplayName("ForRegisteredOnly");
+				string anonymousLabel = this.GetDisplayName("ForAnonymousOnly");
+				string[] memberNames = { "ForRegisteredOnly", "ForAnonymousOnly" };
+				ValidationResult item = new ValidationResult("You cannot select both " + registeredLabel + " and " + anonymousLabel + " you must choose one or none.", memberNames);
+				result.Add(item);
+			}
 
 			if (this.WebFormId.HasValue && !(this.WebFormSaveToDatabase || this.WebFormSaveToFile || this.WebFormSendToEmail))
 			{
-				List<ValidationResult> result = new List<ValidationResult>();
 				string[] memberNames = { "WebFormId" };
-
-				ValidationResult item = new ValidationResult("You must select one of: Save to Database, Save to File, or Send to Email when using a Web Form", memberNames);
+				string label1 = this.GetDisplayName("WebFormSaveToDatabase");
+				string label2 = this.GetDisplayName("WebFormSaveToFile");
+				string label3 = this.GetDisplayName("WebFormSendToEmail");
+				ValidationResult item = new ValidationResult("You must select one of: " + label1 + ", " + label2 + ", or " + label3 + " when using a Web Form", memberNames);
 				result.Add(item);
-				return result;
 			}
 
-			return new List<ValidationResult>();
+			return result;
 		}
 	}
 }

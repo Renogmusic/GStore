@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.UserProfile
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no user profile)
@@ -14,12 +13,13 @@ else
 	<span class="@className" style="white-space:nowrap">
 		@(Html.DisplayNameForModel()) @(Model.UserName) '@(Model.FullName)'@(inactiveText)
 	</span>
+	<br />
 	if (Model.StoreFrontId.HasValue)
 	{
-		@:&nbsp; :&nbsp; @Html.DisplayFor(up => up.StoreFront, "StoreFrontNoLinks")
+		@Html.DisplayFor(up => up.StoreFront, "StoreFrontNoLinks")
 	}
 	else
 	{
-		@:&nbsp; @Html.DisplayFor(up => up.Client, "ClientNoLinks")
+		@Html.DisplayFor(up => up.Client, "ClientNoLinks")
 	}
 }

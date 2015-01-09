@@ -1,0 +1,21 @@
+﻿@model Client
+@{
+	int? clientId = Model == null ? (int?)null : Model.ClientId;
+}
+<div class="form-group">
+	@Html.LabelForModel(new { @class = "col-md-2 title-align-right" })
+	<div class="col-md-10 title-align">
+		@Html.DropDownListForModel(Html.ClientList(clientId), new { onchange = "clientupdated(this);" }, optionLabel: "(none)", allowNull: true)
+		@Html.HelpLabelPopoverForModel()
+		<br />
+		@Html.ValidationMessageForModel()
+	</div>
+</div>
+<input id="ClientIdChanged" name="ClientIdChanged" type="hidden" value="false" />
+<script>
+	function clientupdated(element)
+	{
+		$('#ClientIdChanged').val("true");
+		element.form.submit();
+	}
+</script>

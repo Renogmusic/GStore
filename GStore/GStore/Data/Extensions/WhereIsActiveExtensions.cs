@@ -67,6 +67,80 @@ namespace GStore.Data
 		}
 
 		/// <summary>
+		/// Returns null if no active current config  is found
+		/// </summary>
+		/// <param name="storefront"></param>
+		/// <returns></returns>
+		public static StoreFrontConfiguration CurrentConfig(this StoreFront storefront)
+		{
+			if (storefront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (storefront.StoreFrontConfigurations == null || storefront.StoreFrontConfigurations.Count == 0)
+			{
+				return null;
+			}
+
+			return storefront.StoreFrontConfigurations.AsQueryable().WhereIsActive().OrderBy(c => c.Order).FirstOrDefault();
+		}
+
+		public static StoreFrontConfiguration CurrentConfigOrAny(this StoreFront storefront)
+		{
+			if (storefront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (storefront.StoreFrontConfigurations == null || storefront.StoreFrontConfigurations.Count == 0)
+			{
+				return null;
+			}
+
+			StoreFrontConfiguration activeConfig = storefront.CurrentConfig();
+			if (activeConfig != null)
+			{
+				return activeConfig;
+			}
+
+			return storefront.StoreFrontConfigurations.OrderBy(c => c.Order).FirstOrDefault();
+
+		}
+
+		/// <summary>
+		/// Returns the current active configuration for the store front
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public static StoreFrontConfiguration ActiveOnDate(this IQueryable<StoreFrontConfiguration> query, DateTime datetimeUtc, bool includePending)
+		{
+			return query.WhereIsActiveOn(datetimeUtc, includePending).OrderBy(config => config.Order).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// IQueryable query extension to check where StoreFront and Client is currently active and not pending or expired
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public static IQueryable<StoreFrontConfiguration> WhereIsActive(this IQueryable<StoreFrontConfiguration> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<StoreFrontConfiguration> WhereIsActiveOn(this IQueryable<StoreFrontConfiguration> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.StoreFront.IsPending)
+				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Client.IsPending)
+				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+		/// <summary>
 		/// IQueryable query extension to check where StoreBinding, Client, and StoreFront s currently active and not pending or expired
 		/// </summary>
 		/// <param name="query"></param>
@@ -465,6 +539,61 @@ namespace GStore.Data
 		}
 
 
+		public static IQueryable<Discount> WhereIsActive(this IQueryable<Discount> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<Discount> WhereIsActiveOnOrSelected(this IQueryable<Discount> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.DiscountId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+
+		}
+
+		public static IQueryable<ProductReview> WhereIsActive(this IQueryable<ProductReview> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<ProductReview> WhereIsActiveOnOrSelected(this IQueryable<ProductReview> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.ProductReviewId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Product.IsPending)
+					&& (data.Product.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Product.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+
+		}
+
 
 		/// <summary>
 		/// Returns true if store front and client (parent record) are both active
@@ -479,6 +608,21 @@ namespace GStore.Data
 			}
 
 			return storeFront.IsActiveDirect() && storeFront.Client.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
+		public static bool IsActiveBubble(this StoreFrontConfiguration storeFrontConfig)
+		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+
+			return storeFrontConfig.IsActiveDirect() && storeFrontConfig.StoreFront.IsActiveBubble();
 		}
 
 		/// <summary>

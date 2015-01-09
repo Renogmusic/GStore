@@ -1,8 +1,4 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
-@using GStore.AppHtmlHelpers;
-@using GStore.Data;
-@using GStore.Models;
-
 @{
 	List<Product> products = Model.CurrentProductsListOrNull;
 	if (products == null)
@@ -14,14 +10,14 @@
 		@:<div class="row ProductListContainer">
 		foreach (Product product in products)
 		{
-			@:<div class="ProductListItem col-sm-@(Model.StoreFront.CatalogProductColSm) col-md-@(Model.StoreFront.CatalogProductColMd) col-lg-@(Model.StoreFront.CatalogProductColLg)">
+			@:<div class="ProductListItem col-sm-@(Model.StoreFrontConfig.CatalogProductColSm) col-md-@(Model.StoreFrontConfig.CatalogProductColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductColLg)">
 
 			string url = Url.Action("ViewProductByName", "Catalog", new { urlName = product.UrlName });
 			string imageUrl = product.ImageUrl(Request.ApplicationPath);
 
-			@:<a class="ProductListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" title="@(Html.AttributeEncode(product.Name))" /></a>
+			@:<a class="ProductListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" /></a>
 			@:<br />
-			@:<a class="ProductListTextLink" href="@(url)">@(Html.Encode(product.Name))</a>
+			@:<a class="ProductListTextLink" href="@(url)">@(product.Name)</a>
 			@:</div>
 
 

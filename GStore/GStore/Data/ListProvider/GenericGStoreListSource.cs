@@ -126,6 +126,18 @@ namespace GStore.Data.ListProvider
 			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 
+		public virtual bool DeleteRange(IEnumerable<TEntity> entities)
+		{
+			foreach (var entity in entities)
+			{
+				if (_list.Contains(entity))
+				{
+					_list.Remove(entity);
+				}
+			}
+			return true;
+		}
+
 		public virtual TEntity Update(TEntity entity)
 		{
 			TEntity existingEntity = this.FindById(GetKeyFieldValue(entity));

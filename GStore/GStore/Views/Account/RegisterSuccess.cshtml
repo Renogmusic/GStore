@@ -1,6 +1,12 @@
 ﻿@model GStore.Models.UserProfile
 @{
 	ViewBag.Title = "Registered";
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 
 <h2>Thank you, @Model.FullName for registering!</h2>
@@ -10,3 +16,11 @@
 	</p>
 	@Html.ActionLink("Click here to view your account info.", "Index", "Profile")
 </div>
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout", "LoginOrGuest", "Checkout", new { ContinueAsLogin = true }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

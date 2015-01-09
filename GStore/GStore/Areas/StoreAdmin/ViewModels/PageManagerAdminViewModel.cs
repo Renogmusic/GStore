@@ -9,8 +9,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 {
 	public class PageManagerAdminViewModel : StoreAdminViewModel
 	{
-		public PageManagerAdminViewModel(StoreFront storeFront, UserProfile userProfile, IOrderedQueryable<Page> pages)
-			: base(storeFront, userProfile)
+		public PageManagerAdminViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, IOrderedQueryable<Page> pages)
+			: base(storeFrontConfig, userProfile)
 		{
 			this.Pages = pages;
 		}

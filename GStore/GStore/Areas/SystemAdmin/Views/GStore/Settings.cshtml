@@ -1,9 +1,5 @@
 ﻿@using System.Reflection
-@using GStore.AppHtmlHelpers
 @using GStore.Areas.SystemAdmin.Controllers.BaseClasses
-@using GStore.Models
-@using GStore.Data
-@using System.Reflection
 
 @{
 	Assembly assembly = typeof(GStore.Models.StoreFront).Assembly;
@@ -28,6 +24,9 @@
 			padding: 10px;
 		}
 </style>
+<hr />
+@Html.ActionLink("OK", "About", "GStore", null, new { @class = "btn btn-default" })
+<hr />
 <div class="row" style="padding-top: 1em;">
 	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
 		<h2>Application Settings</h2>
@@ -125,3 +124,5 @@
 		@Html.Partial("_AboutGStorePartial")
 	</div>
 </div>
+<hr />
+@Html.ActionLink("OK", "About", "GStore", null, new { @class = "btn btn-default" })

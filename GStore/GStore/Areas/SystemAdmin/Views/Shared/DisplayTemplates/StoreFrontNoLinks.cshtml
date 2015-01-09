@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.StoreFront
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no store front)
@@ -10,8 +9,9 @@ else
 	bool isActiveBubble = Model.IsActiveBubble();
 	string className = isActiveBubble ? string.Empty : "text-warning";
 	<span class="@className" style="white-space:nowrap">
-		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.StoreFrontId)] @(isActiveDirect ? string.Empty : " [INACTIVE]")
+		@(Html.DisplayNameForModel()) '@(Model.CurrentConfigOrAny().Name)' [@(Model.StoreFrontId)] @(isActiveDirect ? string.Empty : " [INACTIVE]")
 	</span>
-	@: - @(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
+	<br />
+	@(Html.DisplayFor(model => model.Client, "ClientNoLinks"))
 }
 

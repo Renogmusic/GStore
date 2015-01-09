@@ -1,0 +1,170 @@
+﻿@model Order
+@{
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	
+	if (Model.OrderItems.Count > 0)
+	{
+		<div class="table-responsive">
+			<table class="table table-striped  table-condensed">
+				<tr>
+					<th class="text-center">
+						@config.CartItemColumnLabel.OrDefault("Item")
+					</th>
+					@if (config.CartItemQuantityColumnShow)
+					{
+						<th class="text-center">
+							@config.CartItemQuantityColumnLabel.OrDefault("Quantity")
+						</th>
+					}
+					@if (config.CartItemTotalColumnShow)
+					{
+						<th class="text-center">
+							@config.CartItemTotalColumnLabel.OrDefault("Total")
+						</th>
+					}
+				</tr>
+				@{
+		foreach (OrderItem item in Model.OrderItems)
+		{
+			<tr>
+				<td class="text-center">@item.Product.Name</td>
+				@if (config.CartItemQuantityColumnShow)
+				{
+					<td class="text-center">@item.Quantity</td>
+				}
+				@if (config.CartItemTotalColumnShow)
+				{
+					<td class="text-center">@item.LineTotal</td>
+				}
+			</tr>
+		}
+				}
+			</table>
+
+		</div>
+	}
+}
+
+<div class="col-lg-offset-8 table-responsive">
+	<table class="table table-striped table-condensed">
+		@if (config.CartOrderItemCountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderItemCountLabel.OrDefault("Order Item Count")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.ItemCount)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderDiscountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderDiscountLabel.OrDefault("Order Discount")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@(Model.DiscountCode.OrDefault("(none)"))
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderSubtotalShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderSubtotalLabel.OrDefault("Sub-Total")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Subtotal)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderTaxShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderTaxLabel.OrDefault("Tax")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Tax)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderShippingShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderShippingLabel.OrDefault("Shipping")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Shipping)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderHandlingShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderHandlingLabel.OrDefault("Handling")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Handling)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (config.CartOrderDiscountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@config.CartOrderDiscountLabel.OrDefault("Order Discount")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.OrderDiscount)
+					</strong>
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="text-right-md text-right-lg">
+				<strong>
+					@config.CartOrderTotalLabel.OrDefault("Order Total")
+				</strong>
+			</td>
+			<td class="title-align">
+				<strong>
+					@Html.DisplayFor(model => model.Total)
+				</strong>
+			</td>
+		</tr>
+	</table>
+
+</div>
+

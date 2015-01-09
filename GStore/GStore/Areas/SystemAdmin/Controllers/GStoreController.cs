@@ -9,18 +9,25 @@ namespace GStore.Areas.SystemAdmin.Controllers
 {
     public class GStoreController : BaseClasses.SystemAdminBaseController
     {
+		public ActionResult Index()
+		{
+			return About();
+		}
 		public ActionResult About()
 		{
+			this.BreadCrumbsFunc = htmlHelper => this.GStoreAboutBreadcrumb(htmlHelper, false);
 			return View("About");
 		}
 
 		public ActionResult SystemInfo()
 		{
+			this.BreadCrumbsFunc = htmlHelper => this.GStoreSystemInfoBreadcrumb(htmlHelper, false);
 			return View("SystemInfo");
 		}
 
 		public ActionResult Settings()
 		{
+			this.BreadCrumbsFunc = htmlHelper => this.GStoreSettingsBreadcrumb(htmlHelper, false);
 			return View("Settings");
 		}
 

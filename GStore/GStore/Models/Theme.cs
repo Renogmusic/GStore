@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("Themes")]
+	[Table("Theme")]
 	public class Theme : BaseClasses.ClientRecord
 	{
 		[Display(Name="Theme Id")]
@@ -19,6 +19,7 @@ namespace GStore.Models
 		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Folder Name")]
+		[UIHint("ThemeFolder")]
 		public string FolderName { get; set; }
 
 		[Required]
@@ -29,23 +30,23 @@ namespace GStore.Models
 		[Display(Name = "Order")]
 		public int Order { get; set; }
 
-		[Display(Name = "Account Store Fronts")]
-		public virtual ICollection<StoreFront> AccountStoreFronts { get; set; }
+		[Display(Name = "Account Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> AccountStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Admin Store Fronts")]
-		public virtual ICollection<StoreFront> AdminStoreFronts { get; set; }
+		[Display(Name = "Admin Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> AdminStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Catalog Store Fronts")]
-		public virtual ICollection<StoreFront> CatalogStoreFronts { get; set; }
+		[Display(Name = "Catalog Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> CatalogStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Default New Page Store Fronts")]
-		public virtual ICollection<StoreFront> DefaultNewPageStoreFronts { get; set; }
+		[Display(Name = "Default New Page Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> DefaultNewPageStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Notifications Store Fronts")]
-		public virtual ICollection<StoreFront> NotificationsStoreFronts { get; set; }
+		[Display(Name = "Notifications Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> NotificationsStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Profile Store Fronts")]
-		public virtual ICollection<StoreFront> ProfileStoreFronts { get; set; }
+		[Display(Name = "Profile Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> ProfileStoreFrontConfigurations { get; set; }
 
 	}
 }

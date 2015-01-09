@@ -1,11 +1,4 @@
-﻿@using Microsoft.AspNet.Identity
-@using GStore.Identity
-@using GStore.Models
-@using GStore.Data
-@using GStore.AppHtmlHelpers
-@using GStore.Areas.SystemAdmin
-
-@{
+﻿@{
 	using (Html.BeginForm("LogOff", "Account", new { Area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
 	{
 		@Html.AntiForgeryToken()
@@ -35,7 +28,7 @@
 		</li>
 		<li>
 			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
-				<small>( @User.Identity.GetUserName() )</small>
+				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
 			</a>
 		</li>
 		<li class="AdminMenuItemLevel2">

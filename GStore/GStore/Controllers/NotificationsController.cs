@@ -19,7 +19,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.NotificationsLayoutName;
+				return CurrentStoreFrontOrThrow.CurrentConfig().NotificationsLayoutName;
 			}
 		}
 
@@ -27,7 +27,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.NotificationsTheme.FolderName;
+				return CurrentStoreFrontOrThrow.CurrentConfig().NotificationsTheme.FolderName;
 			}
 		}
 

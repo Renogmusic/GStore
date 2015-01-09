@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace GStore.Models
 {
-	[Table("Pages")]
+	[Table("Page")]
 	public class Page : BaseClasses.StoreFrontRecord
 	{
 		[Key]
@@ -42,8 +42,11 @@ namespace GStore.Models
 		[MaxLength(250)]
 		public string Url { get; set; }
 
-		[Display(Name = "For Registered Only", ShortName="Registered Only")]
+		[Display(Name = "For Registered Only", ShortName = "Registered Only")]
 		public bool ForRegisteredOnly { get; set; }
+
+		[Display(Name = "For Anonymous Only", ShortName = "Anonymous Only")]
+		public bool ForAnonymousOnly { get; set; }
 
 		[Display(Name = "Meta Tag Description")]
 		[MaxLength(2000)]
@@ -88,6 +91,7 @@ namespace GStore.Models
 		[AllowHtml]
 		[Display(Name = "Web Form Success Thank You Message Body")]
 		[MaxLength(2000)]
+		[DataType(DataType.Html)]
 		public string WebFormThankYouMessage { get; set; }
 
 		[Display(Name = "Web Form Success Page Id")]
@@ -119,6 +123,9 @@ namespace GStore.Models
 
 		[Display(Name = "Web Form Responses")]
 		public virtual ICollection<WebFormResponse> WebFormResponses { get; set; }
+
+		[Display(Name = "Nav Bar Items")]
+		public virtual ICollection<NavBarItem> NavBarItems { get; set; }
 
 	}
 }

@@ -90,7 +90,7 @@ namespace GStore.Exceptions
 			return GetEnumDescription(errorpage);
 		}
 
-		public static void HandleHttpException(HttpException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleHttpException(HttpException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -105,14 +105,18 @@ namespace GStore.Exceptions
 				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_NotFound, ex.GetHttpCode(), ex, clearError, context, controller);
+					return true;
 				}
+				return false;
 			}
 			else if (httpCode == 400)
 			{
 				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_BadRequest, ex.GetHttpCode(), ex, clearError, context, controller);
+					return true;
 				}
+				return false;
 			}
 			else
 			{
@@ -120,11 +124,13 @@ namespace GStore.Exceptions
 				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
+					return true;
 				}
+				return false;
 			}
 		}
 
-		public static void HandleHttpCompileException(HttpCompileException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleHttpCompileException(HttpCompileException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -135,10 +141,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleHttpParseException(HttpParseException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleHttpParseException(HttpParseException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -149,10 +157,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleAppException(ApplicationException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleAppException(ApplicationException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -163,10 +173,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_AppError, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleInvalidOperationException(InvalidOperationException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleInvalidOperationException(InvalidOperationException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -177,10 +189,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_InvalidOperation, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleDynamicPageInactiveException(DynamicPageInactiveException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleDynamicPageInactiveException(DynamicPageInactiveException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -191,10 +205,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_NotFound, (int)HttpStatusCode.NotFound, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleDynamicPageNotFoundException(DynamicPageNotFoundException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleDynamicPageNotFoundException(DynamicPageNotFoundException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -205,10 +221,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_NotFound, (int)HttpStatusCode.NotFound, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleNoMatchingBindingException(NoMatchingBindingException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleNoMatchingBindingException(NoMatchingBindingException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			if (Properties.Settings.Current.AppEnableBindingAutoMapToFirstStoreFront && !Data.RepositoryFactory.SystemWideRepository(controller.User).StoreFronts.IsEmpty())
 			{
@@ -224,10 +242,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_GStoreNotFound, (int)HttpStatusCode.OK, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleStoreFrontInactiveException(StoreFrontInactiveException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleStoreFrontInactiveException(StoreFrontInactiveException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -238,10 +258,12 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_GStoreInactive, (int)HttpStatusCode.OK, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
-		public static void HandleUnknownException(Exception ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
+		public static bool HandleUnknownException(Exception ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
@@ -252,7 +274,9 @@ namespace GStore.Exceptions
 			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_UnknownError, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
+				return true;
 			}
+			return false;
 		}
 
 		private static void LogHttpException(HttpException ex, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
@@ -538,7 +562,7 @@ namespace GStore.Exceptions
 				else
 				{
 					//if store front error page not found, look for client custom error page
-					customErrorFolder = storeFront.Client.ClientVirtualDirectoryToMap() + "/ErrorPages/";
+					customErrorFolder = storeFront.Client.ClientVirtualDirectoryToMap(context.Request.ApplicationPath) + "/ErrorPages/";
 					customErrorPath = customErrorFolder + errorPage.ErrorPageFileName();
 					if (System.IO.File.Exists(context.Server.MapPath(customErrorPath)))
 					{

@@ -1,6 +1,4 @@
 ﻿@model GStore.Models.ValueList
-@using GStore.AppHtmlHelpers
-@using GStore.Data
 
 <div class="row">
 	<h2 class="jumbotron SysAdminDetailsPageTitle col-md-offset-3 col-md-6 text-center text-success">
@@ -62,30 +60,6 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.Order)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.AllowEdit)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.AllowEdit)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.AllowDelete)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.AllowDelete)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.IsMultiSelect)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.IsMultiSelect)
 		</dd>
 
 		<dt>

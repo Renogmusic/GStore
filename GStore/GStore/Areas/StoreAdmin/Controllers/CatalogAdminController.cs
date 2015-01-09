@@ -9,6 +9,11 @@ namespace GStore.Areas.StoreAdmin.Controllers
 {
     public class CatalogAdminController : BaseClasses.StoreAdminBaseController
     {
+		public ActionResult AA_Status_Incomplete()
+		{
+			throw new NotImplementedException();
+		}
+
 		[AuthorizeGStoreAction(GStoreAction.Catalog_Manager)]
 		public ActionResult Manager()
 		{

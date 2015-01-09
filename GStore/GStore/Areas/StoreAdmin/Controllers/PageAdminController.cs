@@ -20,7 +20,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		{
 			IOrderedQueryable<Page> pages = CurrentStoreFrontOrThrow.Pages.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			PageManagerAdminViewModel viewModel = new PageManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, pages);
+			PageManagerAdminViewModel viewModel = new PageManagerAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, pages);
 			return View("Manager", viewModel);
 		}
 
@@ -28,7 +28,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		public ActionResult Create(string Tab)
 		{
 			Models.Page page = GStoreDb.Pages.Create();
-			page.SetDefaultsForNew(CurrentStoreFrontOrThrow);
+			page.SetDefaultsForNew(CurrentStoreFrontOrThrow.CurrentConfig());
 			Models.ViewModels.PageEditViewModel viewModel = new PageEditViewModel(page, isStoreAdminEdit: true, isCreatePage: true, activeTab: Tab);
 			return View("Create", viewModel);
 		}
@@ -73,13 +73,18 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				{
 					Page page = null;
 					page = GStoreDb.CreatePage(pageEditViewModel, storeFront, CurrentUserProfileOrThrow);
-					AddUserMessage("Page Created!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] was created successfully for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Page Created!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
+					if (pageEditViewModel.CreateMenuItemWithPage)
+					{
+						NavBarItem navBarItem = GStoreDb.CreateNavBarItemForPage(page, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+						AddUserMessage("Site Menu Updated!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] was added to the site menu for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					}
 					return RedirectToAction("Manager");
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while Creating page '" + pageEditViewModel.Name + "' Url: '" + pageEditViewModel.Url + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
+					string errorMessage = "An error occurred while Creating page '" + pageEditViewModel.Name + "' Url: '" + pageEditViewModel.Url + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -91,7 +96,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Page Create Error", "There was an error with your entry for new page '" + pageEditViewModel.Name.ToHtml() + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Page Create Error", "There was an error with your entry for new page '" + pageEditViewModel.Name.ToHtml() + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			pageEditViewModel.IsStoreAdminEdit = true;
@@ -114,7 +119,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.Page page = storeFront.Pages.Where(p => p.PageId == id.Value).SingleOrDefault();
 			if (page == null)
 			{
-				AddUserMessage("Page not found", "Sorry, the page you are trying to edit cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Page not found", "Sorry, the page you are trying to edit cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("Manager");
 
 			}
@@ -135,7 +140,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.Page page = storeFront.Pages.Where(p => p.PageId == id.Value).SingleOrDefault();
 			if (page == null)
 			{
-				AddUserMessage("Page not found", "Sorry, the page you are trying to view cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Page not found", "Sorry, the page you are trying to view cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("Manager");
 
 			}
@@ -157,7 +162,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.Page page = storeFront.Pages.Where(p => p.PageId == id.Value).SingleOrDefault();
 			if (page == null)
 			{
-				AddUserMessage("Page not found", "Sorry, the page you are trying to Delete cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Page not found", "Sorry, the page you are trying to Delete cannot be found. Page id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("Manager");
 
 			}
@@ -181,7 +186,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.Page page = storeFront.Pages.Where(p => p.PageId == id.Value).SingleOrDefault();
 			if (page == null)
 			{
-				AddUserMessage("Page not found", "Sorry, the page you are trying to Delete cannot be found. It may have been deleted already. Page id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Page not found", "Sorry, the page you are trying to Delete cannot be found. It may have been deleted already. Page id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("Manager");
 
 			}
@@ -194,11 +199,18 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				{
 					GStoreDb.PageSections.Delete(section);
 				}
+
+				List<NavBarItem> navBarItemsToDelete = page.NavBarItems.ToList();
+				foreach (NavBarItem navBarItem in navBarItemsToDelete)
+				{
+					GStoreDb.NavBarItems.Delete(navBarItem);
+				}
+
 				bool deleted = GStoreDb.Pages.DeleteById(id.Value);
 				GStoreDb.SaveChanges();
 				if (deleted)
 				{
-					AddUserMessage("Page Deleted", "Page '" + pageName.ToHtml() + "' [" + id + "] was deleted successfully. Sections deleted: " + sectionsToDelete.Count + ".", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Page Deleted", "Page '" + pageName.ToHtml() + "' [" + id + "] was deleted successfully. Sections deleted: " + sectionsToDelete.Count + " Menu Items Deleted: " + navBarItemsToDelete.Count + ".", AppHtmlHelpers.UserMessageType.Success);
 					return RedirectToAction("Manager");
 				}
 				AddUserMessage("Page Delete Error", "There was an error deleting Page '" + pageName.ToHtml() + "' [" + id + "]. It may have already been deleted.", AppHtmlHelpers.UserMessageType.Warning);
@@ -276,13 +288,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				try
 				{
 					page = GStoreDb.UpdatePage(pageEditViewModel, this, storeFront, CurrentUserProfileOrThrow);
-					AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Page Changes Saved!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] saved successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 					pageEditViewModel = new PageEditViewModel(page, isStoreAdminEdit: true, activeTab: pageEditViewModel.ActiveTab);
 					return PartialView("_PageEditPartial", pageEditViewModel);
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while saving your changes to page '" + pageEditViewModel.Name + "' Url: '" + pageEditViewModel.Url + "' [" + pageEditViewModel.PageId + "] for Store Front: '" + storeFront.Name + "' [" + storeFront.StoreFrontId + "] \nError: '" + ex.GetType().FullName + "'";
+					string errorMessage = "An error occurred while saving your changes to page '" + pageEditViewModel.Name + "' Url: '" + pageEditViewModel.Url + "' [" + pageEditViewModel.PageId + "] for Store Front: '" + storeFront.CurrentConfig().Name + "' [" + storeFront.StoreFrontId + "] \nError: '" + ex.GetType().FullName + "'";
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -294,7 +306,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Page Edit Error", "There was an error with your entry for page " + pageEditViewModel.Name.ToHtml() + " [" + pageEditViewModel.PageId + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Page Edit Error", "There was an error with your entry for page " + pageEditViewModel.Name.ToHtml() + " [" + pageEditViewModel.PageId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			pageEditViewModel.IsStoreAdminEdit = true;

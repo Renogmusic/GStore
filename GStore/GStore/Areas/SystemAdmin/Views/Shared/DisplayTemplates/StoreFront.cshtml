@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.StoreFront
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no store front)
@@ -14,9 +13,10 @@ else
 	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Store Front";
 
 	<span class="@className" style="white-space:nowrap">
-		@(Html.DisplayNameForModel()) '@(Model.Name)' [@(Model.StoreFrontId)]@(inactiveText)
+		@(Html.DisplayNameForModel()) '@(Model.CurrentConfigOrAny().Name)' [@(Model.StoreFrontId)]@(inactiveText)
 	</span>
 	@: &nbsp;@(Html.ActionLink(linkText, "Details", "StoreFrontSysAdmin", new { id = Model.StoreFrontId }, new { @class = viewLinkClass }))
-	@: &nbsp; - @(Html.DisplayFor(model => model.Client))
+	<br />
+	@(Html.DisplayFor(model => model.Client))
 }
 

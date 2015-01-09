@@ -1,12 +1,17 @@
-﻿@using GStore.Models
-@{
+﻿@{
 	ViewBag.Title = "Confirm Email";
+	
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
-
 <h2>@ViewBag.Title.</h2>
 <div>
 	<p>
 		Thank you for confirming your email!<br /><br />
-		Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+		Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: routeValues, htmlAttributes: new { id = "loginLink" })
 	</p>
 </div>

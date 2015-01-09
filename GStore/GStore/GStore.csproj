@@ -32,22 +32,32 @@
     <DocumentationFile>
     </DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <MvcBuildViews>true</MvcBuildViews>
     <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -102,7 +112,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -193,7 +203,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Twilio.3.6.24\lib\3.5\Twilio.Api.dll</HintPath>
+      <HintPath>..\packages\Twilio.3.6.25\lib\3.5\Twilio.Api.dll</HintPath>
     </Reference>
     <Reference Include="Twilio.Mvc">
       <HintPath>..\packages\Twilio.Mvc.3.1.12\lib\3.5\Twilio.Mvc.dll</HintPath>
@@ -208,12 +218,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -229,13 +233,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppHtmlHelpers\AppHtmlHelpers.cs" />
+    <Compile Include="AppHtmlHelpers\EnumHelper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\OrderAdmin\OrderAdminAreaRegistration.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\BaseClasses\StoreAdminBaseController.cs" />
+    <Compile Include="Areas\StoreAdmin\Controllers\ClientConfigAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\CatalogAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\NavBarItemAdminController.cs" />
@@ -245,16 +252,34 @@
     <Compile Include="Areas\StoreAdmin\Controllers\OrdersAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ValueListAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\UserProfileAdminController.cs" />
-    <Compile Include="Areas\StoreAdmin\Controllers\ClientConfigAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\ReportsAdminController.cs" />
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigManagerAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\NavBarItemEditAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\NavBarItemManagerAdminViewModel.cs" />
-    <Compile Include="Models\ViewModels\WebFormEditViewModel.cs" />
+    <Compile Include="Controllers\CheckoutController.cs" />
+    <Compile Include="Controllers\OrderStatusController.cs" />
+    <Compile Include="Data\Extensions\OrderExtensions.cs" />
+    <Compile Include="Migrations\201501091417398_Initial.cs" />
+    <Compile Include="Migrations\201501091417398_Initial.Designer.cs">
+      <DependentUpon>201501091417398_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Payment.cs" />
+    <Compile Include="Models\DeliveryInfoShipping.cs" />
+    <Compile Include="Models\DeliveryInfoDigital.cs" />
+    <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\ViewModels\CartConfigViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigAdminViewModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListManagerAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListItemEditAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\WebFormManagerAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\PageManagerAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigAdminViewModel.cs" />
-    <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\StoreAdminAreaRegistration.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BaseClasses\SystemAdminBaseController.cs" />
@@ -262,14 +287,20 @@
     <Compile Include="Areas\SystemAdmin\Controllers\PageTemplateSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ClientSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\BindingsSysAdminController.cs" />
+    <Compile Include="Areas\SystemAdmin\Controllers\StoreFrontSysAdminController.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Areas\SystemAdmin\Controllers\ThemeSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\WebFormSysAdmin.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\ValueListSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\UserProfileSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\Extensions\SysAdminActivationExtensions.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Data\Extensions\FormProcessorExtensions.cs" />
+    <Compile Include="Data\Extensions\SeedDataExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Data\Extensions\SortExtensions.cs" />
-    <Compile Include="Areas\SystemAdmin\Controllers\StoreFrontSysAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\SystemAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\SystemAdminAreaRegistration.cs" />
@@ -287,13 +318,17 @@
     <Compile Include="Controllers\StoreFrontFileController.cs" />
     <Compile Include="Data\EntityFrameworkCodeFirstProvider\GStoreEFDbContextModelBuilder.cs" />
     <Compile Include="Data\Extensions\NewStoreFrontExtensions.cs" />
+    <Compile Include="Data\Extensions\CartExtensions.cs" />
     <Compile Include="Identity\AuthorizeGStoreAction.cs" />
     <Compile Include="Identity\AuthorizeSystemAdmin.cs" />
     <Compile Include="Identity\GStoreAction.cs" />
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BaseClasses\ClientRecordUserProfileOptional.cs" />
     <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
     <Compile Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cs" />
     <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
+    <Compile Include="Models\Discount.cs" />
+    <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\ClientRoleAction.cs" />
     <Compile Include="Models\ClientRole.cs" />
     <Compile Include="Identity\GStoreAuthorizationExtensions.cs">
@@ -304,9 +339,13 @@
     <Compile Include="Data\Extensions\PageExtensions.cs" />
     <Compile Include="Data\Extensions\UserProfileExtensions.cs" />
     <Compile Include="Data\GStoreValueDataType.cs" />
+    <Compile Include="Models\Cart.cs" />
+    <Compile Include="Models\ProductReview.cs" />
     <Compile Include="Models\ProductCategoryAttribute.cs" />
-    <Compile Include="Models\ViewModels\WebFormFieldEditViewModel.cs" />
-    <Compile Include="Models\ViewModels\WebFormViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormFieldEditAdminViewModel.cs" />
+    <Compile Include="Models\StoreFrontConfiguration.cs" />
+    <Compile Include="Models\ViewModels\CheckoutViewModels.cs" />
+    <Compile Include="Models\ViewModels\OrderStatusViewModel.cs" />
     <Compile Include="Models\WebFormFieldResponse.cs" />
     <Compile Include="Models\WebFormResponse.cs" />
     <Compile Include="Models\WebFormField.cs" />
@@ -319,7 +358,6 @@
     <Compile Include="Data\Extensions\NotificationExtensions.cs" />
     <Compile Include="Data\ListProvider\ListContext.cs" />
     <Compile Include="Data\ListProvider\GenericGStoreListSource.cs" />
-    <Compile Include="Data\Extensions\SeedDataExtensions.cs" />
     <Compile Include="Data\Interfaces.cs" />
     <Compile Include="Data\EntityFrameworkCodeFirstProvider\GenericGStoreEFEntity.cs" />
     <Compile Include="Data\RepositoryFactory.cs" />
@@ -351,7 +389,6 @@
     <Compile Include="Models\PageSection.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Models\Client.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ViewModels\NotificationCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\NotificationSettingsViewModel.cs" />
     <Compile Include="Models\EventLogs.cs">
@@ -388,6 +425,11 @@
     <Compile Include="AppHtmlHelpers\UserMessage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Create.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Delete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Details.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Edit.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Index.cshtml" />
     <Content Include="Content\Archive\bootstrap-theme.css" />
     <Content Include="Content\Archive\bootstrap-theme.min.css" />
     <Content Include="Content\Archive\bootstrap.css" />
@@ -396,23 +438,23 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\NavBarTinyLogo.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\large.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\square.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\tiny.png" />
-    <Content Include="Content\Clients\StarterClient\Images\Logo\wide.png" />
-    <Content Include="Content\Clients\StarterClient\Scripts\Scripts.js" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\NavBarTinyLogo.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\large.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\square.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\tiny.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Logo\wide.png" />
-    <Content Include="Content\Clients\StarterClient\Images\NotFound.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\NotFound.png" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Scripts\Scripts.js" />
-    <Content Include="Content\Clients\StarterClient\Styles\Styles.css" />
+    <Content Include="Content\Clients\SampleClient\Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Clients\SampleClient\Images\Logo\NavBarTinyLogo.png" />
+    <Content Include="Content\Clients\SampleClient\Images\Logo\large.png" />
+    <Content Include="Content\Clients\SampleClient\Images\Logo\square.png" />
+    <Content Include="Content\Clients\SampleClient\Images\Logo\tiny.png" />
+    <Content Include="Content\Clients\SampleClient\Images\Logo\wide.png" />
+    <Content Include="Content\Clients\SampleClient\Scripts\Scripts.js" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\NavBarTinyLogo.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\large.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\square.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\tiny.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\wide.png" />
+    <Content Include="Content\Clients\SampleClient\Images\NotFound.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\NotFound.png" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Scripts\Scripts.js" />
+    <Content Include="Content\Clients\SampleClient\Styles\Styles.css" />
     <Content Include="Content\Server\ErrorPages\Error_AppError.html" />
     <Content Include="Content\Server\ErrorPages\Error_BadRequest.html" />
     <Content Include="Content\Server\ErrorPages\Error_GStoreInactive.html" />
@@ -463,7 +505,6 @@
     <Content Include="Content\Server\Images\Logo\wide.png" />
     <Content Include="Content\Server\Images\Utility\LeftUpArrow.png" />
     <Content Include="Content\Server\Scripts\Scripts.js" />
-    <Content Include="Content\Server\Styles\GStoreApp - Copy.css" />
     <Content Include="Content\Server\Styles\Styles.css" />
     <Content Include="Content\Server\Images\favicon.ico" />
     <Content Include="Content\Archive\themes\base\accordion.css" />
@@ -526,13 +567,13 @@
     <Content Include="Areas\StoreAdmin\Views\web.config" />
     <Content Include="Areas\StoreAdmin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\StoreAdmin\Index.cshtml" />
-    <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\Clients\StarterClient\Fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\_StoreAdmin_Layout_Bootstrap.cshtml" />
+    <Content Include="Content\Clients\SampleClient\Fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Clients\SampleClient\Fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\Clients\SampleClient\Fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\_StoreAdmin_Layout_Default.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\_StoreAdminMenuPartial.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\_StoreAdminMenuItemsPartial.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\_StoreAdminLoginPartial.cshtml" />
@@ -584,16 +625,11 @@
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\Details.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\Edit.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\Index.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\_SystemAdmin_Layout_Bootstrap.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\_SystemAdmin_Layout_Default.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\_SystemAdmin_LoginPartial.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\_SystemAdmin_MenuItemsPartial.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\_SystemAdmin_MenuPartial.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\SystemAdmin\Index.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Index.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Details.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Create.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Edit.cshtml" />
-    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\Delete.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Create.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Manager.cshtml" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.woff" />
@@ -622,14 +658,6 @@
     <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Edit.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Index.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Manager.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Add.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Edit.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\View.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Delete.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\ViewValue.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\EditValue.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\DeleteValue.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\AddValue.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Create.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Delete.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ValueListSysAdmin\Details.cshtml" />
@@ -717,8 +745,8 @@
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Details.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Edit.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Manager.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormEditViewModel.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormFieldEditViewModel_HiddenPopup.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormEditAdminViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\WebFormFieldEditAdminViewModel_HiddenPopup.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Int.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\NavBarItemAdmin\AdvancedCreate.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\NavBarItemAdmin\AdvancedDelete.cshtml" />
@@ -732,6 +760,66 @@
     <Content Include="Areas\StoreAdmin\Views\NavBarItemAdmin\EditorTemplates\NavBarItemTreeNode.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\NavBarItemAdmin\Create.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\NavBarItemAdmin\DisplayTemplates\NavBarItem.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Edit.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Details.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Delete.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\Create.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\_ValueListEditPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\_ValueListDisplayPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\DisplayTemplates\ValueListEditAdminViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\DisplayTemplates\ListItemEditAdminViewModel_HiddenPopup.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\EditorTemplates\ValueListEditAdminViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ValueListAdmin\EditorTemplates\ListItemEditAdminViewModel_HiddenPopup.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\DisplayTemplates\ValueList.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormResponse.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ClientConfigAdmin\_StoreFrontViewNoTabsPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\ClientConfigAdmin\StoreFrontDelete.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\_FooterPartial.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\_FooterPartial.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_AppError.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_BadRequest.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_GStoreInactive.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_GStoreNotFound.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_HttpError.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_InvalidOperation.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_NotFound.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\Error_UnknownError.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_UnknownError.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_AppError.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_BadRequest.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_GStoreInactive.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_GStoreNotFound.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_HttpError.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_InvalidOperation.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\Error_NotFound.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\SeekAndDestroy.cshtml" />
+    <Content Include="Content\Clients\poo\ErrorPages\SeekAndDestroy.cshtml" />
+    <Content Include="Content\Clients\poo\Fonts\SeekAndDestroy.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\SeekAndDestroy.cshtml" />
+    <Content Include="Areas\OrderAdmin\Views\web.config" />
+    <Content Include="Areas\StoreAdmin\Views\ClientConfigAdmin\DisplayTemplates\WebForm.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Enum.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\EnumRadio.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Boolean.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Datetime.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Password.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Datetime.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\EnumWithSelect.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Client.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\MultiLineText.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\StoreFront.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Html.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\ThemeFolder.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Int16.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\String.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Int32.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\Int64.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\ValueList.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\ValueListNullable.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\ClientWithPostback.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\EmailAddress.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\ClientNullableWithPostback.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\StoreFrontNullable.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -752,7 +840,6 @@
     <Content Include="Scripts\CKEditor\README.md" />
     <Content Include="Scripts\CKEditor\samples\plugins\htmlwriter\assets\outputforflash\outputforflash.fla" />
     <Content Include="Scripts\CKEditor\skins\kama\readme.md" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="ReadMe.txt" />
     <Content Include="Robots.txt" />
     <Content Include="Content\Server\Scripts\GStoreApp.js" />
@@ -1060,15 +1147,16 @@
     <Content Include="Scripts\CKEditor\skins\kama\images\sprites_ie6.png" />
     <Content Include="Scripts\CKEditor\skins\kama\images\toolbar_start.gif" />
     <Content Include="Scripts\CKEditor\styles.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <None Include="Scripts\jquery-2.1.3.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.3.js" />
+    <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.2.js" />
     <Content Include="Scripts\jquery-ui-1.11.2.min.js" />
     <Content Include="Scripts\jquery.signalR-2.1.2.js" />
     <Content Include="Scripts\jquery.signalR-2.1.2.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery-2.1.3.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -1127,7 +1215,7 @@
     <Content Include="Views\Shared\EditorTemplates\NotificationLink.cshtml" />
     <Content Include="Views\Account\Lockout.cshtml" />
     <Content Include="Views\Shared\_Layout_Plain.cshtml" />
-    <Content Include="Views\Shared\_Layout_Bootstrap.cshtml" />
+    <Content Include="Views\Shared\_Layout_Default.cshtml" />
     <Content Include="Views\Shared\_NavBarCatalogPartial.cshtml" />
     <Content Include="Views\Catalog\Index.cshtml" />
     <Content Include="Views\Shared\_NavbarPartial.cshtml" />
@@ -1168,13 +1256,37 @@
     <Content Include="Views\Shared\DisplayTemplates\PageEditViewModel.cshtml" />
     <Content Include="Views\Shared\_PageDisplayPartial.cshtml" />
     <Content Include="Views\Account\_RegisterWebFormFieldsPartial.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormEditViewModel.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormEditViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormEditAdminViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormEditAdminViewModel.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\_WebFormDisplayPartial.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\_WebFormEditPartial.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormFieldEditViewModel.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormFieldEditViewModel_HiddenPopup.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormFieldEditAdminViewModel.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormFieldEditAdminViewModel_HiddenPopup.cshtml" />
     <Content Include="Views\Account\ForgotPasswordNoUser.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Cart\DisplayTemplates\Product.cshtml" />
+    <Content Include="Views\Cart\DisplayTemplates\decimal.cshtml" />
+    <Content Include="Views\Cart\Index - Copy.cshtml" />
+    <Content Include="Views\Checkout\DeliveryInfoDigitalOnly.cshtml" />
+    <Content Include="Views\Checkout\DeliveryMethod.cshtml" />
+    <Content Include="Views\Checkout\PaymentInfo.cshtml" />
+    <Content Include="Views\Checkout\ConfirmOrder.cshtml" />
+    <Content Include="Views\Checkout\LogInOrGuest.cshtml" />
+    <Content Include="Views\Checkout\_TopStatusPartial.cshtml" />
+    <Content Include="Views\Checkout\EditorTemplates\string.cshtml" />
+    <Content Include="Views\Checkout\EditorTemplates\text.cshtml" />
+    <Content Include="Views\Checkout\EditorTemplates\enum.cshtml" />
+    <Content Include="Views\Checkout\EditorTemplates\EmailAddress.cshtml" />
+    <Content Include="Views\Checkout\DeliveryInfoShipping.cshtml" />
+    <Content Include="Views\Checkout\EditorTemplates\enumRadio.cshtml" />
+    <Content Include="Views\Checkout\DisplayTemplates\decimal.cshtml" />
+    <Content Include="Views\Checkout\DisplayTemplates\Product.cshtml" />
+    <Content Include="Views\Checkout\DisplayTemplates\currency.cshtml" />
+    <Content Include="Views\Checkout\_CartSimplePartial.cshtml" />
+    <Content Include="Views\OrderStatus\_OrderFullInfoPartial.cshtml" />
+    <Content Include="Views\OrderStatus\View.cshtml" />
+    <Content Include="Views\Checkout\_CartFullInfoPartial.cshtml" />
+    <Content Include="Views\Checkout\_CheckoutWebFormFieldsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1184,13 +1296,21 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Clients\StarterClient\ErrorPages\" />
-    <Folder Include="Content\Clients\StarterClient\Images\Categories\" />
-    <Folder Include="Content\Clients\StarterClient\Images\Products\" />
-    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\ErrorPages\" />
-    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Categories\" />
-    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Images\Products\" />
-    <Folder Include="Content\Clients\StarterClient\StoreFronts\StarterStoreFront\Styles\" />
+    <Folder Include="Areas\OrderAdmin\Controllers\" />
+    <Folder Include="Areas\OrderAdmin\Models\" />
+    <Folder Include="Areas\OrderAdmin\Views\Shared\" />
+    <Folder Include="Content\Clients\SampleClient\ErrorPages\" />
+    <Folder Include="Content\Clients\SampleClient\Images\Categories\" />
+    <Folder Include="Content\Clients\SampleClient\Images\Products\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\ErrorPages\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Categories\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Products\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Styles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201501091417398_Initial.resx">
+      <DependentUpon>201501091417398_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -1225,15 +1345,15 @@
           <IISUrl>http://localhost:55520/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://www.hi.com</CustomServerUrl>
+          <CustomServerUrl>
+          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>if "$(ConfigurationName)" == "Release" rd /s /q "$(ProjectDir)obj\Debug"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

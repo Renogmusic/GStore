@@ -17,19 +17,23 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 		{
 			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = true;
+			this._useInactiveStoreFrontAsActive = false;
+			this._useInactiveStoreFrontConfigAsActive = true;
 		}
 
 		public StoreAdminBaseController()
 		{
 			this._logActionsAsPageViews = false;
 			this._throwErrorIfUserProfileNotFound = true;
+			this._useInactiveStoreFrontAsActive = false;
+			this._useInactiveStoreFrontConfigAsActive = true;
 		}
 
 		protected override string LayoutName
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.AdminLayoutName;
+				return CurrentStoreFrontConfigOrAny.AdminLayoutName;
 			}
 		}
 
@@ -37,7 +41,7 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.AdminTheme.FolderName;
+				return CurrentStoreFrontConfigOrAny.AdminTheme.FolderName;
 			}
 		}
 
@@ -46,7 +50,7 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 		{
 			get
 			{
-				return new GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+				return new GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel(CurrentStoreFrontConfigOrAny, CurrentUserProfileOrThrow);
 			}
 		}
 

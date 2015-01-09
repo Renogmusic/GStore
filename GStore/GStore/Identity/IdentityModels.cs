@@ -120,6 +120,11 @@ namespace GStore.Identity
 			return new AspNetIdentityContext();
 		}
 
+		public void Initialize(bool force)
+		{
+			this.Database.Initialize(force);
+		}
+
 		protected AspNetIdentityRoleManager _cachedRoleManager = null;
 		protected AspNetIdentityRoleManager RoleManager
 		{
@@ -163,7 +168,15 @@ namespace GStore.Identity
 			}
 			catch (Exception ex)
 			{
-				throw new ApplicationException("Error performing role check. Database error checking roles", ex);
+				this.Database.Initialize(true);
+				try
+				{
+					return this.RoleManager.RoleExists(roleName);
+				}
+				catch (Exception)
+				{
+					throw new ApplicationException("Error performing role check. Database error checking roles and re-running initialize did not fix it.", ex);
+				}
 			}
 		}
 
@@ -195,7 +208,15 @@ namespace GStore.Identity
 			}
 			catch (Exception ex)
 			{
-				throw new ApplicationException("Error performing role check. Database error checking roles", ex);
+				this.Database.Initialize(true);
+				try
+				{
+					exists = this.RoleManager.RoleExists(roleName);
+				}
+				catch (Exception)
+				{
+					throw new ApplicationException("Error performing role check. Database error checking roles and re-running initialize did not fix it.", ex);
+				}
 			}
 
 			if (!exists)

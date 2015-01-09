@@ -20,7 +20,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		{
 			IOrderedQueryable<WebForm> webForms = CurrentClientOrThrow.WebForms.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			WebFormManagerAdminViewModel viewModel = new WebFormManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForms);
+			WebFormManagerAdminViewModel viewModel = new WebFormManagerAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, webForms);
 			return View("Manager", viewModel);
 		}
 
@@ -28,26 +28,26 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		public ActionResult Create(string Tab)
 		{
 			Models.WebForm webForm = GStoreDb.WebForms.Create();
-			webForm.SetDefaultsForNew(CurrentClientOrThrow.ClientId);
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, isStoreAdminEdit: true, isCreatePage:true);
+			webForm.SetDefaultsForNew(CurrentClientOrThrow);
+			WebFormEditAdminViewModel viewModel = new WebFormEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, isStoreAdminEdit: true, isCreatePage:true);
 			return View("Create", viewModel);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.WebForms_Create)]
-		public virtual ActionResult Create(WebFormEditViewModel webFormEditViewModel)
+		public virtual ActionResult Create(WebFormEditAdminViewModel WebFormEditAdminViewModel)
 		{
 
 			Client client = CurrentClientOrThrow;
-			bool nameIsValid = GStoreDb.ValidateWebFormName(this, webFormEditViewModel.Name, CurrentClientOrThrow.ClientId, null);
+			bool nameIsValid = GStoreDb.ValidateWebFormName(this, WebFormEditAdminViewModel.Name, CurrentClientOrThrow.ClientId, null);
 
 			if (nameIsValid && ModelState.IsValid)
 			{
 				try
 				{
 					WebForm webForm = null;
-					webForm = GStoreDb.CreateWebForm(webFormEditViewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
+					webForm = GStoreDb.CreateWebForm(WebFormEditAdminViewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 					AddUserMessage("Web Form Created!", "Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "] was created successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
 					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.WebForms_Manager))
 					{
@@ -57,7 +57,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while Creating Web Form '" + webFormEditViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] \nError: " + ex.GetType().FullName;
+					string errorMessage = "An error occurred while Creating Web Form '" + WebFormEditAdminViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] \nError: " + ex.GetType().FullName;
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -69,17 +69,17 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Web Form Create Error", "There was an error with your entry for new Web Form '" + webFormEditViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Web Form Create Error", "There was an error with your entry for new Web Form '" + WebFormEditAdminViewModel.Name.ToHtml() + "' for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
 			}
-			webFormEditViewModel.IsStoreAdminEdit = true;
-			webFormEditViewModel.IsCreatePage = true;
-			webFormEditViewModel.IsActiveDirect = !(webFormEditViewModel.IsPending || (webFormEditViewModel.StartDateTimeUtc > DateTime.UtcNow) || (webFormEditViewModel.EndDateTimeUtc < DateTime.UtcNow));
+			WebFormEditAdminViewModel.IsStoreAdminEdit = true;
+			WebFormEditAdminViewModel.IsCreatePage = true;
+			WebFormEditAdminViewModel.IsActiveDirect = !(WebFormEditAdminViewModel.IsPending || (WebFormEditAdminViewModel.StartDateTimeUtc > DateTime.UtcNow) || (WebFormEditAdminViewModel.EndDateTimeUtc < DateTime.UtcNow));
 			
-			return View("Create", webFormEditViewModel);
+			return View("Create", WebFormEditAdminViewModel);
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.WebForms_Edit)]
-		public ActionResult Edit(int? id, string Tab, string SortBy, bool? SortAscending)
+		public ActionResult Edit(int? id, string Tab, string SortBy, bool? SortAscending, int? webFormFieldId)
 		{
 			if (!id.HasValue)
 			{
@@ -95,7 +95,14 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 			}
 
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			//attempt sort so it can show if sort is unknown
+			webForm.WebFormFields.AsQueryable().ApplySort(this, SortBy, SortAscending);
+
+			WebFormEditAdminViewModel viewModel = new WebFormEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			if (webFormFieldId.HasValue)
+			{
+				ViewData.Add("WebFormFieldId", webFormFieldId.Value);
+			}
 			return View("Edit", viewModel);
 		}
 
@@ -116,7 +123,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 			}
 
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			WebFormEditAdminViewModel viewModel = new WebFormEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
 			return View("Details", viewModel);
 		}
 
@@ -138,7 +145,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 			}
 
-			WebFormEditViewModel viewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
+			WebFormEditAdminViewModel viewModel = new WebFormEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, Tab, true, false, false, sortBy: SortBy, sortAscending: SortAscending);
 			return View("Delete", viewModel);
 		}
 
@@ -196,36 +203,36 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.WebForms_Edit)]
-		public virtual PartialViewResult UpdateWebFormAjax(int? id, WebFormEditViewModel webFormEditViewModel, WebFormFieldEditViewModel[] WebFormFields, string FastAddField)
+		public virtual PartialViewResult UpdateWebFormAjax(int? id, WebFormEditAdminViewModel WebFormEditAdminViewModel, WebFormFieldEditAdminViewModel[] WebFormFields, string FastAddField)
 		{
 			if (!id.HasValue)
 			{
 				return HttpBadRequestPartial("id is null");
 			}
 
-			if (webFormEditViewModel.WebFormId == 0)
+			if (WebFormEditAdminViewModel.WebFormId == 0)
 			{
 				return HttpBadRequestPartial("Web Form Id in view model is 0");
 			}
 
-			if (webFormEditViewModel.WebFormId != id.Value)
+			if (WebFormEditAdminViewModel.WebFormId != id.Value)
 			{
-				return HttpBadRequestPartial("Web Form Id mismatch. Parameter value: '" + id.Value + "' != view model value: " + webFormEditViewModel.WebFormId);
+				return HttpBadRequestPartial("Web Form Id mismatch. Parameter value: '" + id.Value + "' != view model value: " + WebFormEditAdminViewModel.WebFormId);
 			}
 
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
-			WebForm webFormToUpdate = storeFront.Client.WebForms.SingleOrDefault(wf => wf.WebFormId == webFormEditViewModel.WebFormId);
+			WebForm webFormToUpdate = storeFront.Client.WebForms.SingleOrDefault(wf => wf.WebFormId == WebFormEditAdminViewModel.WebFormId);
 
 			if (webFormToUpdate == null)
 			{
-				throw new ApplicationException("Web Form not found in client web forms. WebFormId: " + webFormEditViewModel.WebFormId + " Client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]");
+				throw new ApplicationException("Web Form not found in client web forms. WebFormId: " + WebFormEditAdminViewModel.WebFormId + " Client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]");
 			}
 
-			bool nameIsValid = GStoreDb.ValidateWebFormName(this, webFormEditViewModel.Name, storeFront.ClientId, webFormEditViewModel.WebFormId);
+			bool nameIsValid = GStoreDb.ValidateWebFormName(this, WebFormEditAdminViewModel.Name, storeFront.ClientId, WebFormEditAdminViewModel.WebFormId);
 			bool fastAddIsValid = false;
 			if (!string.IsNullOrWhiteSpace(FastAddField))
 			{
-				fastAddIsValid = GStoreDb.ValidateWebFormFieldName(this, FastAddField, storeFront.ClientId, webFormEditViewModel.WebFormId, null);
+				fastAddIsValid = GStoreDb.ValidateWebFormFieldName(this, FastAddField, storeFront.ClientId, WebFormEditAdminViewModel.WebFormId, null);
 			}
 
 			if (nameIsValid && ModelState.IsValid)
@@ -234,11 +241,11 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				WebForm webForm = null;
 				try
 				{
-					webForm = GStoreDb.UpdateWebForm(webFormEditViewModel, storeFront, CurrentUserProfileOrThrow);
+					webForm = GStoreDb.UpdateWebForm(WebFormEditAdminViewModel, storeFront, CurrentUserProfileOrThrow);
 
 					if (WebFormFields != null && WebFormFields.Count() > 0)
 					{
-						foreach (WebFormFieldEditViewModel field in WebFormFields)
+						foreach (WebFormFieldEditAdminViewModel field in WebFormFields)
 						{
 							GStoreDb.UpdateWebFormField(field, storeFront, CurrentUserProfileOrThrow);
 						}
@@ -246,19 +253,19 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 					if (fastAddIsValid)
 					{
-						WebFormField newField = GStoreDb.CreateWebFormFieldFastAdd(webFormEditViewModel, FastAddField, storeFront, CurrentUserProfileOrThrow);
+						WebFormField newField = GStoreDb.CreateWebFormFieldFastAdd(WebFormEditAdminViewModel, FastAddField, storeFront, CurrentUserProfileOrThrow);
 						AddUserMessage("Field Created!", "Field '" + newField.Name.ToHtml() + "' [" + newField.WebFormFieldId + "] created successfully.", UserMessageType.Success);
 						ModelState.Remove("FastAddField");
 					}
 
 					AddUserMessage("Web Form Changes Saved!", "Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "] saved successfully for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
 					this.ModelState.Clear();
-					webFormEditViewModel = new WebFormEditViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, isStoreAdminEdit: true, activeTab: webFormEditViewModel.ActiveTab, sortBy: webFormEditViewModel.SortBy, sortAscending: webFormEditViewModel.SortAscending);
-					return PartialView("_WebFormEditPartial", webFormEditViewModel);
+					WebFormEditAdminViewModel = new WebFormEditAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, webForm, isStoreAdminEdit: true, activeTab: WebFormEditAdminViewModel.ActiveTab, sortBy: WebFormEditAdminViewModel.SortBy, sortAscending: WebFormEditAdminViewModel.SortAscending);
+					return PartialView("_WebFormEditPartial", WebFormEditAdminViewModel);
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while saving your changes to Web Form '" + webFormEditViewModel.Name + "' [" + webFormEditViewModel.WebFormId + "] for Client: '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "] \nError: '" + ex.GetType().FullName + "'";
+					string errorMessage = "An error occurred while saving your changes to Web Form '" + WebFormEditAdminViewModel.Name + "' [" + WebFormEditAdminViewModel.WebFormId + "] for Client: '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "] \nError: '" + ex.GetType().FullName + "'";
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -270,18 +277,31 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Web Form Edit Error", "There was an error with your entry for Web Form " + webFormEditViewModel.Name.ToHtml() + " [" + webFormEditViewModel.WebFormId + "] for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Web Form Edit Error", "There was an error with your entry for Web Form " + WebFormEditAdminViewModel.Name.ToHtml() + " [" + WebFormEditAdminViewModel.WebFormId + "] for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]. Please correct it.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			foreach (string key in this.ModelState.Keys.Where(k => k.StartsWith("WebFormFields[")).ToList())
 			{
-				this.ModelState.Remove(key);
-			}
-			
+				string temp = key.Remove(0, ("WebFormFields[").Length);
+				temp = temp.Remove(temp.IndexOf(']'));
+				int index = int.Parse(temp);
 
-			webFormEditViewModel.FillFieldsFromViewModel(webFormToUpdate, WebFormFields);
-			webFormEditViewModel.IsStoreAdminEdit = true;
-			return PartialView("_WebFormEditPartial", webFormEditViewModel);
+				System.Web.Mvc.ModelState value = null;
+				this.ModelState.TryGetValue(key, out value);
+				if (value.Errors.Count == 0)
+				{
+					this.ModelState.Remove(key);
+				}
+				else
+				{
+					this.ModelState.AddModelError("", "There was an error with field #" + (index + 1) + ". Please correct it and save again.");
+				}
+			}
+
+
+			WebFormEditAdminViewModel.FillFieldsFromViewModel(webFormToUpdate, WebFormFields);
+			WebFormEditAdminViewModel.IsStoreAdminEdit = true;
+			return PartialView("_WebFormEditPartial", WebFormEditAdminViewModel);
 		}
 
 

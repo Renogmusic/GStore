@@ -1,25 +1,23 @@
 ﻿@model GStore.Exceptions.GStoreErrorInfo
-@using GStore.AppHtmlHelpers
-@using GStore.Models
 @{
 	string title = "Error " + Model.ErrorCode + " - Page Not Found";
 	ViewBag.Title = title;
-	StoreFront storeFront = Html.CurrentStoreFront(false);
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
 }
 <h1 class="text-danger">@title</h1>
 @{
-	if (storeFront != null)
+	if (storeFrontConfig != null)
 	{
-		<h2 class="text-danger">@storeFront.Name</h2>
+		<h2 class="text-danger">@storeFrontConfig.Name</h2>
 	}
 }
 <h2 class="text-danger">
 	Sorry, we could not find the page you are looking for.<br />
 </h2>
 <p>@title</p>
-<h3>@Html.GStoreLocalLink("Click here for the " + (storeFront == null ? string.Empty : storeFront.Name + " ") + "home page", "/")</h3>
+<h3>@Html.GStoreLocalLink("Click here for the " + (storeFrontConfig == null ? string.Empty : storeFrontConfig.Name + " ") + "home page", "/")</h3>
 <p><small>@DateTime.Now.ToLocalTime()</small></p>
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
-	@Html.Partial("_ErrorDetailsPartial", Model)
+	Html.RenderPartial("_ErrorDetailsPartial", Model);
 }

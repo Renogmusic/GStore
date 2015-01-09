@@ -10,6 +10,7 @@ namespace GStore.Models.ViewModels
 	public class CatalogViewModel
 	{
 		public StoreFront StoreFront { get; set; }
+		public StoreFrontConfiguration StoreFrontConfig { get; set; }
 		public List<TreeNode<ProductCategory>> CategoryTree { get; set; }
 		public int MaxLevels { get; set; }
 		public ProductCategory CurrentCategoryOrNull { get; set; }
@@ -18,6 +19,7 @@ namespace GStore.Models.ViewModels
 		public CatalogViewModel(StoreFront storeFront, List<TreeNode<ProductCategory>> categoryTree, int maxLevels, ProductCategory currentCategoryOrNull, Product currentProductOrNull)
 		{
 			this.StoreFront = storeFront;
+			this.StoreFrontConfig = storeFront.CurrentConfig();
 			this.CategoryTree = categoryTree;
 			this.MaxLevels = maxLevels;
 			this.CurrentCategoryOrNull = currentCategoryOrNull;

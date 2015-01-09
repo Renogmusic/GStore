@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
-	[Table("ValueLists")]
+	[Table("ValueList")]
 	public class ValueList : BaseClasses.ClientRecord
 	{
 		[Key]
@@ -17,19 +17,11 @@ namespace GStore.Models
 		public string Name { get; set; }
 
 		[Required]
+		[MaxLength(200)]
 		public string Description { get; set; }
 
 		[Required]
 		public int Order { get; set; }
-
-		[Display(Name = "Editable")]
-		public bool AllowEdit { get; set; }
-
-		[Display(Name = "Removable")]
-		public bool AllowDelete { get; set; }
-
-		[Display(Name="Multiple Selections")]
-		public bool IsMultiSelect { get; set; }
 
 		[Display(Name = "Value List Items")]
 		public virtual ICollection<ValueListItem> ValueListItems { get; set; }

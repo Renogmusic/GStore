@@ -29,7 +29,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.ProfileLayoutName;
+				return CurrentStoreFrontConfigOrThrow.ProfileLayoutName;
 			}
 		}
 
@@ -37,7 +37,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.ProfileTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.ProfileTheme.FolderName;
 			}
 		}
 
@@ -100,9 +100,9 @@ namespace GStore.Controllers
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
 
-			string subject = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
-			string textBody = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
-			string htmlBody = "Test Email from " + storeFront.Name + " - " + Request.BindingHostName();
+			string subject = "Test Email from " + storeFront.CurrentConfig().Name + " - " + Request.BindingHostName();
+			string textBody = "Test Email from " + storeFront.CurrentConfig().Name + " - " + Request.BindingHostName();
+			string htmlBody = "Test Email from " + storeFront.CurrentConfig().Name + " - " + Request.BindingHostName();
  
 			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendEmail(client, profile.Email, profile.FullName, subject, textBody, htmlBody, Request.Url.Host);
 			if (result)
@@ -128,7 +128,7 @@ namespace GStore.Controllers
 			Client client = CurrentClientOrThrow;
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
-			string textBody = "Test Text Message from " + storeFront.Name + " - " + Request.BindingHostName();
+			string textBody = "Test Text Message from " + storeFront.CurrentConfig().Name + " - " + Request.BindingHostName();
 
 			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendSms(client, profile.AspNetIdentityUser().PhoneNumber, textBody, Request.Url.Host);
 			if (result)

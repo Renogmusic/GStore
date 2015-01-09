@@ -1,7 +1,4 @@
 ﻿@model GStore.Models.ValueListItem
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Data
 
 @using (Html.BeginForm()) 
 {
@@ -33,85 +30,16 @@
 	</div>
 	
     <div class="form-horizontal">
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-			</div>
-        </div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-			</div>
-        </div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsInteger, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsInteger, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsInteger, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IntegerValue, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IntegerValue, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IntegerValue, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsString, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsString, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsString, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.StringValue, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.StringValue, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.StringValue, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-			</div>
-		</div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-			</div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-			<div class="col-md-10 text-left">
-				@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-				@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
-			</div>
-        </div>
+		@Html.EditorFor(model => model.Name)
+		@Html.EditorFor(model => model.Description)
+		@Html.EditorFor(model => model.Order)
+		@Html.EditorFor(model => model.IsInteger)
+		@Html.EditorFor(model => model.IntegerValue)
+		@Html.EditorFor(model => model.IsString)
+		@Html.EditorFor(model => model.StringValue)
+		@Html.EditorFor(model => model.IsPending)
+		@Html.EditorFor(model => model.StartDateTimeUtc)
+		@Html.EditorFor(model => model.EndDateTimeUtc)
     </div>
 	
 	<div class="row">

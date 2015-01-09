@@ -10,8 +10,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 {
 	public class NavBarItemManagerAdminViewModel : StoreAdminViewModel
 	{
-		public NavBarItemManagerAdminViewModel(StoreFront storeFront, UserProfile userProfile, IOrderedQueryable<NavBarItem> navBarItems)
-			: base(storeFront, userProfile)
+		public NavBarItemManagerAdminViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, IOrderedQueryable<NavBarItem> navBarItems)
+			: base(storeFrontConfig, userProfile)
 		{
 			this.NavBarItems = navBarItems;
 			if (navBarItems != null)

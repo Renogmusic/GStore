@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.ValueListItem
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no value list)
@@ -13,5 +12,6 @@ else
 		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.ValueListItemId))]
 		@(isActiveDirect ? string.Empty : " [INACTIVE]")
 	</span>
-	@: - @(Html.DisplayFor(m => m.ValueList, "ValueListNoLinks"))
+	<br/>
+	@(Html.DisplayFor(m => m.ValueList, "ValueListNoLinks"))
 }

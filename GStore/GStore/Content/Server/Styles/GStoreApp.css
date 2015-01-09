@@ -29,6 +29,9 @@
   border: 0;
   overflow: scroll;
 }
+.bg-selected{
+	background-color: rgba(255, 255, 0, 0.20);
+}
 
 /*Original Bootstrap .table-responsive */
 /*
@@ -461,4 +464,26 @@ dd label.help-label-top, label.help-label-top {
 {
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
+}
+
+:-webkit-input-placeholder { /* WebKit browsers */
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #999;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #999;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    #999;
+}
+.modelinvalid
+{
+	background-color: rgba(255, 0, 0, .15)
+}
+.form-control{
+	display:inline-block;
 }

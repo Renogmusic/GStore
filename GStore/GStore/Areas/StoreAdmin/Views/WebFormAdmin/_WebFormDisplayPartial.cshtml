@@ -1,11 +1,7 @@
-﻿@model GStore.Models.ViewModels.WebFormEditViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-@using GStore.Models
-@using GStore.Models.ViewModels
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormEditAdminViewModel
 
 @{
-	List<WebFormFieldEditViewModel> fields = Model.WebFormFieldEditViewModels();
+	List<WebFormFieldEditAdminViewModel> fields = Model.WebFormFieldEditAdminViewModels();
 
 	bool isReadOnly = Model.IsReadOnly;
 	bool isDeletePage = Model.IsDeletePage;
@@ -79,7 +75,6 @@
 		margin-top: 0;
 		padding-bottom: 0;
 		margin-bottom: 10px;
-		/*background-color: red;*/
 	}
 
 	.form-group label {
@@ -87,7 +82,6 @@
 		margin-top: 5px;
 		padding-bottom: 0;
 		margin-bottom: 0;
-		/*background-color: green;*/
 	}
 </style>
 <script>
@@ -155,8 +149,8 @@
 	}
 
 	function SetActiveTab(tabName) {
-		if (document.getElementById('WebFormEditViewModel_ActiveTab')) {
-			document.getElementById('WebFormEditViewModel_ActiveTab').value = tabName;
+		if (document.getElementById('WebFormEditAdminViewModel_ActiveTab')) {
+			document.getElementById('WebFormEditAdminViewModel_ActiveTab').value = tabName;
 		}
 		if (document.getElementById('ActiveTab')) {
 			document.getElementById('ActiveTab').value = tabName;
@@ -437,11 +431,11 @@
 			@{
 				if (fields.Count == 0)
 				{
-					<h3 class="col-md-offset-3 col-md-9 title-align">There are no fields for this form. Add one.</h3>
+					<h3 class="col-md-offset-3 col-md-9 title-align">There are no fields for this form. Click Edit to add fields.</h3>
 				}
 				else
 				{
-					GStore.Models.ViewModels.WebFormFieldEditViewModel nullModel = null;
+					WebFormFieldEditAdminViewModel nullModel = null;
 					<div class="table-responsive">
 						<table class="table table-hover table-striped">
 							<tr>
@@ -450,6 +444,7 @@
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.Name, "Details", true, true, "Fields")</th>
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.DataTypeString, "Details", true, true, "Fields")</th>
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.IsRequired, "Details", true, true, "Fields")</th>
+								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.ValueList, "Details", true, true, "Fields")</th>
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.WebFormFieldResponses, "Details", true, true, "Fields")</th>
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.Order, "Details", true, true, "Fields")</th>
 								<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.WebFormFieldId, "Details", true, true, "Fields")</th>
@@ -461,10 +456,10 @@
 
 							@{
 					int index = 0;
-					foreach (WebFormFieldEditViewModel fieldModel in fields)
+					foreach (WebFormFieldEditAdminViewModel fieldModel in fields)
 					{
 						string htmlFieldName = "WebFormFields[" + index + "]";
-						string fieldRowClass = fieldModel.IsActiveDirect ? "" : "bg-warning";
+						string fieldRowClass = fieldModel.IsActiveDirect ? "" : "text-warning";
 						MvcHtmlString popupfieldOnClick = new MvcHtmlString(" onclick=\"$('#FieldEditModal_" + fieldModel.Index + "').modal('show');\"");
 
 						@:
@@ -481,6 +476,7 @@
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Name, templateName: null, htmlFieldName: htmlFieldName)</td>
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.DataTypeString, templateName: null, htmlFieldName: htmlFieldName)</td>
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.IsRequired, templateName: null, htmlFieldName: htmlFieldName)</td>
+						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.ValueList, templateName: null, htmlFieldName: htmlFieldName)</td>
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldResponses.Count, templateName: null, htmlFieldName: htmlFieldName)</td>
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.Order, templateName: null, htmlFieldName: htmlFieldName)</td>
 						<td class="text-center" @(popupfieldOnClick)>@Html.DisplayFor(model => fieldModel.WebFormFieldId, templateName: null, htmlFieldName: htmlFieldName)</td>
@@ -506,9 +502,9 @@
 					</table>
 				</div>
 
-				foreach (WebFormFieldEditViewModel fieldModel in fields)
+				foreach (WebFormFieldEditAdminViewModel fieldModel in fields)
 				{
-				@Html.DisplayFor(model => fieldModel, "WebFormFieldEditViewModel_HiddenPopup")
+				@Html.DisplayFor(model => fieldModel, "WebFormFieldEditAdminViewModel_HiddenPopup")
 				}
 				}
 				}

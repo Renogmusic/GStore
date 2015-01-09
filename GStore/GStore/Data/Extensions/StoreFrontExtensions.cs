@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Routing;
 using GStore.AppHtmlHelpers;
 using GStore.Models.ViewModels;
+using GStore.Areas.StoreAdmin.ViewModels;
+using GStore.Models.BaseClasses;
 
 namespace GStore.Data
 {
@@ -19,14 +21,34 @@ namespace GStore.Data
 		/// <param name="request"></param>
 		/// <param name="throwErrorIfNotFound">If true, throws an error when storefront is not found</param>
 		/// <returns></returns>
-		public static StoreFront GetCurrentStoreFront(this IGstoreDb db, HttpRequestBase request, bool throwErrorIfNotFound, bool returnInactiveIfFound)
+		public static StoreFront GetCurrentStoreFront(this IGstoreDb db, HttpRequestBase request, bool throwErrorIfNotFound, bool returnInactiveIfFound, bool ignoreStoreFrontConfigCheck)
 		{
 			//if context has already set the current store front, return it
-			if (db.CachedStoreFront != null)
+			if (db.CachedStoreFront != null && db.CachedStoreFrontConfig != null)
 			{
 				//note: only active storefront is cached, inactives are always queried from database
 				return db.CachedStoreFront;
 			}
+
+			if (db.CachedStoreFront != null && db.CachedStoreFrontConfig == null)
+			{
+				//storefront is set, but not config, try to get current config
+				StoreFrontConfiguration storeFrontActiveCurrentConfig = db.CachedStoreFront.CurrentConfig();
+				if (storeFrontActiveCurrentConfig != null)
+				{
+					db.CachedStoreFrontConfig = storeFrontActiveCurrentConfig;
+					return db.CachedStoreFront;
+				}
+				if (ignoreStoreFrontConfigCheck)
+				{
+					StoreFrontConfiguration storeFrontInactiveConfig = db.CachedStoreFront.CurrentConfigOrAny();
+					if (storeFrontInactiveConfig != null)
+					{
+						return db.CachedStoreFront;
+					}
+				}
+			}
+
 
 			if (request == null)
 			{
@@ -53,7 +75,34 @@ namespace GStore.Data
 			{
 				//active match found, update cache and return the active match
 				db.CachedStoreFront = activeStoreBinding.StoreFront;
-				return activeStoreBinding.StoreFront;
+				StoreFrontConfiguration activeConfig = db.CachedStoreFront.CurrentConfig();
+				if (activeConfig != null)
+				{
+					db.CachedStoreFrontConfig = activeConfig;
+					return activeStoreBinding.StoreFront;
+				}
+				else
+				{
+					StoreFrontConfiguration inactiveConfig = db.CachedStoreFront.CurrentConfigOrAny();
+					if (ignoreStoreFrontConfigCheck && inactiveConfig != null)
+					{
+						return activeStoreBinding.StoreFront;
+					}
+					string noConfigErrorMessage = "No active configuration found for store front id [" + db.CachedStoreFront.StoreFrontId + "]";
+					if (inactiveConfig == null)
+					{
+						noConfigErrorMessage += "\n No configuration was found for this store front. Create One.";
+					}
+					else
+					{
+						noConfigErrorMessage += "\n Configuration '" + inactiveConfig.ConfigurationName + "' [" + inactiveConfig.StoreFrontConfigurationId + "] is inactive."
+							+ "\n IsPending: " + inactiveConfig.IsPending + (inactiveConfig.IsPending ? " <-- Potential Issue" : "")
+							+ "\n StartDateTimeUtc: " + inactiveConfig.StartDateTimeUtc.ToString() + (inactiveConfig.StartDateTimeUtc > DateTime.UtcNow ? " <-- Potential Issue" : "")
+							+ "\n EndDateTimeUtc: " + inactiveConfig.EndDateTimeUtc.ToString() + (inactiveConfig.EndDateTimeUtc < DateTime.UtcNow ? " <-- Potential Issue" : "");
+
+					}
+					throw new Exceptions.StoreFrontInactiveException(noConfigErrorMessage, request.Url, activeStoreBinding.StoreFront);
+				}
 			}
 
 			if ((throwErrorIfNotFound == false) && (returnInactiveIfFound == false))
@@ -276,7 +325,7 @@ namespace GStore.Data
 			if (throwErrorIfNotFound && page == null)
 			{
 				string errorMessage = "Active Page not found for url: " + url
-					+ "\n-Store Front [" + storeFront.StoreFrontId + "]: " + storeFront.Name
+					+ "\n-Store Front [" + storeFront.StoreFrontId + "]: " + storeFront.CurrentConfig().Name
 					+ "\n-Client [" + storeFront.Client.ClientId + "]: " + storeFront.Client.Name;
 
 				var inactivePagesQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
@@ -294,7 +343,7 @@ namespace GStore.Data
 					+ "\n - Page.IsPending: " + inactivePages[0].IsPending.ToString()
 					+ "\n - Page.StartDateTimeUtc(local): " + inactivePages[0].StartDateTimeUtc.ToLocalTime()
 					+ "\n - Page.EndDateTimeUtc(local): " + inactivePages[0].EndDateTimeUtc.ToLocalTime()
-					+ "\n - StoreFront [" + inactivePages[0].StoreFront.StoreFrontId + "]: " + inactivePages[0].StoreFront.Name
+					+ "\n - StoreFront [" + inactivePages[0].StoreFront.StoreFrontId + "]: " + inactivePages[0].StoreFront.CurrentConfigOrAny().Name
 					+ "\n - Client [" + inactivePages[0].StoreFront.Client.ClientId + "]: " + inactivePages[0].StoreFront.Client.Name;
 
 				throw new Exceptions.DynamicPageInactiveException(errorMessage, url, storeFront);
@@ -303,6 +352,12 @@ namespace GStore.Data
 			return page;
 		}
 
+		/// <summary>
+		/// Handles null storeFront by returning false for permissions; unless user is sysadmin (then always true)
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <param name="userProfile"></param>
+		/// <returns></returns>
 		public static bool ShowStoreAdminLink(this StoreFront storeFront, UserProfile userProfile)
 		{
 			if (userProfile == null)
@@ -365,44 +420,97 @@ namespace GStore.Data
 
 		public static string OutgoingMessageSignature(this StoreFront storeFront)
 		{
-			return "\n-Sent From " + storeFront.Name + " \n " + storeFront.PublicUrl;
+			return "\n-Sent From " + storeFront.CurrentConfig().Name + " \n " + storeFront.CurrentConfigOrAny().PublicUrl;
 		}
 
 		public static string StoreFrontVirtualDirectoryToMap(this StoreFront storeFront, string applicationPath)
 		{
-			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.Folder);
+			if (storeFront.CurrentConfig() == null)
+			{
+				throw new ArgumentNullException("storeFront.CurrentConfig()");
+			}
+			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfig().Folder.ToFileName());
 		}
 
-		public static void SetDefaultsForNew(this StoreFront storeFront, int? clientId)
+		public static string StoreFrontVirtualDirectoryToMapAnyConfig(this StoreFront storeFront, string applicationPath)
 		{
-			if (clientId.HasValue)
+			if (storeFront.CurrentConfigOrAny() == null)
 			{
-				storeFront.ClientId = clientId.Value;
+				throw new ArgumentNullException("storeFront.CurrentConfigOrAny()");
 			}
-			storeFront.Name = "New Store Front " + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
-			storeFront.Folder = storeFront.Name;
+			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfigOrAny().Folder.ToFileName());
+		}
+
+		public static void SetDefaultsForNew(this StoreFront storeFront, Client client)
+		{
+			if (client != null)
+			{
+				storeFront.Client = client;
+				storeFront.ClientId = client.ClientId;
+				storeFront.Order = (client.StoreFronts.Count == 0 ? 1000 : client.StoreFronts.Max(sf => sf.Order) + 10);
+			}
+			else
+			{
+				storeFront.Order = 1000;
+			}
 			storeFront.IsPending = false;
 			storeFront.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeFront.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
-			storeFront.MetaApplicationName = storeFront.Name;
-			storeFront.MetaApplicationTileColor = "#880088";
-			storeFront.MetaDescription = "New GStore Storefront " + storeFront.Name;
-			storeFront.MetaKeywords = "GStore Storefront " + storeFront.Name;
-			storeFront.AdminLayoutName = "Bootstrap";
-			storeFront.AccountLayoutName = "Bootstrap";
-			storeFront.ProfileLayoutName = "Bootstrap";
-			storeFront.NotificationsLayoutName = "Bootstrap";
-			storeFront.CatalogLayoutName = "Bootstrap";
-			storeFront.DefaultNewPageLayoutName = "Bootstrap";
-			storeFront.CatalogPageInitialLevels = 6;
-			storeFront.NavBarCatalogMaxLevels = 6;
-			storeFront.NavBarItemsMaxLevels = 6;
-			storeFront.CatalogCategoryColLg = 3;
-			storeFront.CatalogCategoryColMd = 4;
-			storeFront.CatalogCategoryColSm = 6;
-			storeFront.CatalogProductColLg = 2;
-			storeFront.CatalogProductColMd = 3;
-			storeFront.CatalogProductColSm = 6;
+		}
+
+		public static void SetDefaultsForNew(this StoreFrontConfiguration storeFrontConfig, Client client)
+		{
+			if (client != null)
+			{
+				storeFrontConfig.Client = client;
+				storeFrontConfig.ClientId = client.ClientId;
+			}
+			string dateTimeString = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+
+			storeFrontConfig.ConfigurationName = "Default";
+			storeFrontConfig.Name = "Store Front " + (storeFrontConfig.StoreFrontId == 0 ? dateTimeString : storeFrontConfig.StoreFrontId.ToString());
+			storeFrontConfig.Folder = storeFrontConfig.Name;
+			storeFrontConfig.HtmlFooter = storeFrontConfig.Name.ToHtml();
+			storeFrontConfig.Order = 100;
+			storeFrontConfig.PublicUrl = "http://www.gstore.renog.info";
+			storeFrontConfig.IsPending = false;
+			storeFrontConfig.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			storeFrontConfig.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			storeFrontConfig.MetaApplicationName = storeFrontConfig.Name;
+			storeFrontConfig.MetaApplicationTileColor = "#880088";
+			storeFrontConfig.MetaDescription = "New GStore Storefront " + storeFrontConfig.Name;
+			storeFrontConfig.MetaKeywords = "GStore Storefront " + storeFrontConfig.Name;
+			storeFrontConfig.AdminLayoutName = "Default";
+			storeFrontConfig.AccountLayoutName = "Default";
+			storeFrontConfig.ProfileLayoutName = "Default";
+			storeFrontConfig.NotificationsLayoutName = "Default";
+			storeFrontConfig.CatalogLayoutName = "Default";
+			storeFrontConfig.CartLayoutName = "Default";
+			storeFrontConfig.CheckoutLayoutName = "Default";
+			storeFrontConfig.OrderStatusLayoutName = "Default";
+			storeFrontConfig.OrderAdminLayoutName = "Default";
+			storeFrontConfig.DefaultNewPageLayoutName = "Default";
+			storeFrontConfig.CatalogPageInitialLevels = 6;
+			storeFrontConfig.NavBarCatalogMaxLevels = 6;
+			storeFrontConfig.NavBarItemsMaxLevels = 6;
+			storeFrontConfig.CatalogCategoryColLg = 3;
+			storeFrontConfig.CatalogCategoryColMd = 4;
+			storeFrontConfig.CatalogCategoryColSm = 6;
+			storeFrontConfig.CatalogProductColLg = 2;
+			storeFrontConfig.CatalogProductColMd = 3;
+			storeFrontConfig.CatalogProductColSm = 6;
+			storeFrontConfig.UseShoppingCart = true;
+			storeFrontConfig.CartNavShowCartToAnonymous = true;
+			storeFrontConfig.CartNavShowCartToRegistered = true;
+			storeFrontConfig.CartNavShowCartWhenEmpty = true;
+			storeFrontConfig.CartRequireLogin = false;
+			storeFrontConfig.NavBarShowRegisterLink = true;
+			storeFrontConfig.NavBarRegisterLinkText = "Sign-Up";
+			storeFrontConfig.AccountLoginShowRegisterLink = true;
+			storeFrontConfig.AccountLoginRegisterLinkText = "Sign-Up";
+
+			storeFrontConfig.ApplyDefaultCartConfig();
+			storeFrontConfig.Order = 1000;
 		}
 
 		public static void SetDefaultsForNew(this StoreBinding storeBinding, HttpRequestBase request, int? clientId, int? storeFrontId)
@@ -426,9 +534,9 @@ namespace GStore.Data
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 		}
 
-		public static void HandleNewUserRegisteredNotifications(this StoreFront storeFront, Data.IGstoreDb db, HttpRequestBase request, UserProfile newProfile, string notificationBaseUrl, bool sendUserWelcome, bool sendRegisteredNotify)
+		public static void HandleNewUserRegisteredNotifications(this StoreFront storeFront, Data.IGstoreDb db, HttpRequestBase request, UserProfile newProfile, string notificationBaseUrl, bool sendUserWelcome, bool sendRegisteredNotify, string customFields)
 		{
-			UserProfile welcomeUserProfile = storeFront.WelcomePerson;
+			UserProfile welcomeUserProfile = storeFront.CurrentConfig().WelcomePerson;
 			//HttpRequestBase request = controller.Request;
 			
 			Notification notification = db.Notifications.Create();
@@ -451,7 +559,7 @@ namespace GStore.Data
 			}
 
 			notification.BaseUrl = notificationBaseUrl;
-			notification.Message = "Welcome to " + storeFront.Name + "!"
+			notification.Message = "Welcome to " + storeFront.CurrentConfig().Name + "!"
 				+ "\nEnjoy your stay, and email us if you have any questions, suggestions, feedback, or anything!"
 				+ "\n\n" + Properties.Settings.Current.IdentitySendGridMailFromName + " - " + Properties.Settings.Current.IdentitySendGridMailFromEmail;
 
@@ -498,22 +606,38 @@ namespace GStore.Data
 			db.Notifications.Add(notification);
 			db.SaveChanges();
 
-			UserProfile registeredNotify = storeFront.RegisteredNotify;
+			UserProfile registeredNotify = storeFront.CurrentConfig().RegisteredNotify;
 			if (registeredNotify != null)
 			{
-				string messageBody = "New User Registered on " + storeFront.Name + "!"
+				HttpSessionStateBase session = request.RequestContext.HttpContext.Session;
+
+				string messageBody = "New User Registered on " + storeFront.CurrentConfig().Name + "!"
 					+ "\n-Name: " + newProfile.FullName
 					+ "\n-Email: " + newProfile.Email
 					+ "\n-Date/Time: " + DateTime.Now.ToString()
 					+ "\n-Send Me More Info: " + newProfile.SendMoreInfoToEmail.ToString()
 					+ "\n-Notify Of Site Updates: " + newProfile.NotifyOfSiteUpdatesToEmail.ToString()
-					+ "\nSignup Notes: "
-					+ "\n-Store Front: " + storeFront.Name
-					+ "\n-Company: " + storeFront.Client.Name
-					+ "\n" + newProfile.SignupNotes
-					+ "\n" + newProfile.SignupNotes
-					+ "\n\n-UserProfileId: " + newProfile.UserProfileId
-					+ "\n-IP Address: " + request.UserHostAddress;
+					+ "\n-Sign-up Notes: " + newProfile.SignupNotes;
+
+				if (!string.IsNullOrEmpty(customFields))
+				{
+					messageBody += "\n-" + customFields;
+				}
+
+				messageBody += "\n - - - - - - - - - -"
+					+ "\n-User Profile Id: " + newProfile.UserProfileId
+					+ "\n-Url: " + request.Url.ToString()
+					+ "\n-Store Front: " + storeFront.CurrentConfig().Name
+					+ "\n-Client: " + storeFront.Client.Name + " [" + storeFront.ClientId + "]"
+					+ "\n-Host: " + request.Url.Host
+					+ "\n-Raw Url: " + request.RawUrl
+					+ "\n-IP Address: " + request.UserHostAddress
+					+ "\n-User Agent: " + request.UserAgent
+					+ "\n-Session Start Date Time: " + session.EntryDateTime().Value.ToString()
+					+ "\n-Session Entry Raw Url: " + session.EntryRawUrl() ?? "(none)"
+					+ "\n-Session Entry Url: " + session.EntryUrl() ?? "(none)"
+					+ "\n-Session Referrer: " + session.EntryReferrer() ?? "(none)";
+
 
 				Notification newUserNotify = db.Notifications.Create();
 				newUserNotify.StoreFront = storeFront;
@@ -523,7 +647,7 @@ namespace GStore.Data
 				newUserNotify.ToUserProfileId = registeredNotify.UserProfileId;
 				newUserNotify.To = registeredNotify.FullName;
 				newUserNotify.Importance = "Normal";
-				newUserNotify.Subject = "New User Registered on " + storeFront.Name + " - " + newProfile.FullName + " <" + newProfile.Email + ">";
+				newUserNotify.Subject = "New User Registered on " + storeFront.CurrentConfig().Name + " - " + newProfile.FullName + " <" + newProfile.Email + ">";
 				newUserNotify.UrlHost = request.Url.Host;
 				newUserNotify.IsPending = false;
 				newUserNotify.StartDateTimeUtc = DateTime.UtcNow;
@@ -552,7 +676,7 @@ namespace GStore.Data
 				return;
 			}
 
-			UserProfile accountAdmin = storeFront.AccountAdmin;
+			UserProfile accountAdmin = storeFront.CurrentConfig().AccountAdmin;
 
 			Notification notification = db.Notifications.Create();
 			notification.StoreFront = storeFront;
@@ -602,7 +726,7 @@ namespace GStore.Data
 			}
 
 			UserProfile profile = userProfile;
-			UserProfile accountAdmin = storeFront.AccountAdmin;
+			UserProfile accountAdmin = storeFront.CurrentConfig().AccountAdmin;
 			Notification notification = db.Notifications.Create();
 
 			notification.StoreFront = storeFront;
@@ -745,7 +869,13 @@ namespace GStore.Data
 			return count;
 		}
 
-		public static string ImageUrl(this ProductCategory category, string applicationPath)
+		/// <summary>
+		/// Main catagory image
+		/// </summary>
+		/// <param name="category"></param>
+		/// <param name="applicationPath"></param>
+		/// <returns></returns>
+		public static string ImageUrl(this ProductCategory category, string applicationPath, bool forCart = false)
 		{
 			if (string.IsNullOrEmpty(applicationPath))
 			{
@@ -759,7 +889,13 @@ namespace GStore.Data
 			return "/" + applicationPath + "Images/Categories/" + category.ImageName;
 		}
 
-		public static string ImageUrl(this Product product, string applicationPath)
+		/// <summary>
+		/// Main product image
+		/// </summary>
+		/// <param name="product"></param>
+		/// <param name="applicationPath"></param>
+		/// <returns></returns>
+		public static string ImageUrl(this Product product, string applicationPath, bool forCart = false)
 		{
 			if (string.IsNullOrEmpty(applicationPath))
 			{
@@ -776,21 +912,26 @@ namespace GStore.Data
 
 		public static string ClientVirtualDirectoryToMap(this Models.BaseClasses.ClientRecord clientRecord, string applicationPath)
 		{
-			if (string.IsNullOrEmpty(applicationPath))
+			return clientRecord.Client.ClientVirtualDirectoryToMap(applicationPath);
+		}
+
+		public static string StoreFrontVirtualDirectoryToMap(this StoreFrontRecord record, string applicationPath)
+		{
+			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + record.StoreFront.CurrentConfig().Folder.ToFileName();
+		}
+
+		public static string StoreFrontVirtualDirectoryToMapAnyConfig(this StoreFrontRecord record, string applicationPath)
+		{
+			if (record.StoreFront.CurrentConfigOrAny() == null)
 			{
-				throw new ArgumentNullException("applicationPath");
+				throw new ArgumentNullException("record.CurrentConfigOrAny()");
 			}
-			applicationPath = applicationPath.Trim('/');
-			if (!string.IsNullOrEmpty(applicationPath))
-			{
-				applicationPath += "/";
-			}
-			return "/" + applicationPath + "Content/Clients/" + HttpUtility.UrlEncode(clientRecord.Client.Folder);
+			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + record.StoreFront.CurrentConfigOrAny().Folder.ToFileName();
 		}
 
 		public static string EmailConfirmationCodeSubject(this StoreFront storeFront, string callbackUrl, Uri currentUrl)
 		{
-			return "Please confirm your Email account for " + (storeFront == null ? currentUrl.Authority : storeFront.Name + " - " + currentUrl.Authority);
+			return "Please confirm your Email account for " + (storeFront == null ? currentUrl.Authority : storeFront.CurrentConfig().Name + " - " + currentUrl.Authority);
 		}
 
 
@@ -810,7 +951,7 @@ namespace GStore.Data
 
 		public static string ForgotPasswordSubject(this StoreFront storeFront, string callbackUrl, Uri currentUrl)
 		{
-			return "Reset Password for " + (storeFront == null ? currentUrl.Authority : storeFront.Name + " - " + currentUrl.Authority);
+			return "Reset Password for " + (storeFront == null ? currentUrl.Authority : storeFront.CurrentConfig().Name + " - " + currentUrl.Authority);
 		}
 
 		public static string ForgotPasswordMessageHtml(this StoreFront storeFront, string callbackUrl, Uri currentUrl)
@@ -942,7 +1083,7 @@ namespace GStore.Data
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Images", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "WebFormEdit", "StoreAdmin", "SystemAdmin" };
+			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Cart", "Images", "Checkout", "OrderStatus", "OrderAdmin", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "WebFormEdit", "StoreAdmin", "SystemAdmin" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{
@@ -971,7 +1112,7 @@ namespace GStore.Data
 				return true;
 			}
 
-			string errorConflictMessage = "Url '" + url + "' is already in use for page '" + conflict.Name + "' [" + conflict.PageId + "] in Store Front '" + conflict.StoreFront.Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Url or change the conflicting page Url.";
+			string errorConflictMessage = "Url '" + url + "' is already in use for page '" + conflict.Name + "' [" + conflict.PageId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Url or change the conflicting page Url.";
 
 			controller.ModelState.AddModelError(urlField, errorConflictMessage);
 			return false;
@@ -996,7 +1137,57 @@ namespace GStore.Data
 				return true;
 			}
 
-			string errorConflictMessage = "Name '" + name + "' is already in use for Menu Item '" + conflict.Name + "' [" + conflict.NavBarItemId + "] in Store Front '" + conflict.StoreFront.Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Name or change the conflicting Menu Item Name.";
+			string errorConflictMessage = "Name '" + name + "' is already in use for Menu Item '" + conflict.Name + "' [" + conflict.NavBarItemId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Name or change the conflicting Menu Item Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
+		public static bool ValidateValueListName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, int clientId, int? currentValueListId)
+		{
+			string nameField = "Name";
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				string errorMessage = "Name is required \n Please enter a unique name for this Value List";
+				controller.ModelState.AddModelError(nameField, errorMessage);
+				return false;
+			}
+
+			ValueList conflict = db.ValueLists.Where(p => p.ClientId == clientId && p.Name.ToLower() == name.ToLower() && (p.ValueListId != currentValueListId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Name '" + name + "' is already in use for Value List '" + conflict.Name + "' [" + conflict.ValueListId + "] in Client '" + conflict.Client.Name.ToHtml() + "' [" + conflict.ClientId + "]. \n You must enter a unique Name or change the conflicting Value List Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
+		public static bool ValidateValueListFastAddItemName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string name, ValueList valueList, int? currentValueListItemId)
+		{
+			string nameField = "fastAddValueListItem";
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				string errorMessage = "Name is required \n Please enter a unique name for this Value List Item";
+				controller.ModelState.AddModelError(nameField, errorMessage);
+				return false;
+			}
+
+			ValueListItem conflict = valueList.ValueListItems.Where(p => p.Name.ToLower() == name.ToLower() && (p.ValueListId != currentValueListItemId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "Name '" + name + "' is already in use for Value List Item '" + conflict.Name + "' [" + conflict.ValueListItemId + "] in Client '" + conflict.Client.Name.ToHtml() + "' [" + conflict.ClientId + "]. \n You must enter a unique Name or change the conflicting Value List Item Name.";
 
 			controller.ModelState.AddModelError(nameField, errorConflictMessage);
 			return false;
@@ -1058,6 +1249,7 @@ namespace GStore.Data
 			page.BodyBottomScriptTag = viewModel.BodyBottomScriptTag;
 			page.BodyTopScriptTag = viewModel.BodyTopScriptTag;
 			page.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			page.ForAnonymousOnly = viewModel.ForAnonymousOnly;
 			page.ForRegisteredOnly = viewModel.ForRegisteredOnly;
 			page.IsPending = viewModel.IsPending;
 			page.MetaDescription = viewModel.MetaDescription;
@@ -1101,6 +1293,7 @@ namespace GStore.Data
 			page.BodyBottomScriptTag = viewModel.BodyBottomScriptTag;
 			page.BodyTopScriptTag = viewModel.BodyTopScriptTag;
 			page.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			page.ForAnonymousOnly = viewModel.ForAnonymousOnly;
 			page.ForRegisteredOnly = viewModel.ForRegisteredOnly;
 			page.IsPending = viewModel.IsPending;
 			page.MetaDescription = viewModel.MetaDescription;
@@ -1208,6 +1401,45 @@ namespace GStore.Data
 
 		}
 
+		public static NavBarItem CreateNavBarItemForPage(this IGstoreDb db, Page page, StoreFront storeFront, UserProfile userProfile)
+		{
+			NavBarItem record = db.NavBarItems.Create();
+
+			string navBarItemName = page.Name;
+
+			bool nameIsValid = db.ValidateNavBarItemName(null, navBarItemName, storeFront.StoreFrontId, storeFront.ClientId, null);
+			if (!nameIsValid)
+			{
+				int index = 1;
+				do
+				{
+					navBarItemName = page.Name + "_" + index;
+					nameIsValid = db.ValidateNavBarItemName(null, navBarItemName, storeFront.StoreFrontId, storeFront.ClientId, null);
+				} while (!nameIsValid);
+			}
+
+			record.Name = navBarItemName;
+			record.Order = (storeFront.Pages == null ? 100 : storeFront.Pages.Max(pg => pg.Order) + 10);
+			record.ForAnonymousOnly = page.ForAnonymousOnly;
+			record.ForRegisteredOnly = page.ForRegisteredOnly;
+			record.IsPage = true;
+			record.PageId = page.PageId;
+
+			record.StoreFrontId = storeFront.StoreFrontId;
+			record.ClientId = storeFront.ClientId;
+			record.IsPending = false;
+			record.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			record.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			record.UpdateAuditFields(userProfile);
+
+			db.NavBarItems.Add(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
 		public static NavBarItem UpdateNavBarItem(this IGstoreDb db, Areas.StoreAdmin.ViewModels.NavBarItemEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			//find existing record, update it
@@ -1269,9 +1501,163 @@ namespace GStore.Data
 			db.SaveChanges();
 		}
 
+		public static ValueList CreateValueList(this IGstoreDb db, Areas.StoreAdmin.ViewModels.ValueListEditAdminViewModel viewModel, Client client, UserProfile userProfile)
+		{
+			ValueList record = db.ValueLists.Create();
 
+			record.Name = viewModel.Name;
+			record.Order = viewModel.Order;
+			record.Description = viewModel.Description;
+			record.ClientId = client.ClientId;
+			record.Client = client;
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
 
-		public static WebForm CreateWebForm(this IGstoreDb db, WebFormEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+			record.UpdateAuditFields(userProfile);
+
+			db.ValueLists.Add(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		public static ValueList UpdateValueList(this IGstoreDb db, ValueListEditAdminViewModel viewModel, Client client, UserProfile userProfile)
+		{
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			//find existing record, update it
+			ValueList valueList = client.ValueLists.SingleOrDefault(p => p.ValueListId == viewModel.ValueListId);
+			if (valueList == null)
+			{
+				throw new ApplicationException("Value List not found in client Value Lists. Value List Id: " + viewModel.ValueListId + " Client '" + client.Name + " [" + client.ClientId + "]");
+			}
+
+			valueList.Description = viewModel.Description;
+			valueList.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			valueList.IsPending = viewModel.IsPending;
+			valueList.Name = viewModel.Name;
+			valueList.Order = viewModel.Order;
+			valueList.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			valueList.UpdateDateTimeUtc = DateTime.UtcNow;
+			valueList.UpdatedBy = userProfile;
+			valueList.UpdatedBy_UserProfileId = userProfile.UserProfileId;
+
+			valueList.UpdateAuditFields(userProfile);
+
+			valueList = db.ValueLists.Update(valueList);
+			db.SaveChanges();
+
+			return valueList;
+
+		}
+
+		public static ValueListItem CreateValueListItemFastAdd(this IGstoreDb db, ValueListEditAdminViewModel viewModel, string fastAddName, Client client, UserProfile userProfile)
+		{
+			if (string.IsNullOrWhiteSpace(fastAddName))
+			{
+				throw new ArgumentNullException("fastAddName");
+			}
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			ValueListItem newRecord = db.ValueListItems.Create();
+
+			newRecord.Client = client;
+			newRecord.ClientId = client.ClientId;
+			newRecord.CreateDateTimeUtc = DateTime.UtcNow;
+			newRecord.CreatedBy = userProfile;
+			newRecord.CreatedBy_UserProfileId = userProfile.UserProfileId;
+			newRecord.Description = fastAddName;
+			newRecord.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			newRecord.IsPending = false;
+			newRecord.Name = fastAddName;
+			newRecord.IsInteger = false;
+			newRecord.IntegerValue = null;
+			newRecord.IsString = true;
+			newRecord.StringValue = fastAddName;
+			newRecord.Order = (viewModel.ValueListItems == null ? 100 : (viewModel.ValueListItems.Count == 0 ? 100 : (viewModel.ValueListItems.Max(vli => vli.Order) + 100)));
+			newRecord.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			newRecord.ValueList = viewModel.ValueList;
+			newRecord.ValueListId = viewModel.ValueListId;
+			newRecord.UpdateAuditFields(userProfile);
+
+			newRecord = db.ValueListItems.Add(newRecord);
+			db.SaveChanges();
+
+			return newRecord;
+
+		}
+
+		public static ValueListItem UpdateValueListItem(this IGstoreDb db, ValueListItemEditAdminViewModel viewModel, Client client, UserProfile userProfile)
+		{
+			if (viewModel == null)
+			{
+				throw new ArgumentNullException("viewModel");
+			}
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			//find existing record, update it
+			ValueList valueList = client.ValueLists.SingleOrDefault(p => p.ValueListId == viewModel.ValueListId);
+			if (valueList == null)
+			{
+				throw new ApplicationException("Value List not found in client Value Lists. Value List Id: " + viewModel.ValueListId + " Client '" + client.Name + " [" + client.ClientId + "]");
+			}
+			ValueListItem listItem = valueList.ValueListItems.Where(vli => vli.ValueListItemId == viewModel.ValueListItemId).SingleOrDefault();
+			if (listItem == null)
+			{
+				throw new ApplicationException("Value List Item not found in existing values. Value List Id: " + viewModel.ValueListId + " Value List Item Id: " + viewModel.ValueListItemId  + " Client '" + client.Name + " [" + client.ClientId + "]");
+			}
+
+			listItem.Description = viewModel.Description;
+			listItem.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			listItem.IsPending = viewModel.IsPending;
+			listItem.Name = viewModel.Name;
+			listItem.Order = viewModel.Order;
+			listItem.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			listItem.UpdateDateTimeUtc = DateTime.UtcNow;
+			listItem.UpdatedBy = userProfile;
+			listItem.UpdatedBy_UserProfileId = userProfile.UserProfileId;
+
+			listItem.UpdateAuditFields(userProfile);
+
+			listItem = db.ValueListItems.Update(listItem);
+			db.SaveChanges();
+
+			return listItem;
+
+		}
+
+		public static WebForm CreateWebForm(this IGstoreDb db, WebFormEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			if (viewModel == null)
 			{
@@ -1321,7 +1707,7 @@ namespace GStore.Data
 
 		}
 
-		public static WebForm UpdateWebForm(this IGstoreDb db, WebFormEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		public static WebForm UpdateWebForm(this IGstoreDb db, WebFormEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			if (viewModel == null)
 			{
@@ -1371,7 +1757,7 @@ namespace GStore.Data
 
 		}
 
-		public static WebFormField UpdateWebFormField(this IGstoreDb db, WebFormFieldEditViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		public static WebFormField UpdateWebFormField(this IGstoreDb db, WebFormFieldEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			if (viewModel == null)
 			{
@@ -1436,7 +1822,7 @@ namespace GStore.Data
 			}
 		}
 
-		public static WebFormField CreateWebFormFieldFastAdd(this IGstoreDb db, WebFormEditViewModel viewModel, string FastAddField, StoreFront storeFront, UserProfile userProfile)
+		public static WebFormField CreateWebFormFieldFastAdd(this IGstoreDb db, WebFormEditAdminViewModel viewModel, string FastAddField, StoreFront storeFront, UserProfile userProfile)
 		{
 			if (string.IsNullOrWhiteSpace(FastAddField))
 			{
@@ -1513,6 +1899,109 @@ namespace GStore.Data
 			return routeData.Values["urlstorename"].ToString();
 		}
 
+		public static void ApplyDefaultCartConfig(this StoreFrontConfiguration storeFrontConfig)
+		{
+			storeFrontConfig.UseShoppingCart = true;
+			storeFrontConfig.CartLayoutName = "Default";
+			storeFrontConfig.CartNavShowCartToAnonymous = true;
+			storeFrontConfig.CartNavShowCartToRegistered = true;
+			storeFrontConfig.CartNavShowCartWhenEmpty = true;
+			storeFrontConfig.CartRequireLogin = false;
 
+			if (storeFrontConfig.DefaultNewPageTheme != null)
+			{
+				storeFrontConfig.CartTheme = storeFrontConfig.DefaultNewPageTheme;
+				storeFrontConfig.CartThemeId = storeFrontConfig.DefaultNewPageTheme.ThemeId;
+			}
+			storeFrontConfig.CartPageTitle  = "Shopping Cart";
+			storeFrontConfig.CartPageHeading = "Your Shopping Cart";
+			storeFrontConfig.CartEmptyMessage = "Your Cart is Empty";
+			storeFrontConfig.CartItemColumnLabel = "Item";
+			storeFrontConfig.CartItemVariantColumnShow = true;
+			storeFrontConfig.CartItemVariantColumnLabel = "Type";
+			storeFrontConfig.CartItemListPriceColumnShow = true;
+			storeFrontConfig.CartItemListPriceColumnLabel = "List Price";
+			storeFrontConfig.CartItemUnitPriceColumnShow = true;
+			storeFrontConfig.CartItemUnitPriceColumnLabel = "Unit Price";
+			storeFrontConfig.CartItemQuantityColumnShow = true;
+			storeFrontConfig.CartItemQuantityColumnLabel = "Quantity";
+			storeFrontConfig.CartItemListPriceExtColumnShow = true;
+			storeFrontConfig.CartItemListPriceExtColumnLabel = "List Price Ext";
+			storeFrontConfig.CartItemUnitPriceExtColumnShow = true;
+			storeFrontConfig.CartItemUnitPriceExtColumnLabel = "Unit Price Ext";
+			storeFrontConfig.CartItemDiscountColumnShow = true;
+			storeFrontConfig.CartItemDiscountColumnLabel = "Your Savings";
+			storeFrontConfig.CartItemTotalColumnShow = true;
+			storeFrontConfig.CartItemTotalColumnLabel = "Total";
+			storeFrontConfig.CartOrderDiscountCodeSectionShow = true;
+			storeFrontConfig.CartOrderDiscountCodeLabel = "Discount Code";
+			storeFrontConfig.CartOrderDiscountCodeApplyButtonText = "Apply Code";
+			storeFrontConfig.CartOrderDiscountCodeRemoveButtonText = "Remove Code";
+			storeFrontConfig.CartOrderItemCountShow = true;
+			storeFrontConfig.CartOrderItemCountLabel = "Total Items in Cart";
+			storeFrontConfig.CartOrderSubtotalShow = true;
+			storeFrontConfig.CartOrderSubtotalLabel = "Sub-Total";
+			storeFrontConfig.CartOrderTaxShow = true;
+			storeFrontConfig.CartOrderTaxLabel = "Tax";
+			storeFrontConfig.CartOrderShippingShow = true;
+			storeFrontConfig.CartOrderShippingLabel = "Shipping";
+			storeFrontConfig.CartOrderHandlingShow = true;
+			storeFrontConfig.CartOrderHandlingLabel = "Handling";
+			storeFrontConfig.CartOrderDiscountShow = true;
+			storeFrontConfig.CartOrderDiscountLabel = "Order Discount";
+			storeFrontConfig.CartOrderTotalLabel = "Order Total";
+		}
+
+		public static void ApplyDefaultCheckoutConfig(this StoreFrontConfiguration storeFrontConfig)
+		{
+			storeFrontConfig.CheckoutLayoutName = "Default";
+			if (storeFrontConfig.DefaultNewPageTheme != null)
+			{
+				storeFrontConfig.CheckoutTheme = storeFrontConfig.DefaultNewPageTheme;
+				storeFrontConfig.CheckoutThemeId = storeFrontConfig.DefaultNewPageTheme.ThemeId;
+			}
+			storeFrontConfig.CheckoutLogInOrGuestWebForm = null;
+			storeFrontConfig.CheckoutLogInOrGuestWebFormId = null;
+			storeFrontConfig.CheckoutDeliveryInfoDigitalOnlyWebForm = null;
+			storeFrontConfig.CheckoutDeliveryInfoDigitalOnlyWebFormId = null;
+			storeFrontConfig.CheckoutDeliveryInfoShippingWebForm = null;
+			storeFrontConfig.CheckoutDeliveryInfoShippingWebFormId = null;
+			storeFrontConfig.CheckoutDeliveryMethodWebForm = null;
+			storeFrontConfig.CheckoutDeliveryMethodWebFormId = null;
+			storeFrontConfig.CheckoutPaymentInfoWebForm = null;
+			storeFrontConfig.CheckoutPaymentInfoWebFormId = null;
+			storeFrontConfig.CheckoutConfirmOrderWebForm = null;
+			storeFrontConfig.CheckoutConfirmOrderWebFormId = null;
+		}
+
+		public static void ApplyDefaultOrderStatusConfig(this StoreFrontConfiguration storeFrontConfig)
+		{
+			storeFrontConfig.OrderStatusLayoutName = "Default";
+			if (storeFrontConfig.DefaultNewPageTheme != null)
+			{
+				storeFrontConfig.OrderStatusTheme = storeFrontConfig.DefaultNewPageTheme;
+				storeFrontConfig.OrderStatusThemeId = storeFrontConfig.DefaultNewPageTheme.ThemeId;
+			}
+		}
+
+		public static StoreFrontConfiguration CloneStoreFrontConfiguration(this IGstoreDb db, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile)
+		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+
+			StoreFrontConfiguration newConfig = db.StoreFrontConfigurations.Create(storeFrontConfig);
+			newConfig.ConfigurationName = "New Configuration Created " + DateTime.UtcNow.ToString();
+			newConfig.StoreFrontConfigurationId = 0;
+			newConfig.Order = storeFrontConfig.StoreFront.StoreFrontConfigurations.Max(c => c.Order) + 10;
+			newConfig.SetDefaults(userProfile);
+
+			return newConfig;
+		}
 	}
 }

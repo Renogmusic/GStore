@@ -16,6 +16,7 @@ namespace GStore.Identity
 		protected bool _allowAnyMatch = false;
 
 		protected bool _treatInactiveStoreFrontAsActive = false;
+		protected bool _treatInactiveStoreFrontConfigAsActive = true;
 
 		/// <summary>
 		/// Verifies the current logged on user has permission to a specific GStoreAction for the current StoreFront, otherwise prompts to log in
@@ -58,7 +59,7 @@ namespace GStore.Identity
 
 			Data.IGstoreDb db = Data.RepositoryFactory.StoreFrontRepository(httpContext);
 			UserProfile userProfile = db.GetCurrentUserProfile(true, true);
-			StoreFront storeFront = db.GetCurrentStoreFront(httpContext.Request, false, _treatInactiveStoreFrontAsActive);
+			StoreFront storeFront = db.GetCurrentStoreFront(httpContext.Request, false, _treatInactiveStoreFrontAsActive, _treatInactiveStoreFrontConfigAsActive);
 			if (storeFront == null)
 			{
 				//no storefront, 

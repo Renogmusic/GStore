@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.WebFormField
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no Web Form Field)
@@ -20,5 +19,6 @@ else
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "FieldDetails", "WebFormSysAdmin", new { id = Model.WebFormFieldId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayFor(m => m.WebForm))
+	<br />
+	@(Html.DisplayFor(m => m.WebForm))
 }

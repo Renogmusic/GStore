@@ -37,6 +37,6 @@ namespace GStore.Models.BaseClasses
 		public string UserName { get; set; }
 		public string FullName { get; set; }
 		public string Message { get; set; }
-
+		public string SessionId { get; set; }
 	}
 }

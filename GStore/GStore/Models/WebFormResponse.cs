@@ -5,7 +5,7 @@ using System.Web.Mvc;
 
 namespace GStore.Models
 {
-	[Table("WebFormResponses")]
+	[Table("WebFormResponse")]
 	public class WebFormResponse : BaseClasses.StoreFrontRecordUserProfileOptional
 	{
 		[Key]

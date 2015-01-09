@@ -71,6 +71,14 @@ namespace GStore.Controllers.BaseClass
 			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost, false, null, false, Tab));
 		}
 
+		[HttpGet]
+		[ActionName("SubmitForm")]
+		public virtual ActionResult SubmitFormBlank()
+		{
+			this._logActionsAsPageViews = true;
+			return Display();
+		}
+
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public virtual ActionResult SubmitForm()
@@ -92,8 +100,8 @@ namespace GStore.Controllers.BaseClass
 				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
 				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
 
-				messageBody = messageBody.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
-				messageTitle = messageTitle.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontOrNull, CurrentUserProfileOrNull, CurrentPageOrNull);
+				messageBody = messageBody.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull);
+				messageTitle = messageTitle.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull);
 
 				ModelState.Clear();
 
@@ -297,9 +305,16 @@ namespace GStore.Controllers.BaseClass
 
 			if (page.ForRegisteredOnly && !User.Identity.IsAuthenticated)
 			{
-				AddUserMessage("Log in required", "Please log in to view this page", UserMessageType.Danger);
-				RedirectToAction("Login", "Account", null).ExecuteResult(this.ControllerContext);
+				AddUserMessage("Log in required", "Please log in to view this page. URL: " + Request.RawUrl.ToHtml(), UserMessageType.Danger);
+				RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl }).ExecuteResult(this.ControllerContext);
 			}
+
+			if (page.ForAnonymousOnly && User.Identity.IsAuthenticated)
+			{
+				AddUserMessage("Page", "The page you tried to view is for Anonymous users only. Log off to view this page. URL: " + Request.RawUrl.ToHtml(), UserMessageType.Info);
+				RedirectToAction("Index", "Profile", null).ExecuteResult(this.ControllerContext);
+			}
+
 		}
 
 		public Models.Page CurrentPageOrThrow
@@ -331,7 +346,7 @@ namespace GStore.Controllers.BaseClass
 							if (Properties.Settings.Current.AppEnableAutomaticHomePageCreation)
 							{
 
-								Models.Page newHomePage = GStoreDb.AutoCreateHomePage(Request, exDPNF.StoreFront, this);
+								Models.Page newHomePage = GStoreDb.AutoCreateHomePage(Request, exDPNF.StoreFront.CurrentConfigOrAny(), this);
 								_page = CurrentStoreFrontOrThrow.GetCurrentPage(Request);
 								return _page;
 							}

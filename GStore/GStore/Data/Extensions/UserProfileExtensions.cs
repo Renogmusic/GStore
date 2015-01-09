@@ -64,7 +64,7 @@ namespace GStore.Data
 				}
 				else
 				{
-					errorMessage += "\n - StoreFront [" + inactiveProfiles[0].StoreFront.StoreFrontId + "]: " + inactiveProfiles[0].StoreFront.Name
+					errorMessage += "\n - StoreFront [" + inactiveProfiles[0].StoreFront.StoreFrontId + "]: " + inactiveProfiles[0].StoreFront.CurrentConfigOrAny().Name
 					+ "\n - Client [" + inactiveProfiles[0].StoreFront.Client.ClientId + "]: " + inactiveProfiles[0].StoreFront.Client.Name;
 				}
 
@@ -254,6 +254,7 @@ namespace GStore.Data
 				profile.StoreFrontId = storeFrontId.Value;
 			}
 
+			profile.EntryDateTime = DateTime.UtcNow;
 			profile.IsPending = true;
 			profile.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			profile.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);

@@ -1,9 +1,4 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
-@using Microsoft.AspNet.Identity
-@using GStore.Identity
-@using GStore.AppHtmlHelpers
-@using GStore.Models
-@using GStore.Data
 @if (Request.IsAuthenticated)
 {
 	
@@ -12,9 +7,39 @@
 		@Html.AntiForgeryToken()
 
 	<ul class="nav navbar-nav navbar-right">
+		@{
+			if (Model.ShowCart)
+			{
+				<li>
+					@{
+				if (Model.Cart.IsEmpty())
+				{
+					<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)">
+						Cart (empty)
+					</a>
+				}
+				else
+				{
+					<a href="@Url.Action("Index", "Cart")" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")">
+						<small>
+							Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
+							<br />
+							$@(Model.Cart.Subtotal.ToString("N2"))
+						</small>
+					</a>
+				}
+					}
+				</li>
+			}
+			if (Model.StoreFrontConfig == null || !Model.StoreFrontConfig.IsActiveDirect())
+			{
+				<li><a href="#"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+			}
+		}
+
 		<li>
 			<a href="@Url.Action("Index", "Profile")" title="My Account">
-				<small>( @User.Identity.GetUserName() )</small>
+				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
 			</a>
 		</li>
 		@if (Model.ShowStoreAdminLink)
@@ -45,11 +70,35 @@ else
 {
 	<ul class="nav navbar-nav navbar-right">
 		@{
+		if (Model.ShowCart)
+		{
+			<li>
+				@{
+					if (Model.Cart.IsEmpty())
+					{
+						<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)">
+							Cart (empty)
+						</a>
+					}
+					else
+					{
+						<a href="@Url.Action("Index", "Cart")" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")"><small>
+							Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
+							<br/>
+							$@(Model.Cart.Subtotal.ToString("N2"))
+							</small>
+						</a>
+					}
+				}
+			</li>
+		}
+		}
+		@{
 			if (Model.StoreFront != null)
 			{
-				if (Model.StoreFront.NavBarShowRegisterLink)
+				if (Model.StoreFrontConfig.NavBarShowRegisterLink)
 				{
-					string signupLinkText = Model.StoreFront.NavBarRegisterLinkText;
+					string signupLinkText = Model.StoreFrontConfig.NavBarRegisterLinkText;
 					if (string.IsNullOrEmpty(signupLinkText))
 					{
 						signupLinkText = "Sign-Up";

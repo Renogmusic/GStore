@@ -1,0 +1,225 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormFieldEditAdminViewModel
+
+@{
+	List<SelectListItem> valueListOptions = Model.ValueListSelectList;
+	
+	string statusTextClass = " text-success";
+	if (!Model.IsActiveDirect)
+	{
+		statusTextClass = " text-warning";
+	}
+}
+<script>
+	$(document).ready(function () {
+		$('#FieldEditModal_@(Model.Index)').on('hidden.bs.modal', function (e) {
+			//field edit is closed
+		})
+		});
+
+</script>
+<style>
+	.modal .modal-content label.control-label {
+		padding-bottom: 0 !important;
+		margin-top: 0 !important;
+	}
+
+	.modal .modal-content label.help-label {
+		text-align: center;
+		padding-bottom: 0 !important;
+		margin-top: 0 !important;
+	}
+</style>
+<div id="FieldEditModal_@(Model.Index)" class="modal modal-lg fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-warning">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title text-center">
+					Field '@(Model.Name)' [@(Model.WebFormFieldId)]
+					<br />
+					Form '@(Model.WebForm.Name)' [@(Model.WebFormId)] - Index: @(Model.Index)
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row center-block text-center">
+					<div class="col-xs-12">
+						<input type="submit" class="btn btn-warning" value="Save changes" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.WebFormFieldId, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.DisplayFor(model => model.WebFormFieldId)
+						@Html.HiddenFor(model => model.WebFormFieldId)
+						@Html.HiddenFor(model => model.WebFormId)
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.WebFormFieldId, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.Name, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.Order, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.Description, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.Description, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.IsRequired, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.IsRequired, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsRequired, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.LabelText, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.LabelText, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.LabelText, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.DataType, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EnumDropDownListFor(model => model.DataType, htmlAttributes: new { @class = "form-control" })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.DataType, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.HelpLabelBottomText, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.HelpLabelBottomText, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.HelpLabelBottomText, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.HelpLabelTopText, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.HelpLabelTopText, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.HelpLabelTopText, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.TextAreaColumns, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.TextAreaColumns, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.TextAreaColumns, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.TextAreaRows, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.TextAreaRows, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.TextAreaRows, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.ValueList, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.DropDownListFor(model => model.ValueListId, valueListOptions, "(none)", htmlAttributes: new { @class = "form-control" } )
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.ValueList, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.IsActiveDirect, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align@(statusTextClass)">
+						<strong>@(Model.IsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
+
+						<a class="btn btn-xs btn-success" href="#" onclick="ActivateField(@(Model.Index)); return false;">Make It Active Now</a>
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.IsPending, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.StartDateTimeUtc, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.EndDateTimeUtc, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer bg-warning">
+				<div class="row center-block text-center">
+					<div class="col-xs-12">
+						<input type="submit" class="btn btn-warning" value="Save changes" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

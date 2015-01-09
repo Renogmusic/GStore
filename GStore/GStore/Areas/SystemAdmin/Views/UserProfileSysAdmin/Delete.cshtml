@@ -1,6 +1,4 @@
 ﻿@model GStore.Models.UserProfile
-@using GStore.AppHtmlHelpers
-@using GStore.Data
 
 <div class="row">
 	<h2 class="jumbotron SysAdminDeletePageTitle col-md-offset-3 col-md-6 text-danger">Confirm User Profile Delete</h2>
@@ -86,6 +84,97 @@
 		</dt>
 		<dd>
 			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SignupNotes)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SignupNotes)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendMoreInfoToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendMoreInfoToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EntryDateTime)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.EntryDateTime)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EntryUrl)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.EntryUrl)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EntryRawUrl)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.EntryRawUrl)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EntryReferrer)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.EntryReferrer)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.RegisterWebFormResponse)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.RegisterWebFormResponse)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.AllowUsersToSendSiteMessages)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.AllowUsersToSendSiteMessages)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotifyAllWhenLoggedOn)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.NotifyAllWhenLoggedOn)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.NotifyOfSiteUpdatesToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.NotifyOfSiteUpdatesToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SubscribeToNewsletterEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SubscribeToNewsletterEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendSiteMessagesToEmail)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendSiteMessagesToEmail)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.SendSiteMessagesToSms)
+		</dt>
+		<dd>
+			@Html.DisplayFor(model => model.SendSiteMessagesToSms)
 		</dd>
 
 		<dt>

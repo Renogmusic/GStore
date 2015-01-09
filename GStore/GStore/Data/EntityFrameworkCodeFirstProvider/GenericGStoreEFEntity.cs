@@ -111,6 +111,17 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 
+		public virtual bool DeleteRange(IEnumerable<TEntity> entities)
+		{
+			if (entities == null)
+			{
+				throw new ArgumentNullException("entity");
+			}
+
+			_dbSet.RemoveRange(entities);
+			return true;
+		}
+
 		public virtual TEntity Update(TEntity entity)
 		{
 			if (entity == null)

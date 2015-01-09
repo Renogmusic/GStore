@@ -66,6 +66,27 @@ namespace GStore
 				);
 
 				routes.MapRoute(
+					name: "Stores-Cart",
+					url: "Stores/{urlstorename}/Cart/{action}/{id}",
+					defaults: new { controller = "Cart", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
+					name: "Stores-Checkout",
+					url: "Stores/{urlstorename}/Checkout/{action}/{id}",
+					defaults: new { controller = "Checkout", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
+					name: "Stores-OrderStatus",
+					url: "Stores/{urlstorename}/OrderStatus/{action}/{id}",
+					defaults: new { controller = "OrderStatus", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-Images",
 					url: "Stores/{urlstorename}/Images/{*path}",
 					defaults: new { controller = "StoreFrontFile", action = "Images", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -191,6 +212,28 @@ namespace GStore
 				defaults: new { controller = "Catalog", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
+
+			routes.MapRoute(
+				name: "Cart",
+				url: "Cart/{action}/{id}",
+				defaults: new { controller = "Cart", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "Checkout",
+				url: "Checkout/{action}/{id}",
+				defaults: new { controller = "Checkout", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "OrderStatus",
+				url: "OrderStatus/{action}/{id}",
+				defaults: new { controller = "OrderStatus", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
 
 			routes.MapRoute(
 				name: "Images",

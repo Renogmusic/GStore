@@ -17,10 +17,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 	public class BindingsSysAdminController : BaseClasses.SystemAdminBaseController
 	{
 
-		public ActionResult Index(int? clientId, string SortBy, bool? SortAscending)
+		public ActionResult Index(int? clientId, int? storeFrontId, string SortBy, bool? SortAscending)
 		{
 			clientId = FilterClientIdRaw();
 
+			StoreFront storeFront = null;
 			IQueryable<StoreBinding> query = null;
 			if (clientId.HasValue)
 			{
@@ -42,7 +43,15 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				query = GStoreDb.StoreBindings.All();
 			}
 
+			if (storeFrontId.HasValue && storeFrontId.Value != 0)
+			{
+				query = query.Where(b => b.StoreFrontId == storeFrontId.Value);
+				storeFront = GStoreDb.StoreFronts.FindById(storeFrontId.Value);
+			}
+
+			ViewData.Add("StoreFrontId", storeFrontId);
 			IOrderedQueryable<StoreBinding> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = html => this.BindingsBreadcrumb(html, clientId, storeFront, false);
 			return View(queryOrdered.ToList());
 		}
 
@@ -57,24 +66,24 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
+
 			return View(storeBinding);
 		}
 
 		public ActionResult Create(int? clientId, int? storeFrontId)
 		{
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(clientId);
-
 			StoreBinding model = GStoreDb.StoreBindings.Create();
 			model.SetDefaultsForNew(Request, clientId, storeFrontId);
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, model.ClientId, model.StoreFront, model);
 			return View(model);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(StoreBinding storeBinding)
+		public ActionResult Create(StoreBinding storeBinding, bool? clientIdChanged)
 		{
-			if (ModelState.IsValid)
+			if (ModelState.IsValid && !(clientIdChanged ?? false))
 			{
 				storeBinding = GStoreDb.StoreBindings.Create(storeBinding);
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
@@ -95,9 +104,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFrontId = storeBinding.StoreFrontId;
 			}
 
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
-
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
 			return View(storeBinding);
 		}
 
@@ -112,17 +119,16 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
 
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
 			return View(storeBinding);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(StoreBinding storeBinding)
+		public ActionResult Edit(StoreBinding storeBinding, bool? clientIdChanged)
 		{
-			if (ModelState.IsValid)
+			if (ModelState.IsValid && !(clientIdChanged ?? false))
 			{
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeBinding = GStoreDb.StoreBindings.Update(storeBinding);
@@ -130,9 +136,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Store Binding Saved", "Store Binding [" + storeBinding.StoreBindingId + "] updated successfully.", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
-			ViewBag.ClientList = ClientList();
-			ViewBag.StoreFrontList = StoreFrontList(storeBinding.ClientId);
 
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
 			return View(storeBinding);
 		}
 
@@ -159,6 +164,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
 			return View(storeBinding);
 		}
 
@@ -169,7 +175,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			try
 			{
 				StoreBinding target = GStoreDb.StoreBindings.FindById(id);
-				string storeFrontName = target.StoreFront.Name;
+				string storeFrontName = target.StoreFront.CurrentConfigOrAny().Name;
 
 				if (target == null)
 				{

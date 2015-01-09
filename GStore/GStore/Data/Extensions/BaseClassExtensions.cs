@@ -42,11 +42,6 @@ namespace GStore.Data
 			record.UpdatedBy_UserProfileId = userProfileId;
 		}
 
-		public static string StoreFrontVirtualDirectoryToMap(this StoreFrontRecord record, string applicationPath)
-		{
-			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + HttpUtility.UrlEncode(record.StoreFront.Folder);
-		}
-
 		public static bool IsActiveDirect(this GStoreEntity record)
 		{
 			return record.IsActiveDirect(DateTime.UtcNow);
@@ -63,36 +58,43 @@ namespace GStore.Data
 		/// <summary>
 		/// Sets defaults for the record (for new records)
 		/// </summary>
-		public static void SetDefaults(this AuditFieldsUserProfileOptional record, UserProfile userProfile)
+		public static void SetDefaults(this AuditFieldsUserProfileOptional record, UserProfile userProfileOrNull)
 		{
-			record.UpdateAuditFields(userProfile);
+			record.UpdateAuditFields(userProfileOrNull);
 		}
 
 		/// <summary>
 		/// Updated UpdateDateTimeUtc and updateuserid to current
 		/// </summary>
-		public static void UpdateAuditFields(this AuditFieldsUserProfileOptional record, UserProfile userProfile)
+		public static void UpdateAuditFields(this AuditFieldsUserProfileOptional record, UserProfile userProfileOrNull)
 		{
-			int? userProfileId = null;
-			if (userProfile != null)
+			int? userProfileIdOrNull = null;
+			if (userProfileOrNull != null)
 			{
-				userProfileId = userProfile.UserProfileId;
+				userProfileIdOrNull = userProfileOrNull.UserProfileId;
 			}
-			record.UpdateAuditFields(userProfileId);
+			record.UpdateAuditFields(userProfileIdOrNull);
 		}
 
-		public static void UpdateAuditFields(this AuditFieldsUserProfileOptional record, int? userProfileId)
+		public static void UpdateAuditFields(this AuditFieldsUserProfileOptional record, int? userProfileIdOrNull)
 		{
 			//new record fill create info
 			if (record.CreateDateTimeUtc == null || record.CreateDateTimeUtc == DateTime.MinValue)
 			{
 				record.CreateDateTimeUtc = DateTime.UtcNow;
-				record.CreatedBy_UserProfileId = userProfileId;
+				record.CreatedBy_UserProfileId = userProfileIdOrNull;
 			}
 			record.UpdateDateTimeUtc = DateTime.UtcNow;
-			record.UpdatedBy_UserProfileId = userProfileId;
+			record.UpdatedBy_UserProfileId = userProfileIdOrNull;
 		}
 
+		/// <summary>
+		/// Copies values from current entity to another entity. Performs a shallow copy
+		/// </summary>
+		/// <typeparam name="TEntity"></typeparam>
+		/// <param name="copyTo"></param>
+		/// <param name="copyFrom"></param>
+		/// <returns></returns>
 		public static TEntity CopyValuesToEntity<TEntity>(this TEntity copyFrom, TEntity copyTo) where TEntity : GStoreEntity, new()
 		{
 			if (copyTo == null)
@@ -106,6 +108,13 @@ namespace GStore.Data
 			return CopyEntityValues(copyFrom, copyTo);
 		}
 
+		/// <summary>
+		/// Copies values from another entity to current entity. Performs a shallow copy
+		/// </summary>
+		/// <typeparam name="TEntity"></typeparam>
+		/// <param name="copyTo"></param>
+		/// <param name="copyFrom"></param>
+		/// <returns></returns>
 		public static TEntity UpdateValuesFromEntity<TEntity>(this TEntity copyTo, TEntity copyFrom) where TEntity : GStoreEntity, new()
 		{
 			if (copyTo == null)
@@ -120,6 +129,13 @@ namespace GStore.Data
 			return CopyEntityValues(copyFrom, copyTo);
 		}
 
+		/// <summary>
+		/// Copies values from one entity to another. Performs a shallow copy
+		/// </summary>
+		/// <typeparam name="TEntity"></typeparam>
+		/// <param name="copyFrom"></param>
+		/// <param name="copyTo"></param>
+		/// <returns></returns>
 		public static TEntity CopyEntityValues<TEntity>(TEntity copyFrom, TEntity copyTo) where TEntity : GStoreEntity, new()
 		{
 			if (copyTo == null)

@@ -1,6 +1,4 @@
-﻿@model GStore.Models.ViewModels.WebFormEditViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Identity
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormEditAdminViewModel
 
 <div class="row">
 	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8 text-success">
@@ -23,7 +21,7 @@
 		@if (Html.UserHasPermission(GStoreAction.WebForms_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			<a href="#" onclick="JumpToEditTab();" class="btn btn-success">Edit</a>
+			<a href="#" onclick="JumpToEditTab();" class="btn btn-warning">Edit</a>
 		}
 		@if (Html.UserHasPermission(GStoreAction.WebForms_Delete))
 		{
@@ -41,7 +39,7 @@
 		@if (Html.UserHasPermission(GStoreAction.WebForms_Edit))
 		{
 			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-			<a href="#" onclick="JumpToEditTab();" class="btn btn-success">Edit</a>
+			<a href="#" onclick="JumpToEditTab();" class="btn btn-warning">Edit</a>
 		}
 		@if (Html.UserHasPermission(GStoreAction.WebForms_Delete))
 		{

@@ -1,0 +1,58 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.WebFormEditAdminViewModel
+@{
+	AjaxOptions options = new AjaxOptions();
+	options.AllowCache = false;
+	options.HttpMethod = "Post";
+	options.UpdateTargetId = "WebFormEdit_Target";
+	options.InsertionMode = InsertionMode.Replace;
+	options.LoadingElementId = "WebFormEdit_LoadingElement";
+	options.OnBegin = "WebFormEdit_OnBegin";
+	options.OnComplete = "WebFormEdit_OnComplete";
+	options.OnFailure = "WebFormEdit_OnFailure";
+	options.OnSuccess = "WebFormEdit_OnSuccess";
+	options.LoadingElementDuration = 700;
+}
+<script>
+	function WebFormEdit_OnBegin() {
+		@*alert('OnBegin_@(Model.Index)');*@
+	}
+
+	function WebFormEdit_OnComplete() {
+		@*alert('OnComplete_@(Model.Index)');*@
+	}
+	function WebFormEdit_OnFailure() {
+		AddUserMessageDanger("Save Failed.", "Web Form Edit failed with a server error. Please try again or re-load the page and try again. Web Form: '@(Model.Name)' [@(Model.WebFormId)]");
+	}
+	function WebFormEdit_OnSuccess() {
+		@*alert('OnSuccess_@(Model.Index)');*@
+	}
+</script>
+<div id="WebFormEdit_LoadingElement" class="bg-success" style="display:none">
+	<strong>Saving....</strong>
+</div>
+@{
+	string actionName = "UpdateWebFormAjax";
+	string controllerName = "Page";
+	string area = "";
+	
+	if (Model.IsStoreAdminEdit)
+	{
+		controllerName = "WebFormAdmin";
+		area = "StoreAdmin";
+		if (Model.WebFormId == default(int))
+		{
+			actionName = "CreateWebFormAjax";
+		}
+		else
+		{
+			actionName = "UpdateWebFormAjax";
+		}
+	}
+	
+}
+@using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { id = Model.WebFormId, area = area, }, htmlAttributes: new { id = "WebFormEditForm" }))
+{
+	<div id="WebFormEdit_Target">
+		@Html.Partial("_WebFormEditPartial", Model)
+	</div>
+}

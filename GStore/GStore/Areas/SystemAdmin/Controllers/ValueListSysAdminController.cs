@@ -42,6 +42,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			IOrderedQueryable<ValueList> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListsBreadcrumb(htmlHelper, clientId);
 			return View(queryOrdered.ToList());
 		}
 
@@ -56,15 +57,21 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Value List not found. Value List id: " + id);
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
 		public ActionResult Create(int? clientId)
 		{
-			ViewBag.ClientList = ClientList();
-
 			ValueList model = GStoreDb.ValueLists.Create();
-			model.SetDefaultsForNew(clientId);
+
+			Client client = null;
+			if (clientId.HasValue && clientId.Value > 0)
+			{
+				client = GStoreDb.Clients.FindById(clientId.Value);
+			}
+			model.SetDefaultsForNew(client);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, model.ClientId, model);
 			return View(model);
 		}
 
@@ -87,8 +94,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				clientId = valueList.ClientId;
 			}
 
-			ViewBag.ClientList = ClientList();
-
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
@@ -103,8 +109,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
@@ -120,8 +126,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Value List Updated", "Changes saved successfully to Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "]", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
@@ -159,6 +165,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
@@ -213,6 +220,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List not found. Value List id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueList);
 		}
 
@@ -231,6 +239,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			ValueListItem model = GStoreDb.ValueListItems.Create();
 			model.SetDefaultsForNew(valueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(model);
 		}
 
@@ -250,16 +259,22 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List not found. Value List id: " + valueListItem.ValueListId);
 			}
 
+			if (valueList.ValueListItems.Any(vl => vl.Name.ToLower() == valueListItem.Name.ToLower()))
+			{
+				ModelState.AddModelError("Name", "An item with name '" + valueListItem.Name + "' already exists. Choose a new name or edit the original value.");
+			}
+
 			if (ModelState.IsValid)
 			{
 				valueListItem.ClientId = valueList.ClientId;
 				valueListItem.ValueListId = valueList.ValueListId;
-				GStoreDb.ValueListItems.Add(valueListItem);
+				valueListItem = GStoreDb.ValueListItems.Add(valueListItem);
 				GStoreDb.SaveChanges();
 				AddUserMessage("Value List Item Created", "Value List Item '" + valueListItem.Name.ToHtml() + "' [" + valueListItem.ValueListItemId + "] created successfully", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
 			return View(valueListItem);
 		}
 
@@ -275,8 +290,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
 			return View(valueListItem);
 		}
 
@@ -292,8 +307,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Value List Item Updated", "Changes saved successfully to Value List Item '" + valueListItem.Name.ToHtml() + "' [" + valueListItem.ValueListItemId + "]", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
-			ViewBag.ClientList = ClientList();
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
 			return View(valueListItem);
 		}
 
@@ -310,6 +325,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
 			return View(valueListItem);
 		}
 
@@ -326,6 +342,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
 			return View(valueListItem);
 		}
 
@@ -391,14 +408,6 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			listItem.IsPending = false;
 			listItem.IsString = true;
 			listItem.StringValue = stringValue;
-			if (valueList.ValueListItems.Count == 0)
-			{
-				listItem.Order = 1000;
-			}
-			else
-			{
-				listItem.Order = valueList.ValueListItems.Max(vl => vl.Order) + 10;
-			}
 			
 			GStoreDb.ValueListItems.Add(listItem);
 			GStoreDb.SaveChanges();

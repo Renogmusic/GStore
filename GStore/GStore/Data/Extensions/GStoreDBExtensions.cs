@@ -7,9 +7,9 @@ namespace GStore.Data
 {
 	public static class GStoreDBExtensions
 	{
-		public static void SeedDatabase(this IGstoreDb db)
+		public static void SeedDatabase(this IGstoreDb db, bool force = false)
 		{
-			SeedDataExtensions.AddSeedData(db);
+			SeedDataExtensions.AddSeedData(db, force);
 		}
 		public static StoreBinding AutoMapBinding(this IGstoreDb db, Controllers.BaseClass.BaseController baseController)
 		{
@@ -53,9 +53,9 @@ namespace GStore.Data
 			return SeedDataExtensions.SeedAutoMapStoreFrontBestGuess(db);
 		}
 
-		public static Page AutoCreateHomePage(this IGstoreDb db, HttpRequestBase request, StoreFront storeFront, Controllers.BaseClass.BaseController baseController)
+		public static Page AutoCreateHomePage(this IGstoreDb db, HttpRequestBase request, StoreFrontConfiguration storeFrontConfig, Controllers.BaseClass.BaseController baseController)
 		{
-			return SeedDataExtensions.CreateAutoHomePage(db, request, storeFront, baseController);
+			return SeedDataExtensions.CreateAutoHomePage(db, request, storeFrontConfig, baseController);
 		}
 
 		public static void SaveEntityToFile<TEntity>(this TEntity entity, string folder, string fileName) where TEntity : Models.BaseClasses.GStoreEntity, new()
@@ -151,7 +151,12 @@ namespace GStore.Data
 		public static bool IsProxy(this GStoreEntity entity)
 		{
 			//check if the current object type is the base type, or an entity parent type
-			return (entity != null) && (System.Data.Entity.Core.Objects.ObjectContext.GetObjectType(entity.GetType()) != entity.GetType());
+			if (entity == null)
+			{
+				throw new ArgumentNullException("entity");
+			}
+			Type pocoType = System.Data.Entity.Core.Objects.ObjectContext.GetObjectType(entity.GetType());
+			return pocoType != entity.GetType();
 		}
 
 		/// <summary>
@@ -163,6 +168,13 @@ namespace GStore.Data
 		{
 			return !entity.IsProxy();
 		}
+
+		public static Type GetPocoType(this GStoreEntity entity)
+		{
+			return System.Data.Entity.Core.Objects.ObjectContext.GetObjectType(entity.GetType());
+		}
+
+
 
 	}
 }

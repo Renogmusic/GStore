@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GStore.Models
 {
 	/// <summary>
 	/// User Profile information and settings
 	/// </summary>
-	[Table("UserProfiles")]
+	[Table("UserProfile")]
 	public class UserProfile : BaseClasses.AuditFieldsUserProfileOptional
 	{
 		/// <summary>
@@ -29,7 +29,7 @@ namespace GStore.Models
 		[MaxLength(255)]
 		[Required]
 		[Display(Name = "Identity User Id (email)")]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.EmailAddress)]
+		[DataType(DataType.EmailAddress)]
 		public string UserId { get; set; }
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace GStore.Models
 		[Required]
 		[Index(IsUnique=true)]
 		[MaxLength(255)]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.EmailAddress)]
+		[DataType(DataType.EmailAddress)]
 		public string UserName { get; set; }
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace GStore.Models
 		[Required]
 		[Index(IsUnique = true)]
 		[MaxLength(255)]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.EmailAddress)]
+		[DataType(DataType.EmailAddress)]
 		public string Email { get; set; }
 
 		[ForeignKey("StoreFrontId")]
@@ -79,8 +79,27 @@ namespace GStore.Models
 		/// Notes entered at signup
 		/// </summary>
 		[Display(Name = "Signup Notes")]
-		[DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
+		[DataType(DataType.MultilineText)]
 		public string SignupNotes { get; set; }
+
+		[Display(Name = "Session Entry Url")]
+		public string EntryUrl { get; set; }
+
+		[Display(Name = "Session Entry Raw Url")]
+		public string EntryRawUrl { get; set; }
+
+		[Display(Name = "Session Entry Referrer")]
+		public string EntryReferrer { get; set; }
+
+		[Display(Name = "Session Entry Date and Time")]
+		public DateTime EntryDateTime { get; set; }
+
+		[Display(Name = "Register Web Form Response Id")]
+		public int? RegisterWebFormResponseId { get; set; }
+
+		[ForeignKey("RegisterWebFormResponseId")]
+		[Display(Name = "Register Web Form Response")]
+		public virtual WebFormResponse RegisterWebFormResponse { get; set; }
 
 		/// <summary>
 		/// User has asked for more info at signup
@@ -203,13 +222,19 @@ namespace GStore.Models
 		[Display(Name = "Client User Roles")]
 		public virtual ICollection<ClientUserRole> ClientUserRoles { get; set; }
 
-		[Display(Name = "Welcome Store Fronts")]
-		public virtual ICollection<StoreFront> WelcomeStoreFronts { get; set; }
+		[Display(Name = "Welcome Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> WelcomeStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Account Admin Store Fronts")]
-		public virtual ICollection<StoreFront> AccountAdminStoreFronts { get; set; }
+		[Display(Name = "Account Admin Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> AccountAdminStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Registered Notify Store Fronts")]
-		public virtual ICollection<StoreFront> RegisteredNotifyStoreFronts { get; set; }
+		[Display(Name = "Registered Notify Store Front Configurations")]
+		public virtual ICollection<StoreFrontConfiguration> RegisteredNotifyStoreFrontConfigurations { get; set; }
+
+		[Display(Name = "Product Reviews")]
+		public virtual ICollection<ProductReview> ProductReviews { get; set; }
+
+		public virtual ICollection<Order> Orders { get; set; }
+
 	}
 }

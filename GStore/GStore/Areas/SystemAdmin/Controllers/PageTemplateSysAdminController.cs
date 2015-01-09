@@ -42,6 +42,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			IOrderedQueryable<PageTemplate> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplatesBreadcrumb(htmlHelper, clientId, false);
 			return View(queryOrdered.ToList());
         }
 
@@ -56,22 +57,32 @@ namespace GStore.Areas.SystemAdmin.Controllers
             {
                 return HttpNotFound();
             }
-            return View(pageTemplate);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, false);
+			return View(pageTemplate);
         }
 
         public ActionResult Create(int? clientId, string viewName)
 		{
+			Client client = null;
+			if (clientId.HasValue && clientId.Value != 0 && clientId.Value != -1)
+			{
+				client = GStoreDb.Clients.FindById(clientId.Value);
+				if (client == null)
+				{
+					return HttpBadRequest("Client not found by Id: " + clientId.Value);
+				}
+			}
 
-			ViewBag.ClientList = ClientList();
 			PageTemplate model = GStoreDb.PageTemplates.Create();
-			model.SetDefaultsForNew(clientId);
+			model.SetDefaultsForNew(client);
 			if (!string.IsNullOrEmpty(viewName))
 			{
 				model.ViewName = viewName;
 				model.Name = viewName;
 				model.Description = viewName;
 			}
-            return View(model);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, model.ClientId, model, false);
+			return View(model);
         }
 
         [HttpPost]
@@ -91,7 +102,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Page Template Added", "Page Template '" + pageTemplate.Name.ToHtml() + "' [" + pageTemplate.PageTemplateId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
             }
-			ViewBag.ClientList = ClientList();
+
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, false);
 			return View(pageTemplate);
         }
 
@@ -106,7 +118,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
             {
                 return HttpNotFound();
             }
-			ViewBag.ClientList = ClientList();
+
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, false);
 			return View(pageTemplate);
         }
 
@@ -126,7 +139,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
                 return RedirectToAction("Index");
             }
-			ViewBag.ClientList = ClientList();
+
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, false);
 			return View(pageTemplate);
         }
 
@@ -164,6 +178,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
             {
                 return HttpNotFound();
             }
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, false);
 			return View(pageTemplate);
         }
 
@@ -213,6 +228,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template not found. Page Template id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
 			return View(template);
 		}
 
@@ -231,6 +247,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			PageTemplateSection model = GStoreDb.PageTemplateSections.Create();
 			model.SetDefaultsForNew(template);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
 			return View(model);
 		}
 
@@ -266,6 +283,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("SectionIndex", new { id = section.PageTemplateId });
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
 			return View(section);
 		}
 
@@ -282,6 +300,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found. Page Template Section Id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
 			return View(section);
 		}
 
@@ -314,6 +333,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("SectionIndex", new { id = section.PageTemplateId });
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
 			return View(section);
 		}
 
@@ -330,6 +350,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found by id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
 			return View(section);
 		}
 
@@ -346,6 +367,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found by id: " + id);
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
 			return View(section);
 		}
 
@@ -362,6 +384,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template not found by id: " + id);
 			}
 			Models.ViewModels.PageViewModel model = new Models.ViewModels.PageViewModel(null, false, false, false, true, id.Value, false, "");
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
 			return View("~/Views/Page/" + template.ViewName + ".cshtml", model);
 		}
 

@@ -1,7 +1,4 @@
 ﻿@model GStore.Models.WebFormField
-@using GStore.AppHtmlHelpers
-@using GStore.Data
-
 <div class="row">
 	<h2 class="jumbotron SysAdminDeletePageTitle col-md-offset-3 col-md-6 text-danger">Confirm Web Form Field Delete</h2>
 </div>
@@ -75,35 +72,19 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.LabelText)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.LabelText)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.HelpLabelTopText)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.HelpLabelTopText)
-		</dd>
-
-		<dt>
-			@Html.DisplayNameFor(model => model.HelpLabelBottomText)
-		</dt>
-
-		<dd>
-			@Html.DisplayFor(model => model.HelpLabelBottomText)
-		</dd>
-
-		<dt>
 			@Html.DisplayNameFor(model => model.IsRequired)
 		</dt>
 
 		<dd>
 			@Html.DisplayFor(model => model.IsRequired)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.LabelText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.LabelText)
 		</dd>
 
 		<dt>
@@ -123,11 +104,19 @@
 		</dd>
 
 		<dt>
-			@Html.DisplayNameFor(model => model.TextAreaRows)
+			@Html.DisplayNameFor(model => model.HelpLabelTopText)
 		</dt>
 
 		<dd>
-			@Html.DisplayFor(model => model.TextAreaRows)
+			@Html.DisplayFor(model => model.HelpLabelTopText)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.HelpLabelBottomText)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.HelpLabelBottomText)
 		</dd>
 
 		<dt>
@@ -136,6 +125,22 @@
 
 		<dd>
 			@Html.DisplayFor(model => model.TextAreaColumns)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.TextAreaRows)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.TextAreaRows)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ValueList)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ValueList)
 		</dd>
 
 		<dt>
@@ -193,7 +198,6 @@
 		<dd>
 			@Html.DisplayFor(model => model.UpdatedBy)
 		</dd>
-
 
 	</dl>
 </div>

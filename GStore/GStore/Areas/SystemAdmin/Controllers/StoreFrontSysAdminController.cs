@@ -10,6 +10,7 @@ using GStore.Data.EntityFrameworkCodeFirstProvider;
 using GStore.Models;
 using GStore.Data;
 using GStore.AppHtmlHelpers;
+using System.Text;
 
 namespace GStore.Areas.SystemAdmin.Controllers
 {
@@ -43,6 +44,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 
 			IOrderedQueryable<StoreFront> queryOrdered = query.ApplySort(this, SortBy, SortAscending);
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontsBreadcrumb(htmlHelper, clientId, false);
 			return View(queryOrdered.ToList());
 		}
 
@@ -59,22 +61,27 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
 			return View(storeFront);
 		}
 
 		// GET: SystemAdmin/StoreFrontSysAdmin/Create
 		public ActionResult Create(int? clientId)
 		{
-			ViewBag.UserProfileList = UserProfileList(clientId, null);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.ClientList = ClientList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, null);
-			ViewBag.RegisterSuccessPageList = StoreFrontRegisterSuccessPageList(clientId, null);
-			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, null);
-			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, null);
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No clients in database.", "There are no clients in the database. To Create a store front you need to create a client first.", UserMessageType.Info);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
 
+			Client client = null;
+			if (clientId.HasValue)
+			{
+				client = GStoreDb.Clients.FindById(clientId.Value);
+			}
 			StoreFront model = GStoreDb.StoreFronts.Create();
-			model.SetDefaultsForNew(clientId);
+			model.SetDefaultsForNew(client);
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, clientId, model, false);
 			return View(model);
 		}
 
@@ -83,31 +90,20 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(StoreFront storeFront)
+		public ActionResult Create(StoreFront storeFront, bool? createDefaultConfig)
 		{
-			//check if storefront name or folder is dupe for this client
-			ValidateStoreFrontName(storeFront);
-			ValidateStoreFrontFolder(storeFront);
-
 			if (ModelState.IsValid)
 			{
 				storeFront = GStoreDb.StoreFronts.Create(storeFront);
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Add(storeFront);
-				AddUserMessage("Store Front Added", "Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
+				AddUserMessage("Store Front Added", "Store Front [" + storeFront.StoreFrontId + "] for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was created successfully!", AppHtmlHelpers.UserMessageType.Success);
 
-				//create folders for new Store Front if they don't exist already
-				try
+				if (createDefaultConfig.HasValue && createDefaultConfig.Value)
 				{
-					SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath)));
-					AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Success);
+					return CreateConfig(storeFront.StoreFrontId);
 				}
-				catch (Exception ex)
-				{
-					AddUserMessage("Error Creating Store Front Folders!", "There was an error creating the store front folders in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'. You will need to create the folder manually. Error: " + ex.Message.ToHtml(), AppHtmlHelpers.UserMessageType.Warning);
-				}
-
 				return RedirectToAction("Index");
 			}
 			int? clientId = null;
@@ -116,15 +112,99 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				clientId = storeFront.ClientId;
 			}
 
-			ViewBag.UserProfileList = UserProfileList(clientId, null);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.ClientList = ClientList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(clientId, storeFront.StoreFrontId);
-			ViewBag.RegisterSuccessPageList = StoreFrontRegisterSuccessPageList(clientId, storeFront.StoreFrontId);
-			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(clientId, storeFront.StoreFrontId);
-			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(clientId, storeFront.StoreFrontId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
 			return View(storeFront);
+		}
+
+		/// <summary>
+		/// Creates a configuration where there is none for a storefront
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public ActionResult CreateConfig(int? id)
+		{
+			if (!id.HasValue || id.Value == 0)
+			{
+				return HttpBadRequest("storeFrontId is null or 0");
+			}
+			StoreFront storeFront = GStoreDb.StoreFronts.FindById(id.Value);
+			if (storeFront == null)
+			{
+				return HttpBadRequest("storeFront not found by id: " + id.Value);
+			}
+
+			StoreFrontConfiguration configToCopyFrom = storeFront.CurrentConfigOrAny();
+			StoreFrontConfiguration newConfig = GStoreDb.StoreFrontConfigurations.Create();
+
+			if (configToCopyFrom != null)
+			{
+				newConfig = newConfig.UpdateValuesFromEntity(configToCopyFrom);
+				newConfig.StoreFrontConfigurationId = 0;
+				newConfig.StoreFront = storeFront;
+				newConfig.Client = storeFront.Client;
+			}
+			else
+			{
+				UserProfile profile = GStoreDb.SeedAutoMapUserBestGuess();
+				if (profile == null)
+				{
+					AddUserMessage("Config Create Error!", "No users found to link to new configuration for client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]. Method: SeedAutoMapUserBestGuess"
+						+ "<br/><a href=\"" + Url.Action("Create", "UserProfileSysAdmin") + "\">Click HERE to create a new user profile for this client.</a>", UserMessageType.Danger);
+					return RedirectToAction("Create", "UserProfileSysAdmin", new { clientId = storeFront.ClientId, storeFrontId = storeFront.StoreFrontId });
+				}
+				Theme theme = storeFront.Client.Themes.AsQueryable().ApplyDefaultSort().FirstOrDefault();
+				if (theme == null)
+				{
+					AddUserMessage("Config Create Error!", "No Themes found to link to new configuration for client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]. Method: FirstTheme"
+						+ "<br/> <a href=\"" + Url.Action("Create", "ThemeSysAdmin") + "\">Click HERE to create a new theme for this client.</a>", UserMessageType.Danger);
+					return RedirectToAction("Create", "ThemeSysAdmin", new { clientId = storeFront.ClientId });
+				}
+				
+				newConfig.StoreFront = storeFront;
+				newConfig.StoreFrontId = storeFront.StoreFrontId;
+				newConfig.SetDefaultsForNew(storeFront.Client);
+				newConfig.AccountAdmin = profile;
+				newConfig.WelcomePerson = profile;
+				newConfig.RegisteredNotify = profile;
+				newConfig.AccountTheme = theme;
+				newConfig.AdminTheme = theme;
+				newConfig.CartTheme = theme;
+				newConfig.CheckoutTheme = theme;
+				newConfig.CatalogTheme = theme;
+				newConfig.DefaultNewPageTheme = theme;
+				newConfig.NotificationsTheme = theme;
+				newConfig.OrderStatusTheme = theme;
+				newConfig.OrderAdminTheme = theme;
+				newConfig.ProfileTheme = theme;
+				newConfig.ApplyDefaultCartConfig();
+				newConfig.ApplyDefaultCheckoutConfig();
+				newConfig.ApplyDefaultOrderStatusConfig();
+			}
+
+			newConfig = GStoreDb.StoreFrontConfigurations.Add(newConfig);
+			GStoreDb.SaveChanges();
+
+			string storeFrontRootFolder = newConfig.StoreFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
+
+			string clientFrontFolderVirtualPath = storeFront.ClientVirtualDirectoryToMap(Request.ApplicationPath);
+			string storeFrontFolderVirtualPath = storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
+
+			if (!System.IO.Directory.Exists(Server.MapPath(clientFrontFolderVirtualPath)))
+			{
+				SysAdminActivationExtensions.CreateClientFolders(Server.MapPath(storeFront.ClientVirtualDirectoryToMap(Request.ApplicationPath)));
+				AddUserMessage("Client Folders Created.", "Client Folders Created for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] in '" + clientFrontFolderVirtualPath.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
+			}
+
+
+			if (!System.IO.Directory.Exists(Server.MapPath(storeFrontFolderVirtualPath)))
+			{
+				SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(storeFrontFolderVirtualPath));
+				AddUserMessage("Store Front Folders Created.", "Store Front Folders Created for New Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] in '" + storeFrontFolderVirtualPath.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
+			}
+
+			AddUserMessage("Store Front Configuration Created.", "Store Front Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] created successfully for Store Front '" + newConfig.Name.ToHtml() + "' [" + newConfig.StoreFrontId + "].", AppHtmlHelpers.UserMessageType.Success);
+
+			return RedirectToAction("Index");
 		}
 
 		// GET: SystemAdmin/StoreFrontSysAdmin/Edit/5
@@ -140,14 +220,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound();
 			}
 
-			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.ClientList = ClientList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.RegisterSuccessPageList = StoreFrontRegisterSuccessPageList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
-
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
 			return View(storeFront);
 		}
 
@@ -158,68 +231,33 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(StoreFront storeFront)
 		{
-			ValidateStoreFrontName(storeFront);
-			ValidateStoreFrontFolder(storeFront);
-
 			if (ModelState.IsValid)
 			{
-				StoreFront originalValues = GStoreDb.StoreFronts.Single(sf => sf.StoreFrontId == storeFront.StoreFrontId);
-				string originalFolderName = originalValues.Folder;
-				string originalFolderToMap = originalValues.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
-
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Update(storeFront);
-				AddUserMessage("Store Front Updated", "Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				GStoreDb.SaveChanges();
-
-				//detect if folder name has changed
-				if (storeFront.Folder != originalFolderName)
-				{
-					//default behavior is to move the old folder to the new name
-					string newStoreFrontFolder = Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath));
-					string originalStoreFrontFolder = Server.MapPath(originalFolderToMap);
-					if (System.IO.Directory.Exists(originalStoreFrontFolder))
-					{
-						try
-						{
-							System.IO.Directory.Move(originalStoreFrontFolder, newStoreFrontFolder);
-							AddUserMessage("Folder Moved", "StoreFront folder name was changed, so the StoreFront folder was moved from '" + originalFolderToMap.ToHtml() + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Success);
-						}
-						catch (Exception ex)
-						{
-							AddUserMessage("Error Moving StoreFront Folder!", "There was an error moving the StoreFront folder from '" + originalFolderToMap.ToHtml() + "' to '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'. You will need to move the folders manually. Error: " + ex.Message.ToHtml(), AppHtmlHelpers.UserMessageType.Warning);
-						}
-					}
-					else
-					{
-						try
-						{
-							SysAdminActivationExtensions.CreateStoreFrontFolders(newStoreFrontFolder);
-							AddUserMessage("StoreFront Folders Created", "StoreFront Folders were created in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Info);
-						}
-						catch (Exception ex)
-						{
-							AddUserMessage("Error Creating StoreFront Folders!", "There was an error creating the Store front folders in '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'. You will need to create the folders manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
-						}
-					}
-				}
-
+				AddUserMessage("Store Front Updated", "Store Front [" + storeFront.StoreFrontId + "] for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
-			ViewBag.UserProfileList = UserProfileList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.ClientList = ClientList();
-			ViewBag.RegisterWebFormList = RegisterWebFormList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.RegisterSuccessPageList = StoreFrontRegisterSuccessPageList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.NotFoundPageList = StoreFrontNotFoundPageList(storeFront.ClientId, storeFront.StoreFrontId);
-			ViewBag.StoreErrorPageList = StoreFrontErrorPageList(storeFront.ClientId, storeFront.StoreFrontId);
 
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
 			return View(storeFront);
 		}
 
 		public ActionResult Activate(int id)
 		{
 			this.ActivateStoreFrontOnly(id);
+			if (Request.UrlReferrer != null)
+			{
+				return Redirect(Request.UrlReferrer.ToString());
+
+			}
+			return RedirectToAction("Index");
+		}
+
+		public ActionResult ActivateConfig(int id)
+		{
+			this.ActivateStoreFrontConfigOnly(id);
 			if (Request.UrlReferrer != null)
 			{
 				return Redirect(Request.UrlReferrer.ToString());
@@ -241,6 +279,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound();
 			}
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
 			return View(storeFront);
 		}
 
@@ -249,35 +288,235 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult DeleteConfirmed(int id)
 		{
+			StoreFront target = GStoreDb.StoreFronts.FindById(id);
+			if (target == null)
+			{
+				//storefront not found, already deleted? overpost?
+				throw new ApplicationException("Error deleting Store Front. Store Front not found. It may have been deleted by another user. StoreFrontId: " + id);
+			}
+			int clientId = target.ClientId;
+			string clientName = target.Client.Name;
+
 			try
 			{
-				StoreFront target = GStoreDb.StoreFronts.FindById(id);
-				if (target == null)
+				List<StoreFrontConfiguration> configsToDelete = target.StoreFrontConfigurations.ToList();
+				foreach (var config  in configsToDelete)
 				{
-					//storefront not found, already deleted? overpost?
-					throw new ApplicationException("Error deleting Store Front. Store Front not found. It may have been deleted by another user. StoreFrontId: " + id);
+					GStoreDb.StoreFrontConfigurations.Delete(config);
 				}
-				string storeFrontName = target.Name;
-				string storeFrontFolder = target.Folder;
-				string storeFrontFolderToMap = target.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
 
-				bool deleted = GStoreDb.StoreFronts.DeleteById(id);
+				bool deleted = GStoreDb.StoreFronts.Delete(target);
 				GStoreDb.SaveChanges();
 				if (deleted)
 				{
-					AddUserMessage("Store Front Deleted", "Store Front '" + storeFrontName.ToHtml() + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
-					if (System.IO.Directory.Exists(Server.MapPath(storeFrontFolderToMap)))
-					{
-						AddUserMessage("Store Front folders not deleted", "Store Front folder '" + storeFrontFolderToMap.ToHtml() + "' was not deleted from the file system. You will need to delete the folder manually.", AppHtmlHelpers.UserMessageType.Info);
-					}
+					AddUserMessage("Store Front Deleted", "Store Front [" + id + "] for client '" + clientName.ToHtml() + "' [" + clientId + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
+				}
+				return RedirectToAction("Index");
+			}
+			catch (Exception ex)
+			{
+				AddUserMessage("Store Front Delete Error!", "Error deleting Store Front.\nYou will need to delete with a Seek and Destroy.\nThis Store Front may have child records. Store Front id " + id + "<br/>Exception:" + ex.ToString(), UserMessageType.Danger);
+				return RedirectToAction("Delete", new { id = id });
+			}
+		}
+
+		public ActionResult SeekAndDestroy(int? id)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("client id is null");
+			}
+			Data.IGstoreDb db = GStoreDb;
+			StoreFront storeFront = db.StoreFronts.FindById(id.Value);
+			if (storeFront == null)
+			{
+				return HttpNotFound();
+			}
+			ViewData.Add("SeekAndDestroySummary", ChildRecordSummary(storeFront, GStoreDb));
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
+			return View(storeFront);
+		}
+
+		// POST: SystemAdmin/ClientSysAdmin/Delete/5
+		[HttpPost, ActionName("SeekAndDestroy")]
+		[ValidateAntiForgeryToken]
+		public ActionResult SeekAndDestroyConfirmed(int id, bool? deleteEventLogs, bool? deleteFolders)
+		{
+			StoreFront target = GStoreDb.StoreFronts.FindById(id);
+			if (target == null)
+			{
+				//client not found, already deleted? overpost?
+				AddUserMessage("Store Front Delete Error!", "Store Front not found Store Front Id: " + id + "<br/>Store Front may have been deleted by another user.", UserMessageType.Danger);
+				return RedirectToAction("Index");
+			}
+			StoreFrontConfiguration config = target.CurrentConfigOrAny();
+
+			string name = config == null ? "id [" + target.StoreFrontId + "]" : config.Name;
+			string folder = config == null ? null : config.Folder;
+			string folderToMap = config == null ? null : config.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
+
+			try
+			{
+				string report = SeekAndDestroyChildRecordsNoSave(target, deleteEventLogs ?? true, deleteFolders ?? true);
+				AddUserMessage("Seek and Destroy report.", report.ToHtmlLines(), UserMessageType.Info);
+				bool deleted = GStoreDb.StoreFronts.DeleteById(id);
+				GStoreDb.SaveChangesEx(false, false, false, false);
+				if (deleted)
+				{
+					AddUserMessage("Store Front Deleted", "Store Front '" + name.ToHtml() + "' [" + id + "] was deleted successfully.", AppHtmlHelpers.UserMessageType.Success);
 				}
 			}
 			catch (Exception ex)
 			{
-
-				throw new ApplicationException("Error deleting StoreFront.  See inner exception for errors.  Related child tables may still have data to be deleted. StoreFrontId: " + id, ex);
+				AddUserMessage("Store Front Seek and Destroy Error!", "Error with Seek and Destroy for Store Front '" + name.ToHtml() + "' [" + id + "].<br/>This Store Front may have child records.<br/>Exception:" + ex.ToString(), UserMessageType.Danger);
 			}
 			return RedirectToAction("Index");
+		}
+
+		protected string ChildRecordSummary(StoreFront storeFront, IGstoreDb db)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (db == null)
+			{
+				throw new ArgumentNullException("db");
+			}
+
+			StringBuilder output = new StringBuilder();
+			int storeFrontId = storeFront.StoreFrontId;
+			string name = storeFront.CurrentConfigOrAny() == null ? "id " + storeFront.StoreFrontId : storeFront.CurrentConfigOrAny().Name;
+
+			output.AppendLine("--File and Child Record Summary for Store Front '" + name.ToHtml() + " [" + storeFrontId + "]--");
+
+			output.AppendLine("--Store Front Linked Records--");
+			output.AppendLine("StoreFronts: " + db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("ClientUserRoles: " + db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId).Count());
+			output.AppendLine("Carts: " + db.Carts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("CartItems: " + db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Discounts: " + db.Discounts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("NavBarItems: " + db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Notifications: " + db.Notifications.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("NotificationLink: " + db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Pages: " + db.Pages.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("PageSections: " + db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("ProductCategories: " + db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Products: " + db.Products.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("ProductReviews: " + db.ProductReviews.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("StoreBindings: " + db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("StoreFrontConfigurations: " + db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("UserProfiles: " + db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("WebFormResponses: " + db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("WebFormFieldResponses: " + db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+
+			output.AppendLine("--event logs--");
+			output.AppendLine("BadRequests: " + db.BadRequests.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("FileNotFoundLogs: " + db.FileNotFoundLogs.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("PageViewEvent: " + db.PageViewEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("SecurityEvents: " + db.SecurityEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("SystemEvents: " + db.SystemEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("UserActionEvents: " + db.UserActionEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+
+			output.AppendLine("--File System--");
+			string folderPath = Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath));
+			output.AppendLine("Virtual Directory: '" + storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath) + "'");
+			output.AppendLine("Physicial Directory: '" + folderPath + "'");
+			output.AppendLine("Folder Exists: " + System.IO.Directory.Exists(folderPath));
+			if (System.IO.Directory.Exists(folderPath))
+			{
+				output.AppendLine("SubFolders: " + System.IO.Directory.EnumerateDirectories(folderPath, "*", System.IO.SearchOption.AllDirectories).Count());
+				output.AppendLine("Files: " + System.IO.Directory.EnumerateFiles(folderPath, "*", System.IO.SearchOption.AllDirectories).Count());
+			}
+
+			return output.ToString();
+		}
+
+		/// <summary>
+		/// deletes all child records and returns a string summary of the records deleted
+		/// </summary>
+		/// <param name="client"></param>
+		/// <returns></returns>
+		protected string SeekAndDestroyChildRecordsNoSave(StoreFront storeFront, bool deleteEventLogs, bool deleteFolders)
+		{
+			StringBuilder output = new StringBuilder();
+			IGstoreDb db = GStoreDb;
+			int storeFrontId = storeFront.StoreFrontId;
+
+			string virtualPath = null;
+			if (storeFront.CurrentConfigOrAny() != null)
+			{
+				virtualPath = storeFront.StoreFrontVirtualDirectoryToMapAnyConfig(Request.ApplicationPath);
+			}
+
+			output.AppendLine("Deleting storefront records...");
+			db.StoreFronts.DeleteRange(db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.ClientUserRoles.DeleteRange(db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId));
+			db.Carts.DeleteRange(db.Carts.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.CartItems.DeleteRange(db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.Discounts.DeleteRange(db.Discounts.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.NavBarItems.DeleteRange(db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.Notifications.DeleteRange(db.Notifications.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.NotificationLinks.DeleteRange(db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.Pages.DeleteRange(db.Pages.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.PageSections.DeleteRange(db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.ProductCategories.DeleteRange(db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.Products.DeleteRange(db.Products.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.ProductReviews.DeleteRange(db.ProductReviews.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.StoreBindings.DeleteRange(db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.StoreFrontConfigurations.DeleteRange(db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.UserProfiles.DeleteRange(db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.WebFormResponses.DeleteRange(db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId));
+			db.WebFormFieldResponses.DeleteRange(db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId));
+			output.AppendLine("Deleted storefront records!");
+
+			if (deleteEventLogs)
+			{
+				output.AppendLine("Deleting event logs...");
+				db.BadRequests.DeleteRange(db.BadRequests.Where(sf => sf.StoreFrontId == storeFrontId));
+				db.FileNotFoundLogs.DeleteRange(db.FileNotFoundLogs.Where(sf => sf.StoreFrontId == storeFrontId));
+				db.PageViewEvents.DeleteRange(db.PageViewEvents.Where(sf => sf.StoreFrontId == storeFrontId));
+				db.SecurityEvents.DeleteRange(db.SecurityEvents.Where(sf => sf.StoreFrontId == storeFrontId));
+				db.SystemEvents.DeleteRange(db.SystemEvents.Where(sf => sf.StoreFrontId == storeFrontId));
+				db.UserActionEvents.DeleteRange(db.UserActionEvents.Where(sf => sf.StoreFrontId == storeFrontId));
+				output.AppendLine("Deleted event logs!");
+			}
+
+			if (deleteFolders)
+			{
+				if (virtualPath == null)
+				{
+					output.AppendLine("Warning: No store front configuration, no folder name for StoreFront files. They might not exist or have been orphaned when the configuration was deleted.");
+				}
+				else
+				{
+					string folderPath = Server.MapPath(virtualPath);
+					output.AppendLine("Deleting Files...");
+					output.AppendLine("Virtual Directory: '" + virtualPath + "'");
+					output.AppendLine("Physicial Directory: '" + folderPath + "'");
+					output.AppendLine("Folder Exists: " + System.IO.Directory.Exists(folderPath));
+					if (System.IO.Directory.Exists(folderPath))
+					{
+						try
+						{
+							System.IO.Directory.Delete(folderPath, true);
+							AddUserMessage("Store Front Folders Deleted.", "Store Front folder was deleted successfully.", UserMessageType.Info);
+							output.AppendLine("Deleted Files!");
+						}
+						catch (Exception)
+						{
+							AddUserMessage("Delete folders failed.", "Delete folders failed. You will have to delete the Store Front folder manually.", UserMessageType.Warning);
+							output.AppendLine("Delete files failed!");
+						}
+					}
+					else
+					{
+						output.AppendLine("Deleted Files!");
+					}
+				}
+			}
+
+			return output.ToString();
 		}
 
 	}

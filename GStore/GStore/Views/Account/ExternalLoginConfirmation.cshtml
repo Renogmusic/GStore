@@ -1,6 +1,12 @@
 ﻿@model GStore.Models.ViewModels.ExternalLoginConfirmationViewModel
 @{
 	ViewBag.Title = "Sign-Up";
+	bool checkingOut = Model.CheckingOut ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
 }
 <h2>@ViewBag.Title.</h2>
 <h3>Associate your @ViewBag.LoginProvider account.</h3>
@@ -8,6 +14,7 @@
 @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.CheckingOut)
 
 	<h4>Association Form</h4>
 	<hr />
@@ -30,6 +37,15 @@
 		</div>
 	</div>
 }
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout as a Guest", "LoginOrGuest", "Checkout", new { ContinueAsGuest = true }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}
+
 
 @section Scripts {
 	@Scripts.Render("~/bundles/jqueryval")

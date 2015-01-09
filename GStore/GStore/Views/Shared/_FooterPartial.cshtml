@@ -1,6 +1,4 @@
-﻿@using GStore.AppHtmlHelpers;
-@using GStore.Models;
-<footer>
+﻿<footer>
 	<div class="row">
 		<div class="col-sm-4 text-center">
 			<a id="PoweredByGStoreLink" href="@Url.Action("About", "GStore")" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">
@@ -11,10 +9,10 @@
 		</div>
 		<div class="col-sm-4 text-center">
 			@{
-				StoreFront storeFront = Html.CurrentStoreFront(false);
-				if (storeFront != null)
+				StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+				if (storeFrontConfig != null)
 				{
-					@Html.Raw(storeFront.HtmlFooter)
+					@Html.Raw(storeFrontConfig.HtmlFooter)
 				}
 				else
 				{
@@ -28,9 +26,3 @@
 		</div>
 	</div>
 </footer>
-
-
-
-
-
-

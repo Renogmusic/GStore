@@ -1,28 +1,28 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
-@using GStore.AppHtmlHelpers
-@using GStore.Models;
-@using GStore.Data;
-@if (Model.EditMode)
-{
-	@Html.Partial("_EditModeTopPartial", Model)
-}
-else if (Model.ShowEditPageLink)
-{
-	@Html.Partial("_EditLinkTopPartial", Model)
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+	if (Model.EditMode)
+	{
+		Html.RenderPartial("_EditModeTopPartial", Model);
+	}
+	else if (Model.ShowEditPageLink)
+	{
+		Html.RenderPartial("_EditLinkTopPartial", Model);
+	}
 }
 	<h1 class="text-danger">Welcome to your new store front at GStore!</h1>
-	<h2>@Html.CurrentStoreFront(true).Name</h2>
+	<h2>@storeFrontConfig.Name</h2>
 	Page [@Model.Page.PageId]: @Model.Page.Name
 	<br />
-	StoreFront [@Model.Page.StoreFront.StoreFrontId]: @Model.Page.StoreFront.Name
+	Store Front '@(storeFrontConfig.Name )' [@(storeFrontConfig.StoreFrontId)]
 	<br />
-	Client [@Model.Page.Client.ClientId]: @Model.Page.Client.Name
+	Client '@(storeFrontConfig.Client.Name)' [@storeFrontConfig.Client.ClientId]
 	<br />
-	Account Admin [@Model.Page.StoreFront.AccountAdmin.UserProfileId]: @Model.Page.StoreFront.AccountAdmin.FullName &lt; @Model.Page.StoreFront.AccountAdmin.Email &gt;
+	Account Admin [@storeFrontConfig.AccountAdmin.UserProfileId]: @storeFrontConfig.AccountAdmin.FullName &lt; @storeFrontConfig.AccountAdmin.Email &gt;
 	<br />
-	Registered Notify [@Model.Page.StoreFront.RegisteredNotify.UserProfileId]: @Model.Page.StoreFront.RegisteredNotify.FullName &lt; @Model.Page.StoreFront.RegisteredNotify.Email &gt;
+	Registered Notify [@storeFrontConfig.RegisteredNotify.UserProfileId]: @storeFrontConfig.RegisteredNotify.FullName &lt; @storeFrontConfig.RegisteredNotify.Email &gt;
 	<br />
-	Welcome Messages From [@Model.Page.StoreFront.WelcomePerson.UserProfileId]: @Model.Page.StoreFront.WelcomePerson.FullName &lt; @Model.Page.StoreFront.WelcomePerson.Email &gt;
+	Welcome Messages From [@storeFrontConfig.WelcomePerson.UserProfileId]: @storeFrontConfig.WelcomePerson.FullName &lt; @storeFrontConfig.WelcomePerson.Email &gt;
 	<br/>
 <br />
 	GStore.Properties.Settings.AppEnableEmail
@@ -39,9 +39,9 @@ else if (Model.ShowEditPageLink)
 
 @if (Model.EditMode)
 {
-	@Html.Partial("_EditModeBottomPartial", Model)
+	Html.RenderPartial("_EditModeBottomPartial", Model);
 }
 else if (Model.ShowEditPageLink)
 {
-	@Html.Partial("_EditLinkBottomPartial", Model)
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
 }

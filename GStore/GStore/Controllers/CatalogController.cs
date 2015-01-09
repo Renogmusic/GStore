@@ -14,7 +14,7 @@ namespace GStore.Controllers
         // GET: Catalog
 		public ActionResult Index()
 		{
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontOrThrow.CatalogPageInitialLevels, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
 			return View("Index", model);
 		}
 
@@ -22,7 +22,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.CatalogLayoutName;
+				return CurrentStoreFrontConfigOrThrow.CatalogLayoutName;
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontOrThrow.CatalogTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.CatalogTheme.FolderName;
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace GStore.Controllers
 			}
 			/// get current catalog item
 
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontOrThrow.CatalogPageInitialLevels, category, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, category, null);
 
 			//get products
 
@@ -123,7 +123,7 @@ namespace GStore.Controllers
 				throw new ApplicationException("Product is null, be sure product is set before calling ViewProduct");
 			}
 			/// get current catalog item
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontOrThrow.CatalogPageInitialLevels, product.Category, product);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product);
 			return View("ViewProduct", model);
 		}
 
@@ -134,7 +134,7 @@ namespace GStore.Controllers
 				productName = "The product you linked to";
 			}
 			AddUserMessage("Sorry!", productName.ToHtml() + " was not found. Here is a list of our current products.", GStore.AppHtmlHelpers.UserMessageType.Info);
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontOrThrow.CatalogPageInitialLevels, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
 			return View("Index", model);
 		}
 
@@ -145,7 +145,7 @@ namespace GStore.Controllers
 				categoryName = "The category you linked to";
 			}
 			AddUserMessage("Sorry!", categoryName.ToHtml() + " was not found. Here is a list of our current products.", GStore.AppHtmlHelpers.UserMessageType.Info);
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontOrThrow.CatalogPageInitialLevels, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
 			return View("Index", model);
 		}
 

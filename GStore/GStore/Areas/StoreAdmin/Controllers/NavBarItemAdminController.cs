@@ -19,7 +19,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		{
 			IOrderedQueryable<NavBarItem> navBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			NavBarItemManagerAdminViewModel viewModel = new NavBarItemManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, navBarItems);
+			NavBarItemManagerAdminViewModel viewModel = new NavBarItemManagerAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, navBarItems);
 			return View("Manager", viewModel);
 		}
 
@@ -28,7 +28,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		{
 			IOrderedQueryable<NavBarItem> navBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ApplySort(this, SortBy, SortAscending);
 
-			NavBarItemManagerAdminViewModel viewModel = new NavBarItemManagerAdminViewModel(CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow, navBarItems);
+			NavBarItemManagerAdminViewModel viewModel = new NavBarItemManagerAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow, navBarItems);
 			return View("AdvancedManager", viewModel);
 		}
 
@@ -47,7 +47,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			if (source.Value == target.Value)
 			{
 				//nothing changed
-				return Manager(null, null);
+				return RedirectToAction("Manager");
 			}
 
 			NavBarItem sourceItem = CurrentStoreFrontOrThrow.NavBarItems.SingleOrDefault(nb => nb.NavBarItemId == source.Value);
@@ -59,7 +59,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			if (sourceItem.ParentNavBarItemId == target)
 			{
 				//target is already the direct parent of the source, no changes
-				return Manager(null, null);
+				return RedirectToAction("Manager");
 			}
 
 			int? newParentNavBarItemId = (target == 0 ? null : target);
@@ -79,7 +79,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					if (parentCheck.NavBarItemId == sourceItem.NavBarItemId)
 					{
 						AddUserMessage("Menu Item Move Error", "You cannot move a menu item onto its sub-items. Move the menu item to the root if you want to change the order. Source Menu Item: '" + sourceItem.Name.ToHtml() + "' [" + sourceItem.NavBarItemId + "] to Target Menu Item: '" + targetItem.Name.ToHtml() + "' [" + targetItem.NavBarItemId + "]", UserMessageType.Danger);
-						return Manager(null, null);
+						return RedirectToAction("Manager");
 					}
 					parentCheck = parentCheck.ParentNavBarItem;
 				} while (parentCheck != null);
@@ -93,7 +93,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				GStoreDb.SaveChanges();
 			}
 
-			return Manager(null, null);
+			return RedirectToAction("Manager");
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.NavBarItems_Manager)]
@@ -128,19 +128,19 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			{
 				//no siblings, nothing to do
 				AddUserMessage("Item move", "No need to move Menu Item, it has no other items in its group. Menu Item: " + item.Name.ToHtml() + " [" + item.NavBarItemId + "]", UserMessageType.Info);
-				return Manager(null, null);
+				return RedirectToAction("Manager");
 			}
 
 			int itemIndex = siblings.IndexOf(item);
 			if (itemIndex == 0 && moveUp)
 			{
 				AddUserMessage("Item move", "No need to move Menu Item up, it is already first in its group. Menu Item: " + item.Name.ToHtml() + " [" + item.NavBarItemId + "]", UserMessageType.Info);
-				return Manager(null, null);
+				return RedirectToAction("Manager");
 			}
 			if (!moveUp && (itemIndex == (siblings.Count - 1)))
 			{
 				AddUserMessage("Item move", "No need to move Menu Item down, it is already last in its group. Menu Item: " + item.Name.ToHtml() + " [" + item.NavBarItemId + "]", UserMessageType.Info);
-				return Manager(null, null);
+				return RedirectToAction("Manager");
 			}
 
 
@@ -162,7 +162,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			GStoreDb.NavBarItems.Update(target);
 			GStoreDb.NavBarItems.Update(item);
 			GStoreDb.SaveChanges();
-			return Manager(null, null);
+			return RedirectToAction("Manager");
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.NavBarItems_Create)]
@@ -195,13 +195,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				try
 				{
 					NavBarItem navBarItem = GStoreDb.CreateNavBarItem(viewModel, storeFront, CurrentUserProfileOrThrow);
-					AddUserMessage("Menu Item Created!", "Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] was created successfully for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Menu Item Created!", "Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 					return RedirectToAction("Manager");
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while Creating Menu Item '" + viewModel.Name + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
+					string errorMessage = "An error occurred while Creating Menu Item '" + viewModel.Name + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -213,7 +213,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Create Menu Item Error", "There was an error with your entry for new menu item '" + viewModel.Name.ToHtml() + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Create Menu Item Error", "There was an error with your entry for new menu item '" + viewModel.Name.ToHtml() + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
@@ -256,13 +256,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				try
 				{
 					NavBarItem navBarItem = GStoreDb.CreateNavBarItem(navBarItemEditViewModel, storeFront, CurrentUserProfileOrThrow);
-					AddUserMessage("Menu Item Created!", "Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] was created successfully for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					AddUserMessage("Menu Item Created!", "Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 					return RedirectToAction("AdvancedManager");
 				}
 				catch (Exception ex)
 				{
-					string errorMessage = "An error occurred while Creating Menu Item '" + navBarItemEditViewModel.Name + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
+					string errorMessage = "An error occurred while Creating Menu Item '" + navBarItemEditViewModel.Name + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] \nError: " + ex.GetType().FullName;
 
 					if (CurrentUserProfileOrThrow.AspNetIdentityUserIsInRoleSystemAdmin())
 					{
@@ -274,7 +274,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 			else
 			{
-				AddUserMessage("Create Menu Item Error", "There was an error with your entry for new menu item '" + navBarItemEditViewModel.Name.ToHtml() + "' for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
+				AddUserMessage("Create Menu Item Error", "There was an error with your entry for new menu item '" + navBarItemEditViewModel.Name.ToHtml() + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", AppHtmlHelpers.UserMessageType.Danger);
 			}
 
 			navBarItemEditViewModel.FillListsIfEmpty(storeFront.Client, storeFront);
@@ -300,7 +300,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			NavBarItem navBarItem = storeFront.NavBarItems.Where(p => p.NavBarItemId == id.Value).SingleOrDefault();
 			if (navBarItem == null)
 			{
-				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to edit cannot be found. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to edit cannot be found. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("AdvancedManager");
 
 			}
@@ -327,7 +327,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			NavBarItem navBarItem = storeFront.NavBarItems.SingleOrDefault(nb => nb.NavBarItemId == viewModel.NavBarItemId);
 			if (navBarItem == null)
 			{
-				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to edit cannot be found. Menu Item Id: [" + viewModel.NavBarItemId + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to edit cannot be found. Menu Item Id: [" + viewModel.NavBarItemId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				if (viewModel.ReturnToManager)
 				{
 					return RedirectToAction("Manager");
@@ -341,7 +341,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			if (ModelState.IsValid && nameIsValid)
 			{
 				navBarItem = GStoreDb.UpdateNavBarItem(viewModel, storeFront, CurrentUserProfileOrThrow);
-				AddUserMessage("Menu Item updated successfully!", "Menu Item updated successfully. Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
+				AddUserMessage("Menu Item updated successfully!", "Menu Item updated successfully. Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
 				if (viewModel.ReturnToManager)
 				{
 					return RedirectToAction("Manager");
@@ -372,7 +372,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			NavBarItem navBarItem = storeFront.NavBarItems.Where(p => p.NavBarItemId == id.Value).SingleOrDefault();
 			if (navBarItem == null)
 			{
-				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to view cannot be found. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to view cannot be found. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("AdvancedManager");
 
 			}
@@ -394,7 +394,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.NavBarItem navBarItem = storeFront.NavBarItems.Where(p => p.NavBarItemId == id.Value).SingleOrDefault();
 			if (navBarItem == null)
 			{
-				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to Delete cannot be found. Menu Item id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to Delete cannot be found. Menu Item id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				return RedirectToAction("AdvancedManager");
 
 			}
@@ -418,7 +418,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			Models.NavBarItem navBarItem = storeFront.NavBarItems.Where(p => p.NavBarItemId == id.Value).SingleOrDefault();
 			if (navBarItem == null)
 			{
-				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to Delete cannot be found. It may have been deleted already. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
+				AddUserMessage("Menu Item not found", "Sorry, the Menu Item you are trying to Delete cannot be found. It may have been deleted already. Menu Item Id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
 				if (returnToManager)
 				{
 					return RedirectToAction("Manager");

@@ -1,5 +1,4 @@
 ﻿@model GStore.Models.Page
-@using GStore.Data
 @if (Model == null)
 {
 	@:(no page)
@@ -20,6 +19,8 @@ else
 	</span>
 	@:&nbsp;
 	@(Html.ActionLink(linkText, "Details", "PageSysAdmin", new { id = Model.PageId }, new { @class = viewLinkClass }))
-	@: - @(Html.DisplayFor(m => m.StoreFront))
-	@: - @(Html.DisplayFor(m => m.PageTemplate))
+	<br/>
+	@(Html.DisplayFor(m => m.StoreFront))
+	<br/>
+	@(Html.DisplayFor(m => m.PageTemplate))
 }

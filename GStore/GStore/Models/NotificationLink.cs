@@ -4,7 +4,7 @@ using System.Web;
 
 namespace GStore.Models
 {
-	[Table("NotificationLinks")]
+	[Table("NotificationLink")]
 	public class NotificationLink : BaseClasses.StoreFrontRecord
 	{
 		public int NotificationLinkId { get; set; }

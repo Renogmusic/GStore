@@ -9,6 +9,10 @@ namespace GStore.Areas.StoreAdmin.Controllers
 {
 	public class UserProfileAdminController : BaseClasses.StoreAdminBaseController
 	{
+		public ActionResult AA_Status_Incomplete()
+		{
+			throw new NotImplementedException();
+		}
 		[AuthorizeGStoreAction(GStoreAction.UserProfile_Manager)]
 		public ActionResult Manager()
 		{

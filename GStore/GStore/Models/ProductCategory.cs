@@ -7,7 +7,7 @@ using System.Web;
 
 namespace GStore.Models
 {
-	[Table("ProductCategories")]
+	[Table("ProductCategory")]
 	public class ProductCategory : BaseClasses.StoreFrontRecord
 	{
 		[Key]
@@ -15,11 +15,12 @@ namespace GStore.Models
 		public int ProductCategoryId { get; set; }
 
 		[Required]
-		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		[MaxLength(250)]
 		public string Name { get; set; }
 
 		[Required]
+		[MaxLength(100)]
+		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		[Display(Name = "Url Name")]
 		public string UrlName { get; set; }
 
