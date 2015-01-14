@@ -63,6 +63,11 @@ namespace GStore.Controllers
 			return StoreFile("/Fonts/" + path);
 		}
 
+		public ActionResult Pages(string path, bool useNullContentType = false)
+		{
+			return StoreFile("/Pages/" + path);
+		}
+
 
 		/// <summary>
 		/// Checks if a file exists in storefront folder, then client folder, then server folder, otherwise returns 404
@@ -73,7 +78,7 @@ namespace GStore.Controllers
 		{
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				return HttpForbidden("Directory Listing Denied: /Store");
+				return HttpForbidden("Directory Listing Denied: /");
 			}
 
 			Models.StoreFront storeFront = null;
@@ -119,41 +124,6 @@ namespace GStore.Controllers
 
 			string mimeType = MimeMapping.GetMimeMapping(fullPath);
 			return new FilePathResult(fullPath, mimeType);
-		}
-
-		private string ChooseFilePath(Models.StoreFront storeFront, string path, string applicationPath)
-		{
-			string fullVirtualPath;
-			string fullPath;
-			if (storeFront == null)
-			{
-				fullVirtualPath = "~/Content/Server/" + path;
-				fullPath = Server.MapPath(fullVirtualPath);
-				if (!System.IO.File.Exists(fullPath))
-				{
-					return null;
-				}
-				return fullPath;
-			}
-
-			fullVirtualPath = storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/" + path;
-			fullPath = Server.MapPath(fullVirtualPath);
-			if (!System.IO.File.Exists(fullPath))
-			{
-				fullVirtualPath = storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/" + path;
-				fullPath = Server.MapPath(fullVirtualPath);
-				if (!System.IO.File.Exists(fullPath))
-				{
-					fullVirtualPath = "~/Content/Server/" + path;
-					fullPath = Server.MapPath(fullVirtualPath);
-					if (!System.IO.File.Exists(fullPath))
-					{
-						return null;
-					}
-				}
-			}
-
-			return fullPath;
 		}
 
 	}

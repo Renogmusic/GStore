@@ -71,7 +71,23 @@
 			string rowClass = (isActive ? string.Empty : "text-warning");
 
 			<tr class="@(rowClass)">
-				<td onclick="GoToDetails(@(item.ValueListId));">@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-success" })</td>
+				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
+					@{
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						}
+
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
+						}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
 				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
 				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Description))</small></td>
 				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
@@ -96,23 +112,21 @@
 				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
 				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
 				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
 					@{
-			if (userCanEdit)
-			{
-				@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
-			}
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						}
 
-			if (userCanEdit && userCanDelete)
-			{
-				@:<div class="row" style="padding-bottom: 0.5em;"></div>
-			}
-
-			if (userCanDelete)
-			{
-				@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
-			}
-
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
+						}
 					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
 				</td>
 			</tr>
 		}

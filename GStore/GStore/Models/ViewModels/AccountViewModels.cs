@@ -32,13 +32,14 @@ namespace GStore.Models.ViewModels
 		public string Provider { get; set; }
 
 		[Required]
-		[Display(Name = "Code")]
+		[Display(Name = "Code", Description="Enter your verification Code from your Email or Text Message.", Prompt="Enter Your Verification Code (Required)")]
 		public string Code { get; set; }
 		public string ReturnUrl { get; set; }
 
-		[Display(Name = "Remember this browser?")]
+		[Display(Name = "Remember this browser?", Description="Check this box to remember this browser log in\nUncheck this box if you are on a shared computer.")]
 		public bool RememberBrowser { get; set; }
 
+		[Display(Name = "Remember this browser?", Description = "Check this box to remember this browser log in\nUncheck this box if you are on a shared computer.")]
 		public bool RememberMe { get; set; }
 		public bool? CheckingOut { get; set; }
 	}
@@ -46,7 +47,7 @@ namespace GStore.Models.ViewModels
 	public class ForgotViewModel
 	{
 		[Required]
-		[Display(Name = "Email", Description = "Enter your Email Address")]
+		[Display(Name = "Email Address", Description = "Enter your Email Address to reset your password.")]
 		public string Email { get; set; }
 		public bool? CheckingOut { get; set; }
 	}
@@ -54,13 +55,13 @@ namespace GStore.Models.ViewModels
 	public class LoginViewModel
 	{
 		[Required]
-		[Display(Name = "Email", Description = "Enter your Email Address")]
+		[Display(Name = "Email", Description = "Enter your Email Address to log in.")]
 		[EmailAddress]
 		public string Email { get; set; }
 
 		[Required]
 		[DataType(DataType.Password)]
-		[Display(Name = "Password", Description = "Enter your Password")]
+		[Display(Name = "Password", Description = "Enter your Password to log in")]
 		public string Password { get; set; }
 
 		[Display(Name = "Remember me", Description = "Check this box to remember your login")]
@@ -108,20 +109,21 @@ namespace GStore.Models.ViewModels
 	{
 		[Required]
 		[EmailAddress]
-		[Display(Name = "Email")]
+		[Display(Name = "Email", Description = "Enter your Email Address to reset your password.", Prompt = "Enter Your Email Address (Required)")]
 		public string Email { get; set; }
 
 		[Required]
 		[StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
 		[DataType(DataType.Password)]
-		[Display(Name = "Password")]
+		[Display(Name = "Password", Description = "Enter a new password with at least 6 characters.", Prompt = "Enter a new Password (Required)")]
 		public string Password { get; set; }
 
 		[DataType(DataType.Password)]
-		[Display(Name = "Confirm password")]
+		[Display(Name = "Confirm password", Description="Comfirm your password")]
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public string ConfirmPassword { get; set; }
 
+		[Display(Name = "Password Reset Code", Description="Password Reset Code")]
 		public string Code { get; set; }
 
 		public bool? CheckingOut { get; set; }
@@ -131,7 +133,7 @@ namespace GStore.Models.ViewModels
 	{
 		[Required]
 		[EmailAddress]
-		[Display(Name = "Email", Description="Enter your Email address")]
+		[Display(Name = "Email", Description="Enter your Email address to reset your password.", Prompt="Enter your Email Address (Required)")]
 		public string Email { get; set; }
 
 		public bool? CheckingOut { get; set; }

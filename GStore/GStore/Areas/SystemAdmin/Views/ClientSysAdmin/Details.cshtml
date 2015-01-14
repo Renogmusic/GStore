@@ -22,8 +22,11 @@
 			Store Fronts
 		</dt>
 		<dd>
-			@Html.ActionLink("View Store Fronts", "Index", "StoreFrontSysAdmin", new { clientId = Model.ClientId }, new { @class = "btn btn-info" })<br />
-			Active: @Model.StoreFronts.AsQueryable().WhereIsActive().Count() / Total @Model.StoreFronts.Count()
+			<a href="@(Url.Action("Index", "StoreFrontSysAdmin", new { clientId = Model.ClientId }))" class="btn btn-lg btn-info">
+				View Store Fronts
+				<hr/>
+				Active: @Model.StoreFronts.AsQueryable().WhereIsActive().Count() / Total @Model.StoreFronts.Count()
+			</a>
 		</dd>
 		<dt>
 			@Html.DisplayNameFor(model => model.ClientId)

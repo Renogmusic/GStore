@@ -102,6 +102,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		}
 
+		public void UpdateParentNavBarItem(NavBarItem navBarItem)
+		{
+			this.ParentNavBarItem = navBarItem;
+		}
+
 		[Editable(false)]
 		public bool IsSimpleCreatePage { get; set; }
 

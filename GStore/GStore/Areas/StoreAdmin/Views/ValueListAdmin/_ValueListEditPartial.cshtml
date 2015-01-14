@@ -1,5 +1,4 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.ValueListEditAdminViewModel
-
 @{
 	List<ValueListItemEditAdminViewModel> listItems = Model.ValueListItemEditAdminViewModels();
 
@@ -71,7 +70,7 @@
 			selectedIndex = selectedItem.Index;
 		}
 	}
-
+	ViewData.SetColDisplay(1, 2, 8);
 }
 
 <style>
@@ -229,38 +228,9 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Description, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.Name, "FieldText")
+				@Html.EditorFor(model => model.Description, "FieldText")
+				@Html.EditorFor(model => model.Order, "FieldInt")
 
 			</div>
 
@@ -384,8 +354,8 @@
 			<div class="form-group">
 				<label class="text-right control-label col-md-3">New List Item</label>
 				<div class="col-md-9 title-align">
-					@Html.TextBox("fastAddValueListItem", null, htmlAttributes: new { @class = "form-control" })
-					@Html.ValidationMessage("fastAddValueListItem", new { @class = "text-danger" })
+					@Html.TextBox("fastAddValueListItem", null, htmlAttributes: new { @class = "form-control", placeholder="Enter a list item to add" })
+					<br/>@Html.ValidationMessage("fastAddValueListItem", new { @class = "text-danger" })
 				</div>
 				<div class="row">
 					<div class="col-md-offset-3 col-md-9 help-label">
@@ -459,38 +429,9 @@
 					</div>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
-					<div class="col-md-9 title-align">
-						@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+				@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+				@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 			</div>
 			@{

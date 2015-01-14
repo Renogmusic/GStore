@@ -14,7 +14,7 @@
 	string prefix = Html.NameForModel().ToHtmlString();
 	string textValue = (Html.GetModelStateValue(prefix + Model.Name.ToHtmlAttribute(), typeof(string)) ?? string.Empty).ToString();
 
-	string fieldId = "Page_WebForm_item_" + Model.Name.ToHtmlAttribute().Replace(' ', '_');
+	string fieldId = ViewData.TemplateInfo.GetFullHtmlFieldId(Model.Name);
 	string fieldName = Model.Name.ToHtmlAttribute();
 
 	string align = "title-align";
@@ -61,12 +61,21 @@
 					{
 						rows = Model.TextAreaColumns.Value;
 					}
-					@Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols })
+					@Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols, placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") })
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.Html:
-				@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control" }))
-				<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
+					@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") }))
+					//if CKEditor is not in ViewData, add script for it and set viewdata flag
+					bool hasCkEditor = (ViewData["CKEditor"] as bool?) ?? false;
+					{
+						if (!hasCkEditor)
+						{
+							<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+							ViewData["CKEditor"] = true;
+						}
+					}
+					<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.ValueListItemDropdown:
@@ -174,8 +183,24 @@
 			if (!usedCustomDisplay)
 			{
 				<!-- Default text box -->
-				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align })
+				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align, placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") })
 			}
+
+			string popoverText = null;
+			if (!string.IsNullOrEmpty(Model.HelpLabelTopText) && !string.IsNullOrEmpty(Model.HelpLabelBottomText))
+			{
+				popoverText = Model.HelpLabelTopText + "\n\n" + Model.HelpLabelBottomText;
+			}
+			else if (string.IsNullOrEmpty(Model.HelpLabelTopText) && string.IsNullOrEmpty(Model.HelpLabelBottomText))
+			{
+				popoverText = "Enter a Value";
+			}
+			else
+			{
+				popoverText = Model.HelpLabelTopText + Model.HelpLabelBottomText;
+			}
+
+			@Html.HelpLabelPopover(Model.LabelText, popoverText)
 		}
 
 	</div>

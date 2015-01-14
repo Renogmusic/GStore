@@ -4,7 +4,7 @@
 	{
 	<!-- ClientConfig Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Configuration">Configuration<span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="c" title="Configuration">Configuration<span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
 				{
@@ -69,7 +69,7 @@
 	{
 	<!-- Pages Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Pages">Pages<span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="p" title="Pages">Pages<span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.Pages_Manager))
 				{
@@ -92,7 +92,7 @@
 	{
 	<!-- NavBar Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Top Menu">Site Menu<span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="s" title="Site Top Menu">Site Menu<span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.NavBarItems_Manager))
 				{
@@ -123,7 +123,7 @@
 	{
 	<!-- Web Forms Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Web Forms">Web Forms<span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="w" title="Web Forms">Web Forms<span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.WebForms_Manager))
 				{
@@ -146,7 +146,7 @@
 	{
 	<!-- ValueList Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Value Lists">Value Lists<span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="v" title="Value Lists">Value Lists<span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.ValueLists_Manager))
 				{
@@ -165,92 +165,52 @@
 		</li>
 	}
 
-	@if (Html.UserHasPermission(GStoreAction.Orders_StoreAdminMenuItem))
-	{
-	<!-- Orders Menu Item -->
-		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Orders (coming soon)"><small class="text-warning">Orders</small><span class="caret"></span></a>
-			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-				@if (Html.UserHasPermission(GStoreAction.Orders_Manager))
-				{
-					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Order Manager", "Manager", "OrdersAdmin")
-					</li>
-					<li class="nav-divider"></li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Orders_Carts_ViewAbandoned))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Abandoned Carts", "Carts_ViewAbandoned", "OrdersAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Orders_Carts_ViewCurrent))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Current Carts", "", "OrdersAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Orders_Carts_TransferAbandonedCart))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Transfer An Abandoned Cart", "Carts_TransferAbandonedCart", "OrdersAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Orders_Carts_SendCheckOutLink))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Check Out an Abandoned Cart", "Carts_SendCheckOutLink", "OrdersAdmin")
-					</li>
-				}
-			</ul>
-		</li>
-	}
-
-	@if (Html.UserHasPermission(GStoreAction.Reports_StoreAdminMenuItem))
-	{
+@if (Html.UserHasPermission(GStoreAction.Reports_StoreAdminMenuItem))
+{
 	<!-- Reports Menu Item -->
-		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Reports (coming soon)"><small class="text-warning">Reports</small><span class="caret"></span></a>
-			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-				@if (Html.UserHasPermission(GStoreAction.Reports_Manager))
-				{
-					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Report Manager", "Manager", "ReportsAdmin")
-					</li>
-					<li class="nav-divider"></li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Reports_AbandonedCarts_View))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Abandoned Carts Report", "AbandonedCartsReport", "ReportsAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Reports_MonthlySales_View))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Monthly Sales Report", "MonthlySalesReport", "ReportsAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyVisitors_View))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Monthly Visitors Report", "MonthlyVisitorsReport", "ReportsAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyPageViews_View))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Monthly Page Views Report", "MonthlyPageViewsReport", "ReportsAdmin")
-					</li>
-				}
-			</ul>
-		</li>
-	}
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="r" title="Reports (coming soon)"><small class="text-warning">Reports</small><span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			@if (Html.UserHasPermission(GStoreAction.Reports_Manager))
+			{
+				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+					@Html.ActionLink("Report Manager", "Manager", "ReportsAdmin")
+				</li>
+				<li class="nav-divider"></li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.Reports_AbandonedCarts_View))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Abandoned Carts Report", "AbandonedCartsReport", "ReportsAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlySales_View))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Monthly Sales Report", "MonthlySalesReport", "ReportsAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyVisitors_View))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Monthly Visitors Report", "MonthlyVisitorsReport", "ReportsAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyPageViews_View))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Monthly Page Views Report", "MonthlyPageViewsReport", "ReportsAdmin")
+				</li>
+			}
+		</ul>
+	</li>
+}
+
 	@if (Html.UserHasPermission(GStoreAction.UserProfile_StoreAdminMenuItem))
 	{
 	<!-- User Profile Menu Item -->
 		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="User Manager (coming soon)"><small class="text-warning">Users</small><span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="u" title="User Manager (coming soon)"><small class="text-warning">Users</small><span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Manager))
 				{
@@ -311,52 +271,11 @@
 		</li>
 	}
 
-	@if (Html.UserHasPermission(GStoreAction.Catalog_StoreAdminMenuItem))
-	{
-	<!-- Catalog Menu Item -->
-		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Catalog (coming soon)"><small class="text-warning">Catalog</small><span class="caret"></span></a>
-			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-				@if (Html.UserHasPermission(GStoreAction.Catalog_Manager))
-				{
-					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Catalog Manager", "Manager", "CatalogAdmin")
-					</li>
-					<li class="nav-divider"></li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Catalog_Categories_Manager))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Manage Categories", "Categories", "CatalogAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Catalog_Products_Manager))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Manage Products", "Products", "CatalogAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Catalog_Categories_Images_Manager))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Manage Category Images", "CategoryImages", "CatalogAdmin")
-					</li>
-				}
-				@if (Html.UserHasPermission(GStoreAction.Catalog_Products_Images_Manager))
-				{
-					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Manage Product Images", "ProductImages", "CatalogAdmin")
-					</li>
-				}
-			</ul>
-		</li>
-	}
-
 	@if (Html.UserHasPermission(GStoreAction.ClientRole_StoreAdminMenuItem))
 	{
 	<!-- ClientRole Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Roles (coming soon)"><small class="text-warning">Roles</small><span class="caret"></span></a>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="r" title="Roles (coming soon)"><small class="text-warning">Roles</small><span class="caret"></span></a>
 			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_Manager))
 				{
@@ -393,7 +312,7 @@
 		</li>
 	}
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Get Help!">Help<span class="caret"></span></a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Get Help!">Help<span class="caret"></span></a>
 		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">

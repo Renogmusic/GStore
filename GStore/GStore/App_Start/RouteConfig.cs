@@ -122,9 +122,16 @@ namespace GStore
 				);
 
 				routes.MapRoute(
-					name: "Stores-WebFormEdit",
-					url: "Stores/{urlstorename}/WebFormEdit/{action}/{id}",
-					defaults: new { controller = "WebFormEdit", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					name: "Stores-Pages",
+					url: "Stores/{urlstorename}/Pages/{*path}",
+					defaults: new { controller = "Page", action = "HtmlPage", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
+					name: "Stores-WebPages",
+					url: "Stores/{urlstorename}/WebPages/{*path}",
+					defaults: new { controller = "StoreFrontFile", action = "Pages", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 					namespaces: new[] { "GStore.Controllers" }
 				);
 
@@ -132,6 +139,13 @@ namespace GStore
 					name: "Stores-DynamicPageFormSubmitRoute",
 					url: "Stores/{urlstorename}/SubmitForm/{*DynamicPageUrl}",
 					defaults: new { controller = "Page", action = "SubmitForm", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
+					name: "Stores-DynamicPageViewRoute",
+					url: "Stores/{urlstorename}/View/{*DynamicPageUrl}",
+					defaults: new { controller = "Page", action = "Details", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 					namespaces: new[] { "GStore.Controllers" }
 				);
 
@@ -271,9 +285,23 @@ namespace GStore
 			);
 
 			routes.MapRoute(
-				name: "WebFormEdit",
-				url: "WebFormEdit/{action}/{id}",
-				defaults: new { controller = "WebFormEdit", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				name: "Pages",
+				url: "Pages/{*path}",
+				defaults: new { controller = "Page", action = "HtmlPage", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "WebPages",
+				url: "WebPages/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Pages", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "DynamicPageViewRoute",
+				url: "View/{*DynamicPageUrl}",
+				defaults: new { controller = "Page", action = "Details", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
 

@@ -116,6 +116,16 @@
 				</div>
 
 				<div class="form-group">
+					@Html.LabelFor(model => model.Watermark, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.DisplayFor(model => model.Watermark)
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.Watermark, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				<div class="form-group">
 					@Html.LabelFor(model => model.DataType, new { @class = "title-align-right control-label col-md-4 small" })
 					<div class="col-md-8 title-align">
 						@Html.DisplayFor(model => model.DataType)
@@ -187,7 +197,7 @@
 
 				<div class="form-group">
 					@Html.LabelFor(model => model.IsActiveDirect, new { @class = "title-align-right control-label col-md-4 small" })
-					<div class="col-md-8 title-align@(statusTextClass)">
+					<div class="col-md-8 title-align @(statusTextClass)">
 						<strong>@(Model.IsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
 					</div>
 					<div class="row">

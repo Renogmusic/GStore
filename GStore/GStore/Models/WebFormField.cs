@@ -37,6 +37,10 @@ namespace GStore.Models
 		public string LabelText { get; set; }
 
 		[MaxLength(100)]
+		[Display(Name = "Watermark Text")]
+		public string Watermark { get; set; }
+
+		[MaxLength(100)]
 		[Display(Name = "Help Label Top Text")]
 		public string HelpLabelTopText { get; set; }
 

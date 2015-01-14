@@ -1,0 +1,14 @@
+﻿@model GStore.Models.ViewModels.PageViewModel
+<hr />
+<div class="row">
+	<div class="col-xs-12">
+		@Html.ActionLink("Edit this Page", "Edit", "Page", null, null)
+		@{
+			if (Html.UserIsSystemAdmin())
+			{
+				@:&nbsp;&nbsp;-&nbsp;&nbsp;
+				@Html.ActionLink("SysAdmin Manual Edit", "Edit", "Page", new { autopost = false }, null)
+			}
+		}
+	</div>
+</div>

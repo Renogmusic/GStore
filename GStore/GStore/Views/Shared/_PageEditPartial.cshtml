@@ -79,6 +79,8 @@
 		}
 	}
 
+	ViewData.SetColDisplay(1, 2, 9);
+
 }
 <style>
 	.form-group .form-control {
@@ -99,6 +101,8 @@
 	}
 </style>
 <script>
+	$(document).ready(function () { $('[data-toggle="popover"]').popover(); });
+
 	@{
 		@:$(document).ready(function () { HideFormPreview(); });
 												if (sectionContentActive.Length == 0)
@@ -189,10 +193,9 @@
 </script>
 <div class="@(containerClasses)">
 	<div class="row">
-		<div class="col-md-offset-3 col-md-9 text-left">
+		<div class="col-md-offset-2 col-md-8 text-left">
 			@Html.AntiForgeryToken()
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-			@Html.HiddenFor(model => model.PageId)
 			@Html.HiddenFor(model => model.ActiveTab)
 		</div>
 	</div>
@@ -250,79 +253,21 @@
 
 		<div id="sectionContent" class="tab-pane fade in@(sectionContentActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Page Content</h3>
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Page Content</h3>
 			</div>
 		</div>
 
 		<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Basic Page Fields</h3>
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Basic Page Fields</h3>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.PageTitle, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.PageTitle, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.PageTitle, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.PageTitle, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Url, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.Url, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Url, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Url, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.ForAnonymousOnly, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.ForAnonymousOnly, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.ForRegisteredOnly, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label title-align" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.Name, "FieldText")
+				@Html.EditorFor(model => model.PageTitle, "FieldText")
+				@Html.EditorFor(model => model.Url, "FieldText")
+				@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+				@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+				@Html.EditorFor(model => model.Order, "FieldInt")
+				@Html.EditorFor(model => model.PageId, "FieldKey")
 
 				@{
 					if (Model.IsCreatePage)
@@ -334,7 +279,7 @@
 								@Html.ValidationMessageFor(model => model.CreateMenuItemWithPage, "", new { @class = "text-danger" })
 							</div>
 							<div class="row">
-								@Html.HelpLabelFor(model => model.CreateMenuItemWithPage, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+								@Html.HelpLabelFor(model => model.CreateMenuItemWithPage, htmlAttributes: new { @class = "col-md-offset-2 col-md-8 help-label" })
 							</div>
 						</div>
 					}
@@ -346,7 +291,7 @@
 				if (showSaveCancelButtons)
 				{
 					<div class="row">
-						<div class="form-actions col-md-offset-3 col-md-9">
+						<div class="form-actions col-md-offset-2 col-md-8">
 							<input type="submit" value="Save" class="btn btn-warning" />
 							&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
@@ -365,121 +310,42 @@
 
 		<div id="sectionTheme" class="tab-pane fade in@(sectionThemeActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Theme and Template</h3>
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Theme and Template</h3>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.ThemeId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.DropDownList("ThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.ThemeId, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.ThemeId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.DropDownList("PageTemplateId", pageTemplateList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.PageTemplateId, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.PageTemplateId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-			</div>
-
-			@{
-				if (showSaveCancelButtons)
-				{
-					<div class="row">
-						<div class="form-actions col-md-offset-3 col-md-9">
-							<input type="submit" value="Save" class="btn btn-warning" />
-							&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
-							@{
-					if (showRefresh)
+				@Html.EditorFor(model => model.ThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.PageTemplateId, "FieldPageTemplateId")
+				@{
+					if (showSaveCancelButtons)
 					{
-						@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-								<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
-					}
-							}
+						<div class="row">
+							<div class="form-actions col-md-offset-2 col-md-8">
+								<input type="submit" value="Save" class="btn btn-warning" />
+								&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+								<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+								@{
+						if (showRefresh)
+						{
+							@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+									<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+						}
+								}
+							</div>
 						</div>
-					</div>
+					}
 				}
-			}
+			</div>
 		</div>
 
 		<div id="sectionMeta" class="tab-pane fade in@(sectionMetaActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Meta Tags</h3>
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Meta Tags</h3>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.MetaApplicationName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaApplicationName, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.MetaApplicationTileColor, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaApplicationTileColor, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.BodyTopScriptTag, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.BodyBottomScriptTag, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.MetaKeywords, "FieldTextArea")
+				@Html.EditorFor(model => model.MetaDescription, "FieldTextArea")
+				@Html.EditorFor(model => model.MetaApplicationName, "FieldText")
+				@Html.EditorFor(model => model.MetaApplicationTileColor, "FieldText")
+				@Html.EditorFor(model => model.BodyTopScriptTag, "FieldTextArea")
+				@Html.EditorFor(model => model.BodyBottomScriptTag, "FieldTextArea")
 
 			</div>
 
@@ -487,7 +353,7 @@
 				if (showSaveCancelButtons)
 				{
 					<div class="row">
-						<div class="form-actions col-md-offset-3 col-md-9">
+						<div class="form-actions col-md-offset-2 col-md-8">
 							<input type="submit" value="Save" class="btn btn-warning" />
 							&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
@@ -506,18 +372,9 @@
 
 		<div id="sectionForm" class="tab-pane fade in@(sectionFormActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Form</h3>
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Form</h3>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.DropDownList("WebFormId", webFormList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.WebFormId, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.WebFormId, "FieldWebFormIdNullable")
 
 				@{
 					if (Model.WebFormId.HasValue && Html.UserHasPermissionToAny(GStore.Identity.GStoreAction.WebForms_Edit, GStore.Identity.GStoreAction.WebForms_View))
@@ -556,7 +413,7 @@
 								}
 							</div>
 							<div class="row">
-								<label class="col-md-offset-3 col-md-9 help-label">These links open in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
+								<label class="col-md-offset-2 col-md-8 help-label">These links open in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
 							</div>
 						</div>
 					}
@@ -568,100 +425,20 @@
 								@Html.ActionLink("Create a New Web Form", "Create", "WebFormAdmin", new { area = "StoreAdmin" }, new { @class = "btn btn-sm btn-info", target = "_blank" })
 							</div>
 							<div class="row">
-								<label class="col-md-offset-3 col-md-9 help-label">This link opens in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
+								<label class="col-md-offset-2 col-md-8 help-label">This link opens in a new window. If you create a new web form, be sure to save this page after you add the new form to see it in the list.</label>
 							</div>
 						</div>
 					}
 				}
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormSaveToDatabase, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormSaveToDatabase, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormSaveToDatabase, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormSaveToFile, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormSaveToFile, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormSaveToFile, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormSendToEmail, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormSendToEmail, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormSendToEmail, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormThankYouTitle, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormThankYouTitle, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormThankYouTitle, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.TextAreaFor(model => model.WebFormThankYouMessage, new { id = "WebFormThankYouMessage", @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.WebFormThankYouMessage, "", new { @class = "text-danger" })
-					</div>
-					<script>CKEDITOR.replace('WebFormThankYouMessage');</script>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormThankYouMessage, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormSuccessPageId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.DropDownList("WebFormSuccessPageId", webFormSuccessPageList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.WebFormSuccessPageId, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormSuccessPageId, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormEmailToAddress, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormEmailToAddress, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormEmailToAddress, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormEmailToAddress, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WebFormEmailToName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.WebFormEmailToName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.WebFormEmailToName, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.WebFormEmailToName, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.WebFormSaveToDatabase, "FieldCheckbox")
+				@Html.EditorFor(model => model.WebFormSaveToFile, "FieldCheckbox")
+				@Html.EditorFor(model => model.WebFormSendToEmail, "FieldCheckbox")
+				@Html.EditorFor(model => model.WebFormThankYouTitle, "FieldText")
+				@Html.EditorFor(model => model.WebFormThankYouMessage, "FieldHtml")
+				@Html.EditorFor(model => model.WebFormSuccessPageId, "FieldPageIdNullable")
+				@Html.EditorFor(model => model.WebFormEmailToAddress, "FieldEmail")
+				@Html.EditorFor(model => model.WebFormEmailToName, "FieldText")
 
 			</div>
 
@@ -669,7 +446,7 @@
 				if (showSaveCancelButtons)
 				{
 					<div class="row">
-						<div class="form-actions col-md-offset-3 col-md-9">
+						<div class="form-actions col-md-offset-2 col-md-8">
 							<input type="submit" value="Save" class="btn btn-warning" />
 							&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
@@ -688,14 +465,14 @@
 
 		<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
 			<div class="row form-group text-left-md text-left-lg">
-				<h3 class="col-md-offset-3 col-md-9 bg-warning">Activation</h3>
-				<h4 class="col-md-offset-3 col-md-9 text-warning">
+				<h3 class="col-md-offset-2 col-md-8 bg-warning">Activation</h3>
+				<h4 class="col-md-offset-2 col-md-8 text-warning">
 					Warning: editing these values incorrectly will make this page disappear from your site and only be editable from the Store Admin Menu.<br />
 					If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br />
 					If you are unsure what to do, click the "Make It Active Now" button to turn the page on with default values.
 				</h4>
-				<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
-				<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+				<p class="col-md-offset-2 col-md-8">Server Local Time: @(DateTime.Now.ToString())</p>
+				<p class="col-md-offset-2 col-md-8">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
 
 				<div class="form-group">
 					<label class="text-right control-label col-md-3">Status</label>
@@ -712,49 +489,20 @@
 						</p>
 					</div>
 					<div class="row">
-						@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+						@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-2 col-md-8 help-label" })
 					</div>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9 text-left">
-						@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger form-validation" })
-					</div>
-					<div class="row">
-						@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
-					</div>
-				</div>
+				@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+				@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+				@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 			</div>
 			@{
 				if (showSaveCancelButtons)
 				{
 					<div class="row">
-						<div class="form-actions col-md-offset-3 col-md-9">
+						<div class="form-actions col-md-offset-2 col-md-8">
 							<input type="submit" value="Save" class="btn btn-warning" />
 							&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
 							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>

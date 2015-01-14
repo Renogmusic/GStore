@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.StoreFront
 
+@{ ViewData.SetColDisplay(0, 2, 8); }
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -28,11 +29,11 @@
 	</div>
 	
 	<div class="form-horizontal">
-		@Html.EditorFor(model => model.Client)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.IsPending)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
+		@Html.EditorFor(model => model.ClientId, "FieldClientId")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 	</div>
 
 	<div class="row">

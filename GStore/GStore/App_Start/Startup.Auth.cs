@@ -30,6 +30,7 @@ namespace GStore
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
+				ExpireTimeSpan = new TimeSpan(14, 0, 0, 0),
                 Provider = new CookieAuthenticationProvider
                 {
                     // Enables the application to validate the security stamp when the user logs in.

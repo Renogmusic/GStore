@@ -45,7 +45,6 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 			}
 		}
 
-
 		public GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel StoreAdminViewModel
 		{
 			get

@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.UserProfile
 
+@{ ViewData.SetColDisplay(0, 2, 8); }
 @using (Html.BeginForm())
 {
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
@@ -47,28 +48,28 @@
 	</div>
 
 	<div class="row form-horizontal">
-		@Html.EditorFor(model => model.Client, "ClientNullableWithPostback")
-		@Html.EditorFor(model => model.StoreFront, "StoreFrontNullable")
-		@Html.EditorFor(model => model.UserId)
-		@Html.EditorFor(model => model.UserName)
-		@Html.EditorFor(model => model.Email)
-		@Html.EditorFor(model => model.FullName)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.SignupNotes)
-		@Html.EditorFor(model => model.SendMoreInfoToEmail)
-		@Html.EditorFor(model => model.EntryDateTime)
-		@Html.EditorFor(model => model.EntryRawUrl)
-		@Html.EditorFor(model => model.EntryUrl)
-		@Html.EditorFor(model => model.EntryReferrer)
-		@Html.EditorFor(model => model.AllowUsersToSendSiteMessages)
-		@Html.EditorFor(model => model.NotifyAllWhenLoggedOn)
-		@Html.EditorFor(model => model.NotifyOfSiteUpdatesToEmail)
-		@Html.EditorFor(model => model.SubscribeToNewsletterEmail)
-		@Html.EditorFor(model => model.SendSiteMessagesToEmail)
-		@Html.EditorFor(model => model.SendSiteMessagesToSms)
-		@Html.EditorFor(model => model.IsPending)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
+		@Html.EditorFor(model => model.Client, "FieldClientIdNullableWithPostback")
+		@Html.EditorFor(model => model.StoreFront, "FieldStoreFrontIdNullable")
+		@Html.EditorFor(model => model.UserId, "FieldText")
+		@Html.EditorFor(model => model.UserName, "FieldText")
+		@Html.EditorFor(model => model.Email, "FieldEmail")
+		@Html.EditorFor(model => model.FullName, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.SignupNotes, "FieldTextArea")
+		@Html.EditorFor(model => model.SendMoreInfoToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.EntryDateTime, "FieldDateTime")
+		@Html.EditorFor(model => model.EntryRawUrl, "FieldText")
+		@Html.EditorFor(model => model.EntryUrl, "FieldUrl")
+		@Html.EditorFor(model => model.EntryReferrer, "FieldUrl")
+		@Html.EditorFor(model => model.AllowUsersToSendSiteMessages, "FieldCheckbox")
+		@Html.EditorFor(model => model.NotifyAllWhenLoggedOn, "FieldCheckbox")
+		@Html.EditorFor(model => model.NotifyOfSiteUpdatesToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SubscribeToNewsletterEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendSiteMessagesToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendSiteMessagesToSms, "FieldCheckbox")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 		<div class="form-group">
 			<label for="SendWelcomeMessage" class="control-label col-md-2">

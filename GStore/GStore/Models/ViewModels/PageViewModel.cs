@@ -10,7 +10,7 @@ namespace GStore.Models.ViewModels
 {
 	public class PageViewModel
 	{
-		public PageViewModel(Page page, bool showEditPageLink, bool editMode, bool autoPost, bool forTemplateSyncOnly, int? pageTemplateIdForSync, bool syncExistingDefaults, string activeTab)
+		public PageViewModel(Page page, bool showEditPageLink, bool viewMode, bool editMode, bool autoPost, bool forTemplateSyncOnly, int? pageTemplateIdForSync, bool syncExistingDefaults, string activeTab)
 		{
 			if (page == null && !forTemplateSyncOnly)
 			{
@@ -22,6 +22,7 @@ namespace GStore.Models.ViewModels
 			}
 
 			this.Page = page;
+			this.ViewMode = viewMode;
 			this.EditMode = editMode;
 			this.AutoPost = autoPost;
 			this.ShowEditPageLink = showEditPageLink;
@@ -31,6 +32,9 @@ namespace GStore.Models.ViewModels
 		}
 
 		public Page Page { get; set; }
+
+		[Display(Name = "View Mode")]
+		public bool ViewMode { get; set; }
 
 		[Display(Name = "Edit Mode")]
 		public bool EditMode { get; set; }

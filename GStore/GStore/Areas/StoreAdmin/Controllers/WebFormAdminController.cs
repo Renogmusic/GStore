@@ -49,9 +49,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					WebForm webForm = null;
 					webForm = GStoreDb.CreateWebForm(WebFormEditAdminViewModel, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 					AddUserMessage("Web Form Created!", "Web Form '" + webForm.Name.ToHtml() + "' [" + webForm.WebFormId + "] was created successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
-					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.WebForms_Manager))
+					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.WebForms_View))
 					{
-						return RedirectToAction("Manager");
+						return RedirectToAction("Details", new { id = webForm.WebFormId });
 					}
 					return RedirectToAction("Index", "StoreAdmin");
 				}
@@ -242,6 +242,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				try
 				{
 					webForm = GStoreDb.UpdateWebForm(WebFormEditAdminViewModel, storeFront, CurrentUserProfileOrThrow);
+					WebFormEditAdminViewModel.UpdateWebForm(webForm);
 
 					if (WebFormFields != null && WebFormFields.Count() > 0)
 					{
@@ -253,6 +254,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 					if (fastAddIsValid)
 					{
+
 						WebFormField newField = GStoreDb.CreateWebFormFieldFastAdd(WebFormEditAdminViewModel, FastAddField, storeFront, CurrentUserProfileOrThrow);
 						AddUserMessage("Field Created!", "Field '" + newField.Name.ToHtml() + "' [" + newField.WebFormFieldId + "] created successfully.", UserMessageType.Success);
 						ModelState.Remove("FastAddField");

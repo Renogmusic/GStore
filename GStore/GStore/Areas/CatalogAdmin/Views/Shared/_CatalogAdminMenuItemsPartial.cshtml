@@ -1,0 +1,28 @@
+﻿<ul class="nav navbar-nav">
+	<!-- Dynamic Catalog Admin Menu -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Get Help!">Help<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				<a href="mailto:renogmusic@yahoo.com">Support: Email renogmusic@yahoo.com</a>
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("About GStore", "About", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time: @DateTime.UtcNow.ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time: @DateTime.UtcNow.ToLocalTime().ToString()
+			</li>
+		</ul>
+	</li>
+</ul>

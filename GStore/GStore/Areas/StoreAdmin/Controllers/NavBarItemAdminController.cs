@@ -166,17 +166,21 @@ namespace GStore.Areas.StoreAdmin.Controllers
 		}
 
 		[AuthorizeGStoreAction(GStoreAction.NavBarItems_Create)]
-		public ActionResult Create()
+		public ActionResult Create(int? id)
 		{
 			NavBarItem navBarItem = GStoreDb.NavBarItems.Create();
 			navBarItem.SetDefaultsForNew(CurrentStoreFrontOrThrow);
+			if (id.HasValue)
+			{
+				NavBarItem parentNavBarItem = CurrentStoreFrontOrThrow.NavBarItems.SingleOrDefault(nb => nb.NavBarItemId == id.Value);
+				if (parentNavBarItem != null)
+				{
+					navBarItem.ParentNavBarItem = parentNavBarItem;
+					navBarItem.ParentNavBarItemId = parentNavBarItem.NavBarItemId;
+				}
+			}
+
 			NavBarItemEditAdminViewModel viewModel = new NavBarItemEditAdminViewModel(navBarItem, CurrentUserProfileOrThrow, null, isCreatePage: true);
-
-			IEnumerable<SelectListItem> pageList = CurrentStoreFrontOrThrow.Pages.AsQueryable().ToSelectList(null);
-			IEnumerable<SelectListItem> parentNavBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ToSelectListWithNull(null, "(no parent - top level item)");
-
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
 
 			return View("Create", viewModel);
 		}
@@ -217,12 +221,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 
 			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
-			viewModel.IsSimpleCreatePage = true;
+			viewModel.UpdateParentNavBarItem(CurrentStoreFrontOrThrow.NavBarItems.SingleOrDefault(nb => nb.NavBarItemId == viewModel.ParentNavBarItemId)); 
 
-			IEnumerable<SelectListItem> pageList = storeFront.Pages.AsQueryable().ToSelectList(null);
-			IEnumerable<SelectListItem> parentNavBarItems = storeFront.NavBarItems.AsQueryable().ToSelectListWithNull(null, "(no parent - top level item)");
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
+			viewModel.IsSimpleCreatePage = true;
 
 			return View("Create", viewModel);
 		}
@@ -235,11 +236,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			navBarItem.SetDefaultsForNew(CurrentStoreFrontOrThrow);
 			NavBarItemEditAdminViewModel viewModel = new NavBarItemEditAdminViewModel(navBarItem, CurrentUserProfileOrThrow, Tab, isCreatePage: true);
 
-			IEnumerable<SelectListItem> pageList = CurrentStoreFrontOrThrow.Pages.AsQueryable().ToSelectListWithNull(null, "(no page)");
-			IEnumerable<SelectListItem> parentNavBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ToSelectListWithNull(null, "(no parent - top level item)");
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
-			
 			return View("AdvancedCreate", viewModel);
 		}
 
@@ -257,7 +253,10 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				{
 					NavBarItem navBarItem = GStoreDb.CreateNavBarItem(navBarItemEditViewModel, storeFront, CurrentUserProfileOrThrow);
 					AddUserMessage("Menu Item Created!", "Menu Item '" + navBarItem.Name.ToHtml() + "' [" + navBarItem.NavBarItemId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
-
+					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.NavBarItems_View))
+					{
+						return RedirectToAction("AdvancedDetails", new { id = navBarItem.NavBarItemId, ReturnToManager = navBarItemEditViewModel.ReturnToManager });
+					}
 					return RedirectToAction("AdvancedManager");
 				}
 				catch (Exception ex)
@@ -280,11 +279,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			navBarItemEditViewModel.FillListsIfEmpty(storeFront.Client, storeFront);
 			navBarItemEditViewModel.IsCreatePage = true;
 
-			IEnumerable<SelectListItem> pageList = storeFront.Pages.AsQueryable().ToSelectListWithNull(null, "(no page)");
-			IEnumerable<SelectListItem> parentNavBarItems = storeFront.NavBarItems.AsQueryable().ToSelectListWithNull(null, "(no parent - top level item)");
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
-
 			return View("AdvancedCreate", navBarItemEditViewModel);
 		}
 
@@ -306,11 +300,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			}
 
 			NavBarItemEditAdminViewModel viewModel = new NavBarItemEditAdminViewModel(navBarItem, CurrentUserProfileOrThrow, activeTab: Tab, returnToManager: returnToManager);
-
-			IEnumerable<SelectListItem> pageList = CurrentStoreFrontOrThrow.Pages.AsQueryable().ToSelectListWithNull(navBarItem.PageId, "(no page)");
-			IEnumerable<SelectListItem> parentNavBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ToSelectListWithNull(navBarItem.ParentNavBarItemId, "(no parent - top level item)");
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
 
 			return View("AdvancedEdit", viewModel);
 		}
@@ -351,11 +340,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					return RedirectToAction("AdvancedManager");
 				}
 			}
-
-			IEnumerable<SelectListItem> pageList = CurrentStoreFrontOrThrow.Pages.AsQueryable().ToSelectListWithNull(navBarItem.PageId, "(no page)");
-			IEnumerable<SelectListItem> parentNavBarItems = CurrentStoreFrontOrThrow.NavBarItems.AsQueryable().ToSelectListWithNull(navBarItem.ParentNavBarItemId, "(no parent - top level item)");
-			ViewData.Add("PageId", pageList);
-			ViewData.Add("ParentNavBarItemId", parentNavBarItems);
 
 			return View("AdvancedEdit", viewModel);
 		}

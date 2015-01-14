@@ -15,6 +15,8 @@
 	{
 		routeValues = new { CheckingOut = checkingOut };
 	}
+
+	ViewData.SetColDisplay(0, 2, 9);
 }
 
 <div class="row">
@@ -41,75 +43,22 @@
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 		</div>
 	</div>
+
 	<div class="form-horizontal">
-		<div class="form-group">
-			@Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.TextBoxFor(m => m.Email, new { @class = "form-control", MaxLength = 150 })
-				@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.Email, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(m => m.FullName, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.TextBoxFor(m => m.FullName, new { @class = "form-control", MaxLength = 150 })
-				@Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.FullName, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.PasswordFor(m => m.Password, new { @class = "form-control", MaxLength = 50 })
-				@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.Password, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-		<div class="form-group">
-			@Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", MaxLength = 50 })
-				@Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.ConfirmPassword, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(m => m.NotifyOfSiteUpdates, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.CheckBoxFor(m => m.NotifyOfSiteUpdates, new { @class = "form-control" })
-				@Html.ValidationMessageFor(m => m.NotifyOfSiteUpdates, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.NotifyOfSiteUpdates, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(m => m.SendMeMoreInfo, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.CheckBoxFor(m => m.SendMeMoreInfo, new { @class = "form-control" })
-				@Html.ValidationMessageFor(m => m.SendMeMoreInfo, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.SendMeMoreInfo, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
-
-		<div class="form-group">
-			@Html.LabelFor(m => m.SignupNotes, new { @class = "col-md-2 control-label" })
-			<div class="col-md-10">
-				@Html.TextAreaFor(m => m.SignupNotes, 10, 60, new { @class = "form-control", MaxLength = 1000 })
-				@Html.ValidationMessageFor(m => m.SignupNotes, "", new { @class = "text-danger" })
-			</div>
-			@Html.HelpLabelFor(m => m.SignupNotes, new { @class = "row title-align col-md-offset-2 col-md-10 help-label" })
-		</div>
+		@Html.EditorFor(model => model.Email, "FieldEmail")
+		@Html.EditorFor(model => model.FullName, "FieldText")
+		@Html.EditorFor(model => model.Password, "FieldPassword")
+		@Html.EditorFor(model => model.ConfirmPassword, "FieldPassword")
+		@Html.EditorFor(model => model.NotifyOfSiteUpdates, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendMeMoreInfo, "FieldCheckbox")
+		@Html.EditorFor(model => model.SignupNotes, "FieldTextArea")
 	</div>
 
 	if ((storeFrontConfig != null) && (storeFrontConfig.RegisterWebForm != null) && storeFrontConfig.RegisterWebForm.IsActiveBubble())
 	{
 		Html.RenderPartial("_RegisterWebFormFieldsPartial", Model);
 	}
-	
+
 	<div class="row">
 		<div class="form-actions row col-md-offset-2 col-md-7">
 			@{

@@ -30,8 +30,11 @@
 			Page Template Sections
 		</dt>
 		<dd>
-			@Html.ActionLink("View Sections", "SectionIndex", "PageTemplateSysAdmin", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })<br />
-			Active: @Model.Sections.AsQueryable().WhereIsActive().Count() / Total @Model.Sections.Count()
+			<a href="@(Url.Action("SectionIndex", "PageTemplateSysAdmin", new { id = Model.PageTemplateId }))" class="btn btn-lg btn-info">
+				View Sections
+				<hr/>
+				Active: @Model.Sections.AsQueryable().WhereIsActive().Count() / Total @Model.Sections.Count()
+			</a>
 			<br/>Sync Sections to Update
 		</dd>
 		<dt>

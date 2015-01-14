@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.StoreBinding
 
+@{ ViewData.SetColDisplay(0, 2, 8); }
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -19,23 +20,23 @@
 	<div class="row">
 		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-			@Html.HiddenFor(model => model.StoreBindingId)
 			@Html.HiddenAuditFields()
 		</div>
 	</div>
 
 	<div class="form-horizontal">
-		@Html.EditorFor(model => model.Client)
-		@Html.EditorFor(model => model.StoreFront)
-		@Html.EditorFor(model => model.HostName)
-		@Html.EditorFor(model => model.Port)
-		@Html.EditorFor(model => model.RootPath)
-		@Html.EditorFor(model => model.UseUrlStoreName)
-		@Html.EditorFor(model => model.UrlStoreName)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
-		@Html.EditorFor(model => model.IsPending)
+		@Html.EditorFor(model => model.StoreBindingId, "FieldKey")
+		@Html.EditorFor(model => model.ClientId, "FieldClientIdWithPostback")
+		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontId")
+		@Html.EditorFor(model => model.HostName, "FieldText")
+		@Html.EditorFor(model => model.Port, "FieldInt")
+		@Html.EditorFor(model => model.RootPath, "FieldText")
+		@Html.EditorFor(model => model.UseUrlStoreName, "FieldCheckbox")
+		@Html.EditorFor(model => model.UrlStoreName, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 	</div>
 

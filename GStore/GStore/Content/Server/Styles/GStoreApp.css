@@ -22,6 +22,7 @@
 	margin: -10px 0 0 0;
 }*/
 
+
 .table-responsive {
   overflow-x: auto;
   overflow-y: visible;
@@ -33,6 +34,10 @@
 	background-color: rgba(255, 255, 0, 0.20);
 }
 
+.modal-lg
+{
+	width:100%;
+}
 /*Original Bootstrap .table-responsive */
 /*
 .table-responsive {
@@ -79,6 +84,10 @@
 		-ms-overflow-style: scrollbar;
 		overflow: auto;
 	}
+	.form-control{
+		width: 90%;
+	}
+
 	.control-label
 	{
 		text-align: center;
@@ -86,6 +95,9 @@
 	.help-label
 	{
 		text-align: center;
+	}
+	.modal-dialog{
+		width: 95%;
 	}
 
 }
@@ -107,6 +119,9 @@
 	.help-label
 	{
 		text-align: center;
+	}
+	.modal-dialog{
+		width: 95%;
 	}
 }
 
@@ -132,6 +147,9 @@
 	{
 		text-align: left;
 	}
+	.modal-dialog{
+		width: 90%;
+	}
 }
 
 /* direct lg size and up - desktop */
@@ -155,6 +173,9 @@
 	.help-label
 	{
 		text-align: left;
+	}
+	.modal-dialog{
+		width: 80%;
 	}
 }
 
@@ -486,4 +507,9 @@ dd label.help-label-top, label.help-label-top {
 }
 .form-control{
 	display:inline-block;
+}
+
+.StackHighlight{
+	background-color: lightblue;
+	font-weight: bold;
 }

@@ -63,6 +63,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
         public ActionResult Create(int? clientId, string viewName)
 		{
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No Clients in database.", "You must create a Client before you can add Page Templates.", UserMessageType.Warning);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
+
 			Client client = null;
 			if (clientId.HasValue && clientId.Value != 0 && clientId.Value != -1)
 			{
@@ -228,7 +234,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template not found. Page Template id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionsBreadcrumb(htmlHelper, template, false);
 			return View(template);
 		}
 
@@ -247,7 +253,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			PageTemplateSection model = GStoreDb.PageTemplateSections.Create();
 			model.SetDefaultsForNew(template);
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, model, false);
 			return View(model);
 		}
 
@@ -283,7 +289,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("SectionIndex", new { id = section.PageTemplateId });
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
+			section.PageTemplate = template;
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, section, false);
 			return View(section);
 		}
 
@@ -300,7 +307,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found. Page Template Section Id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, section, false);
 			return View(section);
 		}
 
@@ -333,7 +340,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("SectionIndex", new { id = section.PageTemplateId });
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, sectionToUpdate, false);
 			return View(section);
 		}
 
@@ -350,7 +357,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found by id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, section, false);
 			return View(section);
 		}
 
@@ -367,7 +374,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Page Template Section not found by id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, section.ClientId, section.PageTemplate, false);
+			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateSectionBreadcrumb(htmlHelper, section, false);
 			return View(section);
 		}
 
@@ -383,7 +390,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			{
 				return HttpNotFound("Page Template not found by id: " + id);
 			}
-			Models.ViewModels.PageViewModel model = new Models.ViewModels.PageViewModel(null, false, false, false, true, id.Value, false, "");
+			Models.ViewModels.PageViewModel model = new Models.ViewModels.PageViewModel(null, false, false, false, false, true, id.Value, false, "");
 			this.BreadCrumbsFunc = htmlHelper => this.PageTemplateBreadcrumb(htmlHelper, template.ClientId, template, false);
 			return View("~/Views/Page/" + template.ViewName + ".cshtml", model);
 		}

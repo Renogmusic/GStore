@@ -24,7 +24,6 @@
 		default:
 			goto case "";
 	}
-
 }
 <script>
 	function JumpToViewTab() {
@@ -86,14 +85,7 @@
 					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.Name, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.Name, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.Name, "FieldText")
 			</div>
 
 			<div id="sectionEmail" class="tab-pane fade in @(tabEmailActive)">
@@ -127,50 +119,11 @@
 	}
 				}
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.UseSendGridEmail, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.UseSendGridEmail, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.UseSendGridEmail, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.UseSendGridEmail, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.SendGridMailAccount, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.SendGridMailAccount, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.SendGridMailAccount, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.SendGridMailAccount, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.SendGridMailFromEmail, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.SendGridMailFromEmail, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.SendGridMailFromEmail, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.SendGridMailFromEmail, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.SendGridMailFromName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.SendGridMailFromName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.SendGridMailFromName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.SendGridMailFromName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.SendGridMailPassword, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.SendGridMailPassword, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.SendGridMailPassword, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.SendGridMailPassword, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.UseSendGridEmail, "FieldCheckbox")
+				@Html.EditorFor(model => model.SendGridMailAccount, "FieldText")
+				@Html.EditorFor(model => model.SendGridMailFromEmail, "FieldText")
+				@Html.EditorFor(model => model.SendGridMailFromName, "FieldText")
+				@Html.EditorFor(model => model.SendGridMailPassword, "FieldText")
 			</div>
 
 			<div id="sectionSms" class="tab-pane fade in @(tabSmsActive)">
@@ -205,82 +158,21 @@
 					}
 				}
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.UseTwilioSms, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.UseTwilioSms, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.UseTwilioSms, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.UseTwilioSms, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.TwilioFromPhone, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.TwilioFromPhone, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.TwilioFromPhone, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.TwilioFromPhone, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.TwilioSid, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.TwilioSid, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.TwilioSid, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.TwilioSid, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.TwilioSmsFromEmail, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.TwilioSmsFromEmail, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.TwilioSmsFromEmail, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.TwilioSmsFromEmail, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.TwilioSmsFromName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.TwilioSmsFromName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.TwilioSmsFromName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.TwilioSmsFromName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.TwilioToken, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.TwilioToken, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.TwilioToken, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.TwilioToken, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.UseTwilioSms, "FieldCheckbox")
+				@Html.EditorFor(model => model.TwilioFromPhone, "FieldText")
+				@Html.EditorFor(model => model.TwilioSid, "FieldText")
+				@Html.EditorFor(model => model.TwilioSmsFromEmail, "FieldText")
+				@Html.EditorFor(model => model.TwilioSmsFromName, "FieldText")
+				@Html.EditorFor(model => model.TwilioToken, "FieldText")
 			</div>
 
 			<div id="sectionAdvanced" class="tab-pane fade in @(tabAdvancedActive)">
 				<div class="row">
 					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Advanced Settings</h3>
 				</div>
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.EnablePageViewLog, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.EnablePageViewLog, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EnablePageViewLog, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.EnablePageViewLog, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Client.EnableNewUserRegisteredBroadcast, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EnableNewUserRegisteredBroadcast, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.EnableNewUserRegisteredBroadcast, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.EnablePageViewLog, "FieldCheckbox")
+				@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast, "FieldCheckbox")
 
 			</div>
 

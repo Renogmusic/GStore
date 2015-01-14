@@ -11,7 +11,7 @@
 <div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a id="navbarbrandlink" href="~/" class="navbar-brand">
+			<a id="navbarbrandlink" href="~/" class="navbar-brand" accesskey="h">
 				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
 					 src="~/Images/Logo/NavBarTinyLogo.png" alt="@(Html.AttributeEncode(storeFrontName))" title="@(Html.AttributeEncode(storeFrontName))" />
 				@(Html.Encode(storeFrontName))
@@ -27,7 +27,7 @@
 			<ul class="nav navbar-nav">
 				@{Html.RenderPartial("_NavBarCatalogPartial", Model); }
 				@{Html.RenderPartial("_NavBarMenuPartial", Model);}
-				<li>@(Html.ActionLink("About GStore", "About", "GStore"))</li>
+				<li>@(Html.ActionLink("About GStore", "About", "GStore", null, new { title="Click here for information about GStore" }))</li>
 			</ul>
 			@{Html.RenderPartial("_LoginPartial");}
 		</div>

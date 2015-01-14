@@ -55,6 +55,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 				this.IsPending = webFormField.IsPending;
 				this.IsRequired = webFormField.IsRequired;
 				this.LabelText = webFormField.LabelText;
+				this.Watermark = webFormField.Watermark;
 				this.Order = webFormField.Order;
 				this.StartDateTimeUtc = webFormField.StartDateTimeUtc;
 				this.TextAreaColumns = webFormField.TextAreaColumns;
@@ -79,6 +80,25 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 				return;
 			}
 
+			this.Name = "New Field";
+			this.Order = 100;
+			if (WebFormEditAdminViewModel.WebForm != null && WebFormEditAdminViewModel.WebForm.WebFormFields.Count > 0)
+			{
+				this.Order = WebFormEditAdminViewModel.WebFormFields.Max(wff => wff.Order) + 10;
+				bool nameIsDirty = WebFormEditAdminViewModel.WebForm.WebFormFields.Any(wff => wff.Name.ToLower() == this.Name.ToLower());
+				if (nameIsDirty)
+				{
+					int counter = 1;
+					do
+					{
+						counter++;
+						this.Name = "New Field " + counter;
+						nameIsDirty = WebFormEditAdminViewModel.WebForm.WebFormFields.Any(wff => wff.Name.ToLower() == this.Name.ToLower());
+					} while (nameIsDirty);
+				}
+				
+			}
+
 			this.WebForm = WebFormEditAdminViewModel.WebForm;
 			this.WebFormId = WebFormEditAdminViewModel.WebForm.WebFormId;
 			this.IsPending = false;
@@ -86,11 +106,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.StartDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			this.DataType = GStoreValueDataType.SingleLineText;
 			this.DataTypeString = this.DataType.ToDisplayName();
-			this.Description = "new field";
+			this.Description = this.Name;
 			this.IsRequired = false;
 			this.LabelText = "Text";
+			this.Watermark = this.Name;
 			this.HelpLabelBottomText = "Enter text here";
-			this.Order = 9000;
 			this.TextAreaColumns = null;
 			this.TextAreaRows = null;
 		}
@@ -132,6 +152,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(100)]
 		[Display(Name = "Label Text", Description = "Text to show on form as a label for this field")]
 		public string LabelText { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Watermark Text", Description = "Text to show on text boxes when they are empty. Useful for user input. \nExample: Enter your Email address.")]
+		public string Watermark { get; set; }
 
 		[MaxLength(100)]
 		[Display(Name = "Help Label Top Text", Description = "Help information to show on top of this field")]

@@ -1,0 +1,70 @@
+﻿<ul class="nav navbar-nav">
+	<!-- Dynamic Order Admin Menu -->
+@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_MenuItem))
+{
+	<!-- Orders Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="o" title="Orders (coming soon)"><small class="text-warning">Orders</small><span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Manager))
+			{
+				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+					@Html.ActionLink("Order Manager", "Manager", "OrdersAdmin")
+				</li>
+				<li class="nav-divider"></li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_ViewAbandoned))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("View Abandoned Carts", "Carts_ViewAbandoned", "OrdersAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_ViewCurrent))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("View Current Carts", "", "OrdersAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_TransferAbandonedCart))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Transfer An Abandoned Cart", "Carts_TransferAbandonedCart", "OrdersAdmin")
+				</li>
+			}
+			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_SendCheckOutLink))
+			{
+				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+					@Html.ActionLink("Check Out an Abandoned Cart", "Carts_SendCheckOutLink", "OrdersAdmin")
+				</li>
+			}
+		</ul>
+	</li>
+}
+
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Get Help!">Help<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				<a href="mailto:renogmusic@yahoo.com">Support: Email renogmusic@yahoo.com</a>
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("About GStore", "About", "GStore")
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time: @DateTime.UtcNow.ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time: @DateTime.UtcNow.ToLocalTime().ToString()
+			</li>
+		</ul>
+	</li>
+
+</ul>

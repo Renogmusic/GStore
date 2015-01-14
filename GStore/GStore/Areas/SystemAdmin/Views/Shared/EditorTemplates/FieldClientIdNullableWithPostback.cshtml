@@ -1,0 +1,34 @@
+﻿@model int?
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	string optionLabel = ViewData.OptionLabel() ?? "(none)";
+	
+}
+<input id="ClientIdChanged" type="hidden" name="ClientIdChanged" value="false" />
+<script>
+	function updateClient(element)
+	{
+		$('#ClientIdChanged').val('true'); 
+		element.form.submit();
+	}
+</script>
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	<div class="col-md-@(colData) title-align">
+		@Html.DropDownListForModel(Html.ClientList(Model), new { onchange = "updateClient(this);" }, optionLabel, true)
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@if (useHelpLabelText)
+		{
+			<br />@Html.HelpLabelForModel()
+		}
+		<br />
+		@Html.ValidationMessageForModel()
+	</div>
+</div>

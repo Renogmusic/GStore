@@ -90,6 +90,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		}
 		public WebFormFieldEditAdminViewModel[] webFormFieldPostData { get; protected set; }
 
+		public void UpdateWebForm(WebForm webForm)
+		{
+			this.WebForm = webForm;
+		}
+
 		[Editable(false)]
 		[Display(Name = "Web Form", Description = "")]
 		public WebForm WebForm { get; protected set; }

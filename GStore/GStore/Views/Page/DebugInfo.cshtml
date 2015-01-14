@@ -1,14 +1,20 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeTopPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeTopPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkTopPartial", Model);
+}
+
+
 @{
 	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
-	if (Model.EditMode)
-	{
-		Html.RenderPartial("_EditModeTopPartial", Model);
-	}
-	else if (Model.ShowEditPageLink)
-	{
-		Html.RenderPartial("_EditLinkTopPartial", Model);
-	}
 }
 	<h1 class="text-danger">Welcome to your new store front at GStore!</h1>
 	<h2>@storeFrontConfig.Name</h2>
@@ -37,11 +43,15 @@
 
 @Html.DisplayPageForm()
 
-@if (Model.EditMode)
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeBottomPartial", Model);
+}
+else if (Model.EditMode)
 {
 	Html.RenderPartial("_EditModeBottomPartial", Model);
 }
-else if (Model.ShowEditPageLink)
+@if (Model.ShowEditPageLink)
 {
 	Html.RenderPartial("_EditLinkBottomPartial", Model);
 }

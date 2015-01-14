@@ -1,0 +1,54 @@
+﻿@model GStore.Areas.OrderAdmin.ViewModels.OrderAdminViewModel
+@{
+	using (Html.BeginForm("LogOff", "Account", new {Area = ""}, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+	{
+		@Html.AntiForgeryToken()
+
+	<ul class="nav navbar-nav navbar-right">
+		<li>
+			<a href="@Url.Action("Index", "Profile", new { Area = ""})" accesskey="p" title="My Account">
+				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
+			</a>
+		</li>
+		<li>
+			@{
+		if (Model.StoreFrontConfig.IsActiveDirect())
+		{
+			<a href="~/" accesskey="b" title="Back to Site">Back to Site</a>
+		}
+		else
+		{
+			<a href="~/" class="text-danger" accesskey="b" title="Back to Site"><span class="text-danger"><strong>Back to INACTIVE Site</strong></span></a>
+		}
+}
+		</li>
+		@if (Model.ShowCatalogAdminLink)
+		{
+			<li>
+				<a href="@Url.Action("Index", "CatalogAdmin", new { Area = "CatalogAdmin" })" accesskey="c" title="Catalog Admin">
+					Catalog Admin
+				</a>
+			</li>
+		}
+		@if (Model.ShowStoreAdminLink)
+		{
+			<li class="AdminMenuItemLevel2">
+				<a href="@Url.Action("Index", "StoreAdmin", new { Area = "StoreAdmin" })" accesskey="s" title="Store Admin">
+					Store Admin
+				</a>
+			</li>
+		}
+		@if (Model.ShowSystemAdminLink)
+		{
+			<li>
+				<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" accesskey="s" title="System Admin">
+					System Admin
+				</a>
+			</li>
+		}
+
+		<li><a href="javascript:document.getElementById('logoutForm').submit()" accesskey="l" title="Log Off">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+	</ul>
+	}
+}
+

@@ -12,7 +12,9 @@
 		@:RouteData Source: <strong>@(Model.RouteDataSource)</strong><br />
 		@:Url: <strong>@(Model.Url)</strong><br />
 		@:RawUrl:<strong>@(Model.RawUrl)</strong><br />
-		@:IPAddress:<strong>@(Model.IPAddress)</strong><br/>
+		@:IPAddress:<strong>@(Model.IPAddress)</strong><br />
+
+
 		if (Model.Exception != null)
 		{
 			Exception ex = Model.Exception;
@@ -24,5 +26,53 @@
 				ex = ex.InnerException;
 			} while (ex != null);
 		}
+
+		<div class="text-left">
+			<pre>@{
+				Client client = Html.CurrentClient(false);
+				StoreFront storeFront = Html.CurrentStoreFront(false);
+				StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+				@("Client: " + (client == null ? "(null)" : client.Name + " [" + client.ClientId + "]"))
+				if (storeFrontConfig == null)
+				{
+					@("\tStore Front: " + (storeFront == null ? "(null)" : "Id " + storeFront.StoreFrontId))
+					@("\tStore Front Config: (null)")
+				}
+				else
+				{
+					@("\tStore Front: " + (storeFront == null ? "(null)" : storeFrontConfig.Name + " [" + storeFront.StoreFrontId + "]"))
+					@("\tStore Front Config: " + (storeFrontConfig.ConfigurationName + " [" + storeFrontConfig.StoreFrontConfigurationId + "]"))
+				}
+			}</pre>
+		</div>
+
+		if (Request.QueryString.Count > 0)
+		{
+			<div class="text-left">
+				<pre><b>Querystring: </b> @(Request.QueryString.ToString())
+<b>Querystring Values</b>
+					@foreach (string value in Request.QueryString.Keys)
+					{
+@(Html.Raw(("<b>" + value.ToHtml()).PadLeft(40) + "</b>: \t" + Request.QueryString[value].ToString().ToHtml() + "\n"))
+					}</pre>
+			</div>
+		}
+
+		if (Request.Form.Count > 0)
+		{
+			<div class="text-left">
+				<pre><b>Form Data</b>
+@(Request.Form.ToString())
+		</pre>
+				<pre><b>Form Values</b>
+@foreach (string value in Request.Form.Keys)
+{
+	@(Html.Raw(("<b>" + value.ToHtml()).PadLeft(40) + "</b>: \t" + Request.Form[value].ToString().ToHtml() + "\n"))
+}
+		</pre>
+			</div>
+		}
+
+
 	}
 </div>

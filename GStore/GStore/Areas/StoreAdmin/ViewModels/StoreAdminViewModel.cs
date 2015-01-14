@@ -27,26 +27,38 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.StoreFront = currentStoreFrontConfig.StoreFront;
 			this.UserProfile = userProfile;
 			this.Client = currentStoreFrontConfig.Client;
-			this.IsSystemAdmin = this.UserProfile.AspNetIdentityUserIsInRoleSystemAdmin();
+			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
+			this.ShowOrderAdminLink = this.StoreFront.ShowOrderAdminLink(userProfile);
+			this.ShowCatalogAdminLink = this.StoreFront.ShowCatalogAdminLink(userProfile);
+		}
+		public void UpdateClient(Client client)
+		{
+			this.Client = client;
 		}
 
 		[Display(Name = "Store Front Configuration")]
-		public StoreFrontConfiguration StoreFrontConfig { get; set; }
+		public StoreFrontConfiguration StoreFrontConfig { get; protected set; }
 
 		[Display(Name = "Store Front")]
-		public StoreFront StoreFront { get; set; }
+		public StoreFront StoreFront { get; protected set; }
 
 		[Display(Name = "Client")]
-		public Client Client { get; set; }
+		public Client Client { get; protected set; }
 
 		[Display(Name = "User Profile")]
-		public UserProfile UserProfile { get; set; }
+		public UserProfile UserProfile { get; protected set; }
 
 		[Display(Name = "Is Active")]
-		public bool IsActiveDirect { get; set; }
+		public bool IsActiveDirect { get; protected set; }
 
-		[Display(Name = "Is System Admin")]
-		public bool IsSystemAdmin { get; set; }
+		[Display(Name = "Show System Admin Link")]
+		public bool ShowSystemAdminLink { get; protected set; }
+
+		[Display(Name = "Show Order Admin Link")]
+		public bool ShowOrderAdminLink { get; protected set; }
+
+		[Display(Name = "Show Catalog Admin Link")]
+		public bool ShowCatalogAdminLink { get; protected set; }
 
 	}
 }

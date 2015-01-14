@@ -70,7 +70,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		{
 			if (GStoreDb.Clients.IsEmpty())
 			{
-				AddUserMessage("No clients in database.", "There are no clients in the database. To Create a store front you need to create a client first.", UserMessageType.Info);
+				AddUserMessage("No clients in database.", "There are no clients in the database. To Create a Store Front you need to create a Client first.", UserMessageType.Warning);
 				return RedirectToAction("Create", "ClientSysAdmin");
 			}
 
@@ -171,6 +171,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				newConfig.CartTheme = theme;
 				newConfig.CheckoutTheme = theme;
 				newConfig.CatalogTheme = theme;
+				newConfig.CatalogAdminTheme = theme;
 				newConfig.DefaultNewPageTheme = theme;
 				newConfig.NotificationsTheme = theme;
 				newConfig.OrderStatusTheme = theme;

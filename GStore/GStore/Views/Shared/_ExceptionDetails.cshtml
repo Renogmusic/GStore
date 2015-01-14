@@ -1,23 +1,24 @@
 ﻿@model System.Exception
 @if (Model != null)
 {
-	@:Exception: <strong>@(Model.Message)</strong><br />
 	if (Model is HttpException)
 	{
 		HttpException httpEx = Model as HttpException;
-		@:<pre>HTTP Exception Code @httpEx.GetHttpCode() Message: @httpEx.Message</pre>
+		@:<pre>@(Model.GetType().FullName) HTTP Exception Code @httpEx.GetHttpCode() Message: @httpEx.Message</pre>
+	}
+	else
+	{
+		@:<pre>@(Model.GetType().FullName) Exception Message: @Model.Message</pre>
 	}
 
 	<strong>Source: @Model.Source</strong><br />
 	if (Model.TargetSite != null)
 	{
-		@:Method: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.Name)</strong><br />
-		@:Target Site: <strong>@((Model.TargetSite != null) && (Model.TargetSite.DeclaringType != null) ? Model.TargetSite.DeclaringType.FullName : "(null)")</strong><br />
-		@:Target Site Info: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.ToString())</strong><br />
+		@: - Target Site: <strong>@((Model.TargetSite != null) && (Model.TargetSite.DeclaringType != null) ? Model.TargetSite.DeclaringType.FullName : "(null)")</strong>
+		@: - Method: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.Name)</strong>
+		@: - Target Site Info: <strong>@(Model.TargetSite == null ? "(null)" : Model.TargetSite.ToString())</strong>
 	}
-	<pre>Exception.ToString: @Model.ToString()</pre>
-	<pre>Stack Trace: @Model.StackTrace</pre>
-
+	<pre>Stack Trace: @("\n")@(Html.StackTraceWithHighlight(Model.StackTrace))</pre>
 	if (Model is HttpException)
 	{
 		HttpException httpExDetails = Model as HttpException;

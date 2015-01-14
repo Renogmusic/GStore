@@ -6,32 +6,44 @@
 
 	<ul class="nav navbar-nav navbar-right">
 		<li>
-			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
+			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account" accesskey="p">
 				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
 			</a>
 		</li>
+		@if (Model.ShowOrderAdminLink)
+		{
+			<li class="AdminMenuItemLevel2">
+				@Html.ActionLink("Order Admin", "Index", "OrderAdmin", new { Area = "OrderAdmin" }, new { title = "Order Admin", accesskey = "o" })
+			</li>
+		}
+		@if (Model.ShowCatalogAdminLink)
+		{
+			<li class="AdminMenuItemLevel2">
+				@Html.ActionLink("Catalog Admin", "Index", "CatalogAdmin", new { Area = "CatalogAdmin" }, new { title = "Catalog Admin", accesskey = "c" })
+			</li>
+		}
 		<li>
 			@{
 		if (Model.StoreFrontConfig.IsActiveDirect())
 		{
-			<a href="~/">Back to Site</a>
+			<a href="~/" accesskey="b" title="Back to Site">Back to Site</a>
 		}
 		else
 		{
-			<a href="~/" class="text-danger"><span class="text-danger"><strong>Back to INACTIVE Site</strong></span></a>
+			<a href="~/" class="text-danger" accesskey="b" title="Back to Inactive Site"><span class="text-danger"><strong>Back to INACTIVE Site</strong></span></a>
 		}
 }
 		</li>
-		@if (Model.IsSystemAdmin)
+		@if (Model.ShowSystemAdminLink)
 		{
 			<li>
-				<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" title="System Admin">
+				<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" accesskey="s" title="System Admin">
 					System Admin
 				</a>
 			</li>
 		}
 
-		<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+		<li><a href="javascript:document.getElementById('logoutForm').submit()" accesskey="l" title="Log off the system">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
 	</ul>
 	}
 }

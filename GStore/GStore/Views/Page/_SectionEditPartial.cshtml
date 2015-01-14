@@ -26,8 +26,8 @@
 
 	function ShowDefault_@(Model.Index)() {
 		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "true";
-		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = false;
-		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = false;
 
 		document.getElementById("HasNothing_@(Model.Index)").value = "false";
 
@@ -71,34 +71,39 @@
 		@if (Model.AutoSubmit)
 		{
 			@:document.getElementById("IsAutoPosted_@(Model.Index)").value = "true";
-			@:$('#SectionEditForm_@(Model.Index)').trigger('submit');
-		}
+											@:$('#SectionEditForm_@(Model.Index)').trigger('submit');
+										}
+	}
+
+	function LoadDefaultHtml_@(Model.Index)() {
+		var defaultHtml = '@(Model.DefaultRawHtmlValue.ToJavaScriptMvcString())';
+		var data = CKEDITOR.instances.RawHtml_@(Model.Index).setData(defaultHtml);
 	}
 
 
 	@if (Model.UseDefaultFromTemplate)
 	{
 		@:$(document).ready(function () { ShowDefault_@(Model.Index)(); });
-						}
+										}
 	else if (Model.HasNothing)
 	{
 		@:$(document).ready(function () { ShowNothing_@(Model.Index)(); });
-						}
+										}
 	else if (Model.HasRawHtml)
 	{
 		@:$(document).ready(function () { ShowRawHtml_@(Model.Index)(); });
-						}
+										}
 	else
 	{
 		@:$(document).ready(function () { ShowPlainText_@(Model.Index)(); });
-						}
+										}
 
 </script>
 @Html.AntiForgeryToken()
 <div class="@(containerClasses)">
 	<div class="form-horizontal text-center">
 		<h4 class="bg-info">
-			Section: <strong>@Model.SectionName [@Model.PageTemplateSectionId]</strong>
+			&#8595; Section: <strong>@Model.SectionName [@Model.PageTemplateSectionId]</strong> &#8595;
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input id="formatDefault_(@Model.Index)" type="radio" name="selectedFormat" value="Default" @(Model.UseDefaultFromTemplate ? "checked=\"checked\"" : string.Empty) onchange="ShowDefault_@(Model.Index)();AutoSubmitForm_@(Model.Index)();" />
 			<label for="formatDefault_(@Model.Index)"><small>Default</small></label>
@@ -165,6 +170,7 @@
 		</div>
 		<div id="RawHtmlEditor_@(Model.Index)" class="form-group">
 			<div class="col-md-12">
+				<center><a href="javascript:LoadDefaultHtml_@(Model.Index)()" class="btn btn-xs btn-warning">Click here to load the default HTML</a></center>
 				<textarea id="RawHtml_@(Model.Index)" class="form-control" name="@(prefix)RawHtml" rows="4" cols="20">@Model.RawHtml</textarea>
 				<script>CKEDITOR.replace('RawHtml_@(Model.Index)');</script>
 			</div>

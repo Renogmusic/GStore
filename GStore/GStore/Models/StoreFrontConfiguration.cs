@@ -116,6 +116,7 @@ namespace GStore.Models
 		
 		#region Themes
 
+		[Required]
 		[Display(Name = "Default Theme Id")]
 		public int DefaultNewPageThemeId { get; set; }
 
@@ -123,6 +124,7 @@ namespace GStore.Models
 		[ForeignKey("DefaultNewPageThemeId")]
 		public virtual Theme DefaultNewPageTheme { get; set; }
 
+		[Required]
 		[Display(Name = "Catalog Theme Id")]
 		public int CatalogThemeId { get; set; }
 
@@ -130,6 +132,7 @@ namespace GStore.Models
 		[ForeignKey("CatalogThemeId")]
 		public virtual Theme CatalogTheme { get; set; }
 
+		[Required]
 		[Display(Name = "Account Theme Id")]
 		public int AccountThemeId { get; set; }
 
@@ -137,6 +140,7 @@ namespace GStore.Models
 		[ForeignKey("AccountThemeId")]
 		public virtual Theme AccountTheme { get; set; }
 
+		[Required]
 		[Display(Name = "Notifications Theme Id")]
 		public int NotificationsThemeId { get; set; }
 
@@ -144,6 +148,7 @@ namespace GStore.Models
 		[ForeignKey("NotificationsThemeId")]
 		public virtual Theme NotificationsTheme { get; set; }
 
+		[Required]
 		[Display(Name = "Profile Theme Id")]
 		public int ProfileThemeId { get; set; }
 
@@ -151,6 +156,7 @@ namespace GStore.Models
 		[ForeignKey("ProfileThemeId")]
 		public virtual Theme ProfileTheme { get; set; }
 
+		[Required]
 		[Display(Name = "Store Admin Theme Id")]
 		public int AdminThemeId { get; set; }
 
@@ -182,6 +188,7 @@ namespace GStore.Models
 		[MaxLength(10)]
 		public string CartLayoutName { get; set; }
 
+		[Required]
 		[Display(Name = "Cart Theme Id")]
 		public int CartThemeId { get; set; }
 
@@ -309,6 +316,7 @@ namespace GStore.Models
 		[MaxLength(10)]
 		public string CheckoutLayoutName { get; set; }
 
+		[Required]
 		[Display(Name = "Checkout Theme Id")]
 		public int CheckoutThemeId { get; set; }
 
@@ -367,6 +375,7 @@ namespace GStore.Models
 		[MaxLength(10)]
 		public string OrderStatusLayoutName { get; set; }
 
+		[Required]
 		[Display(Name = "Order Status Theme Id")]
 		public int OrderStatusThemeId { get; set; }
 
@@ -383,12 +392,30 @@ namespace GStore.Models
 		[MaxLength(10)]
 		public string OrderAdminLayoutName { get; set; }
 
+		[Required]
 		[Display(Name = "Order Admin Theme Id")]
 		public int OrderAdminThemeId { get; set; }
 
 		[Display(Name = "Order Admin Theme")]
 		[ForeignKey("OrderAdminThemeId")]
 		public virtual Theme OrderAdminTheme { get; set; }
+
+		#endregion
+
+		#region Catalog Admin
+
+		[Required]
+		[Display(Name = "Catalog Admin Layout Name")]
+		[MaxLength(10)]
+		public string CatalogAdminLayoutName { get; set; }
+
+		[Required]
+		[Display(Name = "Catalog Admin Theme Id")]
+		public int CatalogAdminThemeId { get; set; }
+
+		[Display(Name = "Catalog Admin Theme")]
+		[ForeignKey("CatalogAdminThemeId")]
+		public virtual Theme CatalogAdminTheme { get; set; }
 
 		#endregion
 

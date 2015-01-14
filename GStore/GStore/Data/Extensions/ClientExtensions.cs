@@ -236,7 +236,7 @@ namespace GStore.Data
 				webFormField.WebForm = webForm;
 				webFormField.WebFormId = webForm.WebFormId;
 				webFormField.ClientId = webForm.ClientId;
-				webForm.Order = webForm.WebFormFields.Count == 0 ? 100 : webForm.WebFormFields.Max(wf => wf.Order) + 10;
+				webFormField.Order = webForm.WebFormFields.Count == 0 ? 100 : webForm.WebFormFields.Max(wf => wf.Order) + 10;
 				webFormField.Name = "New Field";
 				bool nameIsDirty = webForm.WebFormFields.Any(wf => wf.Name.ToLower() == webFormField.Name.ToLower());
 				int counter = 1;
@@ -250,6 +250,8 @@ namespace GStore.Data
 				webFormField.LabelText = webFormField.Name;
 				webFormField.Description = webFormField.Name;
 			}
+			webFormField.Watermark = "Enter a " + webFormField.Name;
+			webFormField.Description = webFormField.Name;
 			webFormField.DataType = GStoreValueDataType.SingleLineText;
 			webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
 			webFormField.IsPending = false;

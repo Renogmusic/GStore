@@ -1,13 +1,8 @@
 ﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreFrontConfigAdminViewModel
 
-<script src="~/Scripts/CKEditor/ckeditor.js"></script>
 @using (Html.BeginForm())
 {
 	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
-	SelectList themeList = ViewBag.ThemeList as SelectList;
-	SelectList pageList = ViewBag.PageList as SelectList;
-	SelectList webFormList = ViewBag.WebFormList as SelectList;
-	
 
 	string tabBasicActive = string.Empty;
 	string tabAdminsActive = string.Empty;
@@ -70,6 +65,8 @@
 		default:
 			goto case "";
 	}
+
+	ViewData.SetColDisplay(1, 2, 8);
 
 	<script>
 		function JumpToViewTab() {
@@ -153,8 +150,6 @@
 	<div class="row">
 		<div class="form-validation col-md-offset-3 col-md-9">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger bold" })
-			@Html.HiddenFor(model => model.StoreFrontId)
-			@Html.HiddenFor(model => model.StoreFrontConfigurationId)
 		</div>
 	</div>
 
@@ -183,13 +178,9 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Basic Info</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.StoreFrontId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DisplayFor(model => model.StoreFrontId)
-					</div>
-					@Html.HelpLabelFor(model => model.StoreFrontId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.StoreFrontId, "FieldKey")
+				@Html.EditorFor(model => model.StoreFrontConfigurationId, "FieldKey")
+
 
 				@{
 	if (!Model.IsCreatePage)
@@ -204,69 +195,13 @@
 	}
 				}
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.Name, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.ConfigurationName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.ConfigurationName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.ConfigurationName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.ConfigurationName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.PublicUrl, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.PublicUrl, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.PublicUrl, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.HtmlFooter, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.TextAreaFor(model => model.HtmlFooter, new { @class = "form-control" })
-						<script>CKEDITOR.replace('@(Html.IdFor(model => model.HtmlFooter))');</script>
-						@Html.ValidationMessageFor(model => model.HtmlFooter, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.NavBarItemsMaxLevels, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.NavBarItemsMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.NavBarItemsMaxLevels, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NavBarItemsMaxLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.Order, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.Folder, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.Folder, new { htmlAttributes = new { @class = "form-control" } })
-					</div>
-					@Html.HelpLabelFor(model => model.Folder, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.Name, "FieldText")
+				@Html.EditorFor(model => model.ConfigurationName, "FieldText")
+				@Html.EditorFor(model => model.PublicUrl, "FieldUrl")
+				@Html.EditorFor(model => model.HtmlFooter, "FieldHtml")
+				@Html.EditorFor(model => model.NavBarItemsMaxLevels, "FieldInt")
+				@Html.EditorFor(model => model.Order, "FieldInt")
+				@Html.EditorFor(model => model.Folder, "FieldText")
 
 			</div>
 
@@ -275,33 +210,9 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Admin Users</h3>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AccountAdmin, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("AccountAdmin_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.AccountAdmin_UserProfileId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AccountAdmin_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.RegisteredNotify, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("RegisteredNotify_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.RegisteredNotify_UserProfileId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.RegisteredNotify_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.WelcomePerson, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("WelcomePerson_UserProfileId", userProfileList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.WelcomePerson_UserProfileId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.WelcomePerson_UserProfileId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.AccountAdmin_UserProfileId, "FieldUserProfileId")
+				@Html.EditorFor(model => model.RegisteredNotify_UserProfileId, "FieldUserProfileId")
+				@Html.EditorFor(model => model.WelcomePerson_UserProfileId, "FieldUserProfileId")
 
 			</div>
 
@@ -310,61 +221,12 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Meta Tags</h3>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaApplicationName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.MetaApplicationName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaApplicationName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.MetaApplicationName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaApplicationTileColor, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.MetaApplicationTileColor, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaApplicationTileColor, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.MetaApplicationTileColor, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaDescription, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.MetaDescription, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaDescription, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.MetaDescription, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.MetaKeywords, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.MetaKeywords, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.MetaKeywords, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.MetaKeywords, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.BodyTopScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.TextAreaFor(model => model.BodyTopScriptTag, new { @class = "form-control", rows = 8 })
-						@Html.ValidationMessageFor(model => model.BodyTopScriptTag, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.BodyTopScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.BodyBottomScriptTag, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.TextAreaFor(model => model.BodyBottomScriptTag, new { @class = "form-control", rows = 8 })
-						@Html.ValidationMessageFor(model => model.BodyBottomScriptTag, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.BodyBottomScriptTag, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
+				@Html.EditorFor(model => model.MetaApplicationName, "FieldText")
+				@Html.EditorFor(model => model.MetaApplicationTileColor, "FieldText")
+				@Html.EditorFor(model => model.MetaDescription, "FieldTextArea")
+				@Html.EditorFor(model => model.MetaKeywords, "FieldTextArea")
+				@Html.EditorFor(model => model.BodyTopScriptTag, "FieldTextArea")
+				@Html.EditorFor(model => model.BodyBottomScriptTag, "FieldTextArea")
 			</div>
 
 			<div id="sectionTracking" class="tab-pane fade in @(tabTrackingActive)">
@@ -372,24 +234,8 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Tracking</h3>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.EnableGoogleAnalytics, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.EnableGoogleAnalytics, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EnableGoogleAnalytics, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.EnableGoogleAnalytics, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.GoogleAnalyticsWebPropertyId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.GoogleAnalyticsWebPropertyId, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.GoogleAnalyticsWebPropertyId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.GoogleAnalyticsWebPropertyId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.EnableGoogleAnalytics, "FieldCheckbox")
+				@Html.EditorFor(model => model.GoogleAnalyticsWebPropertyId, "FieldText")
 
 			</div>
 
@@ -398,96 +244,17 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Themes</h3>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.DefaultNewPageTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("DefaultNewPageThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.DefaultNewPageThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.DefaultNewPageTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CatalogThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CatalogThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AccountTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("AccountThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.AccountThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AccountTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CartThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CartThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.OrderStatusTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("OrderStatusThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.OrderStatusThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.OrderStatusTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.OrderAdminTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("OrderAdminThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.OrderAdminThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.OrderAdminTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.NotificationsTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("NotificationsThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.NotificationsThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NotificationsTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.ProfileTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("ProfileThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.ProfileThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.ProfileTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AdminTheme, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("AdminThemeId", themeList, htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.AdminThemeId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AdminTheme, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.DefaultNewPageThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.CatalogThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.AccountThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.CartThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.CheckoutThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.OrderStatusThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.OrderAdminThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.NotificationsThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.ProfileThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.CatalogAdminThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.AdminThemeId, "FieldThemeId")
 
 			</div>
 
@@ -496,50 +263,11 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Cart Info</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.UseShoppingCart, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.UseShoppingCart, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.UseShoppingCart, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.UseShoppingCart, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartNavShowCartToAnonymous, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CartNavShowCartToAnonymous, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CartNavShowCartToAnonymous, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartNavShowCartToAnonymous, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartNavShowCartToRegistered, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CartNavShowCartToRegistered, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CartNavShowCartToRegistered, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartNavShowCartToRegistered, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartNavShowCartWhenEmpty, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CartNavShowCartWhenEmpty, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CartNavShowCartWhenEmpty, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartNavShowCartWhenEmpty, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartRequireLogin, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CartRequireLogin, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CartRequireLogin, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartRequireLogin, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.UseShoppingCart, "FieldCheckbox")
+				@Html.EditorFor(model => model.CartNavShowCartToAnonymous, "FieldCheckbox")
+				@Html.EditorFor(model => model.CartNavShowCartToRegistered, "FieldCheckbox")
+				@Html.EditorFor(model => model.CartNavShowCartWhenEmpty, "FieldCheckbox")
+				@Html.EditorFor(model => model.CartRequireLogin, "FieldCheckbox")
 
 				<div class="form-group">
 					<label class="control-label col-md-3">Cart Configuration</label>
@@ -550,11 +278,11 @@
 						}
 						else
 						{
-							@Html.ActionLink("Preview Cart Configuration\n(new window)", "Preview", "Cart", new { Area="", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-info" })
+							@Html.ActionLink("Preview Cart Configuration\n(new window)", "Preview", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-info" })
 							@:&nbsp;&nbsp;|&nbsp;&nbsp;
-							@Html.ActionLink("View Cart Configuration (new window)", "ViewConfig", "Cart", new { Area="", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-success" })
+							@Html.ActionLink("View Cart Configuration (new window)", "ViewConfig", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-success" })
 							@:&nbsp;&nbsp;|&nbsp;&nbsp;
-							@Html.ActionLink("Edit Cart Configuration (new window)", "EditConfig", "Cart", new { Area="", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning" })
+							@Html.ActionLink("Edit Cart Configuration (new window)", "EditConfig", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning" })
 						}
 					</div>
 					<label class="row help-label col-md-offset-3 col-md-9 title-align">Click here to view or edit the shopping cart configuration. Save changes before clicking these buttons.</label>
@@ -567,59 +295,12 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Checkout Info</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutLogInOrGuestWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutLogInOrGuestWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutLogInOrGuestWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutLogInOrGuestWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutDeliveryInfoDigitalOnlyWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutDeliveryInfoShippingWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutDeliveryInfoShippingWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutDeliveryInfoShippingWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutDeliveryInfoShippingWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutDeliveryMethodWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutDeliveryMethodWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutDeliveryMethodWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutDeliveryMethodWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutPaymentInfoWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutPaymentInfoWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutPaymentInfoWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutPaymentInfoWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutConfirmOrderWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("CheckoutConfirmOrderWebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.CheckoutConfirmOrderWebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutConfirmOrderWebForm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.CheckoutLogInOrGuestWebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.CheckoutDeliveryInfoShippingWebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.CheckoutDeliveryMethodWebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.CheckoutPaymentInfoWebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.CheckoutConfirmOrderWebFormId, "FieldWebFormIdNullable")
 
 				<br /><br />
 			</div>
@@ -628,77 +309,14 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Catalog Layout</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.NavBarCatalogMaxLevels, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.NavBarCatalogMaxLevels, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.NavBarCatalogMaxLevels, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NavBarCatalogMaxLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogPageInitialLevels, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogPageInitialLevels, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogPageInitialLevels, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogPageInitialLevels, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogCategoryColLg, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogCategoryColLg, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogCategoryColLg, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogCategoryColLg, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogCategoryColMd, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogCategoryColMd, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogCategoryColMd, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogCategoryColMd, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogCategoryColSm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogCategoryColSm, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogCategoryColSm, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogCategoryColSm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogProductColLg, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogProductColLg, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogProductColLg, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogProductColLg, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogProductColMd, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogProductColMd, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogProductColMd, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogProductColMd, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogProductColSm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogProductColSm, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogProductColSm, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogProductColSm, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.NavBarCatalogMaxLevels, "FieldInt")
+				@Html.EditorFor(model => model.CatalogPageInitialLevels, "FieldInt")
+				@Html.EditorFor(model => model.CatalogCategoryColLg, "FieldInt")
+				@Html.EditorFor(model => model.CatalogCategoryColMd, "FieldInt")
+				@Html.EditorFor(model => model.CatalogCategoryColSm, "FieldInt")
+				@Html.EditorFor(model => model.CatalogProductColLg, "FieldInt")
+				@Html.EditorFor(model => model.CatalogProductColMd, "FieldInt")
+				@Html.EditorFor(model => model.CatalogProductColSm, "FieldInt")
 
 			</div>
 
@@ -707,23 +325,8 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Error Pages</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.NotFoundError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("NotFoundError_PageId", pageList, "(GStore System Default Not Found Error Page)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.NotFoundError_PageId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NotFoundError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.StoreError_PageId, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("StoreError_PageId", pageList, "(GStore System Default Error Page)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.StoreError_PageId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.StoreError_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.NotFoundError_PageId, "FieldPageIdNullable", new { OptionLabel = "(GStore System Default Not Found Error Page)" })
+				@Html.EditorFor(model => model.StoreError_PageId, "FieldPageIdNullable", new { OptionLabel = "(GStore System Default Error Page)" })
 
 			</div>
 
@@ -733,59 +336,12 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Registration</h3>
 				</div>
 
-				<div class="form-group">
-					@Html.LabelFor(model => model.NavBarShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.NavBarShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.NavBarShowRegisterLink, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NavBarShowRegisterLink, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.NavBarRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.NavBarRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.NavBarRegisterLinkText, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NavBarRegisterLinkText, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AccountLoginShowRegisterLink, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.AccountLoginShowRegisterLink, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.AccountLoginShowRegisterLink, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AccountLoginShowRegisterLink, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AccountLoginRegisterLinkText, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.AccountLoginRegisterLinkText, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.AccountLoginRegisterLinkText, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AccountLoginRegisterLinkText, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.RegisterWebForm, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("Register_WebFormId", webFormList, "(No Custom Fields)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.Register_WebFormId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.Register_WebFormId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.RegisterSuccessPage, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.DropDownList("RegisterSuccess_PageId", pageList, "(GStore System Default Register Success Page)", htmlAttributes: new { @class = "form-control" })
-						@Html.ValidationMessageFor(model => model.RegisterSuccess_PageId, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.RegisterSuccess_PageId, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.NavBarShowRegisterLink, "FieldCheckbox")
+				@Html.EditorFor(model => model.NavBarRegisterLinkText, "FieldText")
+				@Html.EditorFor(model => model.AccountLoginShowRegisterLink, "FieldCheckbox")
+				@Html.EditorFor(model => model.AccountLoginRegisterLinkText, "FieldText")
+				@Html.EditorFor(model => model.Register_WebFormId, "FieldWebFormIdNullable")
+				@Html.EditorFor(model => model.RegisterSuccess_PageId, "FieldPageIdNullable", new { OptionLabel = "(GStore System Default Register Success Page)" })
 
 			</div>
 
@@ -794,96 +350,17 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Layouts</h3>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.DefaultNewPageLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.DefaultNewPageLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.DefaultNewPageLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CatalogLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CatalogLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CatalogLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CatalogLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CartLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CartLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CartLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CartLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.CheckoutLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.CheckoutLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.CheckoutLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.CheckoutLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.OrderStatusLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.OrderStatusLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.OrderStatusLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.OrderStatusLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.OrderAdminLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.OrderAdminLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.OrderAdminLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.OrderAdminLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AccountLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.AccountLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.AccountLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.ProfileLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.ProfileLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.ProfileLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.ProfileLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.NotificationsLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.NotificationsLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.NotificationsLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.AdminLayoutName, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.AdminLayoutName, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.AdminLayoutName, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.DefaultNewPageLayoutName, "FieldText")
+				@Html.EditorFor(model => model.CatalogLayoutName, "FieldText")
+				@Html.EditorFor(model => model.CartLayoutName, "FieldText")
+				@Html.EditorFor(model => model.CheckoutLayoutName, "FieldText")
+				@Html.EditorFor(model => model.OrderStatusLayoutName, "FieldText")
+				@Html.EditorFor(model => model.OrderAdminLayoutName, "FieldText")
+				@Html.EditorFor(model => model.AccountLayoutName, "FieldText")
+				@Html.EditorFor(model => model.ProfileLayoutName, "FieldText")
+				@Html.EditorFor(model => model.NotificationsLayoutName, "FieldText")
+				@Html.EditorFor(model => model.CatalogAdminLayoutName, "FieldText")
+				@Html.EditorFor(model => model.AdminLayoutName, "FieldText")
 			</div>
 
 			<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
@@ -891,7 +368,7 @@
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Activation</h3>
 				</div>
 				<h4 class="col-md-offset-3 col-md-6 text-warning">
-					Warning: editing these values incorrectly de-activate your site.<br />
+					Warning: editing these values incorrectly will de-activate your site.<br />
 					If you are unsure what to do, click the "Make It Active Now" button to turn the configuration on with default values.<br />
 					You can always log in and edit these values even if you de-activate your site.
 				</h4>
@@ -911,33 +388,9 @@
 					</div>
 				</div>
 
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.IsPending, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.StartDateTimeUtc, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
-
-				<div class="form-group">
-					@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-3" })
-					<div class="col-md-9">
-						@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-						@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
-					</div>
-					@Html.HelpLabelFor(model => model.EndDateTimeUtc, new { @class = "row help-label col-md-offset-3 col-md-9 title-align" })
-				</div>
+				@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+				@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+				@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 			</div>
 

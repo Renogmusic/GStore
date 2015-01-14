@@ -80,6 +80,10 @@ namespace GStore.Areas.StoreAdmin.Controllers
 						NavBarItem navBarItem = GStoreDb.CreateNavBarItemForPage(page, CurrentStoreFrontOrThrow, CurrentUserProfileOrThrow);
 						AddUserMessage("Site Menu Updated!", "Page '" + page.Name.ToHtml() + "' [" + page.PageId + "] was added to the site menu for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 					}
+					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.Pages_View))
+					{
+						return RedirectToAction("Details", new { id = page.PageId });
+					}
 					return RedirectToAction("Manager");
 				}
 				catch (Exception ex)

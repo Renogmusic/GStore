@@ -63,6 +63,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Create(int? clientId)
 		{
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No Clients in database.", "You must create a Client before you can add Value Lists.", UserMessageType.Warning);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
+
 			ValueList model = GStoreDb.ValueLists.Create();
 
 			Client client = null;
@@ -220,7 +226,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List not found. Value List id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemsBreadcrumb(htmlHelper, valueList, false);
 			return View(valueList);
 		}
 
@@ -239,7 +245,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			ValueListItem model = GStoreDb.ValueListItems.Create();
 			model.SetDefaultsForNew(valueList);
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, model, false);
 			return View(model);
 		}
 
@@ -274,7 +280,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList);
+			valueListItem.ValueList = valueList;
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, valueListItem, false);
 			return View(valueListItem);
 		}
 
@@ -291,7 +298,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, valueListItem, false);
 			return View(valueListItem);
 		}
 
@@ -299,6 +306,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult ListItemEdit(ValueListItem valueListItem)
 		{
+			ValueList valueList = GStoreDb.ValueLists.FindById(valueListItem.ValueListId);
+			if (valueListItem == null)
+			{
+				return HttpNotFound("Value List not found. Value List id: " + valueListItem.ValueListId);
+			}
+
 			if (ModelState.IsValid)
 			{
 				valueListItem.UpdateAuditFields(CurrentUserProfileOrThrow);
@@ -308,7 +321,8 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return RedirectToAction("ListItemIndex", new { id = valueListItem.ValueListId });
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
+			valueListItem.ValueList = valueList;
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, valueListItem, false);
 			return View(valueListItem);
 		}
 
@@ -325,7 +339,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, valueListItem, false);
 			return View(valueListItem);
 		}
 
@@ -342,7 +356,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Value List Item not found. Value List Item id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.ValueListBreadcrumb(htmlHelper, valueListItem.ClientId, valueListItem.ValueList);
+			this.BreadCrumbsFunc = htmlHelper => this.ValueListItemBreadcrumb(htmlHelper, valueListItem, false);
 			return View(valueListItem);
 		}
 

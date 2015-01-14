@@ -63,6 +63,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Create(int? clientId)
 		{
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No Clients in database.", "You must create a Client before you can add Web Forms.", UserMessageType.Warning);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
+
 			Client client = null;
 			if (clientId.HasValue)
 			{
@@ -228,7 +234,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form not found. Web Form id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldsBreadcrumb(htmlHelper, webForm);
 			return View(webForm);
 		}
 
@@ -248,7 +254,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			WebFormField model = GStoreDb.WebFormFields.Create();
 			model.SetDefaultsForNew(webForm);
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, model);
 			return View(model);
 		}
 
@@ -278,13 +284,14 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				webFormField.ClientId = webForm.ClientId;
 				webFormField.WebFormId = webForm.WebFormId;
 				webFormField.DataTypeString = webFormField.DataType.ToDisplayName();
-				GStoreDb.WebFormFields.Add(webFormField);
+				webFormField = GStoreDb.WebFormFields.Add(webFormField);
 				GStoreDb.SaveChanges();
 				AddUserMessage("Web Form Field Created", "Web Form Field '" + webFormField.Name.ToHtml() + "' [" + webFormField.WebFormFieldId + "] created successfully", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("FieldIndex", new { id = webFormField.WebFormId });
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm);
+			webFormField.WebForm = webForm;
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, webFormField);
 			return View(webFormField);
 		}
 
@@ -301,7 +308,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, webFormField);
 			return View(webFormField);
 		}
 
@@ -337,7 +344,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			}
 			webFormField.WebForm = GStoreDb.WebForms.Single(wf => wf.WebFormId == webFormField.WebFormId);
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, webFormField);
 			return View(webFormField);
 		}
 
@@ -354,7 +361,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, webFormField);
 			return View(webFormField);
 		}
 
@@ -371,7 +378,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				return HttpNotFound("Web Form Field not found. Web Form Field id: " + id);
 			}
 
-			this.BreadCrumbsFunc = htmlHelper => this.WebFormBreadcrumb(htmlHelper, webFormField.ClientId, webFormField.WebForm);
+			this.BreadCrumbsFunc = htmlHelper => this.WebFormFieldBreadcrumb(htmlHelper, webFormField);
 			return View(webFormField);
 		}
 
@@ -435,17 +442,9 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			webFormField.Name = stringValue;
 			webFormField.Description = stringValue;
 			webFormField.LabelText = stringValue;
+			webFormField.Watermark = "Enter a " + stringValue;
 			webFormField.HelpLabelTopText = string.Empty;
 			webFormField.HelpLabelBottomText = string.Empty;
-			webFormField.IsPending = false;
-			if (webForm.WebFormFields.Count == 0)
-			{
-				webFormField.Order = 1000;
-			}
-			else
-			{
-				webFormField.Order = webForm.WebFormFields.Max(vl => vl.Order) + 10;
-			}
 
 			GStoreDb.WebFormFields.Add(webFormField);
 			GStoreDb.SaveChanges();

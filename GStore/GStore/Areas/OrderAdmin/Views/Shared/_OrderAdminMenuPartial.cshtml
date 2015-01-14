@@ -1,0 +1,26 @@
+﻿@model GStore.Areas.OrderAdmin.ViewModels.OrderAdminViewModel
+
+<!-- Order Admin Menu -->
+<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a id="navbarbrandlink" href="@(Url.Action("Index", "OrderAdmin"))" class="navbar-brand" accesskey="h">
+				<img id="NavBarTinyLogo" class="NavBarTinyLogo"
+					 src="~/Images/Logo/NavBarTinyLogo.png"
+					 alt="@(Html.AttributeEncode(Model.StoreFrontConfig.Name))"
+					 title="@(Html.AttributeEncode(Model.StoreFrontConfig.Name))" />
+				@(Html.Encode(Model.StoreFrontConfig.Name)) - Order Admin
+			</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="navbar-collapse collapse">
+			@Html.Partial("_OrderAdminMenuItemsPartial", Model)
+			@Html.Partial("_OrderAdminLoginPartial")
+		</div>
+	</div>
+</div>

@@ -1,6 +1,7 @@
 ﻿@model GStore.Models.StoreBinding
 
-@using (Html.BeginForm()) 
+@{ ViewData.SetColDisplay(0, 2, 8); }
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
@@ -24,17 +25,17 @@
 	</div>
 	
     <div class="form-horizontal">
-		@Html.EditorFor(model => model.Client, "ClientWithPostBack")
-		@Html.EditorFor(model => model.StoreFront)
-		@Html.EditorFor(model => model.HostName)
-		@Html.EditorFor(model => model.Port)
-		@Html.EditorFor(model => model.RootPath)
-		@Html.EditorFor(model => model.UseUrlStoreName)
-		@Html.EditorFor(model => model.UrlStoreName)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
-		@Html.EditorFor(model => model.IsPending)
+		@Html.EditorFor(model => model.Client, "FieldClientIdWithPostback")
+		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontId")
+		@Html.EditorFor(model => model.HostName, "FieldText")
+		@Html.EditorFor(model => model.Port, "FieldInt")
+		@Html.EditorFor(model => model.RootPath, "FieldText")
+		@Html.EditorFor(model => model.UseUrlStoreName, "FieldCheckbox")
+		@Html.EditorFor(model => model.UrlStoreName, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
     </div>
 	
 	<div class="row">

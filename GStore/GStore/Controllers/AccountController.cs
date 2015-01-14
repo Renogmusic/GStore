@@ -243,7 +243,7 @@ namespace GStore.Controllers
 				}
 				if (result.Succeeded)
 				{
-					await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+					await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
 
 					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
 
@@ -311,13 +311,19 @@ namespace GStore.Controllers
 					{
 						return Redirect(storeFrontConfig.RegisterSuccessPage.UrlResolved(this.Url));
 					}
-					return View("RegisterSuccess", newProfile);
+					return RedirectToAction("RegisterSuccess");
 				}
 				AddErrors(result);
 			}
 
 			// If we got this far, something failed, redisplay form
 			return View(model);
+		}
+
+		[Authorize]
+		public ActionResult RegisterSuccess()
+		{
+			return View("RegisterSuccess", CurrentUserProfileOrThrow);
 		}
 
 		//
@@ -656,7 +662,7 @@ namespace GStore.Controllers
 			}
 
 			// Sign in the user with this external login provider if the user already has a login
-			var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+			var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: true);
 			switch (result)
 			{
 				case SignInStatus.Success:
@@ -701,7 +707,7 @@ namespace GStore.Controllers
 					result = await UserManager.AddLoginAsync(user.Id, info.Login);
 					if (result.Succeeded)
 					{
-						await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+						await SignInManager.SignInAsync(user, isPersistent: true, rememberBrowser: false);
 						return RedirectToLocal(returnUrl);
 					}
 				}

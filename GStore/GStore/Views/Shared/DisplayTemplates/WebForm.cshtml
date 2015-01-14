@@ -19,11 +19,6 @@
 
 @if (fields.Count() > 0)
 {
-	if (fields.Any(f => f.DataType == GStoreValueDataType.Html))
-	{
-		<script src="~/Scripts/CKEditor/ckeditor.js"></script>
-	}
-
 	<script type="text/javascript">
 		$(document).ready(function () {
 			if ($('input:text:first'))

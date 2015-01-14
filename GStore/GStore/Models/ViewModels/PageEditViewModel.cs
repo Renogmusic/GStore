@@ -227,7 +227,7 @@ namespace GStore.Models.ViewModels
 
 		[Key]
 		[Editable(false)]
-		[Display(Name = "Page Id")]
+		[Display(Name = "Page Id", Description="Internal number to identity this page")]
 		public int PageId { get; set; }
 
 		[Editable(false)]

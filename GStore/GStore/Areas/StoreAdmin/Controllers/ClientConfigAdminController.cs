@@ -216,10 +216,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
-			ViewBag.PageList = PageList(clientId, storeFrontId); 
 
 			return View("StoreFrontEdit", viewModel);
 		}
@@ -278,6 +274,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
 				config.AdminLayoutName = model.AdminLayoutName;
 				config.AdminThemeId = model.AdminThemeId;
+				config.BodyBottomScriptTag = model.BodyBottomScriptTag;
+				config.BodyTopScriptTag = model.BodyTopScriptTag;
 				config.CartLayoutName = model.CartLayoutName;
 				config.CartThemeId = model.CartThemeId;
 				config.CheckoutLayoutName = model.CheckoutLayoutName;
@@ -297,6 +295,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.CatalogProductColLg = model.CatalogProductColLg;
 				config.CatalogProductColMd = model.CatalogProductColMd;
 				config.CatalogProductColSm = model.CatalogProductColSm;
+				config.CatalogAdminLayoutName = model.CatalogAdminLayoutName;
+				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
 				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
@@ -349,11 +349,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
 
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
-			ViewBag.PageList = PageList(clientId, storeFrontId); 
-
 			return View("StoreFrontEdit", model);
 		}
 
@@ -391,11 +386,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
 
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
-			ViewBag.PageList = PageList(clientId, storeFrontId); 
-
 			StoreFrontConfiguration configToClone = storeFrontToEdit.CurrentConfigOrAny();
 			StoreFrontConfiguration newStoreFrontConfig = null;
 			if (configToClone != null)
@@ -428,7 +418,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				return HttpBadRequest("model is null");
 			}
 
-			model.Client = CurrentClientOrThrow;
+			model.UpdateClient(CurrentClientOrThrow);
 			//verify the storeFront permissions in case we're operating on a different storefront
 			GStore.Models.StoreFront storeFrontToEdit = null;
 			if (model.StoreFrontId != CurrentStoreFrontOrThrow.StoreFrontId)
@@ -489,6 +479,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.CatalogProductColLg = model.CatalogProductColLg;
 				config.CatalogProductColMd = model.CatalogProductColMd;
 				config.CatalogProductColSm = model.CatalogProductColSm;
+				config.CatalogAdminLayoutName = model.CatalogAdminLayoutName;
+				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
 				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
@@ -551,11 +543,6 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 			int clientId = storeFrontToEdit.ClientId;
 			int storeFrontId = storeFrontToEdit.StoreFrontId;
-
-			ViewBag.UserProfileList = UserProfileList(clientId, storeFrontId);
-			ViewBag.ThemeList = ThemeList();
-			ViewBag.WebFormList = WebFormList(clientId, storeFrontId);
-			ViewBag.PageList = PageList(clientId, storeFrontId); 
 
 			model.IsCreatePage = true;
 			return View("StoreFrontEdit", model);

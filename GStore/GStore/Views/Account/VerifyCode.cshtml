@@ -7,6 +7,8 @@
 	{
 		routeValues = new { CheckingOut = checkingOut };
 	}
+
+	ViewData.SetColDisplay(0, 2, 9);
 }
 
 <h2>@ViewBag.Title.</h2>
@@ -28,20 +30,10 @@
 			</div>
 		</div>
 	}
-	<div class="form-group">
-		@Html.LabelFor(m => m.Code, new { @class = "col-md-2 control-label" })
-		<div class="col-md-10">
-			@Html.TextBoxFor(m => m.Code, new { @class = "form-control" })
-		</div>
-	</div>
-	<div class="form-group">
-		<div class="col-md-offset-2 col-md-10">
-			<div class="checkbox">
-				@Html.CheckBoxFor(m => m.RememberBrowser)
-				@Html.LabelFor(m => m.RememberBrowser)
-			</div>
-		</div>
-	</div>
+
+	@Html.EditorFor(model => model.Code, "FieldText")
+	@Html.EditorFor(m => m.RememberBrowser, "FieldCheckbox")
+
 	<div class="form-group">
 		<div class="col-md-offset-2 col-md-10">
 			<input type="submit" class="btn btn-primary" value="Submit" />

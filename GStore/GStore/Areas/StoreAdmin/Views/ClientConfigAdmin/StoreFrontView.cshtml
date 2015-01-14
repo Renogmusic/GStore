@@ -427,6 +427,15 @@
 			</dd>
 
 			<dt>
+				@Html.DisplayNameFor(model => model.CatalogAdminTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogAdminTheme)
+				<br />@Html.HelpLabelFor(model => model.CatalogAdminTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
 				@Html.DisplayNameFor(model => model.AdminTheme)
 			</dt>
 
@@ -828,6 +837,15 @@
 				<br />@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "help-label" })
 			</dd>
 
+			<dd>
+				@Html.DisplayFor(model => model.CatalogAdminLayoutName)
+				<br />@Html.HelpLabelFor(model => model.CatalogAdminLayoutName, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogAdminLayoutName)
+			</dt>
+
 			<dt>
 				@Html.DisplayNameFor(model => model.AdminLayoutName)
 			</dt>
@@ -846,7 +864,7 @@
 		</div>
 
 		<h4 class="col-md-offset-3 col-md-6 text-warning">
-			Warning: editing these values incorrectly de-activate your site.<br />
+			Warning: editing these values incorrectly will de-activate your site.<br />
 			If you are unsure what to do, click the "Make It Active Now" button to turn the configuration on with default values.<br/>
 			You can always log in and edit these values even if you de-activate your site.
 		</h4>

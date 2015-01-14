@@ -64,6 +64,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Create(int? clientId)
 		{
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No Clients in database.", "You must create a Client before you can add Themes.", UserMessageType.Warning);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
+
 			Client client = null;
 			if (clientId.HasValue)
 			{

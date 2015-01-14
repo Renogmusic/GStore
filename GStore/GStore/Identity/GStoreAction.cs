@@ -12,6 +12,8 @@ namespace GStore.Identity
 	{
 
 		Admin_StoreAdminArea = 1000,
+		Admin_OrderAdminArea = 12000,
+		Admin_CatalogAdminArea = 11000,
 
 		ClientConfig_StoreAdminMenuItem = 2000,
 		ClientConfig_Manager = 2100,
@@ -47,19 +49,29 @@ namespace GStore.Identity
 		WebForms_Delete = 3550,
 
 		ValueLists_StoreAdminMenu = 7000,
+
 		ValueLists_Manager = 3510,
 		ValueLists_View = 3520,
 		ValueLists_Create = 3530,
 		ValueLists_Edit = 3540,
 		ValueLists_Delete = 3550,
 
+
+		OrderAdmin_Orders_MenuItem = 12101,
+		OrderAdmin_Orders_Manager = 12110,
+		OrderAdmin_Orders_Carts_ViewAbandoned = 12120,
+		OrderAdmin_Orders_Carts_ViewCurrent = 12130,
+		OrderAdmin_Orders_Carts_TransferAbandonedCart = 12140,
+		OrderAdmin_Orders_Carts_SendCheckOutLink = 12150,
+
+
 //items below are not implemented yet //
-		Catalog_StoreAdminMenuItem = 4000,
-		Catalog_Manager = 4100,
-		Catalog_Categories_Manager = 4200,
-		Catalog_Categories_Images_Manager = 4300,
-		Catalog_Products_Manager = 4400,
-		Catalog_Products_Images_Manager = 4500,
+		Catalog_StoreAdminMenuItem = 12200,
+		Catalog_Manager = 12210,
+		Catalog_Categories_Manager = 12220,
+		Catalog_Categories_Images_Manager = 12230,
+		Catalog_Products_Manager = 12240,
+		Catalog_Products_Images_Manager = 12250,
 
 		UserProfile_StoreAdminMenuItem = 5000,
 		UserProfile_Manager = 5100,
@@ -85,13 +97,6 @@ namespace GStore.Identity
 		ClientRole_User_EditClaims = 6320,
 		ClientRole_User_Delete = 6330,
 		ClientRole_User_AssignUsers = 6340,
-
-		Orders_StoreAdminMenuItem = 8000,
-		Orders_Manager = 8100,
-		Orders_Carts_ViewAbandoned = 8200,
-		Orders_Carts_ViewCurrent = 8300,
-		Orders_Carts_TransferAbandonedCart = 8400,
-		Orders_Carts_SendCheckOutLink = 8500,
 
 		Reports_StoreAdminMenuItem = 9000,
 		Reports_Manager = 9100,

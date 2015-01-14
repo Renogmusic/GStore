@@ -25,7 +25,7 @@ namespace GStore.Controllers.BaseClass
 				Models.Page page = CurrentPageOrNull;
 				if (page == null)
 				{
-					throw new ApplicationException("StoreFront error; unknown layout");
+					return CurrentStoreFrontConfigOrThrow.DefaultNewPageLayoutName;
 				}
 				return page.PageTemplate.LayoutName;
 			}
@@ -38,7 +38,7 @@ namespace GStore.Controllers.BaseClass
 				Models.Page page = CurrentPageOrNull;
 				if (page == null)
 				{
-					throw new ApplicationException("StoreFront error; unknown theme");
+					return CurrentStoreFrontConfigOrThrow.DefaultNewPageTheme.FolderName;
 				}
 				return page.Theme.FolderName;
 			}
@@ -52,11 +52,44 @@ namespace GStore.Controllers.BaseClass
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
 			bool showPageEditLink = CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrNull, GStoreAction.Pages_Edit);
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false, false, null, false, ""));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, showPageEditLink, false, false, false, false, null, false, ""));
+		}
+
+		/// <summary>
+		/// Returns an HTML page inside the store front layout
+		/// </summary>
+		/// <returns></returns>
+		public ActionResult HtmlPage(string path)
+		{
+			this._logActionsAsPageViews = true;
+			string fullFilePath = ChooseFilePath(CurrentStoreFrontOrThrow, "/Pages/" + path, Request.ApplicationPath);
+			if (fullFilePath == null)
+			{
+				return HttpNotFound("Page not Found for '" + path + "'");
+			}
+
+			return View("HtmlPage", model: fullFilePath);
 		}
 
 		[HttpGet]
-		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
+		[AuthorizeGStoreAction(true, GStoreAction.Pages_View, GStoreAction.Pages_Edit)]
+		public virtual ActionResult Details(bool? AutoPost, string Tab)
+		{
+			this._logActionsAsPageViews = false;
+			bool autoPost = true;
+			if (AutoPost.HasValue)
+			{
+				autoPost = AutoPost.Value;
+			}
+
+			string rawUrl = Request.RawUrl;
+			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
+			bool showEditLink = CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.Pages_Edit);
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, showEditLink, true, false, false, false, null, false, Tab));
+		}
+
+		[HttpGet]
+		[AuthorizeGStoreAction(GStoreAction.Pages_Edit)]
 		public virtual ActionResult Edit(bool? AutoPost, string Tab)
 		{
 			this._logActionsAsPageViews = false;
@@ -68,7 +101,7 @@ namespace GStore.Controllers.BaseClass
 
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
-			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, true, autoPost, false, null, false, Tab));
+			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, false, true, autoPost, false, null, false, Tab));
 		}
 
 		[HttpGet]
@@ -128,7 +161,7 @@ namespace GStore.Controllers.BaseClass
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
+		[AuthorizeGStoreAction(GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdatePageAjax(int? PageId, PageEditViewModel pageEditViewModel)
 		{
 			this._logActionsAsPageViews = false;
@@ -202,7 +235,7 @@ namespace GStore.Controllers.BaseClass
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		[GStore.Identity.AuthorizeGStoreAction(Identity.GStoreAction.Pages_Edit)]
+		[AuthorizeGStoreAction(GStoreAction.Pages_Edit)]
 		public virtual PartialViewResult UpdateSectionAjax(PageSectionEditViewModel viewModel)
 		{
 			this._logActionsAsPageViews = false;
@@ -300,7 +333,7 @@ namespace GStore.Controllers.BaseClass
 			Page page = this.CurrentPageOrNull;
 			if (page == null)
 			{
-				//null page
+				throw new ApplicationException("Page is null");
 			}
 
 			if (page.ForRegisteredOnly && !User.Identity.IsAuthenticated)

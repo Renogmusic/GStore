@@ -632,6 +632,41 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				);
 		}
 
+		protected MvcHtmlString PageTemplateSectionsBreadcrumb(HtmlHelper htmlHelper, PageTemplate pageTemplate, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				PageTemplateBreadcrumb(htmlHelper, pageTemplate.ClientId, pageTemplate, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Sections", "SectionIndex", "PageTemplateSysAdmin", new { id = pageTemplate.PageTemplateId }, null).ToHtmlString() : "Sections")
+				);
+		}
+
+		protected MvcHtmlString PageTemplateSectionBreadcrumb(HtmlHelper htmlHelper, PageTemplateSection pageTemplateSection, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (pageTemplateSection != null)
+			{
+				if (pageTemplateSection.PageTemplateSectionId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = pageTemplateSection.PageTemplateSectionId });
+					name = "'" + pageTemplateSection.Name + "' [" + pageTemplateSection.PageTemplateSectionId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				PageTemplateSectionsBreadcrumb(htmlHelper, pageTemplateSection.PageTemplate, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "SectionDetails", "PageTemplateSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+
+		}
+
 		protected MvcHtmlString ThemesBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
 		{
 			return new MvcHtmlString(
@@ -735,6 +770,41 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				);
 		}
 
+		protected MvcHtmlString ValueListItemsBreadcrumb(HtmlHelper htmlHelper, ValueList valueList, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				ValueListBreadcrumb(htmlHelper, valueList.ClientId, valueList, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("List Items", "ListItemIndex", "ValueListSysAdmin", new { id = valueList.ValueListId }, null).ToHtmlString() : "List Items")
+				);
+		}
+
+		protected MvcHtmlString ValueListItemBreadcrumb(HtmlHelper htmlHelper, ValueListItem valueListItem, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (valueListItem != null)
+			{
+				if (valueListItem.ValueListItemId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = valueListItem.ValueListItemId });
+					name = "'" + valueListItem.Name + "' [" + valueListItem.ValueListItemId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				ValueListItemsBreadcrumb(htmlHelper, valueListItem.ValueList, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "ListItemDetails", "ValueListSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+
+		}
+
 		protected MvcHtmlString WebFormsBreadcrumb(HtmlHelper htmlHelper, int? clientId, bool ShowAsLink = false)
 		{
 			return new MvcHtmlString(
@@ -767,6 +837,41 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 				+ " -> "
 				+ (showLink ? htmlHelper.ActionLink(name, "Details", "WebFormSysAdmin", routeData, null).ToHtmlString() : name)
 				);
+		}
+
+		protected MvcHtmlString WebFormFieldsBreadcrumb(HtmlHelper htmlHelper, WebForm webForm, bool ShowAsLink = false)
+		{
+			return new MvcHtmlString(
+				WebFormBreadcrumb(htmlHelper, webForm.ClientId, webForm, true).ToHtmlString()
+				+ " -> "
+				+ (ShowAsLink ? htmlHelper.ActionLink("Fields", "FieldIndex", "WebFormSysAdmin", new { id = webForm.WebFormId }, null).ToHtmlString() : "Fields")
+				);
+		}
+
+		protected MvcHtmlString WebFormFieldBreadcrumb(HtmlHelper htmlHelper, WebFormField webFormField, bool ShowAsLink = false)
+		{
+			RouteValueDictionary routeData = null;
+			string name = "(unknown)";
+			bool showLink = false;
+			if (webFormField != null)
+			{
+				if (webFormField.WebFormFieldId == 0)
+				{
+					name = "New";
+				}
+				else
+				{
+					showLink = ShowAsLink;
+					routeData = new RouteValueDictionary(new { id = webFormField.WebFormFieldId });
+					name = "'" + webFormField.Name + "' [" + webFormField.WebFormFieldId + "]";
+				}
+			}
+			return new MvcHtmlString(
+				WebFormFieldsBreadcrumb(htmlHelper, webFormField.WebForm, true).ToHtmlString()
+				+ " -> "
+				+ (showLink ? htmlHelper.ActionLink(name, "FieldDetails", "WebFormSysAdmin", routeData, null).ToHtmlString() : name)
+				);
+
 		}
 
 		protected MvcHtmlString GStoreAboutBreadcrumb(HtmlHelper htmlHelper, bool ShowAsLink = false)

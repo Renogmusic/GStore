@@ -73,9 +73,27 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 		public ActionResult Create(int? clientId, int? storeFrontId)
 		{
+			if (GStoreDb.Clients.IsEmpty())
+			{
+				AddUserMessage("No Clients in database.", "You must create a Client and Store Front to add a store binding.", UserMessageType.Warning);
+				return RedirectToAction("Create", "ClientSysAdmin");
+			}
+			if (GStoreDb.StoreFronts.IsEmpty())
+			{
+				AddUserMessage("No Store Fronts in database.", "You must create a Store Front to add a store binding.", UserMessageType.Warning);
+				return RedirectToAction("Create", "StoreFrontSysAdmin");
+			}
+
 			StoreBinding model = GStoreDb.StoreBindings.Create();
 			model.SetDefaultsForNew(Request, clientId, storeFrontId);
 			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, model.ClientId, model.StoreFront, model);
+
+			if (clientId == null)
+			{
+				Client firstClient = GStoreDb.Clients.Where(c => c.StoreFronts.Any()).ApplyDefaultSort().First();
+				model.Client = firstClient;
+				model.ClientId = firstClient.ClientId;
+			}
 			return View(model);
 		}
 
@@ -92,6 +110,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				AddUserMessage("Store Binding Added", "Store Binding [" + storeBinding.StoreBindingId + "] created successfully!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}
+
 			int? clientId = null;
 			if (storeBinding.ClientId != default(int))
 			{

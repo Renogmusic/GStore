@@ -64,6 +64,9 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.CatalogProductColLg = storeFrontConfig.CatalogProductColLg;
 			this.CatalogProductColMd = storeFrontConfig.CatalogProductColMd;
 			this.CatalogProductColSm = storeFrontConfig.CatalogProductColSm;
+			this.CatalogAdminLayoutName = storeFrontConfig.CatalogAdminLayoutName;
+			this.CatalogAdminThemeId = storeFrontConfig.CatalogAdminThemeId;
+			this.CatalogAdminTheme = storeFrontConfig.CatalogAdminTheme;
 			this.DefaultNewPageLayoutName = storeFrontConfig.DefaultNewPageLayoutName;
 			this.DefaultNewPageTheme = storeFrontConfig.DefaultNewPageTheme;
 			this.DefaultNewPageThemeId = storeFrontConfig.DefaultNewPageThemeId;
@@ -121,7 +124,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.StartDateTimeUtc = storeFrontConfig.StartDateTimeUtc;
 
 			this.ConfigIsActiveDirect = storeFrontConfig.IsActiveDirect();
-			this.IsSystemAdmin = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 		}
 
 		public string ActiveTab { get; set; }
@@ -146,7 +148,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public UserProfile AccountAdmin { get; protected set; }
 
 		[Required]
-		[Display(Name = "Account Admin Id", Description = "Profile to use for sending Account Login notices such as Locked Out notification and Password Changed notification")]
+		[Display(Name = "Account Admin", Description = "Profile to use for sending Account Login notices such as Locked Out notification and Password Changed notification")]
 		public int AccountAdmin_UserProfileId { get; set; }
 
 		[Required]
@@ -158,7 +160,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme AccountTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Account (register and login) Theme Id", Description = "Choose a Theme for the Account Register/Login section of the site")]
+		[Display(Name = "Account (register and login) Theme", Description = "Choose a Theme for the Account Register/Login section of the site")]
 		public int AccountThemeId { get; set; }
 
 		[Display(Name = "Account Login Show Register Link", Description = "Check this box to show the register/signup link on the login page. Uncheck to NOT show it")]
@@ -178,7 +180,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme AdminTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Store Admin Theme Id", Description = "Choose a Theme for the Store Admin section of the site")]
+		[Display(Name = "Store Admin Theme", Description = "Choose a Theme for the Store Admin section of the site")]
 		public int AdminThemeId { get; set; }
 
 		[Required]
@@ -190,7 +192,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme CartTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Shopping Cart Theme Id", Description = "Choose a Theme for the Shopping Cart section of the site")]
+		[Display(Name = "Shopping Cart Theme", Description = "Choose a Theme for the Shopping Cart section of the site")]
 		public int CartThemeId { get; set; }
 
 		[Required]
@@ -202,44 +204,56 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme CheckoutTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Checkout Theme Id", Description = "Choose a Theme for the Checkout section of the site")]
+		[Display(Name = "Checkout Theme", Description = "Choose a Theme for the Checkout section of the site")]
 		public int CheckoutThemeId { get; set; }
 
-		[Display(Name = "Checkout Log In or Guest Web Form Id", Description = "Custom fields for the checkout Log in or Guest page")]
+		[Display(Name = "Checkout Log In or Guest Web Form", Description = "Custom fields for the checkout Log in or Guest page")]
 		public int? CheckoutLogInOrGuestWebFormId { get; set; }
 
 		[Display(Name = "Checkout Log In or Guest Web Form", Description = "Custom fields for the checkout Log in or Guest page")]
 		public WebForm CheckoutLogInOrGuestWebForm { get; protected set; }
 
-		[Display(Name = "Checkout Delivery Info Digital Only Web Form Id", Description = "Custom fields for the checkout Delivery Info Digital Only page")]
+		[Display(Name = "Checkout Delivery Info Digital Only Web Form", Description = "Custom fields for the checkout Delivery Info Digital Only page")]
 		public int? CheckoutDeliveryInfoDigitalOnlyWebFormId { get; set; }
 
 		[Display(Name = "Checkout Delivery Info Digital Only Web Form", Description = "Custom fields for the checkout Delivery Info Digital Only page")]
 		public WebForm CheckoutDeliveryInfoDigitalOnlyWebForm { get; protected set; }
 
-		[Display(Name = "Checkout Delivery Info Shipping Web Form Id", Description = "Custom fields for the checkout Delivery Info Shipping page")]
+		[Display(Name = "Checkout Delivery Info Shipping Web Form", Description = "Custom fields for the checkout Delivery Info Shipping page")]
 		public int? CheckoutDeliveryInfoShippingWebFormId { get; set; }
 
 		[Display(Name = "Checkout Delivery Info Shipping Web Form", Description = "Custom fields for the checkout Delivery Info Shipping page")]
 		public WebForm CheckoutDeliveryInfoShippingWebForm { get; protected set; }
 
-		[Display(Name = "Checkout Delivery Method Web Form Id", Description = "Custom fields for the checkout Delivery Method page")]
+		[Display(Name = "Checkout Delivery Method Web Form", Description = "Custom fields for the checkout Delivery Method page")]
 		public int? CheckoutDeliveryMethodWebFormId { get; set; }
 
-		[Display(Name = "Checkout Delivery Method Web Form Id", Description = "Custom fields for the checkout Delivery Method page")]
+		[Display(Name = "Checkout Delivery Method Web Form", Description = "Custom fields for the checkout Delivery Method page")]
 		public WebForm CheckoutDeliveryMethodWebForm { get; protected set; }
 
-		[Display(Name = "Checkout Payment Info Web Form Id", Description = "Custom fields for the checkout Payment Info page")]
+		[Display(Name = "Checkout Payment Info Web Form", Description = "Custom fields for the checkout Payment Info page")]
 		public int? CheckoutPaymentInfoWebFormId { get; set; }
 
 		[Display(Name = "Checkout Payment Info Web Form", Description = "Custom fields for the checkout Payment Info page")]
 		public WebForm CheckoutPaymentInfoWebForm { get; protected set; }
 
-		[Display(Name = "Checkout Confirm Order Web Form Id", Description = "Custom fields for the checkout Confirm Order page")]
+		[Display(Name = "Checkout Confirm Order Web Form", Description = "Custom fields for the checkout Confirm Order page")]
 		public int? CheckoutConfirmOrderWebFormId { get; set; }
 
 		[Display(Name = "Checkout Confirm Order Web Form", Description = "Custom fields for the checkout Confirm Order page")]
 		public WebForm CheckoutConfirmOrderWebForm { get; protected set; }
+
+		[Required]
+		[Display(Name = "Catalog Admin Layout Name", Description = "Always 'Default'")]
+		[MaxLength(10)]
+		public string CatalogAdminLayoutName { get; set; }
+
+		[Display(Name = "Catalog Admin Theme", Description = "Choose a Theme for the Catalog Admin section of the site")]
+		public Theme CatalogAdminTheme { get; protected set; }
+
+		[Required]
+		[Display(Name = "Catalog Admin Theme", Description = "Choose a Theme for the Catalog Admin section of the site")]
+		public int CatalogAdminThemeId { get; set; }
 
 		[Required]
 		[Display(Name = "Order Status Layout Name", Description = "Always 'Default'")]
@@ -250,7 +264,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme OrderStatusTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Order Status Theme Id", Description = "Choose a Theme for the Order Status section of the site")]
+		[Display(Name = "Order Status Theme", Description = "Choose a Theme for the Order Status section of the site")]
 		public int OrderStatusThemeId { get; set; }
 
 		[Required]
@@ -262,7 +276,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme OrderAdminTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Order Admin Theme Id", Description = "Choose a Theme for the Order Admin section of the site")]
+		[Display(Name = "Order Admin Theme", Description = "Choose a Theme for the Order Admin section of the site")]
 		public int OrderAdminThemeId { get; set; }
 
 		[Required]
@@ -289,7 +303,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme CatalogTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Catalog Theme Id", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
+		[Display(Name = "Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
 		public int CatalogThemeId { get; set; }
 
 		[Required]
@@ -321,7 +335,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme DefaultNewPageTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Default New Page Theme Id", Description = "Choose a Theme as the default for new pages")]
+		[Display(Name = "Default New Page Theme", Description = "Choose a Theme as the default for new pages")]
 		public int DefaultNewPageThemeId { get; set; }
 
 		[Display(Name = "Enable Google Analytics", Description = "Check this box to use Google Analytics tracking\nBe sure to enter the Google analytics WebProperty Id as well")]
@@ -361,9 +375,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(1000)]
 		public string MetaKeywords { get; set; }
 
+		[AllowHtml]
 		[Display(Name = "Page Script on Top of Pages", Description = "Advanced: Script tags or HTML tags shown on the Top of pages for search engines.\nLeave blank if you are not sure what to do here.")]
 		public string BodyTopScriptTag { get; set; }
 
+		[AllowHtml]
 		[Display(Name = "Page Script on Bottom of Pages", Description = "Advanced: Script tags or HTML tags shown on the bottom of pages for search engines.\nLeave blank if you are unsure what to do here.")]
 		public string BodyBottomScriptTag { get; set; }
 
@@ -397,13 +413,13 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Register Web Form", Description = "Register Form for new users signing up or use the system default registration form")]
 		public WebForm RegisterWebForm { get; protected set; }
 
-		[Display(Name = "Register Web Form Id", Description = "Register Form for new users signing up or use the system default registration form")]
+		[Display(Name = "Register Web Form", Description = "Register Form for new users signing up or use the system default registration form")]
 		public int? Register_WebFormId { get; set; }
 
 		[Display(Name = "Not Found Error Page", Description = "Choose a page to display for File Not Found (404) errors or use the system default not found page")]
 		public Page NotFoundErrorPage { get; protected set; }
 
-		[Display(Name = "Not Found Error Page Id", Description = "Choose a page to display for File Not Found (404) errors or use the system default not found page")]
+		[Display(Name = "Not Found Error Page", Description = "Choose a page to display for File Not Found (404) errors or use the system default not found page")]
 		public int? NotFoundError_PageId { get; set; }
 
 		[Required]
@@ -415,7 +431,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme NotificationsTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Notifications Theme Id", Description = "Choose a Theme for the Notifications/Messaging section of the site")]
+		[Display(Name = "Notifications Theme", Description = "Choose a Theme for the Notifications/Messaging section of the site")]
 		public int NotificationsThemeId { get; set; }
 
 		[Required]
@@ -427,7 +443,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public Theme ProfileTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Profile Theme Id", Description = "Choose a Theme for the User Profile section of the site")]
+		[Display(Name = "Profile Theme", Description = "Choose a Theme for the User Profile section of the site")]
 		public int ProfileThemeId { get; set; }
 
 		[Required]
@@ -439,19 +455,19 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public UserProfile RegisteredNotify { get; protected set; }
 
 		[Required]
-		[Display(Name = "Registered Notify Id", Description = "This profile will receive a notification when a new user signs up")]
+		[Display(Name = "Registered Notify", Description = "This profile will receive a notification when a new user signs up")]
 		public int RegisteredNotify_UserProfileId { get; set; }
 
 		[Display(Name = "Register Success Page", Description = "Choose a page to display when a user signs up successfully, or or use the system default register success page")]
 		public Page RegisterSuccessPage { get; protected set; }
 
-		[Display(Name = "Register Success Page Id", Description = "Choose a page to display when a user signs up successfully, or or use the system default register success page")]
+		[Display(Name = "Register Success Page", Description = "Choose a page to display when a user signs up successfully, or or use the system default register success page")]
 		public int? RegisterSuccess_PageId { get; set; }
 
 		[Display(Name = "Store Error Page", Description = "Choose a page to display for web site errors or use the system default error page")]
 		public Page StoreErrorPage { get; protected set; }
 
-		[Display(Name = "Store Error Page Id", Description = "Choose a page to display for web site errors or use the system default error page")]
+		[Display(Name = "Store Error Page", Description = "Choose a page to display for web site errors or use the system default error page")]
 		public int? StoreError_PageId { get; set; }
 
 		[Display(Name = "Use Shopping Cart", Description = "Check this box to use the built-in shopping cart. If unchecked, items can be ordered one at a time.\nDefault: checked.")]
@@ -473,7 +489,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public UserProfile WelcomePerson { get; protected set; }
 
 		[Required]
-		[Display(Name = "Welcome Person Id", Description = "This profile will be used to automatically send a welcome message to newly registered users for their first login")]
+		[Display(Name = "Welcome Person", Description = "This profile will be used to automatically send a welcome message to newly registered users for their first login")]
 		public int WelcomePerson_UserProfileId { get; set; }
 
 		[Required]

@@ -134,7 +134,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.DisplayFor(model => model.Name)
 					@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">
@@ -145,7 +145,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.DisplayFor(model => model.Description)
 					@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">
@@ -156,7 +156,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.DisplayFor(model => model.Order)
 					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">
@@ -323,7 +323,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control", disabled="disabled" } })
+					@Html.DisplayFor(model => model.IsPending)
 					@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">
@@ -334,7 +334,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.DisplayFor(model => model.StartDateTimeUtc)
 					@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">
@@ -345,7 +345,7 @@
 			<div class="form-group">
 				@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
 				<div class="col-md-9 title-align">
-					@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+					@Html.DisplayFor(model => model.EndDateTimeUtc)
 					@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
 				</div>
 				<div class="row">

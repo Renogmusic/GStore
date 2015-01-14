@@ -6,41 +6,59 @@
 	<ul class="nav navbar-nav navbar-right">
 		<li class="AdminMenuItemLevel2">
 			@{
-				IEnumerable<SelectListItem> clientList = Html.ClientFilterList();
-				if (clientList == null)
-				{
-					@:null client list
+		IEnumerable<SelectListItem> clientList = Html.ClientFilterList();
+		if (clientList == null)
+		{
+			@:null client list
 				}
-				else
-				{
-					@:Client:
-					<select onchange="updateclient(this.options[this.selectedIndex].value);" class="form-control" style="height: 25px; padding: 0 0 0 0; line-height: none;">
-						@{
-					foreach (SelectListItem item in clientList)
-					{
-						@:<option @(item.Selected ? " SELECTED" : string.Empty) value="@(item.Value)">@(item.Text)</option>
+		else
+		{
+			@:Client:
+				<select onchange="updateclient(this.options[this.selectedIndex].value);" class="form-control" style="height: 25px; padding: 0 0 0 0; line-height: none;">
+					@{
+			foreach (SelectListItem item in clientList)
+			{
+				@:
+						<option @(item.Selected ? " SELECTED" : string.Empty) value="@(item.Value)">@(item.Text)</option>
 					}
-						}
-					</select>
+					}
+				</select>
 
-				}
+		}
 			}
 		</li>
 		<li>
-			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account">
+			<a href="@Url.Action("Index", "Profile", new { Area = ""})" title="My Account" accesskey="p">
 				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
 			</a>
 		</li>
+		@{
+			if (Html.CurrentStoreFront(false) != null && Html.UserHasPermission(GStoreAction.Admin_OrderAdminArea))
+			{
+				<li class="AdminMenuItemLevel2">
+					@Html.ActionLink("Order Admin", "Index", "OrderAdmin", new { Area = "OrderAdmin" }, new { title = "Order Admin", accesskey = "o" })
+				</li>
+			}
+			if (Html.CurrentStoreFront(false) != null && Html.UserHasPermission(GStoreAction.Admin_CatalogAdminArea))
+			{
+				<li class="AdminMenuItemLevel2">
+					@Html.ActionLink("Catalog Admin", "Index", "CatalogAdmin", new { Area = "CatalogAdmin"}, new { title = "Catalog Admin", accesskey="c" })
+				</li>
+			}
+			if (Html.CurrentStoreFront(false) != null && Html.UserHasPermission(GStoreAction.Admin_StoreAdminArea))
+			{
+				<li class="AdminMenuItemLevel2">
+					@Html.ActionLink("Store Admin", "Index", "StoreAdmin", new { Area = "StoreAdmin" }, new { title = "Store Admin", accesskey = "s" })
+				</li>
+			}
+		}
 		<li class="AdminMenuItemLevel2">
-			@Html.ActionLink("Store Admin", "Index", "StoreAdmin", new { Area = "StoreAdmin" }, null)
+			<a href="~/" title="Back to Site" accesskey="b">Back to Site</a>
 		</li>
-		<li class="AdminMenuItemLevel2">
-			<a href="~/">Back to Site</a>
-		</li>
-		<li><a href="javascript:document.getElementById('logoutForm').submit()">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+		<li><a href="javascript:document.getElementById('logoutForm').submit()" accesskey="l" title="Log off the system">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
 	</ul>
 	}
-}
+			}
 <script>
 	function updateclient(clientId)
 	{

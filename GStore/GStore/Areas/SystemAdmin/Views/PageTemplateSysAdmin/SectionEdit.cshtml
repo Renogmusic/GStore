@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.PageTemplateSection
 
+@{ ViewData.SetColDisplay(0, 2, 8); }
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -15,8 +16,6 @@
 	<div class="row">
 		<div class="form-validation col-md-offset-2 col-md-10">
 			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-			@Html.HiddenFor(model => model.PageTemplateId)
-			@Html.HiddenFor(model => model.PageTemplateSectionId)
 			@Html.HiddenAuditFields()
 		</div>
 	</div>
@@ -30,13 +29,15 @@
 	</div>
 	
 	<div class="form-horizontal">
-		@Html.EditorFor(model => model.Name)
-		@Html.EditorFor(model => model.Description)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.DefaultRawHtmlValue)
-		@Html.EditorFor(model => model.IsPending)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
+		@Html.EditorFor(model => model.PageTemplateId, "FieldKey")
+		@Html.EditorFor(model => model.PageTemplateSectionId, "FieldKey")
+		@Html.EditorFor(model => model.Name, "FieldText")
+		@Html.EditorFor(model => model.Description, "FieldTextArea")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.DefaultRawHtmlValue, "FieldText")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 	</div>
 
 	<div class="row">

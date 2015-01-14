@@ -1,9 +1,13 @@
 ﻿@model GStore.Models.ViewModels.PageViewModel
-@if (Model.EditMode)
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeTopPartial", Model);
+}
+else if (Model.EditMode)
 {
 	Html.RenderPartial("_EditModeTopPartial", Model);
 }
-else if (Model.ShowEditPageLink)
+@if (Model.ShowEditPageLink)
 {
 	Html.RenderPartial("_EditLinkTopPartial", Model);
 }
@@ -18,11 +22,15 @@ else if (Model.ShowEditPageLink)
 	@Html.DisplayPageForm()
 </div>
 
-@if (Model.EditMode)
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeBottomPartial", Model);
+}
+else if (Model.EditMode)
 {
 	Html.RenderPartial("_EditModeBottomPartial", Model);
 }
-else if (Model.ShowEditPageLink)
+@if (Model.ShowEditPageLink)
 {
 	Html.RenderPartial("_EditLinkBottomPartial", Model);
 }

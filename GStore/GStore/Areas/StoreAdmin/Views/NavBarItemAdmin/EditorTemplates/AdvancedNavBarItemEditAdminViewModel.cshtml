@@ -7,269 +7,32 @@
 	@{
 		if (!Model.IsCreatePage)
 		{
-			<div class="form-group">
-				@Html.LabelFor(model => model.NavBarItemId, htmlAttributes: new { @class = "control-label col-md-2" })
-				<div class="col-md-10">
-					@Html.DisplayFor(model => model.NavBarItemId)
-					@Html.HiddenFor(model => model.NavBarItemId)
-				</div>
-				<div class="row">
-					@Html.HelpLabelFor(model => model.NavBarItemId, new { @class = "col-md-offset-2 col-md-10 help-label" })
-				</div>
-			</div>
+			@Html.EditorFor(model => model.NavBarItemId, "FieldKey")
 		}
 	}
-	<div class="form-group">
-		@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control"} })
-			@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.Name, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
 
-	<div class="form-group">
-		@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Order, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.Order, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.ParentNavBarItemId, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownList("ParentNavBarItemId", null, htmlAttributes: new { @class = "form-control" })
-			@Html.ValidationMessageFor(model => model.ParentNavBarItemId, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.ParentNavBarItemId, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.ForRegisteredOnly, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.ForRegisteredOnly, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.ForRegisteredOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.ForAnonymousOnly, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.ForAnonymousOnly, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.ForAnonymousOnly, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.UseDividerBeforeOnMenu, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.UseDividerBeforeOnMenu, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.UseDividerBeforeOnMenu, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.UseDividerBeforeOnMenu, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.UseDividerAfterOnMenu, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.UseDividerAfterOnMenu, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.UseDividerAfterOnMenu, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.UseDividerAfterOnMenu, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.OpenInNewWindow, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.OpenInNewWindow, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.OpenInNewWindow, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.OpenInNewWindow, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.htmlAttributes, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.htmlAttributes, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.htmlAttributes, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.htmlAttributes, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.IsPage, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.IsPage, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.IsPage, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.IsPage, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.PageId, "PageId", htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.DropDownList("PageId", null, htmlAttributes: new { @class = "form-control" })
-			@Html.ValidationMessageFor(model => model.PageId, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.PageId, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.IsLocalHRef, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.IsLocalHRef, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.IsLocalHRef, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.IsLocalHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.LocalHRef, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.LocalHRef, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.LocalHRef, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.LocalHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.IsRemoteHRef, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.IsRemoteHRef, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.IsRemoteHRef, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.IsRemoteHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.RemoteHRef, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.RemoteHRef, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.RemoteHRef, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.RemoteHRef, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.IsAction, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.IsAction, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.IsAction, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.IsAction, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.Action, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Action, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Action, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.Action, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.ActionIdParam, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.ActionIdParam, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.ActionIdParam, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.ActionIdParam, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.Area, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Area, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Area, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.Area, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.Controller, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.Controller, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.Controller, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.Controller, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.IsPending, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.IsPending, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.StartDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.StartDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
-
-	<div class="form-group">
-		@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-2" })
-		<div class="col-md-10">
-			@Html.EditorFor(model => model.EndDateTimeUtc, new { htmlAttributes = new { @class = "form-control" } })
-			@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
-		</div>
-		<div class="row">
-			@Html.HelpLabelFor(model => model.EndDateTimeUtc, new { @class = "col-md-offset-2 col-md-10 help-label" })
-		</div>
-	</div>
+	@Html.EditorFor(model => model.Name, "FieldText")
+	@Html.EditorFor(model => model.Order, "FieldInt")
+	@Html.EditorFor(model => model.ParentNavBarItemId, "FieldParentNavBarItemIdNullable")
+	@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.UseDividerBeforeOnMenu, "FieldCheckbox")
+	@Html.EditorFor(model => model.UseDividerAfterOnMenu, "FieldCheckbox")
+	@Html.EditorFor(model => model.OpenInNewWindow, "FieldCheckbox")
+	@Html.EditorFor(model => model.htmlAttributes, "FieldText")
+	@Html.EditorFor(model => model.IsPage, "FieldCheckbox")
+	@Html.EditorFor(model => model.PageId, "PageIdNullable")
+	@Html.EditorFor(model => model.IsLocalHRef, "FieldCheckbox")
+	@Html.EditorFor(model => model.LocalHRef, "FieldUrl")
+	@Html.EditorFor(model => model.IsRemoteHRef, "FieldCheckbox")
+	@Html.EditorFor(model => model.RemoteHRef, "FieldUrl")
+	@Html.EditorFor(model => model.IsAction, "FieldCheckbox")
+	@Html.EditorFor(model => model.Action, "FieldText")
+	@Html.EditorFor(model => model.ActionIdParam, "FieldText")
+	@Html.EditorFor(model => model.Area, "FieldText")
+	@Html.EditorFor(model => model.Controller, "FieldDateTime")
+	@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+	@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+	@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 </div>

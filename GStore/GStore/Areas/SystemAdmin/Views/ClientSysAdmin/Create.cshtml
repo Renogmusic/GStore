@@ -1,5 +1,6 @@
 ﻿@model GStore.Models.Client
 
+@{ ViewData.SetColDisplay(0, 2, 8); }
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -24,25 +25,25 @@
 	</div>
 
 	<div class="form-horizontal">
-		@Html.EditorFor(model => model.Name)
-		@Html.EditorFor(model => model.Folder)
-		@Html.EditorFor(model => model.Order)
-		@Html.EditorFor(model => model.EnablePageViewLog)
-		@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast)
-		@Html.EditorFor(model => model.UseSendGridEmail)
-		@Html.EditorFor(model => model.SendGridMailAccount)
-		@Html.EditorFor(model => model.SendGridMailPassword)
-		@Html.EditorFor(model => model.SendGridMailFromEmail)
-		@Html.EditorFor(model => model.SendGridMailFromName)
-		@Html.EditorFor(model => model.UseTwilioSms)
-		@Html.EditorFor(model => model.TwilioSid)
-		@Html.EditorFor(model => model.TwilioToken)
-		@Html.EditorFor(model => model.TwilioFromPhone)
-		@Html.EditorFor(model => model.TwilioSmsFromName)
-		@Html.EditorFor(model => model.TwilioSmsFromEmail)
-		@Html.EditorFor(model => model.IsPending)
-		@Html.EditorFor(model => model.StartDateTimeUtc)
-		@Html.EditorFor(model => model.EndDateTimeUtc)
+		@Html.EditorFor(model => model.Name, "FieldText")
+		@Html.EditorFor(model => model.Folder, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.EnablePageViewLog, "FieldCheckbox")
+		@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast, "FieldCheckbox")
+		@Html.EditorFor(model => model.UseSendGridEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendGridMailAccount, "FieldText")
+		@Html.EditorFor(model => model.SendGridMailPassword, "FieldText")
+		@Html.EditorFor(model => model.SendGridMailFromEmail, "FieldEmail")
+		@Html.EditorFor(model => model.SendGridMailFromName, "FieldText")
+		@Html.EditorFor(model => model.UseTwilioSms, "FieldCheckbox")
+		@Html.EditorFor(model => model.TwilioSid, "FieldText")
+		@Html.EditorFor(model => model.TwilioToken, "FieldText")
+		@Html.EditorFor(model => model.TwilioFromPhone, "FieldText")
+		@Html.EditorFor(model => model.TwilioSmsFromName, "FieldText")
+		@Html.EditorFor(model => model.TwilioSmsFromEmail, "FieldEmail")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 	</div>
 	<div class="row">
 		<div class="form-actions col-md-offset-2 col-md-10">

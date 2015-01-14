@@ -394,6 +394,8 @@ namespace GStore.Data
 			storeFrontConfig.NotificationsTheme = selectedTheme;
 			storeFrontConfig.CatalogLayoutName = layout;
 			storeFrontConfig.CatalogTheme = selectedTheme;
+			storeFrontConfig.CatalogAdminLayoutName = layout;
+			storeFrontConfig.CatalogAdminTheme = selectedTheme;
 			storeFrontConfig.DefaultNewPageLayoutName = layout;
 			storeFrontConfig.DefaultNewPageTheme = selectedTheme;
 			storeFrontConfig.CatalogPageInitialLevels = 6;
@@ -433,6 +435,8 @@ namespace GStore.Data
 			storeFrontConfig.CheckoutTheme = selectedTheme;
 			storeFrontConfig.OrderStatusLayoutName = layout;
 			storeFrontConfig.OrderStatusTheme = selectedTheme;
+			storeFrontConfig.CatalogLayoutName = layout;
+			storeFrontConfig.CatalogTheme = selectedTheme;
 			storeFrontConfig.OrderAdminLayoutName = layout;
 			storeFrontConfig.OrderAdminTheme = selectedTheme;
 

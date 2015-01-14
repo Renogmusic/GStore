@@ -1,0 +1,24 @@
+﻿@model int?
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+}
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	<div class="col-md-@(colData) title-align">
+		@Html.DropDownListForModel(Html.ClientList(Model))
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@if (useHelpLabelText)
+		{
+			<br />@Html.HelpLabelForModel()
+		}
+		<br />
+		@Html.ValidationMessageForModel()
+	</div>
+</div>

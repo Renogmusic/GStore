@@ -49,9 +49,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					ValueList valueList = null;
 					valueList = GStoreDb.CreateValueList(viewModel, CurrentClientOrThrow, CurrentUserProfileOrThrow);
 					AddUserMessage("Value List Created!", "Value List '" + valueList.Name.ToHtml() + "' [" + valueList.ValueListId + "] was created successfully for Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "]", AppHtmlHelpers.UserMessageType.Success);
-					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ValueLists_Manager))
+					if (CurrentStoreFrontOrThrow.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.ValueLists_View))
 					{
-						return RedirectToAction("Manager");
+						return RedirectToAction("Details", new { id = valueList.ValueListId });
 					}
 					return RedirectToAction("Index", "StoreAdmin");
 				}

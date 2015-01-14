@@ -315,6 +315,12 @@ namespace GStore.Data
 				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
 				page = query.FirstOrDefault();
 			}
+			else if (page == null && urlLower.TrimStart('/').StartsWith("view"))
+			{
+				urlLower = "/" + urlLower.TrimStart('/').Substring(4).TrimStart('/');
+				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
+				page = query.FirstOrDefault();
+			}
 			else if (page == null && urlLower.TrimStart('/').StartsWith("submitform"))
 			{
 				urlLower = "/" + urlLower.TrimStart('/').Substring(10).TrimStart('/');
@@ -365,6 +371,24 @@ namespace GStore.Data
 				return false;
 			}
 			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_StoreAdminArea);
+		}
+
+		public static bool ShowOrderAdminLink(this StoreFront storeFront, UserProfile userProfile)
+		{
+			if (userProfile == null)
+			{
+				return false;
+			}
+			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_OrderAdminArea);
+		}
+
+		public static bool ShowCatalogAdminLink(this StoreFront storeFront, UserProfile userProfile)
+		{
+			if (userProfile == null)
+			{
+				return false;
+			}
+			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_CatalogAdminArea);
 		}
 
 		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActive(this StoreFront storeFront, bool isRegistered)
@@ -485,6 +509,7 @@ namespace GStore.Data
 			storeFrontConfig.ProfileLayoutName = "Default";
 			storeFrontConfig.NotificationsLayoutName = "Default";
 			storeFrontConfig.CatalogLayoutName = "Default";
+			storeFrontConfig.CatalogAdminLayoutName = "Default";
 			storeFrontConfig.CartLayoutName = "Default";
 			storeFrontConfig.CheckoutLayoutName = "Default";
 			storeFrontConfig.OrderStatusLayoutName = "Default";
@@ -1083,7 +1108,7 @@ namespace GStore.Data
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Cart", "Images", "Checkout", "OrderStatus", "OrderAdmin", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "WebFormEdit", "StoreAdmin", "SystemAdmin" };
+			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Cart", "Images", "Checkout", "OrderStatus", "OrderAdmin", "CatalogAdmin", "Pages", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "View", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "StoreAdmin", "SystemAdmin" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{
@@ -1799,6 +1824,7 @@ namespace GStore.Data
 			webFormFieldToUpdate.IsPending = viewModel.IsPending;
 			webFormFieldToUpdate.IsRequired = viewModel.IsRequired;
 			webFormFieldToUpdate.LabelText = viewModel.LabelText;
+			webFormFieldToUpdate.Watermark = viewModel.Watermark;
 			webFormFieldToUpdate.Name = viewModel.Name;
 			webFormFieldToUpdate.Order = viewModel.Order;
 			webFormFieldToUpdate.StartDateTimeUtc = viewModel.StartDateTimeUtc;
@@ -1841,25 +1867,26 @@ namespace GStore.Data
 				throw new ArgumentNullException("userProfile");
 			}
 
+			if (viewModel.WebForm != null)
+			{
+
+			}
+
 			WebFormField webFormField = db.WebFormFields.Create();
+			webFormField.SetDefaultsForNew(viewModel.WebForm);
 
 			webFormField.Client = storeFront.Client;
 			webFormField.ClientId = storeFront.ClientId;
 			webFormField.CreateDateTimeUtc = DateTime.UtcNow;
 			webFormField.CreatedBy = userProfile;
 			webFormField.CreatedBy_UserProfileId = userProfile.UserProfileId;
-			webFormField.DataType = GStoreValueDataType.SingleLineText;
-			webFormField.DataTypeString = GStoreValueDataType.SingleLineText.ToDisplayName();
 			webFormField.Description = FastAddField;
-			webFormField.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			webFormField.HelpLabelBottomText = null;
 			webFormField.HelpLabelTopText = null;
-			webFormField.IsPending = false;
 			webFormField.IsRequired = false;
 			webFormField.LabelText = FastAddField;
+			webFormField.Watermark = FastAddField;
 			webFormField.Name = FastAddField;
-			webFormField.Order = 9000;
-			webFormField.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 			webFormField.TextAreaColumns = null;
 			webFormField.TextAreaRows = null;
 			webFormField.WebForm = viewModel.WebForm;

@@ -407,6 +407,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			CreateFolderIfNotExists(basePath + "\\Fonts");
 			CreateFolderIfNotExists(basePath + "\\Forms");
 			CreateFolderIfNotExists(basePath + "\\Images");
+			CreateFolderIfNotExists(basePath + "\\Pages");
 			CreateFolderIfNotExists(basePath + "\\Scripts");
 			CreateFolderIfNotExists(basePath + "\\Styles");
 		}
@@ -429,6 +430,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			CreateFolderIfNotExists(basePath + "\\ErrorPages");
 			CreateFolderIfNotExists(basePath + "\\Fonts");
 			CreateFolderIfNotExists(basePath + "\\Images");
+			CreateFolderIfNotExists(basePath + "\\Pages");
 			CreateFolderIfNotExists(basePath + "\\Scripts");
 			CreateFolderIfNotExists(basePath + "\\StoreFronts");
 			CreateFolderIfNotExists(basePath + "\\Styles");

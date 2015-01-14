@@ -792,6 +792,10 @@ namespace GStore.Data
 			return orderedQuery;
 		}
 
+		public static IOrderedQueryable<UserProfile> ApplyDefaultSort(this IQueryable<UserProfile> query)
+		{
+			return query.ApplySort(null, null, null);
+		}
 
 		public static IOrderedQueryable<UserProfile> ApplySort(this IQueryable<UserProfile> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
 		{
@@ -2620,7 +2624,6 @@ namespace GStore.Data
 			}
 			return orderedQuery;
 		}
-
 
 		public static IOrderedQueryable<NavBarItem> ApplyDefaultSort(this IQueryable<NavBarItem> query)
 		{

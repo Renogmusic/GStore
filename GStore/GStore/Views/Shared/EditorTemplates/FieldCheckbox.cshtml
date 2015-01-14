@@ -1,0 +1,23 @@
+﻿@model Boolean?
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+}
+<div class="form-group">
+	@Html.LabelForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	<div class="col-md-@(colData) title-align">
+		@Html.CheckboxForModel()
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@Html.ValidationMessageForModel()
+		@if (useHelpLabelText)
+		{
+			<br/>@Html.HelpLabelForModel()
+		}
+	</div>
+</div>

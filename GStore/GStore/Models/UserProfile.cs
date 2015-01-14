@@ -191,16 +191,18 @@ namespace GStore.Models
 		[Display(Name = "Last Lockout Failure Notice")]
 		public DateTime? LastLockoutFailureNoticeDateTimeUtc { get; set; }
 
-		/// <summary>
-		/// Date and time in UTC of last logon failure notification by email
-		/// </summary>
+		[Editable(false)]
+		[Display(Name = "Last Order Admin Visit")]
+		public DateTime? LastOrderAdminVisitDateTimeUtc { get; set; }
+
+		[Editable(false)]
+		[Display(Name = "Last Catalog Admin Visit")]
+		public DateTime? LastCatalogAdminVisitDateTimeUtc { get; set; }
+
 		[Editable(false)]
 		[Display(Name = "Last Store Admin Visit")]
 		public DateTime? LastStoreAdminVisitDateTimeUtc { get; set; }
 
-		/// <summary>
-		/// Date and time in UTC of last logon failure notification by email
-		/// </summary>
 		[Editable(false)]
 		[Display(Name = "Last System Admin Visit")]
 		public DateTime? LastSystemAdminVisitDateTimeUtc { get; set; }

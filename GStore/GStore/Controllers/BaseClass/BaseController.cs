@@ -765,5 +765,48 @@ namespace GStore.Controllers.BaseClass
 			gaEvents.Add(new GaEvent(category, action, label));
 		}
 
+		/// <summary>
+		/// Checks for a file in storefront, client, or storefront folders. Returns path to first file found or Null if file does not exist in any location
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <param name="path"></param>
+		/// <param name="applicationPath"></param>
+		/// <returns></returns>
+		protected string ChooseFilePath(Models.StoreFront storeFront, string path, string applicationPath)
+		{
+			string fullVirtualPath;
+			string fullPath;
+			if (storeFront == null)
+			{
+				fullVirtualPath = "~/Content/Server/" + path;
+				fullPath = Server.MapPath(fullVirtualPath);
+				if (!System.IO.File.Exists(fullPath))
+				{
+					return null;
+				}
+				return fullPath;
+			}
+
+			fullVirtualPath = storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/" + path;
+			fullPath = Server.MapPath(fullVirtualPath);
+			if (!System.IO.File.Exists(fullPath))
+			{
+				fullVirtualPath = storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/" + path;
+				fullPath = Server.MapPath(fullVirtualPath);
+				if (!System.IO.File.Exists(fullPath))
+				{
+					fullVirtualPath = "~/Content/Server/" + path;
+					fullPath = Server.MapPath(fullVirtualPath);
+					if (!System.IO.File.Exists(fullPath))
+					{
+						return null;
+					}
+				}
+			}
+
+			return fullPath;
+		}
+
+
 	}
 }
