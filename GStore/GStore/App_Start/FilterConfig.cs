@@ -10,7 +10,7 @@ namespace GStore
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
 		{
 			filters.Add(new HandleErrorAttribute());
-			if (Properties.Settings.Current.AppEnablePageViewLog)
+			if (Settings.AppEnablePageViewLog)
 			{
 				filters.Add(new PageLogger());
 			}
@@ -26,7 +26,7 @@ namespace GStore
 		/// <param name="context"></param>
 		public override void OnResultExecuting(ResultExecutingContext context)
 		{
-			if (!Properties.Settings.Current.AppEnablePageViewLog)
+			if (!Settings.AppEnablePageViewLog)
 			{
 				base.OnResultExecuting(context);
 				return;

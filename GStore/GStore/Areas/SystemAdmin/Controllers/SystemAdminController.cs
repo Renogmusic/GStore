@@ -10,15 +10,17 @@ namespace GStore.Areas.SystemAdmin.Controllers
 {
     public class SystemAdminController : BaseClasses.SystemAdminBaseController
     {
-        // GET: SystemAdmin/SystemAdmin
+
+		        // GET: SystemAdmin/SystemAdmin
         public ActionResult Index(int? clientId, int? storeFrontId)
         {
 			UserProfile profile = CurrentUserProfileOrNull;
-			if (profile != null)
+			if (profile != null && !Session.SystemAdminVisitLogged())
 			{
 				profile.LastSystemAdminVisitDateTimeUtc = DateTime.UtcNow;
 				GStoreDb.UserProfiles.Update(profile);
 				GStoreDb.SaveChangesDirect();
+				Session.SystemAdminVisitLogged(true);
 			}
 
 			bool hasErrorMessage = false;
@@ -146,6 +148,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			GStoreDb.SeedDatabase(true);
 			AddUserMessage("Database Seeded!", "The Database has been seeded successfully!", AppHtmlHelpers.UserMessageType.Success);
 			return RedirectToAction("Index");
+		}
+
+		public PartialViewResult RecordSummary(int? clientId)
+		{
+			return PartialView("_RecordSummaryPartial", clientId);
 		}
 	}
 }

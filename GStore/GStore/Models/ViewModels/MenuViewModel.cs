@@ -15,10 +15,6 @@ namespace GStore.Models.ViewModels
 		public List<TreeNode<ProductCategory>> CategoryTree { get; protected set; }
 		public List<TreeNode<NavBarItem>> NavBarItemTree { get; protected set; }
 		public UserProfile UserProfile { get; protected set; }
-		public bool ShowOrderAdminLink { get; protected set; }
-		public bool ShowCatalogAdminLink { get; protected set; }
-		public bool ShowStoreAdminLink { get; protected set; }
-		public bool ShowSystemAdminLink { get; protected set; }
 		public bool ShowCart { get; protected set; }
 		public Cart Cart { get; protected set; }
 
@@ -41,10 +37,6 @@ namespace GStore.Models.ViewModels
 			this.CategoryTree = this.StoreFront.CategoryTreeWhereActive(isRegistered);
 			this.NavBarItemTree = this.StoreFront.NavBarTreeWhereActive(isRegistered);
 			this.UserProfile = userProfile;
-			this.ShowCatalogAdminLink = this.StoreFront.ShowCatalogAdminLink(userProfile);
-			this.ShowStoreAdminLink = this.StoreFront.ShowStoreAdminLink(userProfile);
-			this.ShowOrderAdminLink = this.StoreFront.ShowOrderAdminLink(userProfile);
-			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 
 			this.ShowCart = false;
 			if ((storeFrontConfig != null) && (storeFrontConfig.UseShoppingCart))
@@ -76,8 +68,6 @@ namespace GStore.Models.ViewModels
 			this.CategoryTree = categoryTree;
 			this.NavBarItemTree = navBarItemTree;
 			this.UserProfile = userProfile;
-			this.ShowStoreAdminLink = this.StoreFront.ShowStoreAdminLink(userProfile);
-			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
 
 			this.ShowCart = false;
 			if ((storeFrontConfig != null) && (storeFrontConfig.UseShoppingCart))
@@ -91,6 +81,14 @@ namespace GStore.Models.ViewModels
 				{
 					this.ShowCart = (storeFrontConfig.CartNavShowCartWhenEmpty || Cart.ItemCount > 0);
 				}
+			}
+		}
+
+		public AdminMenuViewModel AdminMenuViewModel
+		{
+			get
+			{
+				return new AdminMenuViewModel(this.StoreFront, this.UserProfile, "");
 			}
 		}
 	}

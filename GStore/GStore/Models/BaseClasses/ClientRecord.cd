@@ -24,7 +24,7 @@
   <Class Name="GStore.Models.Client">
     <Position X="6.75" Y="6.75" Width="3" />
     <TypeIdentifier>
-      <HashCode>AAEQAAASUCAAEAAQgAAEASQgCAAAAAAgEAAQCAAABAg=</HashCode>
+      <HashCode>AAEQAAAWUCAAEAAQgAAEASQgCAAAAAAgEAAQCAAABAg=</HashCode>
       <FileName>Models\Client.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -57,44 +57,44 @@
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.StoreFront">
-    <Position X="23.5" Y="9" Width="2.5" />
+    <Position X="23.5" Y="9" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>QEsgEMIggCszgAEgBBSAABQwIIUBIEQQAQUPYCBZFEw=</HashCode>
+      <HashCode>AAMAEAAAAAAgAAAgABAACgAAAARAAAAAAgAIAAAAAAw=</HashCode>
       <FileName>Models\StoreFront.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ValueList">
-    <Position X="26.75" Y="9" Width="1.5" />
+    <Position X="26.5" Y="9" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABEAAAAAAEAgAAABAAAAAAQAAAAAAAAAACAQABAAAAA=</HashCode>
+      <HashCode>ABEAAAAAAAAgAAABAAAAAAQAAAAAAAAAAAAQAAAAAAA=</HashCode>
       <FileName>Models\ValueList.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.ValueListItem">
-    <Position X="29" Y="9" Width="1.5" />
+    <Position X="28.75" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAUAAAAAAAAgAgAIAAAAAAQAAAAAAAAgAAAQAQQAAAA=</HashCode>
       <FileName>Models\ValueListItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.PageTemplate">
-    <Position X="31.25" Y="9" Width="1.75" />
+    <Position X="31" Y="9" Width="1.75" />
     <TypeIdentifier>
       <HashCode>CAEAAAAQAAAgAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAA=</HashCode>
       <FileName>Models\PageTemplate.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.PageTemplateSection">
-    <Position X="33.75" Y="9" Width="2" />
+    <Position X="33.5" Y="9" Width="2" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAACAgBAAAAAQAAAQAIAAAAAAACQAAAAAAAAA=</HashCode>
       <FileName>Models\PageTemplateSection.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.Theme">
-    <Position X="36.5" Y="9" Width="1.5" />
+    <Position X="36.25" Y="9" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAABAAhAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAEAEAAABAAhAAAAAAAgAAQACAAAAIAAAIAAAAAIAAA=</HashCode>
       <FileName>Models\Theme.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -106,9 +106,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="GStore.Models.WebFormField">
-    <Position X="38.75" Y="9" Width="2.25" />
+    <Position X="40.25" Y="9" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAEAAEIEAAIgAgAAAAAAAAQwAAAQAIBEAAAQAKAAAAA=</HashCode>
+      <HashCode>AAEAAEIEAAIgAgABAAQAAAQwAAAQAIBEAAAQAKAAAAA=</HashCode>
       <FileName>Models\WebFormField.cs</FileName>
     </TypeIdentifier>
   </Class>

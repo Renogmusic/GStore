@@ -22,11 +22,11 @@ namespace GStore
 			switch (Data.RepositoryFactory.RepositoryProvider())
 			{
 				case Data.RepositoryProviderEnum.EntityFrameworkCodeFirstProvider:
-					if (Properties.Settings.Current.InitializeEFCodeFirstMigrateLatest)
+					if (Settings.InitializeEFCodeFirstMigrateLatest)
 					{
 						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreDbContextInitializerMigrateLatest());
 					}
-					else if (Properties.Settings.Current.InitializeEFCodeFirstDropCreate)
+					else if (Settings.InitializeEFCodeFirstDropCreate)
 					{
 						System.Data.Entity.Database.SetInitializer(new Data.EntityFrameworkCodeFirstProvider.GStoreEFDbContextInitializerDropCreate());
 					}

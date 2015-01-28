@@ -82,9 +82,9 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.OrderAdminLayoutName = storeFrontConfig.OrderAdminLayoutName;
 			this.OrderAdminThemeId = storeFrontConfig.OrderAdminThemeId;
 			this.OrderAdminTheme = storeFrontConfig.OrderAdminTheme;
-			this.OrderStatusLayoutName = storeFrontConfig.OrderStatusLayoutName;
-			this.OrderStatusThemeId = storeFrontConfig.OrderStatusThemeId;
-			this.OrderStatusTheme = storeFrontConfig.OrderStatusTheme;
+			this.OrdersLayoutName = storeFrontConfig.OrdersLayoutName;
+			this.OrdersThemeId = storeFrontConfig.OrdersThemeId;
+			this.OrdersTheme = storeFrontConfig.OrdersTheme;
 			this.BodyTopScriptTag = storeFrontConfig.BodyTopScriptTag;
 			this.BodyBottomScriptTag = storeFrontConfig.BodyBottomScriptTag;
 			this.Name = storeFrontConfig.Name;
@@ -258,14 +258,14 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Required]
 		[Display(Name = "Order Status Layout Name", Description = "Always 'Default'")]
 		[MaxLength(10)]
-		public string OrderStatusLayoutName { get; set; }
+		public string OrdersLayoutName { get; set; }
 
 		[Display(Name = "Order Status Theme", Description = "Choose a Theme for the Order Status section of the site")]
-		public Theme OrderStatusTheme { get; protected set; }
+		public Theme OrdersTheme { get; protected set; }
 
 		[Required]
 		[Display(Name = "Order Status Theme", Description = "Choose a Theme for the Order Status section of the site")]
-		public int OrderStatusThemeId { get; set; }
+		public int OrdersThemeId { get; set; }
 
 		[Required]
 		[Display(Name = "Order Admin Layout Name", Description = "Always 'Default'")]

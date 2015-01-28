@@ -1,0 +1,154 @@
+﻿@charset "utf-8";
+@import url("//fonts.googleapis.com/css?family=Roboto:400,500");
+.sandstone {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.navbar .nav > li > a {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.navbar-form input,
+.navbar-form .form-control {
+  border: none;
+}
+.btn {
+  border: none;
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.btn:hover {
+  border-color: transparent;
+}
+.btn-lg {
+  line-height: 26px;
+}
+.btn-default:hover {
+  background-color: #393a35;
+}
+input,
+.form-control {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+input:focus,
+.form-control:focus {
+  border-color: #dfd7ca;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.nav {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.nav .open > a,
+.nav .open > a:hover,
+.nav .open > a:focus {
+  border-color: #dfd7ca;
+}
+.nav-tabs > li > a {
+  background-color: #f8f5f0;
+  border-color: #dfd7ca;
+  color: #98978b;
+}
+.nav-tabs > li.disabled > a:hover {
+  background-color: #f8f5f0;
+}
+.nav-pills a {
+  color: #98978b;
+}
+.nav-pills li > a {
+  border: 1px solid transparent;
+}
+.nav-pills li.active > a,
+.nav-pills li > a:hover {
+  border-color: #dfd7ca;
+}
+.nav-pills li.disabled > a {
+  border-color: transparent;
+}
+.breadcrumb {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+  border: 1px solid #dfd7ca;
+}
+.breadcrumb a {
+  color: #98978b;
+}
+.pagination {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.pager {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.pager li > a {
+  color: #98978b;
+}
+.dropdown-menu > li > a {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.alert a,
+.alert .alert-link {
+  color: #fff;
+}
+.tooltip {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.progress {
+  border-radius: 10px;
+  background-color: #dfd7ca;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.progress-bar {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.list-group-item {
+  padding: 16px 24px;
+}
+.well {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel .panel-heading,
+.panel .panel-title,
+.panel .panel-footer {
+  font-size: 11px;
+  line-height: 22px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #fff;
+}
+.panel-default .panel-heading,
+.panel-default .panel-title,
+.panel-default .panel-footer {
+  color: #98978b;
+}
+/*# sourceMappingURL=bootswatch.css.map */

@@ -35,26 +35,32 @@ namespace GStore.Models
 		public int Quantity { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal UnitPrice { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal ListPrice { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal UnitPriceExt { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal ListPriceExt { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal LineDiscount { get; set; }
 
 		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		public decimal LineTotal { get; set; }
 

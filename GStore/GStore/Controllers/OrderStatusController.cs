@@ -1,4 +1,5 @@
 ﻿using GStore.Models;
+using GStore.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,18 @@ namespace GStore.Controllers
 		{
 			if (string.IsNullOrEmpty(id) || id == "0")
 			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_View, "Bad Url", false);
 				return HttpBadRequest("Order ID cannot be null or zero");
 			}
 
 			Order order = CurrentStoreFrontOrThrow.Orders.Where(o => o.OrderNumber == id && o.Email.ToLower() == email.ToLower()).SingleOrDefault();
 			if (order == null)
 			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_NotFound, id, false, orderNumber: id);
 				return HttpNotFound("Order not found. Order Id: " + id + " Email: " + email);
 			}
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_View, id, true, orderNumber: id);
 
 			return View("View", order);
 		}
@@ -37,7 +42,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontConfigOrThrow.OrderStatusLayoutName;
+				return CurrentStoreFrontConfigOrThrow.OrdersLayoutName;
 			}
 		}
 
@@ -45,7 +50,7 @@ namespace GStore.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontConfigOrThrow.OrderStatusTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.OrdersTheme.FolderName;
 			}
 		}
 

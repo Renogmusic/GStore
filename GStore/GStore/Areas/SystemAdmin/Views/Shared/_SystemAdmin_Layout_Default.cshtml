@@ -59,7 +59,7 @@
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(null));
 	</script>
 
-	@Styles.Render("~/Content/Server/Themes/" + GStore.Properties.Settings.Current.SystemAdminThemeFolderName + "/Bootstrap.min.css")
+	@Styles.Render("~/Content/Server/Themes/" + GStore.Settings.SystemAdminThemeFolderName + "/Bootstrap.min.css")
 	@Styles.Render("~/Content/Server/Styles/GStoreApp.css")
 	@Styles.Render("~/Content/Server/Styles/Styles.css")
 
@@ -68,7 +68,7 @@
 	@Scripts.Render("~/bundles/jqueryval")
 	@Scripts.Render("~/bundles/jqueryui")
 	@Scripts.Render("~/bundles/bootstrap")
-	<script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
 	<script src="~/signalr/hubs"></script>
 	@Scripts.Render("~/Content/Server/Scripts/GStoreApp.js")
 	@Scripts.Render("~/Content/Server/Scripts/Scripts.js")
@@ -87,7 +87,7 @@
 		<hr />
 		<a name="UserMessagesBottom"></a>
 		<div id="usermessagebottomcontainer"></div>
-		@Html.Partial("_FooterPartial")
+		@Html.Partial("_AdminFooterPartial")
 	</div>
 
 	@RenderSection("scripts", required: false)

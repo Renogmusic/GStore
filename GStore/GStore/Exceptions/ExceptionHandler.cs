@@ -94,7 +94,7 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogHttpException(ex, context, routeData, controller);
 			}
@@ -102,7 +102,7 @@ namespace GStore.Exceptions
 			int httpCode = ex.GetHttpCode();
 			if (httpCode == 404)
 			{
-				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+				if (Settings.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_NotFound, ex.GetHttpCode(), ex, clearError, context, controller);
 					return true;
@@ -111,7 +111,7 @@ namespace GStore.Exceptions
 			}
 			else if (httpCode == 400)
 			{
-				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+				if (Settings.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_BadRequest, ex.GetHttpCode(), ex, clearError, context, controller);
 					return true;
@@ -121,7 +121,7 @@ namespace GStore.Exceptions
 			else
 			{
 				//unhandled HTTP code
-				if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+				if (Settings.AppUseFriendlyErrorPages)
 				{
 					ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
 					return true;
@@ -134,11 +134,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogHttpCompileException(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
 				return true;
@@ -150,11 +150,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogHttpParseException(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_HttpError, ex.GetHttpCode(), ex, clearError, context, controller);
 				return true;
@@ -166,11 +166,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogAppException(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_AppError, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
 				return true;
@@ -182,11 +182,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogInvalidOperationException(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_InvalidOperation, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
 				return true;
@@ -198,11 +198,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogFileNotFound(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_NotFound, (int)HttpStatusCode.NotFound, ex, clearError, context, controller);
 				return true;
@@ -214,11 +214,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogFileNotFound(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_NotFound, (int)HttpStatusCode.NotFound, ex, clearError, context, controller);
 				return true;
@@ -228,18 +228,18 @@ namespace GStore.Exceptions
 
 		public static bool HandleNoMatchingBindingException(NoMatchingBindingException ex, bool clearError, HttpContext context, RouteData routeData, Controllers.BaseClass.BaseController controller)
 		{
-			if (Properties.Settings.Current.AppEnableBindingAutoMapToFirstStoreFront && !Data.RepositoryFactory.SystemWideRepository(controller.User).StoreFronts.IsEmpty())
+			if (Settings.AppEnableBindingAutoMapToFirstStoreFront && !Data.RepositoryFactory.SystemWideRepository(controller.User).StoreFronts.IsEmpty())
 			{
 				throw new ApplicationException("BaseController did not auto-map properly. Check auto-map routing in GStoreDb property of base controller.", ex);
 			}
 
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogFileNotFound(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_GStoreNotFound, (int)HttpStatusCode.OK, ex, clearError, context, controller);
 				return true;
@@ -251,11 +251,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogFileNotFound(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_GStoreInactive, (int)HttpStatusCode.OK, ex, clearError, context, controller);
 				return true;
@@ -267,11 +267,11 @@ namespace GStore.Exceptions
 		{
 			string rawUrl = context.Request.RawUrl;
 			string url = context.Request.Url.ToString();
-			if (Properties.Settings.Current.AppLogSystemEventsToDb || Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToDb || Settings.AppLogSystemEventsToFile)
 			{
 				LogUnknownException(ex, context, routeData, controller);
 			}
-			if (Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (Settings.AppUseFriendlyErrorPages)
 			{
 				ShowErrorPage(ErrorPage.Error_UnknownError, (int)HttpStatusCode.InternalServerError, ex, clearError, context, controller);
 				return true;
@@ -419,7 +419,7 @@ namespace GStore.Exceptions
 		/// <param name="pagePath"></param>
 		private static void ShowErrorPage(ErrorPage errorPage, int httpStatusCode, Exception ex, bool clearError, HttpContext context, Controllers.BaseClass.BaseController controller)
 		{
-			if (!Properties.Settings.Current.AppUseFriendlyErrorPages)
+			if (!Settings.AppUseFriendlyErrorPages)
 			{
 				return;
 			}

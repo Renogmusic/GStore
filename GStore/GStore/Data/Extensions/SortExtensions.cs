@@ -3330,5 +3330,15 @@ namespace GStore.Data
 			return query.OrderBy(p => p.Order).ThenBy(p => p.ProductCategoryId);
 		}
 
+		public static IOrderedQueryable<Discount> ApplyDefaultSort(this IQueryable<Discount> query)
+		{
+			return query.OrderBy(p => p.Order).ThenBy(p => p.Code).ThenBy(p=>p.DiscountId);
+		}
+
+		public static IOrderedQueryable<GiftCard> ApplyDefaultSort(this IQueryable<GiftCard> query)
+		{
+			return query.OrderBy(p => p.Order).ThenBy(p => p.Code).ThenBy(p => p.GiftCardId);
+		}
+
 	}
 }

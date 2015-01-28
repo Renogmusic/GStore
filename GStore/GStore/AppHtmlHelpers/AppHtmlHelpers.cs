@@ -164,7 +164,7 @@ namespace GStore.AppHtmlHelpers
 			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
 			if (controller == null)
 			{
-				return Properties.Settings.Current.AppDefaultLayoutName;
+				return Settings.AppDefaultLayoutName;
 			}
 
 			return controller.LayoutNameToUse;
@@ -181,7 +181,7 @@ namespace GStore.AppHtmlHelpers
 			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
 			if (controller == null)
 			{
-				return Properties.Settings.Current.AppDefaultThemeFolderName;
+				return Settings.AppDefaultThemeFolderName;
 			}
 
 			return controller.ThemeFolderNameToUse;
@@ -1532,7 +1532,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="urlHost"></param>
 		public static bool SendEmail(Client client, string toEmail, string toName, string subject, string textBody, string htmlBody, string urlHost)
 		{
-			if (!Properties.Settings.Current.AppEnableEmail)
+			if (!Settings.AppEnableEmail)
 			{
 				return false;
 			}
@@ -1583,7 +1583,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="urlHost"></param>
 		public static bool SendSms(Client client, string toPhoneNumber, string textBody, string urlHost)
 		{
-			if (!Properties.Settings.Current.AppEnableSMS)
+			if (!Settings.AppEnableSMS)
 			{
 				return false;
 			}
@@ -1624,12 +1624,13 @@ namespace GStore.AppHtmlHelpers
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
+			string accessKey = category.Entity.Name.Substring(0, 1);
 			if (level == 1 && category.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
 				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown CatalogMenu CatalogMenuLevel" + level + "\">"
 					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
-						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" title=\"" +
+						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" accesskey=\"" + accessKey + "\" title=\"" +
 						htmlHelper.AttributeEncode(category.Entity.Name)
 						+ "\">"
 						+ htmlHelper.Encode(category.Entity.Name)
@@ -1649,7 +1650,7 @@ namespace GStore.AppHtmlHelpers
 						+ "<a href=\""
 							+ urlHelper.Action("ViewCategoryByName", "Catalog", new { urlName = category.Entity.UrlName })
 							+ "\""
-							+ " title=\"" +
+							+ " accesskey=\"" + accessKey + "\" title=\"" +
 							htmlHelper.AttributeEncode(category.Entity.Name)
 						+ "\">"
 						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
@@ -1675,12 +1676,14 @@ namespace GStore.AppHtmlHelpers
 				targetTag = " target=\"_blank\"";
 			}
 
+			string accessKey = navBarItem.Entity.Name.Substring(0, 1);
+
 			if (level == 1 && navBarItem.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
 				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
 					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
-						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" title=\"" +
+						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" accesskey=\"" + accessKey + "\" title=\"" +
 						htmlHelper.AttributeEncode(navBarItem.Entity.Name)
 						+ targetTag + "\">"
 						+ htmlHelper.Encode(navBarItem.Entity.Name)
@@ -1701,7 +1704,7 @@ namespace GStore.AppHtmlHelpers
 						+ "<a href=\""
 							+ navBarItem.Entity.Url(urlHelper)
 							+ "\""
-							+ " title=\"" +
+							+ " accesskey=\"" + accessKey + "\" title=\"" +
 							htmlHelper.AttributeEncode(navBarItem.Entity.Name)
 						+ targetTag + "\">"
 						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
@@ -2935,6 +2938,77 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			htmlHelper.ViewContext.Writer.Write(System.IO.File.ReadAllText(fullFilePath));
+		}
+
+		public static MvcHtmlString Repeat(this HtmlHelper htmlHelper, string html, int count)
+		{
+			StringBuilder htmlOut = new StringBuilder();
+			for (int i = 0; i < count; i++)
+			{
+				htmlOut.Append(html);
+			}
+			return new MvcHtmlString(htmlOut.ToString());
+
+		}
+
+		const string Session_CatalogAdminVisitLogged = "CatalogAdminVisitLogged";
+		public static bool CatalogAdminVisitLogged(this HttpSessionStateBase session)
+		{
+			bool? value = session[Session_CatalogAdminVisitLogged] as bool?;
+			if (value.HasValue && value.Value)
+			{
+				return true;
+			}
+			return false;
+		}
+		public static void CatalogAdminVisitLogged(this HttpSessionStateBase session, bool value)
+		{
+			session[Session_CatalogAdminVisitLogged] = value;
+		}
+
+		const string Session_OrderAdminVisitLogged = "OrderAdminVisitLogged";
+		public static bool OrderAdminVisitLogged(this HttpSessionStateBase session)
+		{
+			bool? value = session[Session_OrderAdminVisitLogged] as bool?;
+			if (value.HasValue && value.Value)
+			{
+				return true;
+			}
+			return false;
+		}
+		public static void OrderAdminVisitLogged(this HttpSessionStateBase session, bool value)
+		{
+			session[Session_OrderAdminVisitLogged] = value;
+		}
+
+		const string Session_StoreAdminVisitLogged = "StoreAdminVisitLogged";
+		public static bool StoreAdminVisitLogged(this HttpSessionStateBase session)
+		{
+			bool? value = session[Session_StoreAdminVisitLogged] as bool?;
+			if (value.HasValue && value.Value)
+			{
+				return true;
+			}
+			return false;
+		}
+		public static void StoreAdminVisitLogged(this HttpSessionStateBase session, bool value)
+		{
+			session[Session_StoreAdminVisitLogged] = value;
+		}
+
+		const string Session_SystemAdminVisitLogged = "SystemAdminVisitLogged";
+		public static bool SystemAdminVisitLogged(this HttpSessionStateBase session)
+		{
+			bool? value = session[Session_SystemAdminVisitLogged] as bool?;
+			if (value.HasValue && value.Value)
+			{
+				return true;
+			}
+			return false;
+		}
+		public static void SystemAdminVisitLogged(this HttpSessionStateBase session, bool value)
+		{
+			session[Session_SystemAdminVisitLogged] = value;
 		}
 	}
 }

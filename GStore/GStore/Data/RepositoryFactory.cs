@@ -86,7 +86,7 @@ namespace GStore.Data
 		/// <returns></returns>
 		public static RepositoryProviderEnum RepositoryProvider()
 		{
-			switch (GStore.Properties.Settings.Current.RepositoryProvider.ToLower())
+			switch (Settings.RepositoryProvider.ToLower())
 			{
 				case "entityframeworkcodefirstprovider":
 				case "entityframeworkcodefirst":

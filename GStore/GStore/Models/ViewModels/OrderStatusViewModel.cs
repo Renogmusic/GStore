@@ -6,11 +6,11 @@ using System.Web;
 
 namespace GStore.Models.ViewModels
 {
-	public class OrderStatusViewModel
+	public class OrdersViewModel
 	{
-		public OrderStatusViewModel() { }
+		public OrdersViewModel() { }
 
-		public OrderStatusViewModel(UserProfile userProfile)
+		public OrdersViewModel(UserProfile userProfile)
 		{
 
 		}

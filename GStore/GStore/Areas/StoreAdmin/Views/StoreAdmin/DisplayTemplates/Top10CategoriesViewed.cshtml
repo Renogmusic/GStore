@@ -1,0 +1,46 @@
+﻿@model GStore.Areas.StoreAdmin.ViewModels.StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	var data = Html.GStoreDb().UserActionEvents
+		.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc && p.Category == UserActionCategoryEnum.Catalog && p.Action == UserActionActionEnum.Catalog_ViewCategory)
+		.GroupBy(p => p.CategoryUrlName)
+		.OrderByDescending(p => p.Count())
+		.Take(10);
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<p>
+		@{ int counter = 0;}
+		@foreach (var cat in data)
+		{
+			counter++;
+			string categoryName = cat.First().CategoryUrlName;
+			if (string.IsNullOrEmpty(categoryName))
+			{
+				categoryName = "(Top)";
+			}
+			else
+			{
+				ProductCategory category = Html.ProductCategoryFromUrlName(categoryName);
+				if (category != null)
+				{
+					categoryName = category.Name;
+				}
+			}
+			@(counter + ". ") @(categoryName) @: - @(cat.Count())<br />
+			}
+		@{
+			if (counter < 10)
+			{
+				@Html.Repeat("-<br/>", 10 - counter);
+			}
+		}
+	</p>
+</div>

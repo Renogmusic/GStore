@@ -81,12 +81,12 @@ namespace GStore.Controllers.BaseClass
 					catch (Exceptions.NoMatchingBindingException)
 					{
 						//no storefront found, return app default layout
-						return Properties.Settings.Current.AppDefaultLayoutName;
+						return Settings.AppDefaultLayoutName;
 					}
 					catch (Exceptions.StoreFrontInactiveException)
 					{
 						//storefront is inactive, return app default layout
-						return Properties.Settings.Current.AppDefaultLayoutName;
+						return Settings.AppDefaultLayoutName;
 					}
 					catch (Exception)
 					{
@@ -94,14 +94,14 @@ namespace GStore.Controllers.BaseClass
 						if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
 						{
 							//couldn't get storefront, use app default layout
-							return Properties.Settings.Current.AppDefaultLayoutName;
+							return Settings.AppDefaultLayoutName;
 						}
 						return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageLayoutName;
 					}
 				}
 				catch (Exception)
 				{
-					return Properties.Settings.Current.AppDefaultLayoutName;
+					return Settings.AppDefaultLayoutName;
 				}
 
 			}
@@ -130,12 +130,12 @@ namespace GStore.Controllers.BaseClass
 					catch (Exceptions.NoMatchingBindingException)
 					{
 						//no storefront found, return app default theme
-						return Properties.Settings.Current.AppDefaultThemeFolderName;
+						return Settings.AppDefaultThemeFolderName;
 					}
 					catch (Exceptions.StoreFrontInactiveException)
 					{
 						//storefront is inactive, return app default theme
-						return Properties.Settings.Current.AppDefaultThemeFolderName;
+						return Settings.AppDefaultThemeFolderName;
 					}
 					catch (Exception)
 					{
@@ -143,7 +143,7 @@ namespace GStore.Controllers.BaseClass
 						if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
 						{
 							//couldn't get storefront, use app default layout
-							return Properties.Settings.Current.AppDefaultThemeFolderName;
+							return Settings.AppDefaultThemeFolderName;
 						}
 						return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageTheme.FolderName;
 					}
@@ -256,7 +256,7 @@ namespace GStore.Controllers.BaseClass
 					{
 						throw new NoMatchingBindingException("No Store Fronts in database. Be sure database is seeded. You can log into system admin section and create a storefront or run the seed database command.\n" + exNMB.Message, exNMB.Uri);
 					}
-					if (!Properties.Settings.Current.AppEnableBindingAutoMapToFirstStoreFront)
+					if (!Settings.AppEnableBindingAutoMapToFirstStoreFront)
 					{
 						_currentStoreFrontError = true;
 						throw new NoMatchingBindingException("No Store Front found matching current site, and auto-map is disabled. Either this site is invalid or wrong bindings exist in database. Turn on Auto-Binding-Map by setting Settings.AppEnableBindingAutoMapToFirstStoreFront to true \n" + exNMB.Message, exNMB.Uri);

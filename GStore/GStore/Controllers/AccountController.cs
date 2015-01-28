@@ -218,7 +218,7 @@ namespace GStore.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = new Identity.AspNetIdentityUser(model.Email) { UserName = model.Email, Email = model.Email };
-				user.TwoFactorEnabled = Properties.Settings.Current.IdentityEnableTwoFactorAuth;
+				user.TwoFactorEnabled = Settings.IdentityEnableTwoFactorAuth;
 				IdentityResult result = null;
 				try
 				{
@@ -294,7 +294,7 @@ namespace GStore.Controllers
 						cart = storeFront.MigrateCartToProfile(GStoreDb, cart, newProfile, this);
 					}
 
-					if (Properties.Settings.Current.IdentityEnableNewUserRegisteredBroadcast && CurrentClientOrThrow.EnableNewUserRegisteredBroadcast)
+					if (Settings.IdentityEnableNewUserRegisteredBroadcast && CurrentClientOrThrow.EnableNewUserRegisteredBroadcast)
 					{
 						string title = model.FullName;
 						string message = "Newly registered!";

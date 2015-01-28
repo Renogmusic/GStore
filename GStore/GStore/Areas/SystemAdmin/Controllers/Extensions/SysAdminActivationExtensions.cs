@@ -384,7 +384,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 			StoreFront storeFront = binding.StoreFront;
 			string message = string.Empty;
-			if (Properties.Settings.Current.AppEnableBindingAutoMapCatchAll)
+			if (Settings.AppEnableBindingAutoMapCatchAll)
 			{
 				message = " to catch-all binding";
 			}

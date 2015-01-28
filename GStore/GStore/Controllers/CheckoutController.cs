@@ -30,6 +30,8 @@ namespace GStore.Controllers
 			GStoreDb.Carts.Update(cart);
 			GStoreDb.SaveChanges();
 
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_Started, "", true, cartId: cart.CartId);
+
 			UserProfile profile = CurrentUserProfileOrNull;
 			if (profile != null)
 			{
@@ -60,6 +62,8 @@ namespace GStore.Controllers
 					cart.StatusSelectedLogInOrGuest = true;
 					GStoreDb.Carts.Update(cart);
 					GStoreDb.SaveChanges();
+
+					GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_SelectedLogInOrGuest, "", true, cartId: cart.CartId);
 					return RedirectToAction("DeliveryInfo");
 				}
 			}
@@ -70,6 +74,8 @@ namespace GStore.Controllers
 				cart.StatusSelectedLogInOrGuest = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_SelectedLogInOrGuest, "", true, cartId: cart.CartId);
 				return RedirectToAction("DeliveryInfo");
 			}
 
@@ -104,6 +110,7 @@ namespace GStore.Controllers
 					cart.StatusSelectedLogInOrGuest = true;
 					GStoreDb.Carts.Update(cart);
 					GStoreDb.SaveChanges();
+					GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_SelectedLogInOrGuest, "", true, cartId: cart.CartId);
 				}
 				return RedirectToAction("DeliveryInfo");
 			}
@@ -121,6 +128,10 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
 			}
 			if (!cart.StatusSelectedLogInOrGuest)
 			{
@@ -149,6 +160,10 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
 			}
 			if (!cart.StatusSelectedLogInOrGuest)
 			{
@@ -192,6 +207,9 @@ namespace GStore.Controllers
 				cart.StatusCompletedDeliveryInfo = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_CompletedDeliveryInfo, "", true, cartId: cart.CartId);
+
 				return RedirectToAction("DeliveryMethod");
 			}
 			viewModel.UpdateForRepost(config, cart, RouteData.Action());
@@ -214,6 +232,10 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
 			}
 			if (!cart.StatusSelectedLogInOrGuest)
 			{
@@ -269,6 +291,9 @@ namespace GStore.Controllers
 				cart.StatusCompletedDeliveryInfo = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_CompletedDeliveryInfo, "", true, cartId: cart.CartId);
+
 				return RedirectToAction("DeliveryMethod");
 			}
 
@@ -292,6 +317,14 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
 			if (!cart.StatusCompletedDeliveryInfo)
 			{
 				return RedirectToAction("DeliveryInfo");
@@ -303,6 +336,8 @@ namespace GStore.Controllers
 					cart.StatusSelectedDeliveryMethod = true;
 					GStoreDb.Carts.Update(cart);
 					GStoreDb.SaveChanges();
+
+					GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_SelectedDeliveryMethod, "All Digital", true, cartId: cart.CartId);
 				}
 				return RedirectToAction("PaymentInfo");
 			}
@@ -322,16 +357,28 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
 			if (!cart.StatusCompletedDeliveryInfo)
 			{
 				return RedirectToAction("DeliveryInfo");
 			}
+
 			if (ModelState.IsValid)
 			{
 				cart.DeliveryInfoShipping.ShippingDeliveryMethod = viewModel.ShippingDeliveryMethod;
 				cart.StatusSelectedDeliveryMethod = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_SelectedDeliveryMethod, "", true, cartId: cart.CartId);
+
 				return RedirectToAction("PaymentInfo");
 			}
 			viewModel.UpdateForRepost(config, cart, RouteData.Action());
@@ -347,6 +394,18 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
+			if (!cart.StatusCompletedDeliveryInfo)
+			{
+				return RedirectToAction("DeliveryInfo");
 			}
 			if (!cart.StatusSelectedDeliveryMethod)
 			{
@@ -367,6 +426,18 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
+			if (!cart.StatusCompletedDeliveryInfo)
+			{
+				return RedirectToAction("DeliveryInfo");
 			}
 			if (!cart.StatusSelectedDeliveryMethod)
 			{
@@ -408,6 +479,9 @@ namespace GStore.Controllers
 				cart.StatusEnteredPaymentInfo = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_EnteredPaymentInfo, "", true, cartId: cart.CartId);
+
 				return RedirectToAction("ConfirmOrder");
 			}
 
@@ -424,6 +498,22 @@ namespace GStore.Controllers
 			{
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
+			}
+			if (!cart.StatusStartedCheckout)
+			{
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
+			if (!cart.StatusCompletedDeliveryInfo)
+			{
+				return RedirectToAction("DeliveryInfo");
+			}
+			if (!cart.StatusSelectedDeliveryMethod)
+			{
+				return RedirectToAction("DeliveryMethod");
 			}
 			if (!cart.StatusEnteredPaymentInfo)
 			{
@@ -445,9 +535,21 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
-			if (!cart.StatusEnteredPaymentInfo)
+			if (!cart.StatusStartedCheckout)
 			{
-				return RedirectToAction("PaymentInfo");
+				return RedirectToAction("Index");
+			}
+			if (!cart.StatusSelectedLogInOrGuest)
+			{
+				return RedirectToAction("LogInOrGuest");
+			}
+			if (!cart.StatusCompletedDeliveryInfo)
+			{
+				return RedirectToAction("DeliveryInfo");
+			}
+			if (!cart.StatusSelectedDeliveryMethod)
+			{
+				return RedirectToAction("DeliveryMethod");
 			}
 
 			if (ModelState.IsValid)
@@ -458,6 +560,8 @@ namespace GStore.Controllers
 				cart.StatusPlacedOrder = true;
 				GStoreDb.Carts.Update(cart);
 				GStoreDb.SaveChanges();
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Checkout, UserActionActionEnum.Checkout_PlacedOrder, "", true, cartId: cart.CartId, orderNumber: order.OrderNumber);
 
 				AddUserMessage("notifications", "sending notification to store and user email", UserMessageType.Success);
 				return RedirectToAction("View", "OrderStatus", new { id = order.OrderNumber, Email = order.Email });

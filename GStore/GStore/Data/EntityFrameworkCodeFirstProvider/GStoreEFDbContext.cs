@@ -53,7 +53,10 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		public virtual DbSet<FileNotFoundLog> FileNotFoundLogsTable { get; set; }
 		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreEFEntity<Models.FileNotFoundLog>(this); } }
-		
+
+		public virtual DbSet<GiftCard> GiftCardTable { get; set; }
+		public IGStoreRepository<Models.GiftCard> GiftCards { get { return new GenericGStoreEFEntity<Models.GiftCard>(this); } }
+
 		public virtual DbSet<NavBarItem> NavBarItemsTable { get; set; }
 		public IGStoreRepository<Models.NavBarItem> NavBarItems { get { return new GenericGStoreEFEntity<Models.NavBarItem>(this); } }
 		

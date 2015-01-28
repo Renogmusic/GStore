@@ -29,6 +29,9 @@ namespace GStore.Controllers
 
 			Cart cart = CurrentStoreFrontOrThrow.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 			CartConfigViewModel cartConfig = CurrentStoreFrontConfigOrThrow.CartConfigViewModel(false, false);
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_View, "", true, (cart == null ? (int?)null : cart.CartId));
+
 			ViewData.Add("CartConfig", cartConfig);
 			return View("Index", cart);
 		}
@@ -46,54 +49,62 @@ namespace GStore.Controllers
 			{
 				quantity = qty.Value;
 			}
+
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+			Cart cart = storeFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
+
 			if (string.IsNullOrWhiteSpace(id))
 			{
 				AddUserMessage("Add to Cart Error", "Item not found. Please try again.", UserMessageType.Danger);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_AddToCartFailure, "Bad Url", false, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 				return RedirectToAction("Index");
 			}
-
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
 			Product product = storeFront.Products.AsQueryable().CanAddToCart(storeFront).SingleOrDefault(p => p.UrlName.ToLower() == id.ToLower());
 			if (product == null)
 			{
 				AddUserMessage("Add to Cart Error", "Item '" + id.ToHtml() + "' could not be found to add to your cart. Please try again.", UserMessageType.Danger);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_AddToCartFailure, "Item Not Found", false, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 				return RedirectToPreviousPageOrCartIndex();
 			}
 
 			//if item with same variant is already added, increment the quantity
-			Cart cart = CurrentStoreFrontOrThrow.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 			if (!CurrentStoreFrontConfigOrThrow.UseShoppingCart)
 			{
 				if (cart != null && cart.CartItems.Count > 0)
 				{
 					//if storefront is not set to use a cart, dump previous items and start with a new cart.
 					CurrentStoreFrontOrThrow.DumpCartAndSave(GStoreDb, cart);
+					cart = storeFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 				}
 			}
-
-
-
-
 
 			CartItem cartItemExisting = cart.FindItemInCart(product, type);
 			if (cartItemExisting != null)
 			{
 				int newQty = cartItemExisting.Quantity + quantity;
 				cartItemExisting = cartItemExisting.UpdateQuantityAndSave(GStoreDb, newQty, this);
+
 				if (newQty <= cartItemExisting.Product.MaxQuantityPerOrder)
 				{
 					AddUserMessage("Item Added to Cart", "'" + cartItemExisting.Product.Name.ToHtml() + "' was added to your cart. Now you have " + cartItemExisting.Quantity + " of them in your cart.<br/><a href=" + Url.Action("Index", "Cart") + ">Click here to view your cart.</a>", UserMessageType.Success);
+					cart.CancelCheckout(GStoreDb);
 				}
 				else
 				{
 					//quantity is over max, user messages are already set
 				}
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_AddToCartSuccess, "Added to Existing", true, cartId: cart.CartId, productUrlName: id);
+
 				return RedirectToPreviousPageOrCartIndex();
 			}
 			CartItem cartItem = cart.AddToCart(product, quantity, type, this);
 
 			AddUserMessage("Item Added to Cart", "'" + product.Name.ToHtml() + "' is now in your shopping cart.<br/><a href=" + Url.Action("Index", "Cart") + ">Click here to view your cart.</a>", UserMessageType.Success);
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_AddToCartSuccess, "Added", true, cartId: cartItem.CartId, productUrlName: id);
+
+			cart.CancelCheckout(GStoreDb);
 
 			return RedirectToPreviousPageOrCartIndex();
 		}
@@ -105,32 +116,37 @@ namespace GStore.Controllers
 				return BounceToLogin();
 			}
 
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+			Cart cart = storeFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
+
 			if (string.IsNullOrWhiteSpace(id))
 			{
-				AddUserMessage("Add to Cart Error", "Item not found. Please try again.", UserMessageType.Danger);
+				AddUserMessage("Remove from Cart Error", "Item not found. Please try again.", UserMessageType.Danger);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_RemoveFromCart, "Bad Url", false, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 				return RedirectToAction("Index");
 			}
-
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
 			Product product = storeFront.Products.AsQueryable().CanAddToCart(storeFront).SingleOrDefault(p => p.UrlName.ToLower() == id.ToLower());
 			if (product == null)
 			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_RemoveFromCart, "Product not found in catalog", false, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 				AddUserMessage("Remove From Cart Error", "Item '" + id.ToHtml() + "' could not be found. Please try again.", UserMessageType.Danger);
+				return RedirectToAction("Index");
 			}
 
-			Cart cart = CurrentStoreFrontOrThrow.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 			CartItem cartItemExisting = cart.FindItemInCart(product, type);
 			if (cartItemExisting == null)
 			{
 				AddUserMessage("Item Not Found in Cart", "'" + id.ToHtml() + "' was already removed from your cart.", UserMessageType.Success);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_RemoveFromCart, "Item not found in cart.", false, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 				return RedirectToAction("Index");
 			}
 
 			bool result = cartItemExisting.RemoveFromCart(GStoreDb);
-
+			cart.CancelCheckout(GStoreDb);
 
 			AddUserMessage("Item Removed from Cart", "'" + product.Name.ToHtml() + "' was removed from your shopping cart.", UserMessageType.Success);
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_RemoveFromCart, "Success", true, cartId: (cart == null ? (int?)null : cart.CartId), productUrlName: id);
 
 			return RedirectToPreviousPageOrCartIndex();
 		}
@@ -139,6 +155,8 @@ namespace GStore.Controllers
 		public ActionResult UpdateDiscountCode()
 		{
 			//stub for URL hacks
+			Cart cart = CurrentStoreFrontOrThrow.GetCart(Session.SessionID, CurrentUserProfileOrNull);
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_ApplyDiscountCodeFailure, "Bad Url", false, cartId: (cart == null ? (int?)null : cart.CartId));
 			return RedirectToAction("Index");
 		}
 
@@ -152,7 +170,20 @@ namespace GStore.Controllers
 			}
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 			Cart cart = CurrentStoreFrontOrThrow.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			cart = cart.UpdateDiscountCode(discountCode, this);
+			bool success = false;
+
+			cart = cart.UpdateDiscountCode(discountCode, this, out success);
+
+			if (success)
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_ApplyDiscountCodeSuccess, "", success, discountCode: discountCode, cartId: (cart == null ? (int?)null : cart.CartId));
+			}
+			else
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Cart, UserActionActionEnum.Cart_ApplyDiscountCodeFailure, "", success, discountCode: discountCode, cartId: (cart == null ? (int?)null : cart.CartId));
+			}
+
+			cart.CancelCheckout(GStoreDb);
 			return RedirectToAction("Index");
 		}
 
@@ -201,6 +232,7 @@ namespace GStore.Controllers
 			}
 
 			cartItemExisting.UpdateQuantityAndSave(GStoreDb, newQuantity, this);
+			cart.CancelCheckout(GStoreDb);
 
 			return RedirectToPreviousPageOrCartIndex();
 		}

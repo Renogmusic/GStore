@@ -10,6 +10,7 @@ using System.Web.Mvc.Html;
 using GStore.AppHtmlHelpers;
 using GStore.Models;
 using System.Linq.Expressions;
+using System.ComponentModel.DataAnnotations;
 
 namespace GStore.AppHtmlHelpers
 {
@@ -127,5 +128,101 @@ namespace GStore.AppHtmlHelpers
 				});
 		}
 
+		public static DateTime ToStartDateTimeUtc(this DashboardDateTimeRange value)
+		{
+			switch (value)
+			{
+				case DashboardDateTimeRange.Past15Minutes:
+					return DateTime.UtcNow.AddMinutes(-15);
+				case DashboardDateTimeRange.PastHour:
+					return DateTime.UtcNow.AddHours(-1);
+				case DashboardDateTimeRange.Past7Days:
+					return DateTime.UtcNow.AddDays(-7);
+				case DashboardDateTimeRange.Past24Hours:
+					return DateTime.UtcNow.AddHours(-24);
+				case DashboardDateTimeRange.Past48Hours:
+					return DateTime.UtcNow.AddHours(-48);
+				case DashboardDateTimeRange.Past72Hours:
+					return DateTime.UtcNow.AddHours(-72);
+				case DashboardDateTimeRange.Past30Days:
+					return DateTime.UtcNow.AddDays(-30);
+				case DashboardDateTimeRange.Past60Days:
+					return DateTime.UtcNow.AddDays(-60);
+				case DashboardDateTimeRange.Past90Days:
+					return DateTime.UtcNow.AddDays(-90);
+				case DashboardDateTimeRange.Past6Months:
+					return DateTime.UtcNow.AddMonths(-6);
+				case DashboardDateTimeRange.PastYear:
+					return DateTime.UtcNow.AddYears(-1);
+				case DashboardDateTimeRange.AllTime:
+					return new DateTime(2000, 1, 1);
+				default:
+					throw new ApplicationException("Unknown DashboardDateTimeRange: " + value.ToString());
+			}
+
+		}
+
+		public static DateTime ToEndDateTimeUtc(this DashboardDateTimeRange value)
+		{
+			return DateTime.UtcNow;
+		}
+
+		public static Product ProductFromUrlName(this HtmlHelper htmlHelper, string productUrlName)
+		{
+			if (string.IsNullOrWhiteSpace(productUrlName))
+			{
+				throw new ArgumentNullException("productUrlName");
+			}
+			return htmlHelper.CurrentStoreFront(true).Products.SingleOrDefault(p => p.UrlName.ToLower() == productUrlName.ToLower());
+		}
+
+		public static ProductCategory ProductCategoryFromUrlName(this HtmlHelper htmlHelper, string categoryUrlName)
+		{
+			if (string.IsNullOrWhiteSpace(categoryUrlName))
+			{
+				throw new ArgumentNullException("categoryUrlName");
+			}
+			return htmlHelper.CurrentStoreFront(true).ProductCategories.SingleOrDefault(p => p.UrlName.ToLower() == categoryUrlName.ToLower());
+		}
+
+	}
+
+	public enum DashboardDateTimeRange
+	{
+		[Display(Name = "the Past 15 Minutes")]
+		Past15Minutes = 1,
+
+		[Display(Name = "the Past 60 Minutes")]
+		PastHour,
+
+		[Display(Name = "the Past Day (24 hours)")]
+		Past24Hours,
+
+		[Display(Name = "the Past 2 days (48 hours)")]
+		Past48Hours,
+
+		[Display(Name = "the Past 3 days (72 hours)")]
+		Past72Hours,
+
+		[Display(Name = "the Past 7 Days")]
+		Past7Days,
+
+		[Display(Name = "the past 30 days")]
+		Past30Days,
+
+		[Display(Name = "the past 2 months (60 days)")]
+		Past60Days,
+
+		[Display(Name = "the past 3 months (90 days)")]
+		Past90Days,
+
+		[Display(Name = "the past 6 months")]
+		Past6Months,
+
+		[Display(Name = "the Past Year")]
+		PastYear,
+
+		[Display(Name = "All Time")]
+		AllTime
 	}
 }

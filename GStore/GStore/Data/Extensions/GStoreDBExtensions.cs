@@ -13,7 +13,7 @@ namespace GStore.Data
 		}
 		public static StoreBinding AutoMapBinding(this IGstoreDb db, Controllers.BaseClass.BaseController baseController)
 		{
-			if (Properties.Settings.Current.AppEnableBindingAutoMapCatchAll)
+			if (Settings.AppEnableBindingAutoMapCatchAll)
 			{
 				return db.AutoMapBindingToCatchAll(baseController);
 			}

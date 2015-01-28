@@ -9,56 +9,56 @@
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Configuration Manager", "Manager", "ClientConfigAdmin")
+						@Html.ActionLink("Configuration Manager", "Manager", "ClientConfigAdmin", null, new { accesskey = "c" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_Edit, GStoreAction.ClientConfig_View))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Client Configuration", "ClientView", "ClientConfigAdmin")
+						@Html.ActionLink("View Client Configuration", "ClientView", "ClientConfigAdmin", null, new { accesskey = "v" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_Edit))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Edit Client Configuration", "ClientEdit", "ClientConfigAdmin")
+						@Html.ActionLink("Edit Client Configuration", "ClientEdit", "ClientConfigAdmin", null, new { accesskey = "e" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermissionToAny(GStoreAction.ClientConfig_StoreFrontConfig_Edit, GStoreAction.ClientConfig_StoreFrontConfig_View))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Store Front Configuration", "StoreFrontView", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
+						@Html.ActionLink("View Store Front Configuration", "StoreFrontView", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, new { accesskey = "v" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Edit Store Front Configuration", "StoreFrontEdit", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, null)
+						@Html.ActionLink("Edit Store Front Configuration", "StoreFrontEdit", "ClientConfigAdmin", new { id = Html.CurrentStoreFront(true).StoreFrontId }, new { accesskey = "e" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_Preview))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Cart Preview (new window to site)", "Preview", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target="_blank" })
+						@Html.ActionLink("Cart Preview (new window to site)", "Preview", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank", accesskey = "c" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_View))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Cart Configuration View (new window to site)", "ViewConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank" })
+						@Html.ActionLink("Cart Configuration View (new window to site)", "ViewConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank", accesskey = "c" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Cart_Edit))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Cart Configuration Edit (new window to site)", "EditConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank" })
+						@Html.ActionLink("Cart Configuration Edit (new window to site)", "EditConfig", "Cart", new { Area = "", id = Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId }, new { target = "_blank", accesskey = "c" })
 					</li>
 				}
 			</ul>
@@ -74,14 +74,14 @@
 				@if (Html.UserHasPermission(GStoreAction.Pages_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Page Manager", "Manager", "PageAdmin")
+						@Html.ActionLink("Page Manager", "Manager", "PageAdmin", null, new { accesskey = "p" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.Pages_Create))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Add a New Page", "Create", "PageAdmin")
+						@Html.ActionLink("Add a New Page", "Create", "PageAdmin", null, new { accesskey = "a" })
 					</li>
 				}
 			</ul>
@@ -97,21 +97,21 @@
 				@if (Html.UserHasPermission(GStoreAction.NavBarItems_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Site Menu Manager", "Manager", "NavBarItemAdmin")
+						@Html.ActionLink("Site Menu Manager", "Manager", "NavBarItemAdmin", null, new { accesskey = "s" })
 					</li>
 					<li class="nav-divider"></li>
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Advanced Site Menu Manager", "AdvancedManager", "NavBarItemAdmin")
+						@Html.ActionLink("Advanced Site Menu Manager", "AdvancedManager", "NavBarItemAdmin", null, new { accesskey = "a" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.NavBarItems_Create))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Add a new Menu Item", "Create", "NavBarItemAdmin")
+						@Html.ActionLink("Add a new Menu Item", "Create", "NavBarItemAdmin", null, new { accesskey = "a" })
 					</li>
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Add a new Menu Item (advanced)", "AdvancedCreate", "NavBarItemAdmin")
+						@Html.ActionLink("Add a new Menu Item (advanced)", "AdvancedCreate", "NavBarItemAdmin", null, new { accesskey = "a" })
 					</li>
 				}
 			</ul>
@@ -128,21 +128,21 @@
 				@if (Html.UserHasPermission(GStoreAction.WebForms_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Web Form Manager", "Manager", "WebFormAdmin")
+						@Html.ActionLink("Web Form Manager", "Manager", "WebFormAdmin", null, new { accesskey = "w" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.WebForms_Create))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Add a new Web Form", "Create", "WebFormAdmin")
+						@Html.ActionLink("Add a new Web Form", "Create", "WebFormAdmin", null, new { accesskey = "w" })
 					</li>
 				}
 			</ul>
 		</li>
 	}
 
-	@if (Html.UserHasPermission(GStoreAction.ValueLists_StoreAdminMenu))
+	@if (Html.UserHasPermission(GStoreAction.ValueLists_StoreAdminMenuItem))
 	{
 	<!-- ValueList Menu Item -->
 		<li class="AdminMenuItem AdminMenuItemLevel1">
@@ -151,14 +151,14 @@
 				@if (Html.UserHasPermission(GStoreAction.ValueLists_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Value List Manager", "Manager", "ValueListAdmin")
+						@Html.ActionLink("Value List Manager", "Manager", "ValueListAdmin", null, new { accesskey = "v" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ValueLists_Create))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Create a new Value List", "Create", "ValueListAdmin")
+						@Html.ActionLink("Create a new Value List", "Create", "ValueListAdmin", null, new { accesskey = "c" })
 					</li>
 				}
 			</ul>
@@ -174,32 +174,32 @@
 			@if (Html.UserHasPermission(GStoreAction.Reports_Manager))
 			{
 				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-					@Html.ActionLink("Report Manager", "Manager", "ReportsAdmin")
+					@Html.ActionLink("Report Manager", "Manager", "ReportsAdmin", null, new { accesskey = "r" })
 				</li>
 				<li class="nav-divider"></li>
 			}
 			@if (Html.UserHasPermission(GStoreAction.Reports_AbandonedCarts_View))
 			{
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Abandoned Carts Report", "AbandonedCartsReport", "ReportsAdmin")
+					@Html.ActionLink("Abandoned Carts Report", "AbandonedCartsReport", "ReportsAdmin", null, new { accesskey = "a" })
 				</li>
 			}
 			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlySales_View))
 			{
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Monthly Sales Report", "MonthlySalesReport", "ReportsAdmin")
+					@Html.ActionLink("Monthly Sales Report", "MonthlySalesReport", "ReportsAdmin", null, new { accesskey = "m" })
 				</li>
 			}
 			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyVisitors_View))
 			{
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Monthly Visitors Report", "MonthlyVisitorsReport", "ReportsAdmin")
+					@Html.ActionLink("Monthly Visitors Report", "MonthlyVisitorsReport", "ReportsAdmin", null, new { accesskey = "m" })
 				</li>
 			}
 			@if (Html.UserHasPermission(GStoreAction.Reports_MonthlyPageViews_View))
 			{
 				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Monthly Page Views Report", "MonthlyPageViewsReport", "ReportsAdmin")
+					@Html.ActionLink("Monthly Page Views Report", "MonthlyPageViewsReport", "ReportsAdmin", null, new { accesskey = "m" })
 				</li>
 			}
 		</ul>
@@ -215,56 +215,56 @@
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("User Manager", "Manager", "UserProfileAdmin")
+						@Html.ActionLink("User Manager", "Manager", "UserProfileAdmin", null, new { accesskey = "u" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Account_CreateNew))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Register a New User", "Account_CreateNew", "UserProfileAdmin")
+						@Html.ActionLink("Register a New User", "Account_CreateNew", "UserProfileAdmin", null, new { accesskey = "r" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Account_ResetPassword))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Reset a User Password", "Account_ResetPassword", "UserProfileAdmin")
+						@Html.ActionLink("Reset a User Password", "Account_ResetPassword", "UserProfileAdmin", null, new { accesskey = "r" })
 					</li>
 				}
 				@if (Html.UserHasPermissionToAny(GStoreAction.UserProfile_Profile_View, GStoreAction.UserProfile_Profile_Edit))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View/Edit a Profile", "Profile_View", "UserProfileAdmin")
+						@Html.ActionLink("View/Edit a Profile", "Profile_View", "UserProfileAdmin", null, new { accesskey = "v" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Profile_Deactivate))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Deactivate a User", "Profile_Deactivate", "UserProfileAdmin")
+						@Html.ActionLink("Deactivate a User", "Profile_Deactivate", "UserProfileAdmin", null, new { accesskey = "d" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Profile_Reactivate))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Reactivate a User", "Profile_Reactivate", "UserProfileAdmin")
+						@Html.ActionLink("Reactivate a User", "Profile_Reactivate", "UserProfileAdmin", null, new { accesskey = "r" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Notifications_View))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Notifications for a User", "Notifications_View", "UserProfileAdmin")
+						@Html.ActionLink("View Notifications for a User", "Notifications_View", "UserProfileAdmin", null, new { accesskey = "v" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Orders_View))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("View Order History", "Orders_View", "UserProfileAdmin")
+						@Html.ActionLink("View Order History", "Orders_View", "UserProfileAdmin", null, new { accesskey = "v" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.UserProfile_Roles_AssignUserRoles))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Assign User Roles", "Roles_AssignUserRoles", "UserProfileAdmin")
+						@Html.ActionLink("Assign User Roles", "Roles_AssignUserRoles", "UserProfileAdmin", null, new { accesskey = "a" })
 					</li>
 				}
 			</ul>
@@ -280,32 +280,32 @@
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_Manager))
 				{
 					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-						@Html.ActionLink("Admin and Public Role Manager", "Manager", "ClientRoleAdmin")
+						@Html.ActionLink("Admin and Public Role Manager", "Manager", "ClientRoleAdmin", null, new { accesskey = "a" })
 					</li>
 					<li class="nav-divider"></li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_Admin_Manager))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Admin Role Manager", "Admin_Manager", "ClientRoleAdmin")
+						@Html.ActionLink("Admin Role Manager", "Admin_Manager", "ClientRoleAdmin", null, new { accesskey = "a" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_Admin_AssignUsers))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Admin - Assign Users To Roles", "Admin_AssignUsers", "ClientRoleAdmin")
+						@Html.ActionLink("Admin - Assign Users To Roles", "Admin_AssignUsers", "ClientRoleAdmin", null, new { accesskey = "a" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_User_Manager))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Public Role Manager", "User_Manager", "ClientRoleAdmin")
+						@Html.ActionLink("Public Role Manager", "User_Manager", "ClientRoleAdmin", null, new { accesskey = "p" })
 					</li>
 				}
 				@if (Html.UserHasPermission(GStoreAction.ClientRole_User_AssignUsers))
 				{
 					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-						@Html.ActionLink("Public - Assign Users to Roles", "User_AssignUsers", "ClientRoleAdmin")
+						@Html.ActionLink("Public - Assign Users to Roles", "User_AssignUsers", "ClientRoleAdmin", null, new { accesskey = "p" })
 					</li>
 				}
 			</ul>
@@ -320,11 +320,11 @@
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore")
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore", null, new { accesskey = "g" })
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("About GStore", "About", "GStore")
+				@Html.ActionLink("About GStore", "About", "GStore", null, new { accesskey = "a" })
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">

@@ -9,7 +9,7 @@
 {
 	@Html.AntiForgeryToken()
 	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
-	@Html.EditorFor(model => model.EmailAddress)
+	@Html.EditorFor(model => model.EmailAddress, "FieldEmail")
 	Html.RenderPartial("_CheckoutWebFormFieldsPartial", new Tuple<CheckoutViewModelBase, WebForm>(Model, Model.Config.CheckoutDeliveryInfoDigitalOnlyWebForm));
 	
 	<input type="submit" class="btn btn-success" Value="Continue &raquo;" />

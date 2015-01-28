@@ -373,15 +373,15 @@ namespace GStore.Models
 		[Required]
 		[Display(Name = "Order Status Layout Name")]
 		[MaxLength(10)]
-		public string OrderStatusLayoutName { get; set; }
+		public string OrdersLayoutName { get; set; }
 
 		[Required]
 		[Display(Name = "Order Status Theme Id")]
-		public int OrderStatusThemeId { get; set; }
+		public int OrdersThemeId { get; set; }
 
 		[Display(Name = "Order Status Theme")]
-		[ForeignKey("OrderStatusThemeId")]
-		public virtual Theme OrderStatusTheme { get; set; }
+		[ForeignKey("OrdersThemeId")]
+		public virtual Theme OrdersTheme { get; set; }
 
 		#endregion
 

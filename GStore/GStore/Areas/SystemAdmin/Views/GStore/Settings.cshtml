@@ -39,9 +39,8 @@
 		<div class="table-responsive">
 			<table id="SystemInfo" class="table-hover table-bordered table-striped">
 				@{
-					GStore.Properties.CurrentSettings settings = GStore.Properties.Settings.Current;
 					GStore.Properties.Settings defaultSettings = GStore.Properties.Settings.Default;
-					PropertyInfo[] props = settings.GetType().GetProperties();
+					PropertyInfo[] props = typeof(GStore.Settings).GetProperties();
 					PropertyInfo[] defaultProperties = defaultSettings.GetType().GetProperties();
 					foreach (PropertyInfo prop in props)
 					{
@@ -52,7 +51,7 @@
 							<td class="data">
 								<strong>
 									@{
-						object currentValue = prop.GetValue(settings).ToString();
+						object currentValue = prop.GetValue(null, null).ToString();
 						PropertyInfo defaultProp = defaultProperties.FirstOrDefault(p => p.Name == prop.Name);
 						if (defaultProp == null)
 						{
@@ -83,8 +82,8 @@
 		<hr />
 		<p>
 			<strong>How to read application settings from code</strong><br />
-			To read GStore settings in code, use the strongly typed functions under GStore.Properties.Settings.Current
-			<br />Example: GStore.Properties.Settings.Current.AppEnableEmail
+			To read GStore settings in code, use the strongly typed functions under GStore.Settings
+			<br />Example: GStore.Settings.AppEnableEmail
 		</p>
 		<p>
 			<strong>How GStore determines which setting to use</strong><br />
@@ -101,7 +100,11 @@
 			<li>
 				Web.Config AppSettings section
 				<br /><strong>Notes:</strong> Not recommended. This is only in place because a lot of developers are familiar with it.
-				<br /><strong>Example How To Set:</strong> (in web.config file, add the following under &lt;appSettings&gt;<br /> &lt;add key=&quot;AppEnableEmail&quot; value=&quot;true&quot; /&gt;
+				<br /><strong>Example How To Set:</strong> (in web.config file, edit the setting under &lt;appSettings&gt;<br />
+				&lt;setting name=&quot;AppEnableEmail&quot; serializeas=&quot;String&quot;&gt;
+					&lt;value&gt;<b><u>False</u></b>&lt;/value&gt;
+				&lt;/setting&gt;
+
 				<br /><strong>Internal Read:</strong> string value = System.Web.Configuration.WebConfigurationManager.AppSettings.Get("AppEnableEmail");
 				<br /><br />
 			</li>

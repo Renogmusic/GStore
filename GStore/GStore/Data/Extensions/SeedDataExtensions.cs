@@ -12,7 +12,7 @@ namespace GStore.Data
 	{
 		public static void AddSeedData(this IGstoreDb storeDb, bool force = false)
 		{
-			if (Properties.Settings.Current.AppDoNotSeedDatabase && !force)
+			if (Settings.AppDoNotSeedDatabase && !force)
 			{
 				return;
 			}
@@ -30,10 +30,10 @@ namespace GStore.Data
 			string browserFullName = "John Doe User";
 
 
-			string layout = Properties.Settings.Current.AppDefaultLayoutName;
-			string pageTemplateViewName = Properties.Settings.Current.AppDefaultPageTemplateViewName;
-			string preferedThemeName = "StarterTheme";
-			bool loadSampleProducts = Properties.Settings.Current.AppSeedSampleProducts;
+			string layout = Settings.AppDefaultLayoutName;
+			string pageTemplateViewName = Settings.AppDefaultPageTemplateViewName;
+			string preferedThemeName = "RenoG";
+			bool loadSampleProducts = Settings.AppSeedSampleProducts;
 
 
 			if (HttpContext.Current != null)
@@ -433,8 +433,8 @@ namespace GStore.Data
 			storeFrontConfig.ApplyDefaultCartConfig();
 			storeFrontConfig.CheckoutLayoutName = layout;
 			storeFrontConfig.CheckoutTheme = selectedTheme;
-			storeFrontConfig.OrderStatusLayoutName = layout;
-			storeFrontConfig.OrderStatusTheme = selectedTheme;
+			storeFrontConfig.OrdersLayoutName = layout;
+			storeFrontConfig.OrdersTheme = selectedTheme;
 			storeFrontConfig.CatalogLayoutName = layout;
 			storeFrontConfig.CatalogTheme = selectedTheme;
 			storeFrontConfig.OrderAdminLayoutName = layout;
@@ -682,6 +682,7 @@ namespace GStore.Data
 			webFormField.IsRequired = isRequired;
 			webFormField.LabelText = name;
 			webFormField.Order = order;
+			webFormField.Watermark = webFormField.Watermark + "Enter " + webFormField.Name + (webFormField.IsRequired ? " (Required)" : "");
 			webFormField.HelpLabelBottomText = helpLabelBottomText;
 			webFormField.HelpLabelTopText = helpLabelTopText;
 			if (dataType.HasValue)
@@ -717,7 +718,7 @@ namespace GStore.Data
 			else
 			{
 				//no page templates in database, create two seed ones
-				pageTemplate = db.CreateSeedPageTemplate(storeFrontConfig.DefaultNewPageLayoutName + " Template", storeFrontConfig.DefaultNewPageLayoutName, Properties.Settings.Current.AppDefaultPageTemplateViewName, storeFrontConfig.Client);
+				pageTemplate = db.CreateSeedPageTemplate(storeFrontConfig.DefaultNewPageLayoutName + " Template", storeFrontConfig.DefaultNewPageLayoutName, Settings.AppDefaultPageTemplateViewName, storeFrontConfig.Client);
 
 				PageTemplate pageTemplate2 = db.CreateSeedPageTemplate("Simple 3x3 With Jumbo Tron", storeFrontConfig.DefaultNewPageLayoutName, "Simple3x3WithJumboTron", storeFrontConfig.Client);
 			}

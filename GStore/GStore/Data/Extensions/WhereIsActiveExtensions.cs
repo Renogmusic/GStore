@@ -565,6 +565,32 @@ namespace GStore.Data
 
 		}
 
+		public static IQueryable<GiftCard> WhereIsActive(this IQueryable<GiftCard> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<GiftCard> WhereIsActiveOnOrSelected(this IQueryable<GiftCard> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.GiftCardId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+
+		}
+
 		public static IQueryable<ProductReview> WhereIsActive(this IQueryable<ProductReview> query)
 		{
 			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);

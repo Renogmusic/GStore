@@ -22,6 +22,7 @@ namespace GStore.Data.ListProvider
 		public IGStoreRepository<Models.DeliveryInfoShipping> DeliveryInfoShippings { get { return new GenericGStoreListSourceRepository<Models.DeliveryInfoShipping>(); } }
 		public IGStoreRepository<Models.Discount> Discounts { get { return new GenericGStoreListSourceRepository<Models.Discount>(); } }
 		public IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get { return new GenericGStoreListSourceRepository<Models.FileNotFoundLog>(); } }
+		public IGStoreRepository<Models.GiftCard> GiftCards { get { return new GenericGStoreListSourceRepository<Models.GiftCard>(); } }
 		public IGStoreRepository<Models.NavBarItem> NavBarItems { get { return new GenericGStoreListSourceRepository<Models.NavBarItem>(); } }
 		public IGStoreRepository<Models.Notification> Notifications { get { return new GenericGStoreListSourceRepository<Models.Notification>(); } }
 		public IGStoreRepository<Models.NotificationLink> NotificationLinks { get { return new GenericGStoreListSourceRepository<Models.NotificationLink>(); } }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using GStore.Models.ViewModels;
 
 namespace GStore.Areas.StoreAdmin.ViewModels
 {
@@ -27,13 +28,19 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.StoreFront = currentStoreFrontConfig.StoreFront;
 			this.UserProfile = userProfile;
 			this.Client = currentStoreFrontConfig.Client;
-			this.ShowSystemAdminLink = userProfile.AspNetIdentityUserIsInRoleSystemAdmin();
-			this.ShowOrderAdminLink = this.StoreFront.ShowOrderAdminLink(userProfile);
-			this.ShowCatalogAdminLink = this.StoreFront.ShowCatalogAdminLink(userProfile);
 		}
+
 		public void UpdateClient(Client client)
 		{
 			this.Client = client;
+		}
+
+		public AdminMenuViewModel AdminMenuViewModel
+		{
+			get
+			{
+				return new AdminMenuViewModel(this.StoreFront, this.UserProfile, "StoreAdmin");
+			}
 		}
 
 		[Display(Name = "Store Front Configuration")]
@@ -50,15 +57,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 
 		[Display(Name = "Is Active")]
 		public bool IsActiveDirect { get; protected set; }
-
-		[Display(Name = "Show System Admin Link")]
-		public bool ShowSystemAdminLink { get; protected set; }
-
-		[Display(Name = "Show Order Admin Link")]
-		public bool ShowOrderAdminLink { get; protected set; }
-
-		[Display(Name = "Show Catalog Admin Link")]
-		public bool ShowCatalogAdminLink { get; protected set; }
 
 	}
 }

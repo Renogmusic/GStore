@@ -14,7 +14,7 @@ namespace GStore
 		{
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-			if (Properties.Settings.Current.AppEnableStoresVirtualFolders)
+			if (Settings.AppEnableStoresVirtualFolders)
 			{
 				routes.MapRoute(
 					name: "Stores-Account",
@@ -124,7 +124,7 @@ namespace GStore
 				routes.MapRoute(
 					name: "Stores-Pages",
 					url: "Stores/{urlstorename}/Pages/{*path}",
-					defaults: new { controller = "Page", action = "HtmlPage", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					defaults: new { controller = "Page", action = "HtmlFile", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 					namespaces: new[] { "GStore.Controllers" }
 				);
 
@@ -287,7 +287,7 @@ namespace GStore
 			routes.MapRoute(
 				name: "Pages",
 				url: "Pages/{*path}",
-				defaults: new { controller = "Page", action = "HtmlPage", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				defaults: new { controller = "Page", action = "HtmlFile", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
 

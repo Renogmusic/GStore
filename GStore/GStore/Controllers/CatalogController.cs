@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using GStore.Data;
 using GStore.Models.ViewModels;
 using GStore.AppHtmlHelpers;
+using GStore.Models;
 
 namespace GStore.Controllers
 {
@@ -15,7 +16,45 @@ namespace GStore.Controllers
 		public ActionResult Index()
 		{
 			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
-			return View("Index", model);
+			return View("Index", "_Layout_Default", model);
+		}
+
+		public ActionResult ViewCategoryByName(string urlName)
+		{
+			if (string.IsNullOrWhiteSpace(urlName))
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewCategory, "Bad Url", false);
+				return Index();
+			}
+
+			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
+			if (category == null)
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewCategoryNotFound, urlName, false, categoryUrlName: urlName);
+				return CategoryNotFound(urlName);
+			}
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewCategory, urlName, true, categoryUrlName: urlName);
+			return ViewCategory(category);
+		}
+
+		public ActionResult ViewProductByName(string urlName)
+		{
+			if (string.IsNullOrWhiteSpace(urlName))
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewProduct, "Bad Url", false);
+				return Index();
+			}
+
+			Models.Product product = CurrentStoreFrontOrThrow.Products.AsQueryable().Where(prod => prod.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
+			if (product == null)
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewProductNotFound, urlName, false, productUrlName: urlName);
+				return ProductNotFound(urlName);
+			}
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewProduct, urlName, false, productUrlName: urlName);
+			return ViewProduct(product);
 		}
 
 		protected override string LayoutName
@@ -32,73 +71,6 @@ namespace GStore.Controllers
 			{
 				return CurrentStoreFrontConfigOrThrow.CatalogTheme.FolderName;
 			}
-		}
-
-
-		public ActionResult ViewCategoryByName(string urlName)
-		{
-			if (string.IsNullOrWhiteSpace(urlName))
-			{
-				return Index();
-			}
-
-			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
-			if (category == null)
-			{
-				return CategoryNotFound(urlName);
-			}
-
-			return ViewCategory(category);
-		}
-
-		public ActionResult ViewCategoryById(int? id)
-		{
-
-			if (!id.HasValue)
-			{
-				return Index();
-			}
-
-			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.ProductCategoryId == id.Value).WhereIsActive().SingleOrDefault();
-			if (category == null)
-			{
-				return CategoryNotFound("Category Id: " + id);
-			}
-
-			return ViewCategory(category);
-		}
-
-		public ActionResult ViewProductByName(string urlName)
-		{
-			if (string.IsNullOrWhiteSpace(urlName))
-			{
-				return Index();
-			}
-
-			Models.Product product = CurrentStoreFrontOrThrow.Products.AsQueryable().Where(prod => prod.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
-			if (product == null)
-			{
-				return ProductNotFound(urlName);
-			}
-
-			return ViewProduct(product);
-		}
-
-		public ActionResult ViewProductById(int? id)
-		{
-			if (!id.HasValue)
-			{
-				return Index();
-			}
-
-			Models.Product product = CurrentStoreFrontOrThrow.Products.AsQueryable().Where(prod => prod.ProductId == id.Value).WhereIsActive().SingleOrDefault();
-			if (product == null)
-			{
-				return ProductNotFound("Product Id: " + id);
-			}
-
-			return ViewProduct(product);
-
 		}
 
 		protected ActionResult ViewCategory(Models.ProductCategory category)
@@ -134,8 +106,8 @@ namespace GStore.Controllers
 				productName = "The product you linked to";
 			}
 			AddUserMessage("Sorry!", productName.ToHtml() + " was not found. Here is a list of our current products.", GStore.AppHtmlHelpers.UserMessageType.Info);
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
-			return View("Index", model);
+
+			return Index();
 		}
 
 		protected ActionResult CategoryNotFound(string categoryName)
@@ -145,8 +117,7 @@ namespace GStore.Controllers
 				categoryName = "The category you linked to";
 			}
 			AddUserMessage("Sorry!", categoryName.ToHtml() + " was not found. Here is a list of our current products.", GStore.AppHtmlHelpers.UserMessageType.Info);
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
-			return View("Index", model);
+			return Index();
 		}
 
     }

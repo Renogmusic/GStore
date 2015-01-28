@@ -59,16 +59,16 @@ namespace GStore.Controllers.BaseClass
 		/// Returns an HTML page inside the store front layout
 		/// </summary>
 		/// <returns></returns>
-		public ActionResult HtmlPage(string path)
+		public ActionResult HtmlFile(string path)
 		{
 			this._logActionsAsPageViews = true;
 			string fullFilePath = ChooseFilePath(CurrentStoreFrontOrThrow, "/Pages/" + path, Request.ApplicationPath);
 			if (fullFilePath == null)
 			{
-				return HttpNotFound("Page not Found for '" + path + "'");
+				return HttpNotFound("HTML File not Found for '" + path + "'");
 			}
 
-			return View("HtmlPage", model: fullFilePath);
+			return View("HtmlFile", model: fullFilePath);
 		}
 
 		[HttpGet]
@@ -376,7 +376,7 @@ namespace GStore.Controllers.BaseClass
 						{
 							System.Diagnostics.Debug.Print("--Dynamic Page Not Found Exception in dynamic url: " + Request.RawUrl);
 							System.Diagnostics.Debug.Print("--" + exDPNF.ToString());
-							if (Properties.Settings.Current.AppEnableAutomaticHomePageCreation)
+							if (Settings.AppEnableAutomaticHomePageCreation)
 							{
 
 								Models.Page newHomePage = GStoreDb.AutoCreateHomePage(Request, exDPNF.StoreFront.CurrentConfigOrAny(), this);

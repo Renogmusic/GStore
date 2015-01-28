@@ -6,19 +6,6 @@
 
 	<ul class="nav navbar-nav navbar-right">
 		<li>
-			<a href="@Url.Action("Index", "Profile", new { Area = ""})" accesskey="p" title="My Account">
-				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
-			</a>
-		</li>
-		@if (Model.ShowOrderAdminLink)
-		{
-			<li>
-				<a href="@Url.Action("Index", "OrderAdmin", new { Area = "OrderAdmin" })" accesskey="o" title="Order Admin">
-					Order Admin
-				</a>
-			</li>
-		}
-		<li>
 			@{
 		if (Model.StoreFrontConfig.IsActiveDirect())
 		{
@@ -30,22 +17,8 @@
 		}
 }
 		</li>
-		@if (Model.ShowStoreAdminLink)
-		{
-			<li class="AdminMenuItemLevel2">
-				<a href="@Url.Action("Index", "StoreAdmin", new { Area = "StoreAdmin" })" accesskey="s" title="Store Admin">
-					Store Admin
-				</a>
-			</li>
-		}
-		@if (Model.ShowSystemAdminLink)
-		{
-			<li>
-				<a href="@Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin" })" accesskey="s" title="System Admin">
-					System Admin
-				</a>
-			</li>
-		}
+
+		@{ Html.RenderPartial("_LoginAdminPartial", Model.AdminMenuViewModel);}
 
 		<li><a href="javascript:document.getElementById('logoutForm').submit()" accesskey="l" title="Log Off">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
 	</ul>

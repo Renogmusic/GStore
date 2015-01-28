@@ -108,20 +108,33 @@ namespace GStore.Controllers
 			if (result)
 			{
 				AddUserMessage("Test Email Sent!", "Test Email was sent to '" + profile.Email.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestEmail, profile.Email, true, emailAddress: profile.Email);
 			}
 			else
 			{
 				AddUserMessage("Test Email not sent", "Test Email was NOT sent. This store does not have Email send activated.", AppHtmlHelpers.UserMessageType.Warning);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestEmail, "Email Disabled", false, emailAddress: profile.Email);
 			}
+
 			return RedirectToAction("Index");
 		}
 
 		public ActionResult SendTestSms()
 		{
 			UserProfile profile = CurrentUserProfileOrThrow;
+
+			string smsPhone = profile.AspNetIdentityUser().PhoneNumber;
+			if (string.IsNullOrWhiteSpace(smsPhone))
+			{
+				AddUserMessage("Test Text Message not sent", "You must add a phone number before you can receive SMS text messages.", AppHtmlHelpers.UserMessageType.Warning);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestSms, "No Phone Number", false, smsPhone: smsPhone);
+				return RedirectToAction("Index");
+			}
+
 			if (!profile.AspNetIdentityUser().PhoneNumberConfirmed)
 			{
 				AddUserMessage("Test Text Message not sent", "You must confirm your phone number before you can receive SMS text messages.", AppHtmlHelpers.UserMessageType.Warning);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestSms, "Phone Number Not Confirmed", false, smsPhone: smsPhone);
 				return RedirectToAction("Index");
 			}
 
@@ -130,14 +143,16 @@ namespace GStore.Controllers
 
 			string textBody = "Test Text Message from " + storeFront.CurrentConfig().Name + " - " + Request.BindingHostName();
 
-			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendSms(client, profile.AspNetIdentityUser().PhoneNumber, textBody, Request.Url.Host);
+			bool result = GStore.AppHtmlHelpers.AppHtmlHelper.SendSms(client, smsPhone, textBody, Request.Url.Host);
 			if (result)
 			{
 				AddUserMessage("Test Text Message Sent!", "Test SMS Text Message was sent to '" + profile.AspNetIdentityUser().PhoneNumber.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestSms, smsPhone, true, smsPhone: smsPhone);
 			}
 			else
 			{
 				AddUserMessage("Test Text Message Not Sent!", "Test Text Message was NOT sent. This store does not have SMS Text send activated.", AppHtmlHelpers.UserMessageType.Warning);
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_SendTestSms, "Sms Disabled", false, smsPhone: smsPhone);
 			}
 			return RedirectToAction("Index");
 		}
@@ -208,6 +223,8 @@ namespace GStore.Controllers
 				};
 				await UserManager.SmsService.SendAsync(message);
 			}
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_AddPhoneNumber, model.Number, true, smsPhone: model.Number);
+
 			return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
 		}
 
@@ -222,6 +239,7 @@ namespace GStore.Controllers
 			{
 				await SignInAsync(user, isPersistent: false);
 			}
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_EnableTwoFactorAuth, "", true);
 			return RedirectToAction("Index", "Profile");
 		}
 
@@ -236,6 +254,7 @@ namespace GStore.Controllers
 			{
 				await SignInAsync(user, isPersistent: false);
 			}
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_DisableTwoFactorAuth, "", true);
 			return RedirectToAction("Index", "Profile");
 		}
 
@@ -249,6 +268,7 @@ namespace GStore.Controllers
 			{
 				return HttpBadRequest("VerifyPhoneNumber phoneNumber = null");
 			}
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_VerifyPhoneNumber_GetCode, code, true);
 			return View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
 		}
 
@@ -270,7 +290,12 @@ namespace GStore.Controllers
 				{
 					await SignInAsync(user, isPersistent: false);
 				}
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_VerifyPhoneNumber_VerifyCode, model.Code, true);
 				return RedirectToAction("Index", new { Message = ProfileMessageId.AddPhoneSuccess });
+			}
+			else
+			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_VerifyPhoneNumber_VerifyCode, model.Code, false);
 			}
 			// If we got this far, something failed, redisplay form
 			ModelState.AddModelError("", "Failed to verify phone");
@@ -284,6 +309,7 @@ namespace GStore.Controllers
 			var result = await UserManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
 			if (!result.Succeeded)
 			{
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_RemovePhoneNumber, "", false);
 				return RedirectToAction("Index", new { Message = ProfileMessageId.Error });
 			}
 			var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
@@ -291,6 +317,7 @@ namespace GStore.Controllers
 			{
 				await SignInAsync(user, isPersistent: false);
 			}
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_RemovePhoneNumber, "", true);
 			return RedirectToAction("Index", new { Message = ProfileMessageId.RemovePhoneSuccess });
 		}
 
@@ -311,7 +338,7 @@ namespace GStore.Controllers
 			{
 				return View(model);
 			}
-			var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+			IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
 			if (result.Succeeded)
 			{
 				var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
@@ -319,6 +346,8 @@ namespace GStore.Controllers
 				{
 					await SignInAsync(user, isPersistent: false);
 				}
+
+				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_PasswordChanged, "", true);
 
 				StoreFront storeFront = CurrentStoreFrontOrNull;
 				if (storeFront == null)
@@ -332,6 +361,18 @@ namespace GStore.Controllers
 				}
 				return RedirectToAction("Index", new { Message = ProfileMessageId.ChangePasswordSuccess });
 			}
+
+			string error = null;
+			try
+			{
+				error = string.Join(", ", result.Errors);
+			}
+			catch (Exception)
+			{
+				error = "Unknown Error";
+			}
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_PasswordChanged, error, false);
 			AddErrors(result);
 			return View(model);
 		}
@@ -420,6 +461,8 @@ namespace GStore.Controllers
 			UserProfile profile = CurrentUserProfileOrThrow;
 			string userId = profile.UserId;
 			await this.SendEmailConfirmationCode(userId);
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_ConfirmEmailSent, profile.Email, true, emailAddress: profile.Email);
+
 			return View(profile);
 		}
 
@@ -451,7 +494,6 @@ namespace GStore.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Notifications(NotificationSettingsViewModel model)
 		{
-
 			UserProfile profile = CurrentUserProfileOrThrow;
 
 			profile.AllowUsersToSendSiteMessages = model.AllowUsersToSendSiteMessages;
@@ -463,6 +505,8 @@ namespace GStore.Controllers
 
 			GStoreDb.UserProfiles.Update(profile);
 			GStoreDb.SaveChanges();
+
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Profile, UserActionActionEnum.Profile_UpdateNotifications, "", true);
 
 			return RedirectToAction("Index");
 		}

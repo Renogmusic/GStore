@@ -111,7 +111,7 @@ namespace GStore.Identity
 	public partial class AspNetIdentityContext : Microsoft.AspNet.Identity.EntityFramework.IdentityDbContext<AspNetIdentityUser, AspNetIdentityRole, string, AspNetIdentityUserLogin, AspNetIdentityUserRole, AspNetIdentityUserClaim>
 	{
 		public AspNetIdentityContext()
-			: base(Properties.Settings.Current.AspNetIdentityNameOrConnectionString)
+			: base(Settings.AspNetIdentityNameOrConnectionString)
 		{
 		}
 

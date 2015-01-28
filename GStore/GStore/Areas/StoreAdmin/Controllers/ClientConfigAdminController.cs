@@ -314,8 +314,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.Order = model.Order;
 				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
 				config.OrderAdminThemeId = model.OrderAdminThemeId;
-				config.OrderStatusLayoutName = model.OrderStatusLayoutName;
-				config.OrderStatusThemeId = model.OrderStatusThemeId;
+				config.OrdersLayoutName = model.OrdersLayoutName;
+				config.OrdersThemeId = model.OrdersThemeId;
 				config.Register_WebFormId = model.Register_WebFormId;
 				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
 				config.NotFoundError_PageId = model.NotFoundError_PageId;
@@ -400,7 +400,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				newStoreFrontConfig.StoreFrontId = id.Value;
 				newStoreFrontConfig.ApplyDefaultCartConfig();
 				newStoreFrontConfig.ApplyDefaultCheckoutConfig();
-				newStoreFrontConfig.ApplyDefaultOrderStatusConfig();
+				newStoreFrontConfig.ApplyDefaultOrdersConfig();
 			}
 
 			StoreFrontConfigAdminViewModel viewModel = new StoreFrontConfigAdminViewModel(newStoreFrontConfig, CurrentUserProfileOrThrow, Tab, true, false);
@@ -499,8 +499,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.Order = model.Order;
 				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
 				config.OrderAdminThemeId = model.OrderAdminThemeId;
-				config.OrderStatusLayoutName = model.OrderStatusLayoutName;
-				config.OrderStatusThemeId = model.OrderStatusThemeId;
+				config.OrdersLayoutName = model.OrdersLayoutName;
+				config.OrdersThemeId = model.OrdersThemeId;
 				config.Register_WebFormId = model.Register_WebFormId;
 				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
 				config.NotFoundError_PageId = model.NotFoundError_PageId;

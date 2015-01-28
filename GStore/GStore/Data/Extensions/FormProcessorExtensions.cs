@@ -286,7 +286,7 @@ namespace GStore.Data
 		private static bool ProcessWebForm_ToEmail(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request)
 		{
 
-			if (!Properties.Settings.Current.AppEnableEmail || !page.StoreFront.Client.UseSendGridEmail)
+			if (!Settings.AppEnableEmail || !page.StoreFront.Client.UseSendGridEmail)
 			{
 				//email not enabled, don't send and fail silently
 				return true;

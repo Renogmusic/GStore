@@ -1,40 +1,39 @@
 ﻿@model GStore.Models.ViewModels.MenuViewModel
 @if (Request.IsAuthenticated)
 {
-	
 	using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
 	{
 		@Html.AntiForgeryToken()
 
 	<ul class="nav navbar-nav navbar-right">
 		@{
-			if (Model.ShowCart)
+		if (Model.ShowCart)
+		{
+			<li>
+				@{
+			if (Model.Cart.IsEmpty())
 			{
-				<li>
-					@{
-				if (Model.Cart.IsEmpty())
-				{
-					<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)" accesskey="c">
-						Cart (empty)
-					</a>
-				}
-				else
-				{
-					<a href="@Url.Action("Index", "Cart")" accesskey="c" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")">
-						<small>
-							Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
-							<br />
-							$@(Model.Cart.Subtotal.ToString("N2"))
-						</small>
-					</a>
-				}
-					}
-				</li>
+				<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)" accesskey="c">
+					Cart (empty)
+				</a>
 			}
-			if (Model.StoreFrontConfig == null || !Model.StoreFrontConfig.IsActiveDirect())
+			else
 			{
-				<li><a href="javascript: return false;"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+				<a href="@Url.Action("Index", "Cart")" accesskey="c" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")">
+					<small>
+						Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
+						<br />
+						$@(Model.Cart.Subtotal.ToString("N2"))
+					</small>
+				</a>
 			}
+				}
+			</li>
+		}
+		if (Model.StoreFrontConfig == null || !Model.StoreFrontConfig.IsActiveDirect())
+		{
+			<li><a href="javascript: return false;"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+		}
 		}
 
 		<li>
@@ -42,38 +41,9 @@
 				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
 			</a>
 		</li>
-		@if (Model.ShowOrderAdminLink)
-		{
-			<li class="AdminMenuItemLevel2">
-				<a href="@(Url.Action("Index", "OrderAdmin", new { Area = "OrderAdmin" }))" accesskey="o" title="Order Admin">Order Admin</a>
-			</li>
-		}
-		@if (Model.ShowCatalogAdminLink)
-		{
-			<li class="AdminMenuItemLevel2">
-				<a href="@(Url.Action("Index", "CatalogAdmin", new { Area = "CatalogAdmin" }))" accesskey="c" title="Catalog Admin">Catalog Admin</a>
-			</li>
-		}
-		@if (Model.ShowStoreAdminLink)
-		{
-			//if user has store admin permissions, show store admin link
-			<li>
-				<a href="@(Url.Action("Index", "StoreAdmin", new { Area = "StoreAdmin" }))" accesskey="s" title="Store Admin">Store Admin</a>
-			</li>
-		}
-		@if (Model.ShowSystemAdminLink)
-		{
-			//if user has system admin permission, show system admin link
-			Client currentClient = Html.CurrentClient(false);
-			int? clientId = null;
-			if (currentClient != null)
-			{
-				clientId = currentClient.ClientId;
-			}
-			<li>
-				<a href="@(Url.Action("Index", "SystemAdmin", new { Area = "SystemAdmin", ClientId = clientId }))" accesskey="s" title="System Admin">System Admin</a>
-			</li>
-		}
+
+		@{ Html.RenderPartial("_LoginAdminPartial", Model.AdminMenuViewModel) ; }
+
 		<li><a href="javascript:document.getElementById('logoutForm').submit()" title="Log off the site" accesskey="l">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
 	</ul>
 	}

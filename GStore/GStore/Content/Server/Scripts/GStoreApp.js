@@ -230,3 +230,15 @@ $(document).ready(function () {
 		inp.focus();
 	}
 });
+
+$(document).ready(function () {
+	$(".boxshadowjs").each(function (index, element) {
+		ApplyBoxShadow(element);
+	});
+});
+
+function ApplyBoxShadow(element) {
+	$(element).css('width', "95%");
+	$(element).css('border', '1px solid silver');
+	$(element).css('box-shadow', 'rgba(0, 0, 0, 0.2) 6px 6px');
+}

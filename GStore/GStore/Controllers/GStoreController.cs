@@ -1,4 +1,5 @@
 ﻿using GStore.Models;
+using GStore.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace GStore.Controllers
 
 		public ActionResult About()
 		{
+			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.GStore, UserActionActionEnum.GStore_ViewAbout, "", true);
 			return View("About");
 		}
 

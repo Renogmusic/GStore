@@ -121,6 +121,9 @@ namespace GStore.Data
 		[Display(Name = "File Not Found Logs", Description = "File Not Found (404) errors including MVC and HTTP Application 404 errors system-wide.")]
 		IGStoreRepository<Models.FileNotFoundLog> FileNotFoundLogs { get; }
 
+		[Display(Name = "Gift Cards", Description = "Gift Cards for a store front.")]
+		IGStoreRepository<Models.GiftCard> GiftCards { get; }
+
 		[Display(Name = "Nav Bar Items", Description = "Site Menu Items for a store front.")]
 		IGStoreRepository<Models.NavBarItem> NavBarItems { get; }
 

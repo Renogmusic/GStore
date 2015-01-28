@@ -22,6 +22,22 @@
 	margin: -10px 0 0 0;
 }*/
 
+.col-centered
+{
+    float: none;
+    margin: 0 auto;
+}
+
+.NoTopMarginOrPad{
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.NoBottomMarginOrPad{
+	margin-bottom: 0;
+	padding-bottom: 0;
+
+}
 
 .table-responsive {
   overflow-x: auto;
@@ -512,4 +528,11 @@ dd label.help-label-top, label.help-label-top {
 .StackHighlight{
 	background-color: lightblue;
 	font-weight: bold;
+}
+.NoClick{
+ pointer-events: none;
+}
+
+.CategoryPath{
+	padding-bottom: 2em;
 }

@@ -401,7 +401,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.WriteLine("--System Event: " + newEvent.SimpleInfo());
 			System.Diagnostics.Trace.Unindent();
 
-			if (Properties.Settings.Current.AppLogSystemEventsToDb)
+			if (Settings.AppLogSystemEventsToDb)
 			{
 				try
 				{
@@ -415,7 +415,7 @@ namespace GStore.Data
 					newEvent.LogToFile(httpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToFile)
 			{
 				newEvent.LogToFile(httpContext);
 			}
@@ -440,7 +440,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.WriteLine("--Security Event: " + newEvent.SimpleInfo());
 			System.Diagnostics.Trace.Unindent();
 
-			if (Properties.Settings.Current.AppLogSecurityEventsToDb)
+			if (Settings.AppLogSecurityEventsToDb)
 			{
 				try
 				{
@@ -454,7 +454,7 @@ namespace GStore.Data
 					newEvent.LogToFile(mvcHttpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogSecurityEventsToFile)
+			if (Settings.AppLogSecurityEventsToFile)
 			{
 				newEvent.LogToFile(mvcHttpContext);
 			}
@@ -487,7 +487,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.Unindent();
 
 
-			if (Properties.Settings.Current.AppLogPageViewEventsToDb)
+			if (Settings.AppLogPageViewEventsToDb)
 			{
 				try
 				{
@@ -501,7 +501,7 @@ namespace GStore.Data
 					newEvent.LogToFile(context.HttpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogPageViewEventsToFile)
+			if (Settings.AppLogPageViewEventsToFile)
 			{
 				newEvent.LogToFile(context.HttpContext);
 			}
@@ -509,19 +509,39 @@ namespace GStore.Data
 			return newEvent;
 		}
 
-		public static UserActionEvent LogUserActionEvent(this IGstoreDb ctx, HttpContextBase httpContext, RouteData routeData, string source, string category, string action, string label, Controllers.BaseClass.BaseController controller)
+		public static UserActionEvent LogUserActionEvent(this IGstoreDb ctx, HttpContextBase httpContext, RouteData routeData, Controllers.BaseClass.BaseController controller, UserActionCategoryEnum category, UserActionActionEnum action, string label, bool success, int? cartId = null, string categoryUrlName = null, string discountCode = null, string emailAddress = null, int? notificationId = null, string orderNumber = null, int? pageId = null, string productUrlName = null, string smsPhone = null, string uploadFileName = null)
 		{
+			if (!Settings.AppEnableUserActionLog)
+			{
+				return null;
+			}
+
 			IGstoreDb newctx = ctx.NewContext();
 
 			UserActionEvent newEvent = newctx.UserActionEvents.Create();
 
+			string source = routeData.ToSourceString();
+
 			string message = "User Action Event"
-				+ " \n-Category: " + category
-				+ " \n-Action: " + action
-				+ " \n-Label: " + label;
+				+ " \n-Category: " + category.ToString()
+				+ " \n-Action: " + action.ToString()
+				+ " \n-Label: " + label.ToString()
+				+ " \n-Success: " + success.ToString();
 
 			newEvent.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, newctx.GetCurrentUserProfile(false, false), controller);
+			newEvent.CartId = cartId;
 			newEvent.Category = category;
+			newEvent.CategoryUrlName = categoryUrlName;
+			newEvent.DiscountCode = discountCode;
+			newEvent.EmailAddress = emailAddress;
+			newEvent.Label = label;
+			newEvent.NotificationId = notificationId;
+			newEvent.OrderNumber = orderNumber;
+			newEvent.PageId = pageId;
+			newEvent.ProductUrlName = productUrlName;
+			newEvent.SMSPhone = smsPhone;
+			newEvent.Success = success;
+			newEvent.UploadFileName = uploadFileName;
 			newEvent.Action = action;
 			newEvent.Label = label;
 
@@ -530,7 +550,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.WriteLine("--User Action Event: " + newEvent.SimpleInfo());
 			System.Diagnostics.Trace.Unindent();
 
-			if (Properties.Settings.Current.AppLogUserActionEventsToDb)
+			if (Settings.AppLogUserActionEventsToDb)
 			{
 				try
 				{
@@ -544,7 +564,7 @@ namespace GStore.Data
 					newEvent.LogToFile(httpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogUserActionEventsToFile)
+			if (Settings.AppLogUserActionEventsToFile)
 			{
 				newEvent.LogToFile(httpContext);
 			}
@@ -572,7 +592,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.WriteLine("--File Not Found Event: " + newLog.SimpleInfo());
 			System.Diagnostics.Trace.Unindent();
 
-			if (Properties.Settings.Current.AppLogFileNotFoundEventsToDb)
+			if (Settings.AppLogFileNotFoundEventsToDb)
 			{
 				try
 				{
@@ -586,7 +606,7 @@ namespace GStore.Data
 					newLog.LogToFile(httpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogFileNotFoundEventsToFile)
+			if (Settings.AppLogFileNotFoundEventsToFile)
 			{
 				newLog.LogToFile(httpContext);
 			}
@@ -616,7 +636,7 @@ namespace GStore.Data
 			System.Diagnostics.Trace.WriteLine("--Bad Request Event: " + badRequest.SimpleInfo());
 			System.Diagnostics.Trace.Unindent();
 
-			if (Properties.Settings.Current.AppLogBadRequestEventsToDb)
+			if (Settings.AppLogBadRequestEventsToDb)
 			{
 				try
 				{
@@ -630,7 +650,7 @@ namespace GStore.Data
 					badRequest.LogToFile(httpContext);
 				}
 			}
-			if (Properties.Settings.Current.AppLogBadRequestEventsToFile)
+			if (Settings.AppLogBadRequestEventsToFile)
 			{
 				badRequest.LogToFile(httpContext);
 			}
@@ -840,7 +860,7 @@ namespace GStore.Data
 
 		public static void CreateEventLogFolders(HttpContext context)
 		{
-			if (Properties.Settings.Current.AppLogBadRequestEventsToFile)
+			if (Settings.AppLogBadRequestEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_BadRequests)))
 				{
@@ -848,7 +868,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogFileNotFoundEventsToFile)
+			if (Settings.AppLogFileNotFoundEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_FileNotFoundLogs)))
 				{
@@ -856,7 +876,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogLogExceptionsToFile)
+			if (Settings.AppLogLogExceptionsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_LogExceptions)))
 				{
@@ -864,7 +884,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogPageViewEventsToFile)
+			if (Settings.AppLogPageViewEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_PageViewEvents)))
 				{
@@ -872,7 +892,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogSecurityEventsToFile)
+			if (Settings.AppLogSecurityEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_SecurityEvents)))
 				{
@@ -880,7 +900,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogSystemEventsToFile)
+			if (Settings.AppLogSystemEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_SystemEvents)))
 				{
@@ -888,7 +908,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppLogUserActionEventsToFile)
+			if (Settings.AppLogUserActionEventsToFile)
 			{
 				if (!System.IO.Directory.Exists(context.Server.MapPath(GStoreFolder_UserActionEvents)))
 				{

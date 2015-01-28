@@ -220,7 +220,7 @@ namespace GStore.Data
 			webForm.DisplayTemplateName = "WebForm";
 			webForm.LabelMdColSpan = 2;
 			webForm.FieldMdColSpan = 10;
-			webForm.SubmitButtonClass = "btn btn-default";
+			webForm.SubmitButtonClass = "btn btn-primary";
 			webForm.SubmitButtonText = "Submit";
 			webForm.DisplayTemplateName = "WebForm";
 			webForm.IsPending = false;

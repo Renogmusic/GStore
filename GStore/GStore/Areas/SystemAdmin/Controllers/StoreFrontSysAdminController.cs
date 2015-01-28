@@ -174,12 +174,12 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				newConfig.CatalogAdminTheme = theme;
 				newConfig.DefaultNewPageTheme = theme;
 				newConfig.NotificationsTheme = theme;
-				newConfig.OrderStatusTheme = theme;
+				newConfig.OrdersTheme = theme;
 				newConfig.OrderAdminTheme = theme;
 				newConfig.ProfileTheme = theme;
 				newConfig.ApplyDefaultCartConfig();
 				newConfig.ApplyDefaultCheckoutConfig();
-				newConfig.ApplyDefaultOrderStatusConfig();
+				newConfig.ApplyDefaultOrdersConfig();
 			}
 
 			newConfig = GStoreDb.StoreFrontConfigurations.Add(newConfig);

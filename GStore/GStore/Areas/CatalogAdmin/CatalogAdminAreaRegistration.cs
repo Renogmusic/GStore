@@ -14,7 +14,7 @@ namespace GStore.Areas.CatalogAdmin
 
         public override void RegisterArea(AreaRegistrationContext context) 
         {
-			if (Properties.Settings.Current.AppEnableStoresVirtualFolders)
+			if (Settings.AppEnableStoresVirtualFolders)
 			{
 				context.MapRoute(
 					name: "Stores-CatalogAdmin_Root",

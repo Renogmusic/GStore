@@ -26,17 +26,17 @@ namespace GStore
 
 		private Task configSendGridasync(IdentityMessage message)
 		{
-			if (!Properties.Settings.Current.AppEnableEmail)
+			if (!Settings.AppEnableEmail)
 			{
 				return Task.FromResult(0);
 			}
 
-			string sendGridMailFromEmail = Properties.Settings.Current.IdentitySendGridMailFromEmail;
-			string sendGridMailFromName = Properties.Settings.Current.IdentitySendGridMailFromName;
+			string sendGridMailFromEmail = Settings.IdentitySendGridMailFromEmail;
+			string sendGridMailFromName = Settings.IdentitySendGridMailFromName;
 
 			string textSignature = "\n-Sent from GStore " + HttpContext.Current.Request.Url.Host;
-			string sendGridMailAccount = Properties.Settings.Current.IdentitySendGridMailAccount;
-			string sendGridMailPassword = Properties.Settings.Current.IdentitySendGridMailPassword;
+			string sendGridMailAccount = Settings.IdentitySendGridMailAccount;
+			string sendGridMailPassword = Settings.IdentitySendGridMailPassword;
 
 			//string sendGridMailFromEmail = storeFront.Client.SendGridMailFromEmail;
 			//string sendGridMailFromName = storeFront.Client.SendGridMailFromName;
@@ -75,14 +75,14 @@ namespace GStore
 	{
 		public Task SendAsync(IdentityMessage message)
 		{
-			if (!Properties.Settings.Current.AppEnableSMS)
+			if (!Settings.AppEnableSMS)
 			{
 				return Task.FromResult(0);
 			}
 
-			string twilioSid = Properties.Settings.Current.IdentityTwilioSid;
-			string twilioToken = Properties.Settings.Current.IdentityTwilioToken;
-			string twilioFromPhone = Properties.Settings.Current.IdentityTwilioFromPhone;
+			string twilioSid = Settings.IdentityTwilioSid;
+			string twilioToken = Settings.IdentityTwilioToken;
+			string twilioFromPhone = Settings.IdentityTwilioFromPhone;
 			string textSignature = "\n-Sent from GStore " + HttpContext.Current.Request.Url.Host;
 
 			var Twilio = new TwilioRestClient(
@@ -138,12 +138,12 @@ namespace GStore
             // You can write your own provider and plug it in here.
 			manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<Identity.AspNetIdentityUser>
             {
-                MessageFormat = "Your security code is {0} \n " + Properties.Settings.Current.IdentityTwoFactorSignature
+                MessageFormat = "Your security code is {0} \n " + Settings.IdentityTwoFactorSignature
             });
 			manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<Identity.AspNetIdentityUser>
             {
                 Subject = "Security Code",
-                BodyFormat = "Your security code is {0} \n " + Properties.Settings.Current.IdentityTwoFactorSignature
+                BodyFormat = "Your security code is {0} \n " + Settings.IdentityTwoFactorSignature
             });
             manager.EmailService = new EmailService();
             manager.SmsService = new SmsService();

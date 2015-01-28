@@ -344,7 +344,8 @@ namespace GStore.Data
 			newCart = db.Carts.Add(newCart);
 			db.SaveChanges();
 
-			newCart.UpdateDiscountCode(discountCode, controller);
+			bool success = false;
+			newCart.UpdateDiscountCode(discountCode, controller, out success);
 
 			return newCart;
 
@@ -454,6 +455,30 @@ namespace GStore.Data
 				db.Carts.Delete(cart);
 				db.SaveChanges();
 			}
+		}
+
+		/// <summary>
+		/// cancels any checkout in progress. Used after a cart is updated or quantity changed or discount code applied
+		/// </summary>
+		/// <param name="cart"></param>
+		/// <returns></returns>
+		public static Cart CancelCheckout(this Cart cart, IGstoreDb db)
+		{
+			if (cart == null)
+			{
+				return null;
+			}
+			if (cart.StatusStartedCheckout)
+			{
+				cart.StatusStartedCheckout = false;
+				cart.StatusSelectedLogInOrGuest = false;
+				cart.StatusCompletedDeliveryInfo = false;
+				cart.StatusSelectedDeliveryMethod = false;
+				cart.StatusEnteredPaymentInfo = false;
+				cart = db.Carts.Update(cart);
+				db.SaveChanges();
+			}
+			return cart;
 		}
 
 		/// <summary>
@@ -746,14 +771,14 @@ namespace GStore.Data
 			return cartItem.UnitPriceExt - cartItem.LineDiscount;
 		}
 
-		public static Cart UpdateDiscountCode(this Cart cart, string discountCode, Controllers.BaseClass.BaseController controller)
+		public static Cart UpdateDiscountCode(this Cart cart, string discountCode, Controllers.BaseClass.BaseController controller, out bool success)
 		{
 			if (controller == null)
 			{
 				throw new ArgumentNullException("controller");
 			}
 
-			ApplyDiscountCodeHelper(cart, discountCode, controller.CurrentStoreFrontConfigOrThrow, true, controller.GStoreDb, controller);
+			success = ApplyDiscountCodeHelper(cart, discountCode, controller.CurrentStoreFrontConfigOrThrow, true, controller.GStoreDb, controller);
 			return cart;
 		}
 

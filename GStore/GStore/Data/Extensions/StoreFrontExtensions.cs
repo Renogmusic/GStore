@@ -512,7 +512,7 @@ namespace GStore.Data
 			storeFrontConfig.CatalogAdminLayoutName = "Default";
 			storeFrontConfig.CartLayoutName = "Default";
 			storeFrontConfig.CheckoutLayoutName = "Default";
-			storeFrontConfig.OrderStatusLayoutName = "Default";
+			storeFrontConfig.OrdersLayoutName = "Default";
 			storeFrontConfig.OrderAdminLayoutName = "Default";
 			storeFrontConfig.DefaultNewPageLayoutName = "Default";
 			storeFrontConfig.CatalogPageInitialLevels = 6;
@@ -586,7 +586,7 @@ namespace GStore.Data
 			notification.BaseUrl = notificationBaseUrl;
 			notification.Message = "Welcome to " + storeFront.CurrentConfig().Name + "!"
 				+ "\nEnjoy your stay, and email us if you have any questions, suggestions, feedback, or anything!"
-				+ "\n\n" + Properties.Settings.Current.IdentitySendGridMailFromName + " - " + Properties.Settings.Current.IdentitySendGridMailFromEmail;
+				+ "\n\n" + Settings.IdentitySendGridMailFromName + " - " + Settings.IdentitySendGridMailFromEmail;
 
 			//NotificationLink link1 = db.NotificationLinks.Create();
 			//link1.StoreFront = storeFront;
@@ -968,7 +968,7 @@ namespace GStore.Data
 				+ "<br/><br/>"
 				+ (storeFront == null ? string.Empty : HttpUtility.HtmlEncode(storeFront.OutgoingMessageSignature()).Replace("\n", " \n<br/>") + "<br/><br/>")
 				+ "<a href=\"" + HttpUtility.HtmlAttributeEncode(currentUrl.Authority) + "\">" + HttpUtility.HtmlEncode(currentUrl.Authority) + "</a>"
-				+ "<br/><br/>" + Properties.Settings.Current.IdentitySendGridMailFromName + " - " + Properties.Settings.Current.IdentitySendGridMailFromEmail;
+				+ "<br/><br/>" + Settings.IdentitySendGridMailFromName + " - " + Settings.IdentitySendGridMailFromEmail;
 
 			return messageHtml;
 
@@ -986,7 +986,7 @@ namespace GStore.Data
 				+ "<br/><br/>"
 				+ (storeFront == null ? string.Empty : HttpUtility.HtmlEncode(storeFront.OutgoingMessageSignature()).Replace("\n", " \n<br/>") + "<br/><br/>")
 				+ "<a href=\"" + HttpUtility.HtmlAttributeEncode(currentUrl.Authority) + "\">" + HttpUtility.HtmlEncode(currentUrl.Authority) + "</a>"
-				+ "<br/><br/>" + Properties.Settings.Current.IdentitySendGridMailFromName + " - " + Properties.Settings.Current.IdentitySendGridMailFromEmail;
+				+ "<br/><br/>" + Settings.IdentitySendGridMailFromName + " - " + Settings.IdentitySendGridMailFromEmail;
 
 			return messageHtml;
 
@@ -1000,7 +1000,7 @@ namespace GStore.Data
 			{
 				messageBody += "\n" + storeFront.OutgoingMessageSignature();
 			}
-			messageBody += "\n\n" + Properties.Settings.Current.IdentityTwoFactorSignature;
+			messageBody += "\n\n" + Settings.IdentityTwoFactorSignature;
 
 			return messageBody;
 		}
@@ -1108,7 +1108,7 @@ namespace GStore.Data
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "GStore", "Profile", "Notifications", "Products", "Category", "Catalog", "Cart", "Images", "Checkout", "OrderStatus", "OrderAdmin", "CatalogAdmin", "Pages", "Styles", "Scripts", "Content", "JS", "Themes", "Fonts", "Edit", "View", "SubmitForm", "UpdatePageAjax", "UpdateSectionAjax", "StoreAdmin", "SystemAdmin" };
+			string[] blockedUrls = { "Account", "Category", "Catalog", "CatalogAdmin", "Cart", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{
@@ -1120,7 +1120,7 @@ namespace GStore.Data
 				}
 			}
 
-			if (Properties.Settings.Current.AppEnableStoresVirtualFolders)
+			if (Settings.AppEnableStoresVirtualFolders)
 			{
 				if (trimUrl.StartsWith("stores"))
 				{
@@ -2001,13 +2001,13 @@ namespace GStore.Data
 			storeFrontConfig.CheckoutConfirmOrderWebFormId = null;
 		}
 
-		public static void ApplyDefaultOrderStatusConfig(this StoreFrontConfiguration storeFrontConfig)
+		public static void ApplyDefaultOrdersConfig(this StoreFrontConfiguration storeFrontConfig)
 		{
-			storeFrontConfig.OrderStatusLayoutName = "Default";
+			storeFrontConfig.OrdersLayoutName = "Default";
 			if (storeFrontConfig.DefaultNewPageTheme != null)
 			{
-				storeFrontConfig.OrderStatusTheme = storeFrontConfig.DefaultNewPageTheme;
-				storeFrontConfig.OrderStatusThemeId = storeFrontConfig.DefaultNewPageTheme.ThemeId;
+				storeFrontConfig.OrdersTheme = storeFrontConfig.DefaultNewPageTheme;
+				storeFrontConfig.OrdersThemeId = storeFrontConfig.DefaultNewPageTheme.ThemeId;
 			}
 		}
 

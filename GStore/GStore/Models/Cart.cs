@@ -85,26 +85,38 @@ namespace GStore.Models
 		[Display(Name = "Item Count", Description="Total number of items in the cart.\nThis counts individual items.")]
 		public int ItemCount { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Sub-Total", Description="Order Sub-total before tax, shipping, handling, and order discount.")]
 		public decimal Subtotal { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Tax", Description="Tax for this order.")]
 		public decimal Tax { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Shipping", Description="Shipping cost for this order.")]
 		public decimal Shipping { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Handling", Description="Handling cost for this order.")]
 		public decimal Handling { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Order Discount", Description="Order discount for this order.")]
 		public decimal OrderDiscount { get; set; }
 
+		[Required]
+		[DataType(DataType.Currency)]
 		[Range(0, 1000000)]
 		[Display(Name = "Cart Total", Description="Order grand total. This is the amount that will be charged.")]
 		public decimal Total { get; set; }

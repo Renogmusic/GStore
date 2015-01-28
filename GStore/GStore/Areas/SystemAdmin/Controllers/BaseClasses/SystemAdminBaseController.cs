@@ -46,7 +46,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 		{
 			get
 			{
-				return Properties.Settings.Current.AppDefaultLayoutName;
+				return Settings.AppDefaultLayoutName;
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 		{
 			get
 			{
-				return Properties.Settings.Current.AppDefaultThemeFolderName;
+				return Settings.AppDefaultThemeFolderName;
 			}
 		}
 

@@ -1,45 +1,121 @@
 ﻿<ul class="nav navbar-nav">
 	<!-- Dynamic Order Admin Menu -->
-@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_MenuItem))
-{
+	@if (Html.UserHasPermission(GStoreAction.Orders_OrderAdminMenuItem))
+	{
 	<!-- Orders Menu Item -->
-	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="o" title="Orders (coming soon)"><small class="text-warning">Orders</small><span class="caret"></span></a>
-		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
-			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Manager))
-			{
-				<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-					@Html.ActionLink("Order Manager", "Manager", "OrdersAdmin")
-				</li>
-				<li class="nav-divider"></li>
-			}
-			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_ViewAbandoned))
-			{
-				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("View Abandoned Carts", "Carts_ViewAbandoned", "OrdersAdmin")
-				</li>
-			}
-			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_ViewCurrent))
-			{
-				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("View Current Carts", "", "OrdersAdmin")
-				</li>
-			}
-			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_TransferAbandonedCart))
-			{
-				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Transfer An Abandoned Cart", "Carts_TransferAbandonedCart", "OrdersAdmin")
-				</li>
-			}
-			@if (Html.UserHasPermission(GStoreAction.OrderAdmin_Orders_Carts_SendCheckOutLink))
-			{
-				<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
-					@Html.ActionLink("Check Out an Abandoned Cart", "Carts_SendCheckOutLink", "OrdersAdmin")
-				</li>
-			}
-		</ul>
-	</li>
-}
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="o" title="Orders (coming soon)"><small class="text-warning">Orders</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Orders_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Order Manager", "Manager", "OrdersAdmin", null, new { accesskey = "o" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+			</ul>
+		</li>
+	}
+
+	@if (Html.UserHasPermission(GStoreAction.Carts_OrderAdminMenuItem))
+	{
+		<!-- Carts Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="c" title="Carts (coming soon)"><small class="text-warning">Carts</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewCurrent))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Cart Manager", "Manager", "CartAdmin", null, new { accesskey = "o" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewAbandoned))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Abandoned Carts", "ViewAbandoned", "CartAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewCurrent))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Current Carts", "ViewCurrent", "CartAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_TransferAbandonedCart))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Transfer An Abandoned Cart", "TransferAbandonedCart", "CartAdmin", null, new { accesskey = "t" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_SendCheckOutLink))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Check Out an Abandoned Cart", "SendCheckOutLink", "CartAdmin", null, new { accesskey = "c" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
+	@if (Html.UserHasPermission(GStoreAction.Discounts_OrderAdminMenuItem))
+	{
+		<!-- Discounts Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="d" title="Discounts (coming soon)"><small class="text-warning">Discounts</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Discounts_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Discount Manager", "Manager", "DiscountAdmin", null, new { accesskey = "d" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Discounts_Create))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("New Discount Code", "Create", "DiscountAdmin", null, new { accesskey = "n" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
+	@if (Html.UserHasPermission(GStoreAction.GiftCards_OrderAdminMenuItem))
+	{
+		<!-- Discounts Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="g" title="Gift Cards (coming soon)"><small class="text-warning">Gift Cards</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Gift Card Manager", "Manager", "GiftCardAdmin", null, new { accesskey = "g" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Create))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("New Gift Card", "Create", "GiftCardAdmin", null, new { accesskey = "n" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_View))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Gift Card", "View", "GiftCardAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Reload))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Reload a Gift Card", "Reload", "GiftCardAdmin", null, new { accesskey = "r" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
 
 	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Get Help!">Help<span class="caret"></span></a>
@@ -50,11 +126,11 @@
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore")
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore", null, new { accesskey = "g" })
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-				@Html.ActionLink("About GStore", "About", "GStore")
+				@Html.ActionLink("About GStore", "About", "GStore", null, new { accesskey = "a" })
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">

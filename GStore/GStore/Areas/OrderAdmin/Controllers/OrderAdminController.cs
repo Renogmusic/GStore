@@ -2,6 +2,7 @@
 using GStore.Models;
 using System;
 using System.Web.Mvc;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Areas.OrderAdmin.Controllers
 {
@@ -11,11 +12,12 @@ namespace GStore.Areas.OrderAdmin.Controllers
         public ActionResult Index()
         {
 			UserProfile profile = CurrentUserProfileOrNull;
-			if (profile != null)
+			if (profile != null && !Session.OrderAdminVisitLogged())
 			{
 				profile.LastOrderAdminVisitDateTimeUtc = DateTime.UtcNow;
 				GStoreDb.UserProfiles.Update(profile);
 				GStoreDb.SaveChangesDirect();
+				Session.OrderAdminVisitLogged(true);
 			}
 
 			return View("Index", this.OrderAdminViewModel);

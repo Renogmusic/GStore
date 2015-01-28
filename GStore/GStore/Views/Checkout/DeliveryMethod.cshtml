@@ -7,8 +7,12 @@
 	@Html.AntiForgeryToken()
 	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
-	@Html.EditorFor(model => model.ShippingDeliveryMethod, "EnumRadio")
+	@Html.EditorFor(model => model.ShippingDeliveryMethod, "FieldEnumRadio")
 	Html.RenderPartial("_CheckoutWebFormFieldsPartial", new Tuple<CheckoutViewModelBase, WebForm>(Model, Model.Config.CheckoutDeliveryMethodWebForm));
 
-	<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+	<div class="row">
+		<div class="col-xs-12">
+			<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+		</div>
+	</div>
 }
