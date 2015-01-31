@@ -371,6 +371,36 @@ namespace GStore.Data
 
 		}
 
+		public static void SetDefaultsForNew(this ProductCategory productCategory, StoreFront storeFront)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			productCategory.ClientId = storeFront.ClientId;
+			productCategory.Client = storeFront.Client;
+			productCategory.StoreFrontId = storeFront.StoreFrontId;
+			productCategory.StoreFront = storeFront;
+			if (storeFront.NavBarItems == null || storeFront.NavBarItems.Count == 0)
+			{
+				productCategory.Name = "New Category";
+				productCategory.Order = 100;
+			}
+			else
+			{
+				productCategory.Order = (storeFront.NavBarItems.Max(nb => nb.Order) + 10);
+				productCategory.Name = "New Category " + productCategory.Order;
+			}
+			productCategory.UrlName = productCategory.Name.Replace(' ', '_');
+			productCategory.ImageName = productCategory.UrlName + ".png";
+			productCategory.ForRegisteredOnly = false;
+			productCategory.UseDividerAfterOnMenu = true;
+			productCategory.IsPending = false;
+			productCategory.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			productCategory.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+
+		}
+
 
 		/// <summary>
 		/// Returns a Select List for MVC. Return type is IEnumerable SelectListItem

@@ -1,4 +1,4 @@
-﻿@model Tuple<string, string, string>
+﻿@model PayPalInfo
 @{
 	string business = "QLVM63Z987BTL";
 	string item_name = "Prosperino Gallipoli";
@@ -6,9 +6,18 @@
 }
 @if (Model != null)
 {
-	business = Model.Item1;
-	item_name = Model.Item2;
-	item_number = Model.Item3;
+	if (!string.IsNullOrEmpty(Model.Business))
+	{
+		business = Model.Business;
+	}
+	if (!string.IsNullOrEmpty(Model.Item_Name))
+	{
+		item_name = Model.Item_Name;
+	}
+	if (!string.IsNullOrEmpty(Model.Item_Number))
+	{
+		item_number = Model.Item_Number;
+	}
 }
 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">

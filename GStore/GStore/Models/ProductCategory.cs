@@ -48,6 +48,9 @@ namespace GStore.Models
 		[Display(Name = "For Registered Users Only")]
 		public bool ForRegisteredOnly { get; set; }
 
+		[Display(Name = "For Anonymous Users Only")]
+		public bool ForAnonymousOnly { get; set; }
+
 		[Display(Name = "Show a Divider before this item")]
 		public bool UseDividerBeforeOnMenu { get; set; }
 

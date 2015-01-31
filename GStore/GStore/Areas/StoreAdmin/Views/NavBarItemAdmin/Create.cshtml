@@ -39,14 +39,14 @@
 	</div>
 
 	@Html.EditorFor(model => model.ParentNavBarItem, "FieldParentNavBarItemOrBlank")
-	@Html.EditorFor(model => model.Name)
-	@Html.EditorFor(model => model.PageId, "PageId")
-	@Html.EditorFor(model => model.Order)
-	@Html.EditorFor(model => model.ForRegisteredOnly)
-	@Html.EditorFor(model => model.ForAnonymousOnly)
-	@Html.EditorFor(model => model.IsPending)
-	@Html.EditorFor(model => model.StartDateTimeUtc)
-	@Html.EditorFor(model => model.EndDateTimeUtc)
+	@Html.EditorFor(model => model.Name, "FieldText")
+	@Html.EditorFor(model => model.PageId, "FieldPageId")
+	@Html.EditorFor(model => model.Order, "FieldInt")
+	@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+	@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+	@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 	<div class="row">
 		<div class="form-actions no-color col-md-offset-3 col-md-6">

@@ -399,6 +399,10 @@ namespace GStore.Data
 			}
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
+				.Where(pc => 
+					(isRegistered || !pc.ForRegisteredOnly) 
+					&& 
+					(!isRegistered || !pc.ForAnonymousOnly ))
 				.Where(cat => isRegistered || !cat.ForRegisteredOnly)
 				.Where(cat => cat.ShowInMenu && (cat.ShowIfEmpty || cat.ChildActiveCount > 0))
 				.OrderBy(cat => cat.Order)
@@ -420,7 +424,6 @@ namespace GStore.Data
 					(isRegistered || !nav.ForRegisteredOnly) 
 					&& 
 					(!isRegistered || !nav.ForAnonymousOnly ))
-
 				.OrderBy(nav => nav.Order)
 				.ThenBy(nav => nav.Name)
 				.AsTree(nav => nav.NavBarItemId, nav => nav.ParentNavBarItemId);
@@ -883,6 +886,17 @@ namespace GStore.Data
 			storeDb.SaveChangesEx(false, false, false, false);
 		}
 
+		/// <summary>
+		/// This is an expensive database and recursion operation, use with caution
+		/// </summary>
+		/// <param name="storeDb"></param>
+		/// <param name="storeFront"></param>
+		public static void RecalculateProductCategoryActiveCount(this Data.IGstoreDb storeDb, int storeFrontId)
+		{
+			StoreFront storeFront = storeDb.StoreFronts.FindById(storeFrontId);
+			storeDb.RecalculateProductCategoryActiveCount(storeFront);
+		}
+
 		private static int ActiveCountWithChildren(this TreeNode<ProductCategory> categoryNode)
 		{
 			int count = categoryNode.Entity.DirectActiveCount;
@@ -1163,6 +1177,31 @@ namespace GStore.Data
 			}
 
 			string errorConflictMessage = "Name '" + name + "' is already in use for Menu Item '" + conflict.Name + "' [" + conflict.NavBarItemId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique Name or change the conflicting Menu Item Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
+		public static bool ValidateProductCategoryUrlName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string urlName, int storeFrontId, int clientId, int? currentProductCategoryId)
+		{
+			string nameField = "UrlName";
+
+			if (string.IsNullOrWhiteSpace(urlName))
+			{
+				string errorMessage = "URL Name is required \n Please enter a unique URL name for this category";
+				controller.ModelState.AddModelError(nameField, errorMessage);
+				return false;
+			}
+
+			ProductCategory conflict = db.ProductCategories.Where(pc => pc.ClientId == clientId && pc.StoreFrontId == storeFrontId && pc.UrlName.ToLower() == urlName && (pc.ProductCategoryId != currentProductCategoryId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "URL Name '" + urlName + "' is already in use for Category '" + conflict.UrlName + "' [" + conflict.ProductCategoryId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique URL Name or change the conflicting Category URL Name.";
 
 			controller.ModelState.AddModelError(nameField, errorConflictMessage);
 			return false;
@@ -1523,6 +1562,94 @@ namespace GStore.Data
 				order += 10;
 			}
 
+			db.SaveChanges();
+		}
+
+		public static ProductCategory CreateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			ProductCategory record = db.ProductCategories.Create();
+
+			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
+			record.ChildActiveCount = 0;
+			record.DirectActiveCount = 0;
+			record.ImageName = viewModel.ImageName;
+			record.ParentCategoryId = viewModel.ParentCategoryId;
+			record.ShowIfEmpty = viewModel.ShowIfEmpty;
+			record.ShowInMenu = viewModel.ShowInMenu;
+			record.UrlName = viewModel.UrlName;
+
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.Name = viewModel.Name;
+			record.Order = viewModel.Order;
+			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
+			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+
+			record.StoreFrontId = storeFront.StoreFrontId;
+			record.ClientId = storeFront.ClientId;
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+
+			record.UpdateAuditFields(userProfile);
+
+			db.ProductCategories.Add(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		public static ProductCategory UpdateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			//find existing record, update it
+			ProductCategory record = storeFront.ProductCategories.SingleOrDefault(pc => pc.ProductCategoryId == viewModel.ProductCategoryId);
+			if (record == null)
+			{
+				throw new ApplicationException("Category not found in storefront Categories. Category Id: " + viewModel.ProductCategoryId);
+			}
+
+			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
+			record.ImageName = viewModel.ImageName;
+			record.ParentCategoryId = viewModel.ParentCategoryId;
+			record.ShowIfEmpty = viewModel.ShowIfEmpty;
+			record.ShowInMenu = viewModel.ShowInMenu;
+			record.UrlName = viewModel.UrlName;
+
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.Name = viewModel.Name;
+			record.Order = viewModel.Order;
+			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
+			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+			record.UpdatedBy = userProfile;
+			record.UpdateDateTimeUtc = DateTime.UtcNow;
+
+			db.ProductCategories.Update(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		/// <summary>
+		/// re-orders siblings and puts them in order by 10's, and saves to database
+		/// </summary>
+		/// <param name="navBarItems"></param>
+		public static void ProductCategoriesRenumberSiblings(this IGstoreDb db, IEnumerable<ProductCategory> productCategories)
+		{
+			List<ProductCategory> sortedItems = productCategories.AsQueryable().ApplyDefaultSort().ToList();
+
+			int order = 100;
+			foreach (ProductCategory item in sortedItems)
+			{
+				item.Order = order;
+				order += 10;
+			}
 			db.SaveChanges();
 		}
 

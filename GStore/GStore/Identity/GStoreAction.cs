@@ -126,13 +126,15 @@ namespace GStore.Identity
 
 		#region Catalog Admin Actions
 
-		//items below are not implemented yet //
-		Catalog_StoreAdminMenuItem = 21000,
-		Catalog_Manager = 21110,
-		Catalog_Categories_Manager = 21120,
-		Catalog_Categories_Images_Manager = 21130,
-		Catalog_Products_Manager = 21140,
-		Catalog_Products_Images_Manager = 21150
+		Categories_CatalogAdminMenuItem = 21000,
+		Categories_Manager = 21110,
+		Categories_Create = 21120,
+		Categories_View = 21130,
+		Categories_Edit = 21140,
+		Categories_Delete = 21150,
+
+		Products_CatalogAdminMenuItem = 22000,
+		Products_Manager = 22110,
 
 		#endregion
 

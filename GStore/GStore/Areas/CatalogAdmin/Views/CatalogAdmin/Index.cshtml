@@ -1,2 +1,16 @@
 ﻿@model CatalogAdminViewModel
-<h1>Catalog Admin Coming Soon!</h1>
+<div class="row">
+	@if (Html.UserHasPermission(GStoreAction.Categories_Manager))
+	{
+		<div class="col-md-6">
+			@Html.ActionLink("Categories", "Manager", "CategoryAdmin", null, new { @class = "btn btn-info" })
+		</div>
+	}
+	@if (Html.UserHasPermission(GStoreAction.Products_Manager))
+	{
+		<div class="col-md-6">
+			@Html.ActionLink("Products", "Manager", "ProductAdmin", null, new { @class = "btn btn-info" })
+		</div>
+	}
+</div>
+

@@ -1,0 +1,87 @@
+﻿@model GStore.Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+	<div class="row">
+		@if (Model.IsCreatePage)
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-info">Create a New Product Category</span>
+			</h1>
+		}
+		else
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-warning">Edit Product Category</span>
+				<br /><small>'@(Model.Name)' [@(Model.ProductCategoryId)]</small>
+			</h1>
+		}
+	</div>
+
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+					}
+					&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink("Ok / Cancel", "Manager", null, new { @class = "btn btn-default" })
+				</center>
+			</div>
+		</div>
+	</div>
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(model => model.ProductCategoryId)
+		@Html.EditorFor(model => model.Name, "FieldText")
+		@Html.EditorFor(model => model.UrlName, "FieldText")
+		@Html.EditorFor(model => model.ImageName, "FieldText")
+		@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+		@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.ParentCategoryId, "FieldInt")
+		@Html.EditorFor(model => model.UseDividerAfterOnMenu, "FieldCheckbox")
+		@Html.EditorFor(model => model.UseDividerBeforeOnMenu, "FieldCheckbox")
+		@Html.EditorFor(model => model.ShowInMenu, "FieldCheckbox")
+		@Html.EditorFor(model => model.ShowIfEmpty, "FieldCheckbox")
+		@Html.EditorFor(model => model.AllowChildCategoriesInMenu, "FieldCheckbox")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+
+	</div>
+
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+					}
+					&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink("Ok / Cancel", "Manager", null, new { @class = "btn btn-default" })
+				</center>
+			</div>
+		</div>
+	</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+

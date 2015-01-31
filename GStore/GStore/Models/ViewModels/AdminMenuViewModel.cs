@@ -8,6 +8,9 @@ using GStore.Identity;
 
 namespace GStore.Models.ViewModels
 {
+	/// <summary>
+	/// ViewModel for admin menus; used in right side nav
+	/// </summary>
 	public class AdminMenuViewModel
 	{
 		public UserProfile UserProfile { get; protected set; }

@@ -456,6 +456,37 @@ dd label.help-label-top, label.help-label-top {
 	padding-top: 0.5em;
 }
 
+.CatalogAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminEditPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+	padding-left: 10% !important;
+}
+.CatalogAdminDetailsPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminDeletePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminCreatePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
 .StoreAdminIndexPageTitle
 {
 	padding-bottom: 0.5em;

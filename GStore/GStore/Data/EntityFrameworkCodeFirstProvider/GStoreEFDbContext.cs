@@ -277,7 +277,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 		{
 			ChangeTracker.DetectChanges();
 			List<Notification> notificationsToProcess = new List<Notification>();
-			List<StoreFront> storeFrontsToRecalculate = new List<StoreFront>();
+			List<int> storeFrontIdsToRecalculate = new List<int>();
 
 			if (ChangeTracker.HasChanges())
 			{
@@ -300,18 +300,20 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 					if (updateCategoryCounts && item.Entity is Models.Product)
 					{
 						StoreFront storeFront = ((Product)item.Entity).StoreFront;
-						if (!storeFrontsToRecalculate.Contains(storeFront))
+						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
+						if (!storeFrontIdsToRecalculate.Contains(storeFrontId))
 						{
-							storeFrontsToRecalculate.Add(storeFront);
+							storeFrontIdsToRecalculate.Add(storeFrontId);
 						}
 					}
 
 					if (updateCategoryCounts && item.Entity is Models.ProductCategory)
 					{
 						StoreFront storeFront = ((ProductCategory)item.Entity).StoreFront;
-						if (!storeFrontsToRecalculate.Contains(storeFront))
+						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
+						if (!storeFrontIdsToRecalculate.Contains(storeFrontId))
 						{
-							storeFrontsToRecalculate.Add(storeFront);
+							storeFrontIdsToRecalculate.Add(storeFrontId);
 						}
 					}
 
@@ -456,17 +458,19 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 				}
 			}
 
-			if (storeFrontsToRecalculate.Count != 0)
+			if (storeFrontIdsToRecalculate.Count != 0)
 			{
-				foreach (StoreFront item in storeFrontsToRecalculate)
+				foreach (int storeFrontId in storeFrontIdsToRecalculate)
 				{
-					Data.StoreFrontExtensions.RecalculateProductCategoryActiveCount(this, item);
+					Data.StoreFrontExtensions.RecalculateProductCategoryActiveCount(this, storeFrontId);
 				}
 			}
 
 			return returnValue;
 
 		}
+
+		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel> ProductCategoryEditAdminViewModels { get; set; }
 
 	}
 }

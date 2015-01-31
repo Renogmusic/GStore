@@ -1,0 +1,28 @@
+﻿<#+
+string FieldType(PropertyMetadata metaData)
+{
+	string returnValue = "";
+	if (metaData.IsEnum)
+	{
+		returnValue = "FieldEnum";
+	}
+	else if (metaData.TypeName == "System.Boolean")
+	{
+		returnValue = "FieldCheckbox";
+	}
+	else if (metaData.TypeName == "System.DateTime")
+	{
+		returnValue ="FieldDateTime";
+	}
+	else if (metaData.TypeName == "System.Int32" || metaData.TypeName == "System.Int16" || metaData.TypeName == "System.Int64")
+	{
+		returnValue ="FieldInt";
+	}
+	else
+	{
+		returnValue = "FieldText";
+	}
+
+	return returnValue;
+}
+#>

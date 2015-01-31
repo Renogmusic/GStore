@@ -422,7 +422,7 @@ namespace GStore.Models
 		#region Catalog Layout
 
 		[Display(Name = "Nav Bar Catalog Max Levels")]
-		[Range(1, 6)]
+		[Range(0, 6)]
 		public int NavBarCatalogMaxLevels { get; set; }
 
 		[Display(Name = "Catalog Page Initial Levels")]

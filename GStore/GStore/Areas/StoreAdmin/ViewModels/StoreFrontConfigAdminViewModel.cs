@@ -389,8 +389,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public string Name { get; set; }
 
 		[Required]
-		[Display(Name = "Site Menu Catalog Max Levels", Description = "Enter the number of Category levels to expand on the Site Top menu")]
-		[Range(1, 6)]
+		[Display(Name = "Site Menu Catalog Max Levels", Description = "Enter the number of Category levels to expand on the Site Top menu. 0 for none, up to 6.")]
+		[Range(0, 6)]
 		public int NavBarCatalogMaxLevels { get; set; }
 
 		[Required]

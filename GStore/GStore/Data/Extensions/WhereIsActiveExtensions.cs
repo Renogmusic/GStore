@@ -748,6 +748,30 @@ namespace GStore.Data
 		/// </summary>
 		/// <param name="storeFront"></param>
 		/// <returns></returns>
+		public static bool IsActiveBubble(this ProductCategory productCategory)
+		{
+			if (productCategory == null)
+			{
+				throw new ArgumentNullException("productCategory");
+			}
+
+			if (!productCategory.Client.IsActiveDirect())
+			{
+				return false;
+			}
+
+			if (productCategory.ParentCategory == null)
+			{
+				return productCategory.IsActiveDirect();
+			}
+			return productCategory.ParentCategory.IsActiveDirect();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
 		public static bool IsActiveBubble(this ValueList valueList)
 		{
 			if (valueList == null)

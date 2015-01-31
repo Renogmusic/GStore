@@ -220,24 +220,24 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public int ClientId { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created On", Description = "Date and time this form was created.")]
+		[Display(Name = "Created On", Description = "Date and time this Menu Item was created.")]
 		public DateTime CreateDateTimeUtc { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created By", Description = "The User who created this form")]
+		[Display(Name = "Created By", Description = "The User who created this Menu Item")]
 		public UserProfile CreatedBy { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created By User Id", Description = "The User who created this form")]
+		[Display(Name = "Created By User Id", Description = "The User who created this Menu Item")]
 		public int CreatedBy_UserProfileId { get; protected set; }
 
-		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this form to go INACTIVE on. \nIf this date is in the past, your form will not show on the page \nExample: 12/31/2199 11:59 PM")]
+		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Menu Item to go INACTIVE on. \nIf this date is in the past, your Menu Item will not show on the page \nExample: 12/31/2199 11:59 PM")]
 		public DateTime EndDateTimeUtc { get; set; }
 
-		[Display(Name = "Inactive", Description = "Check this box to Inactivate a Form immediately. \nIf checked, this form will not be shown on any pages.")]
+		[Display(Name = "Inactive", Description = "Check this box to Inactivate a Menu Item immediately. \nIf checked, this Menu Item will not be shown on any pages.")]
 		public bool IsPending { get; set; }
 
-		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this form to be ACTIVE on. \nIf this date is in the future, your form will not show on the page \nExample: 1/1/2000 12:00 PM")]
+		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Menu Item to be ACTIVE on. \nIf this date is in the future, your Menu Item will not show on the page \nExample: 1/1/2000 12:00 PM")]
 		public DateTime StartDateTimeUtc { get; set; }
 
 		[Editable(false)]
@@ -249,15 +249,15 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		public int StoreFrontId { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated On", Description = "Date and time this form was last updated.")]
+		[Display(Name = "Updated On", Description = "Date and time this Menu Item was last updated.")]
 		public DateTime UpdateDateTimeUtc { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated By", Description = "The user that last updated this form.")]
+		[Display(Name = "Updated By", Description = "The user that last updated this Menu Item.")]
 		public UserProfile UpdatedBy { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated By User Id", Description = "The user ID of the user that last updated this form.")]
+		[Display(Name = "Updated By User Id", Description = "The user ID of the user that last updated this Menu Item.")]
 		public int UpdatedBy_UserProfileId { get; protected set; }
 
 		[Editable(false)]

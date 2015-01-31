@@ -1,0 +1,12 @@
+﻿@model GStore.Models.Client
+
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@:'@(Model.Name)' [@(Model.ClientId)]
+	}
+}

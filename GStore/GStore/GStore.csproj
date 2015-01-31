@@ -244,9 +244,13 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\CatalogAdmin\CatalogAdminAreaRegistration.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\BaseClasses\CatalogAdminBaseController.cs" />
+    <Compile Include="Areas\CatalogAdmin\Controllers\ProductAdminController.cs" />
+    <Compile Include="Areas\CatalogAdmin\Controllers\CategoryAdminController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\CatalogAdminController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\GStoreController.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\CategoryListAdminViewModel.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\CatalogAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductCategoryEditAdminViewModel.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\GiftCardAdminController.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\DiscountAdminController.cs" />
@@ -283,6 +287,7 @@
     <Compile Include="Models\DeliveryInfoDigital.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\ViewModels\PayPalInfoViewModel.cs" />
     <Compile Include="Models\ViewModels\CartConfigViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigAdminViewModel.cs">
       <SubType>Code</SubType>
@@ -1043,7 +1048,7 @@
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormField.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormFieldNoLinks.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebForm.cshtml" />
-    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\StoreFront.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\StoreFront.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Client.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\PageTemplate.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Edit.cshtml" />
@@ -1490,6 +1495,18 @@
     <Content Include="Content\Server\Themes\RenoG\variables.css.map">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\Manager.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\Manager.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryTreeNode.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\StoreFrontConfiguration.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\ManualCreateOrEdit.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategory.cshtml" />
+    <Content Include="CodeTemplates\MvcView\Imports.include.t4" />
+    <Content Include="CodeTemplates\MvcView\ModelMetadataFunctions.cs.include.t4" />
+    <Content Include="CodeTemplates\MvcView\AdminCreateOrEdit.cs.t4" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\CreateOrEdit.cshtml" />
+    <Content Include="CodeTemplates\MvcView\GStore.cs.include.t4" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\Delete.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1956,6 +1973,7 @@
     <Content Include="Views\Page\HtmlFile.cshtml" />
     <Content Include="Views\Catalog\_Layout_Default.cshtml" />
     <Content Include="Views\Shared\_LoginAdminPartial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Client.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
