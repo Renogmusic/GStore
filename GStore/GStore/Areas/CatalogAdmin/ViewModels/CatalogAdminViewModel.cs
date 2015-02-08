@@ -29,6 +29,7 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 			this.UserProfile = userProfile;
 			this.Client = currentStoreFrontConfig.Client;
 		}
+
 		public void UpdateClient(Client client)
 		{
 			this.Client = client;
@@ -56,6 +57,75 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 
 		[Display(Name = "Is Active")]
 		public bool IsActiveDirect { get; protected set; }
+
+		[Display(Name = "Return to Front End")]
+		public bool ReturnToFrontEnd { get; set; }
+
+		public int? FilterProductCategoryId { get; set; }
+
+		public string SortBy { get; set; }
+
+		public bool? SortAscending { get; set; }
+
+		public List<Product> Products
+		{
+			get
+			{
+				if (_products != null)
+				{
+					return _products;
+				}
+				if (this.StoreFront == null)
+				{
+					throw new ArgumentNullException("storeFront");
+				}
+
+				_products = this.StoreFront.Products.AsQueryable().ApplyDefaultSort().ToList();
+				return _products;
+			}
+		}
+		public void UpdateSortedProducts(IOrderedQueryable<Product> sortedProducts)
+		{
+			_products = sortedProducts.ToList();
+		}
+		protected List<Product> _products = null;
+
+		public IEnumerable<TreeNode<ProductCategory>> ProductCategoryTree
+		{
+			get
+			{
+				if (_productCategoryTree != null)
+				{
+					return _productCategoryTree;
+				}
+				if (this.StoreFront == null)
+				{
+					throw new ArgumentNullException("storeFront");
+				}
+				_productCategoryTree = this.ProductCategories.AsTree(pc => pc.ProductCategoryId, pc => pc.ParentCategoryId);
+				return _productCategoryTree;
+			}
+		}
+		protected IEnumerable<TreeNode<ProductCategory>> _productCategoryTree = null;
+
+		public List<ProductCategory> ProductCategories
+		{
+			get
+			{
+				if (_productCategories != null)
+				{
+					return _productCategories;
+				}
+				if (this.StoreFront == null)
+				{
+					throw new ArgumentNullException("storeFront");
+				}
+
+				_productCategories = this.StoreFront.ProductCategories.AsQueryable().ApplyDefaultSort().ToList();
+				return _productCategories;
+			}
+		}
+		protected List<ProductCategory> _productCategories = null;
 
 	}
 }

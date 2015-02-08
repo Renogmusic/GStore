@@ -227,7 +227,7 @@ namespace GStore.Data
 
 		/// <summary>
 		/// Adds an item to the cart. Creates the cart if it does not exist (cart == null), returns user messages if quantity is over the limit
-		/// Controller is only user for user messages. if no used messages wanted, set controller = null
+		/// Controller is only used for user messages. if no used messages wanted, set controller = null
 		/// </summary>
 		/// <param name="cart"></param>
 		/// <param name="storeFront"></param>
@@ -402,7 +402,6 @@ namespace GStore.Data
 			storeFrontConfig.CartNavShowCartToRegistered = cartConfig.CartNavShowCartToRegistered;
 			storeFrontConfig.CartNavShowCartWhenEmpty = cartConfig.CartNavShowCartWhenEmpty;
 			storeFrontConfig.CartRequireLogin = cartConfig.CartRequireLogin;
-			storeFrontConfig.CartLayoutName = cartConfig.CartLayoutName;
 			storeFrontConfig.CartThemeId = cartConfig.CartThemeId;
 
 			storeFrontConfig.CartEmptyMessage = cartConfig.CartEmptyMessage;

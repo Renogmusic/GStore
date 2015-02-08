@@ -248,9 +248,9 @@
     <Compile Include="Areas\CatalogAdmin\Controllers\CategoryAdminController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\CatalogAdminController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\GStoreController.cs" />
-    <Compile Include="Areas\CatalogAdmin\ViewModels\CategoryListAdminViewModel.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\CatalogAdminViewModel.cs" />
-    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductCategoryEditAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductEditAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\CategoryEditAdminViewModel.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\GiftCardAdminController.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\DiscountAdminController.cs" />
@@ -281,12 +281,14 @@
       <DependentUpon>201501141215384_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecord.cs" />
     <Compile Include="Models\GiftCard.cs" />
     <Compile Include="Models\Payment.cs" />
     <Compile Include="Models\DeliveryInfoShipping.cs" />
     <Compile Include="Models\DeliveryInfoDigital.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\ProductAttribute.cs" />
     <Compile Include="Models\ViewModels\PayPalInfoViewModel.cs" />
     <Compile Include="Models\ViewModels\CartConfigViewModel.cs" />
     <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigAdminViewModel.cs">
@@ -386,7 +388,7 @@
     <Compile Include="Hubs\NotifyHub.cs" />
     <Compile Include="Models\BaseClasses\AuditFieldsAllRequired.cs" />
     <Compile Include="Models\BaseClasses\ClientRecord.cs" />
-    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecord.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecordUserProfileOptional.cs" />
     <Compile Include="Exceptions\AppDefinedExceptions.cs" />
     <Compile Include="Data\Extensions\StoreFrontExtensions.cs" />
     <Compile Include="Data\Extensions\WhereIsActiveExtensions.cs" />
@@ -466,6 +468,9 @@
     <Content Include="Content\bootstrap\mixins.min.css">
       <DependentUpon>mixins.css</DependentUpon>
     </Content>
+    <Content Include="Content\Clients\SampleClient\CatalogContent\sample.mp3" />
+    <Content Include="Content\Clients\SampleClient\Images\Categories\songs.png" />
+    <Content Include="Content\Clients\SampleClient\Images\Products\sample.png" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Server\ErrorPages\Error_AppError.html" />
     <Content Include="Content\Server\ErrorPages\Error_BadRequest.html" />
@@ -1055,7 +1060,6 @@
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Details.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\PageAdmin\Delete.cshtml" />
     <Content Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cd" />
-    <Content Include="Models\BaseClasses\StoreFrontDataValueRecord.cd" />
     <Content Include="Models\BaseClasses\ClientRecordUserProfileOptional.cd" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Create.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\Delete.cshtml" />
@@ -1497,9 +1501,8 @@
     </Content>
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\Manager.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\Manager.cshtml" />
-    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryTreeNode.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryRowContent.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\StoreFrontConfiguration.cshtml" />
-    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\ManualCreateOrEdit.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategory.cshtml" />
     <Content Include="CodeTemplates\MvcView\Imports.include.t4" />
     <Content Include="CodeTemplates\MvcView\ModelMetadataFunctions.cs.include.t4" />
@@ -1507,6 +1510,16 @@
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\CreateOrEdit.cshtml" />
     <Content Include="CodeTemplates\MvcView\GStore.cs.include.t4" />
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\Delete.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryTreeNode.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\CreateOrEdit.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\DisplayTemplates\ProductCategory.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\Details.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\Delete.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\DisplayTemplates\Product.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\Details.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CatalogAdmin\DisplayTemplates\ProductCategory.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CatalogAdmin\DisplayTemplates\Product.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryWithProductsLink.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1884,7 +1897,7 @@
     <Content Include="Views\Profile\Logins.cshtml" />
     <Content Include="Views\Profile\SetPassword.cshtml" />
     <Content Include="Views\Profile\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Page\Welcome.cshtml" />
+    <Content Include="Views\Page\Page Welcome.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Notifications\Create.cshtml" />
     <Content Include="Views\Notifications\Delete.cshtml" />
@@ -1906,9 +1919,9 @@
     <Content Include="Views\Shared\_NavbarPartial.cshtml" />
     <Content Include="Views\Shared\_NavBarMenuPartial.cshtml" />
     <Content Include="Views\Catalog\ViewCategory.cshtml" />
-    <Content Include="Views\Catalog\ViewProduct.cshtml" />
-    <Content Include="Views\Catalog\_CategoryListingPartial.cshtml" />
-    <Content Include="Views\Catalog\_ProductListingPartial.cshtml" />
+    <Content Include="Views\Catalog\_ViewProduct_Default_Partial.cshtml" />
+    <Content Include="Views\Catalog\_ViewCategory_Default_Categories_Partial.cshtml" />
+    <Content Include="Views\Catalog\_ViewCategory_Default_Products_Partial.cshtml" />
     <Content Include="Views\Shared\_ErrorDetailsPartial.cshtml" />
     <Content Include="Views\Shared\Error_BadRequest.cshtml" />
     <Content Include="Views\Shared\Error_UnknownError.cshtml" />
@@ -1920,7 +1933,7 @@
     <Content Include="Views\GStore\About.cshtml" />
     <Content Include="Views\Shared\_FooterPartial.cshtml" />
     <Content Include="Views\Shared\_ExceptionDetails.cshtml" />
-    <Content Include="Views\Page\Simple3x3WithJumboTron.cshtml" />
+    <Content Include="Views\Page\Page Simple 3x3 With JumboTron.cshtml" />
     <Content Include="Views\Shared\_AboutGStorePartial.cshtml" />
     <Content Include="Views\Shared\_AboutMePartial.cshtml" />
     <Content Include="Views\Shared\_SystemInformationPartial.cshtml" />
@@ -1928,7 +1941,7 @@
     <Content Include="Views\Page\_EditModeTopPartial.cshtml" />
     <Content Include="Views\Page\_EditLinkBottomPartial.cshtml" />
     <Content Include="Views\Page\_EditModeBottomPartial.cshtml" />
-    <Content Include="Views\Page\HtmlPage.cshtml" />
+    <Content Include="Views\Page\Page Custom Html Page.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\PageSectionEditViewModel.cshtml" />
     <Content Include="Views\Page\_SectionEditPartial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\MultiLineText.cshtml" />
@@ -1971,9 +1984,19 @@
     <Content Include="Views\Page\DebugInfo.cshtml" />
     <Content Include="Views\Shared\_PayPalDonateLink.cshtml" />
     <Content Include="Views\Page\HtmlFile.cshtml" />
-    <Content Include="Views\Catalog\_Layout_Default.cshtml" />
+    <Content Include="Views\Catalog\_Catalog_Layout_Default.cshtml" />
     <Content Include="Views\Shared\_LoginAdminPartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Client.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\UserProfile.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryId.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldCurrency.cshtml" />
+    <Content Include="Views\Catalog\DisplayTemplates\ProductListing.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryIdNullable.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldThemeIdNullable.cshtml" />
+    <Content Include="Views\Page\Test Simple 3x3 With Carousel.cshtml" />
+    <Content Include="Views\Page\Page Simple 3x3 With Carousel.cshtml" />
+    <Content Include="Views\Catalog\ViewProduct.cshtml" />
+    <Content Include="Views\Catalog\_ViewCategory_Default_Partial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -1985,9 +2008,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\StoreAdmin\Views\Shared\EditorTemplates\" />
     <Folder Include="Content\Clients\SampleClient\Fonts\" />
-    <Folder Include="Content\Clients\SampleClient\Images\Categories\" />
     <Folder Include="Content\Clients\SampleClient\Images\Logo\" />
-    <Folder Include="Content\Clients\SampleClient\Images\Products\" />
     <Folder Include="Content\Clients\SampleClient\Pages\" />
     <Folder Include="Content\Clients\SampleClient\Scripts\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\ErrorPages\" />

@@ -38,14 +38,6 @@ namespace GStore.Controllers
 		}
 
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.OrdersLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

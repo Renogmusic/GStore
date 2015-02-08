@@ -33,6 +33,6 @@
 @using (Ajax.BeginForm("UpdateSectionAjax", "Page", options, new { id = "SectionEditForm_" + Model.Index, name = "SectionEditForm_" + Model.Index }))
 {
 	<div id="PageSectionUpdateTargetId_@(Model.Index)">
-		@Html.Partial("_SectionEditPartial", Model)
+		@{ Html.RenderPartial("_SectionEditPartial", Model); }
 	</div>
 }

@@ -1,4 +1,5 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
+<!-- View Category Start -->
 @{
 	if (Model.CurrentCategoryOrNull == null)
 	{
@@ -9,13 +10,34 @@
 		throw new ApplicationException("Model.CurrentCategoryNodeOrNull is null, problem finding category in tree. Check view CatalogViewModel.");
 	}
 
-	ViewBag.Title = Model.CurrentCategoryOrNull.Name;
-
-	@Html.Partial("_CategoryListingPartial", Model)
-
-	List<Product> products = Model.CurrentProductsListOrNull;
-	if (products != null)
+	ProductCategory category = Model.CurrentCategoryOrNull;
+	ViewBag.Title = category.Name;
+	bool userCanEditCategory = false;
+	UserProfile profile = Html.CurrentUserProfile(false);
+	if (profile != null && Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_Edit))
 	{
-		@Html.Partial("_ProductListingPartial", Model)
+		userCanEditCategory = true;
+	}
+
+}
+
+
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<h1>@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+@Html.ProductCategoryWithParentLinks(Model.CurrentCategoryOrNull, "Top", (Model.CurrentCategoryOrNull == null))
+
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+@{ Html.RenderPartial("_ViewCategory_" + Model.CurrentCategoryOrNull.CategoryDetailTemplate.ToString().OrDefault("Default") + "_Partial", Model);}
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+@if (userCanEditCategory)
+{
+	if (Html.UserHasPermission(GStoreAction.Categories_Manager))
+	{
+		<hr />
+		@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
 	}
 }
+<!-- View Category End -->

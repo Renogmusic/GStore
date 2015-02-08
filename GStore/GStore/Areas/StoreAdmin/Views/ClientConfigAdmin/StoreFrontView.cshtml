@@ -583,6 +583,69 @@
 		<dl class="dl-horizontal">
 
 			<dt>
+				@Html.DisplayNameFor(model => model.CatalogTitle)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogTitle)
+				<br />@Html.HelpLabelFor(model => model.CatalogTitle, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogLayout)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogLayout)
+				<br />@Html.HelpLabelFor(model => model.CatalogLayout, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogHeaderHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogHeaderHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogHeaderHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogFooterHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogFooterHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogFooterHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootListTemplate)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootListTemplate)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootListTemplate, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootHeaderHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootHeaderHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootHeaderHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootFooterHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootFooterHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootFooterHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
 				@Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
 			</dt>
 
@@ -754,108 +817,8 @@
 			<h3 class="col-md-offset-3 col-md-6 bg-success">Layouts</h3>
 		</div>
 
-		<dl class="dl-horizontal">
+		<h1>Coming Soon</h1>
 
-			<dt>
-				@Html.DisplayNameFor(model => model.DefaultNewPageLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.DefaultNewPageLayoutName)
-				<br />@Html.HelpLabelFor(model => model.DefaultNewPageLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.CatalogLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.CatalogLayoutName)
-				<br />@Html.HelpLabelFor(model => model.CatalogLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.CartLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.CartLayoutName)
-				<br />@Html.HelpLabelFor(model => model.CartLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.CheckoutLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.CheckoutLayoutName)
-				<br />@Html.HelpLabelFor(model => model.CheckoutLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.OrdersLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.OrdersLayoutName)
-				<br />@Html.HelpLabelFor(model => model.OrdersLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.OrderAdminLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.OrderAdminLayoutName)
-				<br />@Html.HelpLabelFor(model => model.OrderAdminLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.AccountLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.AccountLayoutName)
-				<br />@Html.HelpLabelFor(model => model.AccountLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.ProfileLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.ProfileLayoutName)
-				<br />@Html.HelpLabelFor(model => model.ProfileLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.NotificationsLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.NotificationsLayoutName)
-				<br />@Html.HelpLabelFor(model => model.NotificationsLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dd>
-				@Html.DisplayFor(model => model.CatalogAdminLayoutName)
-				<br />@Html.HelpLabelFor(model => model.CatalogAdminLayoutName, new { @class = "help-label" })
-			</dd>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.CatalogAdminLayoutName)
-			</dt>
-
-			<dt>
-				@Html.DisplayNameFor(model => model.AdminLayoutName)
-			</dt>
-
-			<dd>
-				@Html.DisplayFor(model => model.AdminLayoutName)
-				<br />@Html.HelpLabelFor(model => model.AdminLayoutName, new { @class = "help-label" })
-			</dd>
-
-		</dl>
 	</div>
 
 	<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">

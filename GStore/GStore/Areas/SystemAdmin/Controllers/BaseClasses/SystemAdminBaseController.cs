@@ -42,14 +42,6 @@ namespace GStore.Areas.SystemAdmin.Controllers.BaseClasses
 			return BreadCrumbsFunc(htmlHelper);
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return Settings.AppDefaultLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

@@ -135,6 +135,10 @@ namespace GStore.Identity
 
 		Products_CatalogAdminMenuItem = 22000,
 		Products_Manager = 22110,
+		Products_Create = 22120,
+		Products_View = 22130,
+		Products_Edit = 22140,
+		Products_Delete = 22150,
 
 		#endregion
 

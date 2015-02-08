@@ -1,0 +1,120 @@
+﻿@model GStore.Models.ViewModels.CatalogViewModel
+<!-- View Product Details Default Start -->
+@{
+	Product product = Model.CurrentProductOrNull;
+	bool showAddToCart = false;
+	string addToCartText = "";
+	if (Model.StoreFrontConfig != null)
+	{
+		showAddToCart = true;
+		addToCartText = Model.StoreFrontConfig.UseShoppingCart ? "Add to Cart" : "Buy Now";
+	}
+	decimal price = product.UnitPrice(1);
+
+	ViewBag.Title = product.Name + " - " + product.Category.Name;
+
+}
+@if (!string.IsNullOrWhiteSpace(product.ImageName))
+{
+	string imageUrl = product.ImageUrl(Request.ApplicationPath);
+
+	<div class="row">
+		<div class="col-md-offset-3 col-md-6 ProductListItemBox">
+			<center>
+				<img class="ViewProductImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" />
+				<br />
+				<h2>@Html.DisplayFor(model => product.Name)</h2>
+			</center>
+		</div>
+		<div class="col-md-2">
+			@if (showAddToCart)
+			{
+				<h1 class="text-success">@Html.DisplayFor(model => price, "Currency")</h1>
+				@Html.ActionLink(addToCartText, "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-default" })
+			}
+		</div>
+	</div>
+}
+
+<hr/>
+@if (!string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+{
+	<div class="row">
+		<audio controls="controls" title="Sample of @(product.Name)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Play", product.Name, "Product Details Page")">
+			<source title="Sample" src="@Html.Raw(product.AudioSampleUrl(Request.ApplicationPath))" type="audio/mpeg" />
+		</audio>
+		<br />
+		@Html.DisplayFor(model => product.SampleAudioCaption)
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SummaryHtml))
+{
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.SummaryHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleDownloadFileName))
+{
+	<div class="btn btn-info NoClick">
+		@Html.DisplayNameFor(model => product.SampleDownloadFileName)
+	</div>
+	<div class="row">
+		@Html.DisplayFor(model => product.SampleDownloadFileName)
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleImageFileName))
+{
+	<div class="btn btn-info NoClick">
+		@Html.DisplayNameFor(model => product.SampleImageFileName)
+	</div>
+	<div class="row">
+		@Html.DisplayFor(model => product.SampleImageFileName)
+		<hr />
+	</div>
+}
+
+@if (product.DigitalDownload)
+{
+	<div class="btn btn-info NoClick">
+		@Html.DisplayNameFor(model => product.DigitalDownload)
+	</div>
+	<div class="row">
+		@Html.DisplayFor(model => product.DigitalDownload)
+		<hr />
+	</div>
+}
+
+
+@if (!string.IsNullOrWhiteSpace(product.DescriptionHtml))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@Html.DisplayNameFor(model => product.DescriptionHtml)
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.DescriptionHtml))
+		<hr/>
+	</div>
+}
+
+
+
+@if (showAddToCart)
+{
+	<h3>@Html.DisplayFor(model => product.Name)</h3>
+	<h1 class="text-success">@Html.DisplayFor(model => price, "Currency")</h1>
+	@Html.ActionLink(addToCartText, "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-default" })
+}
+@if (!string.IsNullOrWhiteSpace(product.FooterHtml))
+{
+	@Html.Raw(Html.ReplaceVariables(product.FooterHtml))
+}
+<hr/>
+<!-- View Product Details Default End -->

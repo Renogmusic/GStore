@@ -25,14 +25,6 @@ namespace GStore.Controllers
 			UserManager = userManager;
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.ProfileLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

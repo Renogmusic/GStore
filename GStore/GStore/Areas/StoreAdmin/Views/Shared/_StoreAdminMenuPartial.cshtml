@@ -19,8 +19,8 @@
 			</button>
 		</div>
 		<div class="navbar-collapse collapse">
-			@Html.Partial("_StoreAdminMenuItemsPartial", Model)
-			@Html.Partial("_StoreAdminLoginPartial")
+			@{ Html.RenderPartial("_StoreAdminMenuItemsPartial", Model); }
+			@{ Html.RenderPartial("_StoreAdminLoginPartial"); }
 		</div>
 	</div>
 </div>

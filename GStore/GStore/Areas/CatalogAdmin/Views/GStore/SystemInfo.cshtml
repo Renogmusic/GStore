@@ -3,9 +3,9 @@
 }
 <div class="row" style="padding-top: 1em;">
 	<div class="col-sm-7 col-lg-offset-1 col-lg-6">
-		@Html.Partial("_SystemInformationPartial", null)
+		@{ Html.RenderPartial("_SystemInformationPartial", null); }
 	</div>
 	<div class="col-sm-5 col-lg-4">
-		@Html.Partial("_AboutGStorePartial", null)
+		@{ Html.RenderPartial("_AboutGStorePartial", null); }
 	</div>
 </div>

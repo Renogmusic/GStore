@@ -22,22 +22,6 @@ namespace GStore.Controllers
 			this.LogActionsAsPageViews = false;
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.DefaultNewPageLayoutName;
-			}
-		}
-
-		protected override string ThemeFolderName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.DefaultNewPageTheme.FolderName;
-			}
-		}
-
 		public ActionResult Images(string path)
 		{
 			return StoreFile("/Images/" + path, true);
@@ -66,6 +50,11 @@ namespace GStore.Controllers
 		public ActionResult Pages(string path, bool useNullContentType = false)
 		{
 			return StoreFile("/Pages/" + path);
+		}
+
+		public ActionResult CatalogContent(string path)
+		{
+			return StoreFile("/CatalogContent/" + path);
 		}
 
 
@@ -124,6 +113,14 @@ namespace GStore.Controllers
 
 			string mimeType = MimeMapping.GetMimeMapping(fullPath);
 			return new FilePathResult(fullPath, mimeType);
+		}
+
+		protected override string ThemeFolderName
+		{
+			get
+			{
+				return CurrentStoreFrontConfigOrThrow.DefaultNewPageTheme.FolderName;
+			}
 		}
 
 	}

@@ -31,7 +31,6 @@ namespace GStore.Models.ViewModels
 			this.CartNavShowCartToRegistered = storeFrontConfig.CartNavShowCartToRegistered;
 			this.CartNavShowCartWhenEmpty = storeFrontConfig.CartNavShowCartWhenEmpty;
 			this.CartRequireLogin = storeFrontConfig.CartRequireLogin;
-			this.CartLayoutName = storeFrontConfig.CartLayoutName;
 			this.CartTheme = storeFrontConfig.CartTheme;
 			this.CartThemeId = storeFrontConfig.CartThemeId;
 			this.CartPageTitle = storeFrontConfig.CartPageTitle;
@@ -108,9 +107,6 @@ namespace GStore.Models.ViewModels
 
 		[Display(Name = "Require Login to Add to Cart", Description = "Check this box to require the user to log in when adding to cart. \nDefault: Unchecked.")]
 		public bool CartRequireLogin { get; set; }
-
-		[Display(Name = "CartLayoutName", Description = "Always 'Default'")]
-		public string CartLayoutName { get; set; }
 
 		[Display(Name = "Theme", Description = "Theme used for the cart and order pages")]
 		public Theme CartTheme { get; set; }

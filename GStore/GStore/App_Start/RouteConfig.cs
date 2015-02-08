@@ -129,6 +129,13 @@ namespace GStore
 				);
 
 				routes.MapRoute(
+					name: "Stores-CatalogContent",
+					url: "Stores/{urlstorename}/CatalogContent/{*path}",
+					defaults: new { controller = "StoreFrontFile", action = "CatalogContent", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStore.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-WebPages",
 					url: "Stores/{urlstorename}/WebPages/{*path}",
 					defaults: new { controller = "StoreFrontFile", action = "Pages", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -281,6 +288,13 @@ namespace GStore
 				name: "Fonts",
 				url: "Fonts/{*path}",
 				defaults: new { controller = "StoreFrontFile", action = "Fonts", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStore.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "CatalogContent",
+				url: "CatalogContent/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "CatalogContent", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStore.Controllers" }
 			);
 

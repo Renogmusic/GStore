@@ -261,15 +261,6 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
-        public string AppDefaultLayoutName {
-            get {
-                return ((string)(this["AppDefaultLayoutName"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool AppEnableBindingAutoMapCatchAll {
             get {
@@ -288,7 +279,7 @@ namespace GStore.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Welcome")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Page Welcome")]
         public string AppDefaultPageTemplateViewName {
             get {
                 return ((string)(this["AppDefaultPageTemplateViewName"]));
@@ -418,6 +409,24 @@ namespace GStore.Properties {
         public bool AppEnableUserActionLog {
             get {
                 return ((bool)(this["AppEnableUserActionLog"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string AppDefaultLayoutName {
+            get {
+                return ((string)(this["AppDefaultLayoutName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Welcome Template")]
+        public string AppDefaultPageTemplateName {
+            get {
+                return ((string)(this["AppDefaultPageTemplateName"]));
             }
         }
     }

@@ -5,7 +5,7 @@
 	int colOffset = ViewData.ColOffset();
 	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
 	bool useHelpLabelText = ViewData.UseHelpLabelText();
-	string optionLabel = ViewData.OptionLabel() ?? "(no parent menu item - root item)";
+	string optionLabel = ViewData.OptionLabel() ?? "(no parent menu item - top item)";
 }
 <div class="form-group">
 	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })

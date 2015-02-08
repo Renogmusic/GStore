@@ -36,6 +36,15 @@ namespace GStore.Models
 		[Display(Name="Default Raw Html Value")]
 		public string DefaultRawHtmlValue { get; set; }
 
+		[Display(Name = "Pre-Text Html")]
+		public string PreTextHtml { get; set; }
+
+		[Display(Name = "Post-Text Html")]
+		public string PostTextHtml { get; set; }
+
+		[Display(Name = "Text Css Class")]
+		public string DefaultTextCssClass { get; set; }
+
 		[Display(Name = "Edit in Page Top Editor")]
 		public bool EditInTop { get; set; }
 

@@ -114,6 +114,20 @@ namespace GStore.AppHtmlHelpers
 				});
 		}
 
+		public static IEnumerable<SelectListItem> ProductCategoryList(this HtmlHelper htmlHelper, bool showProductCount = true)
+		{
+			int selectedProductCategoryId = (htmlHelper.ViewData.Model as int?) ?? 0;
+
+			List<ProductCategory> categories = htmlHelper.CurrentStoreFront(true).ProductCategories.AsQueryable().ApplyDefaultSort().ToList();
+			return categories.Select(c =>
+				new SelectListItem()
+				{
+					Value = c.ProductCategoryId.ToString(),
+					Text = c.Name + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName + (showProductCount ? " Products: " + c.Products.Count : ""),
+					Selected = c.ProductCategoryId == selectedProductCategoryId
+				});
+		}
+
 		public static IEnumerable<SelectListItem> WebFormList(this HtmlHelper htmlHelper)
 		{
 			int selectedWebFormId = (htmlHelper.ViewData.Model as int?) ?? 0;

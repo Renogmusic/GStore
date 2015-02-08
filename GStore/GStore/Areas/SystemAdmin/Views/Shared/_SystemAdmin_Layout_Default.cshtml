@@ -78,7 +78,7 @@
 	}
 </head>
 <body>
-	@Html.Partial("_SystemAdmin_MenuPartial")
+	@{ Html.RenderPartial("_SystemAdmin_MenuPartial"); }
 	<div class="container body-content sysadmin sysadmin-body-content@(containerClasses)">
 		<!-- top alert container for dynamic alerts-->
 		<div id="usermessagecontainer"></div>
@@ -87,7 +87,7 @@
 		<hr />
 		<a name="UserMessagesBottom"></a>
 		<div id="usermessagebottomcontainer"></div>
-		@Html.Partial("_AdminFooterPartial")
+		@{ Html.RenderPartial("_AdminFooterPartial"); }
 	</div>
 
 	@RenderSection("scripts", required: false)

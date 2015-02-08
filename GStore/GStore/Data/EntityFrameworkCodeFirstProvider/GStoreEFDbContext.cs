@@ -13,6 +13,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 	using GStore.Data;
 	using System.Data.Entity.ModelConfiguration.Conventions;
 	using GStore.Models.BaseClasses;
+	using System.Reflection;
 
 	public partial class GStoreEFDbContext : DbContext, IGstoreDb
 	{
@@ -297,7 +298,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						recordOptional.UpdateAuditFields(userProfileOptional);
 					}
 
-					if (updateCategoryCounts && item.Entity is Models.Product)
+					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.Product)
 					{
 						StoreFront storeFront = ((Product)item.Entity).StoreFront;
 						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
@@ -307,7 +308,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						}
 					}
 
-					if (updateCategoryCounts && item.Entity is Models.ProductCategory)
+					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.ProductCategory)
 					{
 						StoreFront storeFront = ((ProductCategory)item.Entity).StoreFront;
 						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
@@ -368,14 +369,14 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						foreach (string propName in valError.Entry.CurrentValues.PropertyNames)
 						{
 							object fieldObjectValue = valError.Entry.CurrentValues[propName];
-							string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
+							string fieldValue = fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString();
 							errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
 							if (errorRow.State == EntityState.Modified)
 							{
 								if ((valError.Entry.OriginalValues != null) && (valError.Entry.OriginalValues.PropertyNames.Contains(propName)))
 								{
 									object originalValueObject = valError.Entry.OriginalValues[propName];
-									string originalValue = originalValueObject.ToString();
+									string originalValue = originalValueObject == null ? "(null)" : originalValueObject.ToString();
 									errorDetails += " Original Value: '" + originalValue + "'";
 								}
 							}
@@ -414,14 +415,24 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 						}
 						errorDetails += " (Entity State: " + errorEntry.State.ToString() + ")";
 
-						foreach (string propName in errorEntry.CurrentValues.PropertyNames)
+						if (errorEntry.State == EntityState.Deleted)
 						{
-							object fieldObjectValue = errorEntry.CurrentValues[propName];
-							string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
-							errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
-							if (errorEntry.State == EntityState.Modified)
+							foreach (string propName in errorEntry.OriginalValues.PropertyNames)
 							{
-								if ((errorEntry.OriginalValues != null) && (errorEntry.OriginalValues.PropertyNames.Contains(propName)))
+								object fieldObjectValue = errorEntry.OriginalValues[propName];
+								string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
+								errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
+							}
+						}
+						else
+						{
+							foreach (string propName in errorEntry.CurrentValues.PropertyNames)
+							{
+								object fieldObjectValue = errorEntry.CurrentValues[propName];
+								string fieldValue = (fieldObjectValue == null ? "(null)" : fieldObjectValue.ToString());
+								errorDetails += "\n\t\t" + propName + " = '" + fieldValue + "'";
+								
+								if ((errorEntry.State == EntityState.Modified) && (errorEntry.OriginalValues != null) && (errorEntry.OriginalValues.PropertyNames.Contains(propName)))
 								{
 									object originalValueObject = errorEntry.OriginalValues[propName];
 									string originalValue = originalValueObject.ToString();
@@ -429,6 +440,7 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 								}
 							}
 						}
+
 					}
 
 				}
@@ -470,7 +482,9 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		}
 
-		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel> ProductCategoryEditAdminViewModels { get; set; }
+		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.CategoryEditAdminViewModel> CategoryEditAdminViewModels { get; set; }
+
+		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.ProductEditAdminViewModel> ProductEditAdminViewModels { get; set; }
 
 	}
 }

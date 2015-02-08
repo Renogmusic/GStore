@@ -268,17 +268,13 @@ namespace GStore.Areas.StoreAdmin.Controllers
 			if (ModelState.IsValid)
 			{
 				config.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
-				config.AccountLayoutName = model.AccountLayoutName;
 				config.AccountThemeId = model.AccountThemeId;
 				config.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
 				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
-				config.AdminLayoutName = model.AdminLayoutName;
 				config.AdminThemeId = model.AdminThemeId;
 				config.BodyBottomScriptTag = model.BodyBottomScriptTag;
 				config.BodyTopScriptTag = model.BodyTopScriptTag;
-				config.CartLayoutName = model.CartLayoutName;
 				config.CartThemeId = model.CartThemeId;
-				config.CheckoutLayoutName = model.CheckoutLayoutName;
 				config.CheckoutThemeId = model.CheckoutThemeId;
 				config.CheckoutLogInOrGuestWebFormId = model.CheckoutLogInOrGuestWebFormId;
 				config.CheckoutDeliveryInfoDigitalOnlyWebFormId = model.CheckoutDeliveryInfoDigitalOnlyWebFormId;
@@ -289,15 +285,12 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.CatalogCategoryColLg = model.CatalogCategoryColLg;
 				config.CatalogCategoryColMd = model.CatalogCategoryColMd;
 				config.CatalogCategoryColSm = model.CatalogCategoryColSm;
-				config.CatalogLayoutName = model.CatalogLayoutName;
 				config.CatalogThemeId = model.CatalogThemeId;
 				config.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
 				config.CatalogProductColLg = model.CatalogProductColLg;
 				config.CatalogProductColMd = model.CatalogProductColMd;
 				config.CatalogProductColSm = model.CatalogProductColSm;
-				config.CatalogAdminLayoutName = model.CatalogAdminLayoutName;
 				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
-				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
 				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
@@ -307,21 +300,26 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.MetaDescription = model.MetaDescription;
 				config.MetaKeywords = model.MetaKeywords;
 				config.Name = model.Name;
+				config.CatalogTitle = model.CatalogTitle;
+
+				config.CatalogLayout = model.CatalogLayout;
+				config.CatalogHeaderHtml = model.CatalogHeaderHtml;
+				config.CatalogFooterHtml = model.CatalogFooterHtml;
+				config.CatalogRootListTemplate = model.CatalogRootListTemplate;
+				config.CatalogRootHeaderHtml = model.CatalogRootHeaderHtml;
+				config.CatalogRootFooterHtml = model.CatalogRootFooterHtml;
+
 				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
 				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
 				config.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
 				config.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
 				config.Order = model.Order;
-				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
 				config.OrderAdminThemeId = model.OrderAdminThemeId;
-				config.OrdersLayoutName = model.OrdersLayoutName;
 				config.OrdersThemeId = model.OrdersThemeId;
 				config.Register_WebFormId = model.Register_WebFormId;
 				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
 				config.NotFoundError_PageId = model.NotFoundError_PageId;
-				config.NotificationsLayoutName = model.NotificationsLayoutName;
 				config.NotificationsThemeId = model.NotificationsThemeId;
-				config.ProfileLayoutName = model.ProfileLayoutName;
 				config.ProfileThemeId = model.ProfileThemeId;
 				config.PublicUrl = model.PublicUrl;
 				config.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;
@@ -343,6 +341,19 @@ namespace GStore.Areas.StoreAdmin.Controllers
 
 				AddUserMessage("Store Front Edit Successful", "Your changes to Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "] have been saved successfully.", AppHtmlHelpers.UserMessageType.Success);
 
+				if (model.ResetPagesToThemeId.HasValue && model.ResetPagesToThemeId != 0)
+				{
+					int pagesUpdated = config.StoreFront.ResetPagesToThemeId(model.ResetPagesToThemeId.Value, GStoreDb);
+
+					if (pagesUpdated == 0)
+					{
+						AddUserMessage("Page Themes Matched", "All pages already have theme '" + config.Client.Themes.Single(t => t.ThemeId == model.ResetPagesToThemeId).Name.ToHtml() + "' [" + model.ResetPagesToThemeId.Value + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					}
+					else
+					{
+						AddUserMessage("Page Themes Updated", pagesUpdated + " Page(s) were changed to theme '" + config.Client.Themes.Single(t => t.ThemeId == model.ResetPagesToThemeId).Name.ToHtml() + "' [" + model.ResetPagesToThemeId.Value + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+					}
+				}
 				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId, Tab = model.ActiveTab });
 			}
 
@@ -460,28 +471,21 @@ namespace GStore.Areas.StoreAdmin.Controllers
 					config.CopyValuesFromCartConfigViewModel(storeFrontToEdit.CurrentConfigOrAny().CartConfigViewModel(false, false));
 				}
 				config.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
-				config.AccountLayoutName = model.AccountLayoutName;
 				config.AccountThemeId = model.AccountThemeId;
 				config.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
 				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
-				config.AdminLayoutName = model.AdminLayoutName;
 				config.AdminThemeId = model.AdminThemeId;
-				config.CartLayoutName = model.CartLayoutName;
 				config.CartThemeId = model.CartThemeId;
-				config.CheckoutLayoutName = model.CheckoutLayoutName;
 				config.CheckoutThemeId = model.CheckoutThemeId;
 				config.CatalogCategoryColLg = model.CatalogCategoryColLg;
 				config.CatalogCategoryColMd = model.CatalogCategoryColMd;
 				config.CatalogCategoryColSm = model.CatalogCategoryColSm;
-				config.CatalogLayoutName = model.CatalogLayoutName;
 				config.CatalogThemeId = model.CatalogThemeId;
 				config.CatalogPageInitialLevels = model.CatalogPageInitialLevels;
 				config.CatalogProductColLg = model.CatalogProductColLg;
 				config.CatalogProductColMd = model.CatalogProductColMd;
 				config.CatalogProductColSm = model.CatalogProductColSm;
-				config.CatalogAdminLayoutName = model.CatalogAdminLayoutName;
 				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
-				config.DefaultNewPageLayoutName = model.DefaultNewPageLayoutName;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
 				config.Folder = model.Folder;
@@ -492,21 +496,26 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.MetaDescription = model.MetaDescription;
 				config.MetaKeywords = model.MetaKeywords;
 				config.Name = model.Name;
+				config.CatalogTitle = model.CatalogTitle;
+
+				config.CatalogLayout = model.CatalogLayout;
+				config.CatalogHeaderHtml = model.CatalogHeaderHtml;
+				config.CatalogFooterHtml = model.CatalogFooterHtml;
+				config.CatalogRootListTemplate = model.CatalogRootListTemplate;
+				config.CatalogRootHeaderHtml = model.CatalogRootHeaderHtml;
+				config.CatalogRootFooterHtml = model.CatalogRootFooterHtml;
+
 				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
 				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
 				config.NavBarRegisterLinkText = model.NavBarRegisterLinkText;
 				config.NavBarShowRegisterLink = model.NavBarShowRegisterLink;
 				config.Order = model.Order;
-				config.OrderAdminLayoutName = model.OrderAdminLayoutName;
 				config.OrderAdminThemeId = model.OrderAdminThemeId;
-				config.OrdersLayoutName = model.OrdersLayoutName;
 				config.OrdersThemeId = model.OrdersThemeId;
 				config.Register_WebFormId = model.Register_WebFormId;
 				config.RegisterSuccess_PageId = model.RegisterSuccess_PageId;
 				config.NotFoundError_PageId = model.NotFoundError_PageId;
-				config.NotificationsLayoutName = model.NotificationsLayoutName;
 				config.NotificationsThemeId = model.NotificationsThemeId;
-				config.ProfileLayoutName = model.ProfileLayoutName;
 				config.ProfileThemeId = model.ProfileThemeId;
 				config.PublicUrl = model.PublicUrl;
 				config.RegisteredNotify_UserProfileId = model.RegisteredNotify_UserProfileId;

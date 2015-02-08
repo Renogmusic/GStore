@@ -7,6 +7,7 @@ using System.Text;
 
 namespace GStore.Data
 {
+
 	public enum GStoreValueDataType
 	{
 
@@ -117,5 +118,11 @@ namespace GStore.Data
 		/// </summary>
 		[Display(Name = "Internal Link to an Image (by url)", GroupName = "Link", Order = 1700)]
 		InternalLinkToImageByUrl = 9300,
+	}
+
+	public enum AccountLayout
+	{
+		[Display(Name = "Default Layout", Order = 1)]
+		Default = 0
 	}
 }

@@ -1,36 +1,33 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
+<!-- Product Detail Default Start -->
 @{
-	ViewBag.Title = "Index";
-	Product product = Model.CurrentProductOrNull;
-	bool showAddToCart = false;
-	string addToCartText = "";
-	if (Model.StoreFrontConfig != null)
+	if (Model.CurrentProductOrNull == null)
 	{
-		showAddToCart = true;
-		addToCartText = Model.StoreFrontConfig.UseShoppingCart ? "Add to Cart" : "Buy Now";
+		throw new ApplicationException("Model.CurrentProductOrNull is null, set in controller for this page");
 	}
+
+	Product product = Model.CurrentProductOrNull;
+	ViewBag.Title = product.Name + " - " + product.Category.Name;
+	UserProfile profile = Html.CurrentUserProfile(false);
+	bool userCanEditProduct = false;
+	if (profile != null && Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit))
+	{
+		userCanEditProduct = true;
+	}
+
 }
 <div class="row">
-	<div class="CategoryPath col-xs-12 text-left-lg col-lg-offset-4 col-lg-8 text-center">
-		<h1>@(Model.StoreFrontConfig.Name) Product Catalog</h1>
-		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true)
+	<div class="CategoryPath col-xs-12 text-center">
+		<h1>@(Model.StoreFrontConfig.CatalogTitle)</h1>
+		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true) &gt; @product.Name
 	</div>
 </div>
-
-<h2>@product.Name</h2>
-<hr/>
-
-Feature 1: sample<br />
-
-
-Feature 2: sample<br />
-
-
-Feature 3: sample<br />
-
-@if (showAddToCart)
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+@{ Html.RenderPartial("_ViewProduct_" + Model.CurrentProductOrNull.Category.ProductDetailTemplate.ToString().OrDefault("Default") + "_Partial", Model);}
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+@if (userCanEditProduct)
 {
-	@Html.ActionLink(addToCartText, "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-success" })
+	<hr />
+	@Html.ActionLink("Edit Product", "Edit", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
 }
-
-
+<!-- Product Detail Default End -->

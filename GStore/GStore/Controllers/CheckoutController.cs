@@ -21,6 +21,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("LogInOrGuest");
@@ -50,6 +51,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -81,6 +83,10 @@ namespace GStore.Controllers
 
 			if (profile != null)
 			{
+				cart.StatusSelectedLogInOrGuest = true;
+				GStoreDb.Carts.Update(cart);
+				GStoreDb.SaveChanges();
+
 				return RedirectToAction("DeliveryInfo");
 			}
 
@@ -99,6 +105,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -129,6 +136,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -161,6 +169,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -233,6 +242,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -317,6 +327,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -357,6 +368,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -395,6 +407,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -427,6 +440,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -499,6 +513,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -535,6 +550,7 @@ namespace GStore.Controllers
 				AddUserMessage("Nothing to check out.", "Your cart is empty.", AppHtmlHelpers.UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+			QuantityCheck(cart);
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -571,11 +587,16 @@ namespace GStore.Controllers
 			return View("PaymentInfo", viewModel);
 		}
 
-		protected override string LayoutName
+		protected void QuantityCheck(Cart cart)
 		{
-			get
+			foreach(CartItem item in cart.CartItems)
 			{
-				return CurrentStoreFrontConfigOrThrow.CheckoutLayoutName;
+				int maxQty = item.Product.MaxQuantityPerOrder;
+				if (maxQty != 0 && item.Quantity > maxQty)
+				{
+					//adjust quantity and set user messages and recalc cart
+					item.UpdateQuantityAndSave(this.GStoreDb, item.Quantity, this);
+				}
 			}
 		}
 

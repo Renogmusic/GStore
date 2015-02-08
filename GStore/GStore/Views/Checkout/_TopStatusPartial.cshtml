@@ -97,7 +97,6 @@
 		MvcHtmlString divider3 = new MvcHtmlString(" - ");
 		MvcHtmlString divider4 = new MvcHtmlString(" - ");
 
-		@:Cart Id: @(Model.Cart.CartId)
 		if (showLogInOrGuest)
 		{
 			<a class="@(classLogInOrGuest)" href="@(Url.Action("LogInOrGuest"))">@labelLogInOrGuest</a>

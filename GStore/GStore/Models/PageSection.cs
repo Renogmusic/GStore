@@ -52,5 +52,8 @@ namespace GStore.Models
 		[Display(Name = "Raw Html")]
 		public string RawHtml { get; set; }
 
+		[Display(Name = "Plain text")]
+		public string TextCssClass { get; set; }
+
 	}
 }

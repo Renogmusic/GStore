@@ -29,14 +29,6 @@ namespace GStore.Areas.StoreAdmin.Controllers.BaseClasses
 			this._useInactiveStoreFrontConfigAsActive = true;
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrAny.AdminLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

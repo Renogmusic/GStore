@@ -772,6 +772,30 @@ namespace GStore.Data
 		/// </summary>
 		/// <param name="storeFront"></param>
 		/// <returns></returns>
+		public static bool IsActiveBubble(this Product product)
+		{
+			if (product == null)
+			{
+				return false;
+			}
+
+			if (product.Client == null || !product.Client.IsActiveDirect())
+			{
+				return false;
+			}
+
+			if (product.Category == null)
+			{
+				return false;
+			}
+			return product.Category.IsActiveBubble();
+		}
+
+		/// <summary>
+		/// Returns true if store front and client (parent record) are both active
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <returns></returns>
 		public static bool IsActiveBubble(this ValueList valueList)
 		{
 			if (valueList == null)

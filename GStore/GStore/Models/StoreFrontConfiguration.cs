@@ -184,11 +184,6 @@ namespace GStore.Models
 		public bool CartRequireLogin { get; set; }
 
 		[Required]
-		[Display(Name = "Cart Layout Name")]
-		[MaxLength(10)]
-		public string CartLayoutName { get; set; }
-
-		[Required]
 		[Display(Name = "Cart Theme Id")]
 		public int CartThemeId { get; set; }
 
@@ -312,11 +307,6 @@ namespace GStore.Models
 		#region Checkout
 
 		[Required]
-		[Display(Name = "Checkout Layout Name")]
-		[MaxLength(10)]
-		public string CheckoutLayoutName { get; set; }
-
-		[Required]
 		[Display(Name = "Checkout Theme Id")]
 		public int CheckoutThemeId { get; set; }
 
@@ -371,11 +361,6 @@ namespace GStore.Models
 		#region Order Status
 
 		[Required]
-		[Display(Name = "Order Status Layout Name")]
-		[MaxLength(10)]
-		public string OrdersLayoutName { get; set; }
-
-		[Required]
 		[Display(Name = "Order Status Theme Id")]
 		public int OrdersThemeId { get; set; }
 
@@ -386,11 +371,6 @@ namespace GStore.Models
 		#endregion
 
 		#region Order Admin
-
-		[Required]
-		[Display(Name = "Order Admin Layout Name")]
-		[MaxLength(10)]
-		public string OrderAdminLayoutName { get; set; }
 
 		[Required]
 		[Display(Name = "Order Admin Theme Id")]
@@ -405,11 +385,6 @@ namespace GStore.Models
 		#region Catalog Admin
 
 		[Required]
-		[Display(Name = "Catalog Admin Layout Name")]
-		[MaxLength(10)]
-		public string CatalogAdminLayoutName { get; set; }
-
-		[Required]
 		[Display(Name = "Catalog Admin Theme Id")]
 		public int CatalogAdminThemeId { get; set; }
 
@@ -421,42 +396,75 @@ namespace GStore.Models
 
 		#region Catalog Layout
 
-		[Display(Name = "Nav Bar Catalog Max Levels")]
+		[Required]
+		[Display(Name = "Catalog Title", Description = "Catalog Title shown on all catalog pages.")]
+		public string CatalogTitle { get; set; }
+
+		[Required]
+		[Display(Name = "Catalog Layout", Description="Catalog Layout template setting.")]
+		public CatalogLayoutEnum CatalogLayout { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Header Html", Description = "Catalog Header shown on all catalog pages.")]
+		public string CatalogHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Footer Html", Description = "Catalog Footer shown on all catalog pages.")]
+		public string CatalogFooterHtml { get; set; }
+
+		[Required]
+		[Display(Name = "Catalog Home List Template", Description = "Top (root) catalog list template.")]
+		public CategoryListTemplateEnum CatalogRootListTemplate { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Home Header Html", Description = "Catalog Header shown on the Home (root) catalog page.")]
+		public string CatalogRootHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Home Footer Html", Description = "Catalog Footer shown on the Home (root) catalog page.")]
+		public string CatalogRootFooterHtml { get; set; }
+
+
 		[Range(0, 6)]
+		[Display(Name = "Nav Bar Catalog Max Levels")]
 		public int NavBarCatalogMaxLevels { get; set; }
 
-		[Display(Name = "Catalog Page Initial Levels")]
 		[Range(1, 6)]
+		[Display(Name = "Catalog Page Initial Levels")]
 		public int CatalogPageInitialLevels { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Category col-lg")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Category col-lg")]
 		public int CatalogCategoryColLg { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Category col-md")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Category col-md")]
 		public int CatalogCategoryColMd { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Category col-sm")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Category col-sm")]
 		public int CatalogCategoryColSm { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Product col-lg")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Product col-lg")]
 		public int CatalogProductColLg { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Product col-md")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Product col-md")]
 		public int CatalogProductColMd { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Product col-sm")]
 		[Range(1, 12)]
+		[Display(Name = "Catalog Product col-sm")]
 		public int CatalogProductColSm { get; set; }
 
 		#endregion
@@ -519,37 +527,12 @@ namespace GStore.Models
 
 		#region Layouts
 
-		[Required]
-		[Display(Name = "Default Layout Name")]
-		[MaxLength(10)]
-		public string DefaultNewPageLayoutName { get; set; }
-
-		[Required]
-		[Display(Name = "Catalog Layout Name")]
-		[MaxLength(10)]
-		public string CatalogLayoutName { get; set; }
-
-		[Required]
-		[Display(Name = "Account Layout Name")]
-		[MaxLength(10)]
-		public string AccountLayoutName { get; set; }
-
-		[Required]
-		[Display(Name = "Profile Layout Name")]
-		[MaxLength(10)]
-		public string ProfileLayoutName { get; set; }
-
-		[Required]
-		[Display(Name = "Notifications Layout Name")]
-		[MaxLength(10)]
-		public string NotificationsLayoutName { get; set; }
-
-		[Required]
-		[Display(Name = "Store Admin Layout Name")]
-		[MaxLength(10)]
-		public string AdminLayoutName { get; set; }
-
 		#endregion
 
+	}
+
+	public enum CatalogLayoutEnum : int
+	{
+		Default = 0
 	}
 }

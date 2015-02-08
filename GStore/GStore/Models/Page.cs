@@ -36,7 +36,6 @@ namespace GStore.Models
 		[Display(Name="Theme Id")]
 		public int ThemeId { get; set; }
 
-		//todo: add url to routes
 		[Required]
 		[Index("UniqueRecord", IsUnique = true, Order = 3)]
 		[MaxLength(250)]

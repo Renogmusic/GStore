@@ -8,7 +8,7 @@ using System.Web;
 
 namespace GStore.Models.BaseClasses
 {
-	public abstract class StoreFrontDataValueRecord: StoreFrontRecordUserProfileOptional
+	public abstract class StoreFrontDataValueRecord: StoreFrontRecord
 	{
 		[Required]
 		[Display(Name = "Value Data Type")]

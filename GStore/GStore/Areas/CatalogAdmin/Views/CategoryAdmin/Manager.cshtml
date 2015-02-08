@@ -1,4 +1,4 @@
-﻿@model CategoryListAdminViewModel
+﻿@model CatalogAdminViewModel
 
 @{
 
@@ -6,7 +6,7 @@
 	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Create);
 	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit);
 	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Delete);
-
+	ViewData.Add("ReturnToFrontEnd", true);
 }
 
 <script>
@@ -31,7 +31,7 @@
 		if (source == target) {
 			return;
 		}
-		var url = '@(Html.Raw(Url.Action("MoveItem", new { Source = "XXXX", Target = "YYYY" }).ToJavaScriptString()))';
+		var url = '@(Html.Raw(Url.Action("MoveItem", new { ReturnToFrontEnd = Model.ReturnToFrontEnd, Source = "XXXX", Target = "YYYY" }).ToJavaScriptString()))';
 		url = url.replace("XXXX", source);
 		url = url.replace("YYYY", target);
 		window.location.href = url;
@@ -111,7 +111,13 @@
 	{
 		<div class="row">
 			<div class="col-xs-12">
-				@Html.ActionLink("Create a New Product Category", "Create", null, new { @class = "btn btn-sm btn-info" })
+				@if (Model.ReturnToFrontEnd)
+				{
+					@Html.ActionLink("OK / Cancel", "Index", "Catalog", new { area = "" }, new { @class = "btn btn-default" })
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+
+				}
+				@Html.ActionLink("Create a New Product Category", "Create", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
 			</div>
 		</div>
 	}
@@ -148,17 +154,7 @@
 			int level1IdInt = level1Item.Entity.ProductCategoryId;
 			string level1Id = "'" + level1Item.Entity.ProductCategoryId + "'";
 			<div id="ProductCategoryId_@(level1Item.Entity.ProductCategoryId)" class="row well text-left borderLevel1" onclick="clickitem(@(level1Id));" draggable="true" ondragover="dragover(event, @(level1Id));" ondragstart="dragstart(event, @(level1Id));" ondrop="drop(event, @(level1Id));">
-				@Html.DisplayFor(model => level1Item, "ProductCategoryTreeNode")
-				&nbsp;-&nbsp;
-				<a href="@(Url.Action("MoveUp", new { id = level1IdInt} ))"><small>Move Up</small></a>
-				&nbsp;-&nbsp;
-				<a href="@(Url.Action("MoveDown", new { id = level1IdInt} ))"><small>Move Down</small></a>
-				&nbsp;-&nbsp;
-				<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level1IdInt} ))">Edit</a>
-				&nbsp;-&nbsp;
-				<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level1IdInt} ))">Delete</a>
-				&nbsp;-&nbsp;
-				<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level1IdInt} ))">Create Child</a>
+				@Html.DisplayFor(model => level1Item, "ProductCategoryRowContent")
 			</div>
 			foreach (var level2Item in level1Item.ChildNodes)
 			{
@@ -167,17 +163,7 @@
 				<div class="row">
 					<div class="col-xs-1"></div>
 					<div id="ProductCategoryId_@(level2Item.Entity.ProductCategoryId)" class="well col-xs-10 text-left borderLevel2" onclick="clickitem(@(level2Id));" draggable="true" ondragover="dragover(event, @(level2Id));" ondragstart="dragstart(event, @(level2Id));" ondrop="drop(event, @(level2Id));">
-						@Html.DisplayFor(model => level2Item, "ProductCategoryTreeNode")
-						&nbsp;-&nbsp;
-						<a href="@(Url.Action("MoveUp", new { id = level2IdInt} ))"><small>Move Up</small></a>
-						&nbsp;-&nbsp;
-						<a href="@(Url.Action("MoveDown", new { id = level2IdInt} ))"><small>Move Down</small></a>
-						&nbsp;-&nbsp;
-						<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level2IdInt} ))">Edit</a>
-						&nbsp;-&nbsp;
-						<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level2IdInt} ))">Delete</a>
-						&nbsp;-&nbsp;
-						<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level2IdInt} ))">Create Child</a>
+						@Html.DisplayFor(model => level2Item, "ProductCategoryRowContent")
 					</div>
 				</div>
 				foreach (var level3Item in level2Item.ChildNodes)
@@ -187,17 +173,7 @@
 					<div class="row">
 						<div class="col-xs-offset-1 col-xs-1"></div>
 						<div id="ProductCategoryId_@(level3Item.Entity.ProductCategoryId)" class="well text-left col-xs-9 borderLevel3" onclick="clickitem(@(level3Id));" draggable="true" ondragover="dragover(event, @(level3Id));" ondragstart="dragstart(event, @(level3Id));" ondrop="drop(event, @(level3Id));">
-							@Html.DisplayFor(model => level3Item, "ProductCategoryTreeNode")
-							&nbsp;-&nbsp;
-							<a href="@(Url.Action("MoveUp", new { id = level3IdInt} ))"><small>Move Up</small></a>
-							&nbsp;-&nbsp;
-							<a href="@(Url.Action("MoveDown", new { id = level3IdInt} ))"><small>Move Down</small></a>
-							&nbsp;-&nbsp;
-							<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level3IdInt} ))">Edit</a>
-							&nbsp;-&nbsp;
-							<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level3IdInt} ))">Delete</a>
-							&nbsp;-&nbsp;
-							<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level3IdInt} ))">Create Child</a>
+							@Html.DisplayFor(model => level3Item, "ProductCategoryRowContent")
 						</div>
 					</div>
 					foreach (var level4Item in level3Item.ChildNodes)
@@ -207,17 +183,7 @@
 						<div class="row">
 							<div class="col-xs-offset-2 col-xs-1"></div>
 							<div id="ProductCategoryId_@(level4Item.Entity.ProductCategoryId)" class="well text-left col-xs-8 borderLevel4" onclick="clickitem(@(level4Id));" draggable="true" ondragover="dragover(event, @(level4Id));" ondragstart="dragstart(event, @(level4Id));" ondrop="drop(event, @(level4Id));">
-								@Html.DisplayFor(model => level4Item, "ProductCategoryTreeNode")
-								&nbsp;-&nbsp;
-								<a href="@(Url.Action("MoveUp", new { id = level4IdInt} ))"><small>Move Up</small></a>
-								&nbsp;-&nbsp;
-								<a href="@(Url.Action("MoveDown", new { id = level4IdInt} ))"><small>Move Down</small></a>
-								&nbsp;-&nbsp;
-								<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level4IdInt} ))">Edit</a>
-								&nbsp;-&nbsp;
-								<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level4IdInt} ))">Delete</a>
-								&nbsp;-&nbsp;
-								<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level4IdInt} ))">Create Child</a>
+								@Html.DisplayFor(model => level4Item, "ProductCategoryRowContent")
 							</div>
 						</div>
 						foreach (var level5Item in level4Item.ChildNodes)
@@ -227,17 +193,7 @@
 							<div class="row">
 								<div class="col-xs-offset-3 col-xs-1"></div>
 								<div id="ProductCategoryId_@(level5Item.Entity.ProductCategoryId)" class="well text-left col-xs-7 borderLevel5" onclick="clickitem(@(level5Id));" draggable="true" ondragstart="dragstart(event, @(level5Id));" ondragover="dragover(event, @(level5Id));" ondrop="drop(event, @(level5Id));">
-									@Html.DisplayFor(model => level5Item, "ProductCategoryTreeNode")
-									&nbsp;-&nbsp;
-									<a href="@(Url.Action("MoveUp", new { id = level5IdInt} ))"><small>Move Up</small></a>
-									&nbsp;-&nbsp;
-									<a href="@(Url.Action("MoveDown", new { id = level5IdInt} ))"><small>Move Down</small></a>
-									&nbsp;-&nbsp;
-									<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level5IdInt} ))">Edit</a>
-									&nbsp;-&nbsp;
-									<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level5IdInt} ))">Delete</a>
-									&nbsp;-&nbsp;
-									<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level5IdInt} ))">Create Child</a>
+									@Html.DisplayFor(model => level5Item, "ProductCategoryRowContent")
 								</div>
 							</div>
 							foreach (var level6Item in level5Item.ChildNodes)
@@ -247,17 +203,7 @@
 								<div class="row">
 									<div class="col-xs-offset-4 col-xs-1"></div>
 									<div id="ProductCategoryId_@(level6Item.Entity.ProductCategoryId)" class="well text-left col-xs-6 borderLevel6" onclick="clickitem(@(level6Id));" draggable="true" ondragstart="dragstart(event, @(level6Id));" ondragover="dragover(event, @(level6Id));" ondrop="drop(event, @(level6Id));">
-										@Html.DisplayFor(model => level6Item, "ProductCategoryTreeNode")
-										&nbsp;-&nbsp;
-										<a href="@(Url.Action("MoveUp", new { id = level6IdInt} ))"><small>Move Up</small></a>
-										&nbsp;-&nbsp;
-										<a href="@(Url.Action("MoveDown", new { id = level6IdInt} ))"><small>Move Down</small></a>
-										&nbsp;-&nbsp;
-										<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level6IdInt} ))">Edit</a>
-										&nbsp;-&nbsp;
-										<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level6IdInt} ))">Delete</a>
-										&nbsp;-&nbsp;
-										<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level6IdInt} ))">Create Child</a>
+										@Html.DisplayFor(model => level6Item, "ProductCategoryRowContent")
 									</div>
 								</div>
 								foreach (var level7Item in level6Item.ChildNodes)
@@ -267,17 +213,7 @@
 									<div class="row">
 										<div class="col-xs-offset-5 col-xs-1"></div>
 										<div id="ProductCategoryId_@(level7Item.Entity.ProductCategoryId)" class="well text-left col-xs-5 borderLevel7" onclick="clickitem(@(level7Id));" draggable="true" ondragstart="dragstart(event, @(level7Id));" ondragover="dragover(event, @(level7Id));" ondrop="drop(event, @(level7Id));">
-											@Html.DisplayFor(model => level7Item, "ProductCategoryTreeNode")
-											&nbsp;-&nbsp;
-											<a href="@(Url.Action("MoveUp", new { id = level7IdInt} ))"><small>Move Up</small></a>
-											&nbsp;-&nbsp;
-											<a href="@(Url.Action("MoveDown", new { id = level7IdInt} ))"><small>Move Down</small></a>
-											&nbsp;-&nbsp;
-											<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level7IdInt} ))">Edit</a>
-											&nbsp;-&nbsp;
-											<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level7IdInt} ))">Delete</a>
-											&nbsp;-&nbsp;
-											<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level7IdInt} ))">Create Child</a>
+											@Html.DisplayFor(model => level7Item, "ProductCategoryRowContent")
 										</div>
 									</div>
 									foreach (var level8Item in level7Item.ChildNodes)
@@ -287,17 +223,7 @@
 										<div class="row">
 											<div class="col-xs-offset-6 col-xs-1"></div>
 											<div id="ProductCategoryId_@(level8Item.Entity.ProductCategoryId)" class="well text-left col-xs-4 borderLevel8" onclick="clickitem(@(level8Id));" draggable="true" ondragstart="dragstart(event, @(level8Id));" ondragover="dragover(event, @(level8Id));" ondrop="drop(event, @(level8Id));">
-												@Html.DisplayFor(model => level8Item, "ProductCategoryTreeNode")
-												&nbsp;-&nbsp;
-												<a href="@(Url.Action("MoveUp", new { id = level8IdInt} ))"><small>Move Up</small></a>
-												&nbsp;-&nbsp;
-												<a href="@(Url.Action("MoveDown", new { id = level8IdInt} ))"><small>Move Down</small></a>
-												&nbsp;-&nbsp;
-												<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level8IdInt} ))">Edit</a>
-												&nbsp;-&nbsp;
-												<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level8IdInt} ))">Delete</a>
-												&nbsp;-&nbsp;
-												<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level8IdInt} ))">Create Child</a>
+												@Html.DisplayFor(model => level8Item, "ProductCategoryRowContent")
 											</div>
 										</div>
 										foreach (var level9Item in level8Item.ChildNodes)
@@ -307,17 +233,7 @@
 											<div class="row">
 												<div class="col-xs-offset-7 col-xs-1"></div>
 												<div id="ProductCategoryId_@(level9Item.Entity.ProductCategoryId)" class="well text-left col-xs-3 borderLevel9" onclick="clickitem(@(level9Id));" draggable="true" ondragstart="dragstart(event, @(level9Id));" ondragover="dragover(event, @(level9Id));" ondrop="drop(event, @(level9Id));">
-													@Html.DisplayFor(model => level9Item, "ProductCategoryTreeNode")
-													&nbsp;-&nbsp;
-													<a href="@(Url.Action("MoveUp", new { id = level9IdInt} ))"><small>Move Up</small></a>
-													&nbsp;-&nbsp;
-													<a href="@(Url.Action("MoveDown", new { id = level9IdInt} ))"><small>Move Down</small></a>
-													&nbsp;-&nbsp;
-													<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level9IdInt} ))">Edit</a>
-													&nbsp;-&nbsp;
-													<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level9IdInt} ))">Delete</a>
-													&nbsp;-&nbsp;
-													<a class="btn btn-xs btn-success" href="@(Url.Action("Create", new { id = level9IdInt} ))">Create Child</a>
+													@Html.DisplayFor(model => level9Item, "ProductCategoryRowContent")
 												</div>
 											</div>
 											foreach (var level10Item in level9Item.ChildNodes)
@@ -333,19 +249,11 @@
 												<div class="row">
 													<div class="col-xs-offset-8 col-xs-1"></div>
 													<div id="ProductCategoryId_@(level10Item.Entity.ProductCategoryId)" class="well text-left col-xs-2 borderLevel10 @(textClass)" onclick="clickitem(@(level10Id));" draggable="true" ondragstart="dragstart(event, @(level10Id));">
-														@Html.DisplayFor(model => level10Item, "ProductCategoryTreeNode")
-														&nbsp;-&nbsp;
-														<a href="@(Url.Action("MoveUp", new { id = level10IdInt} ))"><small>Move Up</small></a>
-														&nbsp;-&nbsp;
-														<a href="@(Url.Action("MoveDown", new { id = level10IdInt} ))"><small>Move Down</small></a>
-														&nbsp;-&nbsp;
-														<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = level10IdInt} ))">Edit</a>
-														&nbsp;-&nbsp;
-														<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = level10IdInt} ))">Delete</a>
+														@Html.DisplayFor(model => level10Item, "ProductCategoryRowContent")
 														@if (hasHiddenChildren)
 														{
 															<br />
-															<span class="text-danger">Warning: this item has child items not shown.</span>
+															<span class="text-danger">Warning: this is level 10, so child items are not shown.</span>
 														}
 													</div>
 												</div>

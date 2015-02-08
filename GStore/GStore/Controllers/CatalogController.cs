@@ -16,7 +16,7 @@ namespace GStore.Controllers
 		public ActionResult Index()
 		{
 			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
-			return View("Index", "_Layout_Default", model);
+			return View("Index", this.LayoutNameForCatalog, model);
 		}
 
 		public ActionResult ViewCategoryByName(string urlName)
@@ -57,19 +57,19 @@ namespace GStore.Controllers
 			return ViewProduct(product);
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.CatalogLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get
 			{
 				return CurrentStoreFrontConfigOrThrow.CatalogTheme.FolderName;
+			}
+		}
+
+		protected string LayoutNameForCatalog
+		{
+			get
+			{
+				return "_Catalog_Layout_" + CurrentStoreFrontConfigOrThrow.CatalogLayout.ToString();
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace GStore.Controllers
 
 			//get products
 
-			return View("ViewCategory", model);
+			return View("ViewCategory", this.LayoutNameForCatalog, model);
 		}
 
 		protected ActionResult ViewProduct(Models.Product product)
@@ -96,7 +96,7 @@ namespace GStore.Controllers
 			}
 			/// get current catalog item
 			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product);
-			return View("ViewProduct", model);
+			return View("ViewProduct", this.LayoutNameForCatalog, model);
 		}
 
 		protected ActionResult ProductNotFound(string productName)

@@ -49,15 +49,6 @@ namespace GStore.Controllers
 			_useInactiveStoreFrontAsActive = false;
 		}
 
-
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.AccountLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

@@ -407,14 +407,6 @@ namespace GStore.Controllers
 
 		#endregion
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.CartLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

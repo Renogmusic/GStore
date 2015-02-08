@@ -73,9 +73,6 @@ else
 					@Html.ActionSortLinkFor(model => model.ViewName, "Index")
 				</th>
 				<th class="small text-left">
-					@Html.ActionSortLinkFor(model => model.LayoutName, "Index")
-				</th>
-				<th class="small text-left">
 					@Html.ActionSortLinkFor(model => model.Sections, "Index")
 				</th>
 				<th class="small">
@@ -149,12 +146,17 @@ else
 						@Html.DisplayFor(modelItem => item.ViewName)
 					</td>
 					<td class="text-left">
-						@Html.DisplayFor(modelItem => item.LayoutName)
-					</td>
-					<td class="text-left">
-						@item.Sections.AsQueryable().WhereIsActive().Count()
-						&nbsp;/&nbsp;
-						@item.Sections.Count()
+						@if (item.Sections == null || item.Sections.Count == 0)
+						{
+							@:None<br/>
+							@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = item.PageTemplateId }, new { @class = "btn btn-xs btn-info", target = "_blank" })
+						}
+						else
+						{
+							@item.Sections.AsQueryable().WhereIsActive().Count()
+							@:&nbsp;/&nbsp;
+							@item.Sections.Count()
+						}
 					</td>
 					<td>
 						@if (pageTemplateIsActive)

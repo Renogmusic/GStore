@@ -67,6 +67,14 @@
             }
         }
 
+		public static string AppDefaultLayoutName
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppDefaultLayoutName") ?? _projectSettings.AppDefaultLayoutName;
+			}
+		}
+
 		public static bool AppEnablePageViewLog
 		{
             get
@@ -115,14 +123,6 @@
 			}
 		}
 
-		public static string AppDefaultLayoutName
-		{
-			get
-			{
-				return EnvironmentOrAppSettingString("AppDefaultLayoutName") ?? _projectSettings.AppDefaultLayoutName;
-			}
-		}
-
 		public static bool AppEnableBindingAutoMapCatchAll
 		{
 			get
@@ -136,6 +136,14 @@
 			get
 			{
 				return EnvironmentOrAppSettingBool("AppEnableAutomaticHomePageCreation") ?? _projectSettings.AppEnableAutomaticHomePageCreation;
+			}
+		}
+
+		public static string AppDefaultPageTemplateName
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppDefaultPageTemplateName") ?? _projectSettings.AppDefaultPageTemplateName;
 			}
 		}
 

@@ -22,7 +22,7 @@
 	</div>
 </div>
 <hr />
-@Html.Partial("_StoreFrontViewNoTabsPartial", Model)
+@{ Html.RenderPartial("_StoreFrontViewNoTabsPartial", Model); }
 
 <div class="row">
 	<div class="form-actions no-color col-md-offset-5 col-md-6">

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace GStore.Models
 {
@@ -63,7 +64,59 @@ namespace GStore.Models
 		[Display(Name = "Child Active Product Count")]
 		public int ChildActiveCount { get; set; }
 
+		[Required]
+		[Display(Name = "Category Details Template", Description = "Template for Category details.")]
+		public CategoryListTemplateEnum CategoryDetailTemplate { get; set; }
+
+		[Required]
+		[Display(Name = "Product List Template", Description = "Template for product list in the category page.")]
+		public ProductListTemplateEnum ProductListTemplate { get; set; }
+
+		[Required]
+		[Display(Name = "Product Details Template", Description = "Template for product details.")]
+		public ProductDetailTemplateEnum ProductDetailTemplate { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Child Category Header Html", Description = "Header HTML shown before child categories.")]
+		public string ChildCategoryHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Child Category Footer Html", Description = "Footer HTML shown after child categories.")]
+		public string ChildCategoryFooterHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Product Header Html", Description = "Header HTML shown before products in this category.")]
+		public string ProductHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Product Footer Html", Description = "Footer HTML shown after products in this category.")]
+		public string ProductFooterHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "No Products Message Html", Description = "Message shown when there are no products in this category.")]
+		public string NoProductsMessageHtml { get; set; }
+
 		public virtual ICollection<Product> Products { get; set; }
 
+	}
+
+	public enum CategoryListTemplateEnum : int
+	{
+		Default = 0,
+	}
+
+	public enum ProductListTemplateEnum : int
+	{
+		Default = 0,
+	}
+
+	public enum ProductDetailTemplateEnum: int
+	{
+		Default = 0,
 	}
 }

@@ -130,6 +130,11 @@
 			document.getElementById('PageForm').hidden = true;
 		}
 	}
+
+	function ConfirmResetToDefault()
+	{
+		return confirm("Are you SURE you want to reset this page to the default values?");
+	}
 	function MakeItActive()
 	{
 		var startDateTime = @(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString(true)));
@@ -245,6 +250,7 @@
 				}
 			}
 		}
+		<li class=""><a href="@(Url.Action("Edit", new { ResetContentToDefault = true }))" onclick="return ConfirmResetToDefault();"><u>Reset Content to Defaults</u></a></li>
 	</ul>
 
 

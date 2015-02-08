@@ -53,6 +53,6 @@
 @using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { id = Model.WebFormId, area = area, }, htmlAttributes: new { id = "WebFormEditForm" }))
 {
 	<div id="WebFormEdit_Target">
-		@Html.Partial("_WebFormEditPartial", Model)
+		@{ Html.RenderPartial("_WebFormEditPartial", Model); }
 	</div>
 }

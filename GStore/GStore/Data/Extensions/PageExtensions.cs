@@ -21,5 +21,19 @@ namespace GStore.Data
 			return missingOptionalSections;
 		}
 
+		public static Page ResetContentToDefault(this Page page, IGstoreDb db)
+		{
+			List<PageSection> sections = page.Sections.ToList();
+			foreach (PageSection section in sections)
+			{
+				db.PageSections.Delete(section);
+			}
+
+			db.Pages.Update(page);
+			db.SaveChanges();
+
+			return page;
+		}
+
 	}
 }

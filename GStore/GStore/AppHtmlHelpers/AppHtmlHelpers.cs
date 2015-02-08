@@ -161,14 +161,7 @@ namespace GStore.AppHtmlHelpers
 
 		public static string LayoutNameToUse(this HtmlHelper htmlHelper)
 		{
-			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
-			if (controller == null)
-			{
-				return Settings.AppDefaultLayoutName;
-			}
-
-			return controller.LayoutNameToUse;
-
+			return Settings.AppDefaultLayoutName;
 		}
 
 		/// <summary>
@@ -247,7 +240,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="expression"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLinkFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool useShortName = true)
+		public static MvcHtmlString ActionSortLinkFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool useShortName = true, object additionalRouteData = null)
 		{
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TProperty>(expression, new ViewDataDictionary<TModel>());
 			string expressionText = ExpressionHelper.GetExpressionText(expression);
@@ -267,7 +260,42 @@ namespace GStore.AppHtmlHelpers
 				}
 			}
 
-			return htmlHelper.ActionSortLink(displayName, action, expressionText);
+			return htmlHelper.ActionSortLink(displayName, action, expressionText, additionalRouteData: additionalRouteData);
+		}
+
+		/// <summary>
+		/// Creates a sort link that runs an action
+		/// internally uses Request["SortBy"] and Request["SortAscending"]
+		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
+		/// </summary>
+		/// <typeparam name="TModel"></typeparam>
+		/// <typeparam name="TValue"></typeparam>
+		/// <param name="htmlHelper"></param>
+		/// <param name="expression"></param>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionSortLinkFor<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action, bool useShortName = true, object additionalRouteData = null)
+		{
+
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TValue>(expression, new ViewDataDictionary<TModel>());
+			string expressionText = ExpressionHelper.GetExpressionText(expression);
+			string displayName = (useShortName ? metadata.ShortDisplayName : null) ?? metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
+
+			string[] dotValues = expressionText.Split('.');
+			if (dotValues.Count() > 1)
+			{
+				string firstItem = dotValues[0];
+				if (useShortName)
+				{
+					displayName = htmlHelper.DisplayShortName(firstItem).ToHtmlString() + " " + displayName;
+				}
+				else
+				{
+					displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
+				}
+			}
+
+			return htmlHelper.ActionSortLink(displayName, action, expressionText, additionalRouteData: additionalRouteData);
 		}
 
 		/// <summary>
@@ -281,7 +309,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="expression"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLinkForItem<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool removeItemName, bool useShortName = true, string TabName = "", int? id = null)
+		public static MvcHtmlString ActionSortLinkForItem<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string action, bool removeItemName, bool useShortName = true, string TabName = "", int? id = null, object additionalRouteData = null)
 		{
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TProperty>(expression, new ViewDataDictionary<TModel>());
 			string expressionText = ExpressionHelper.GetExpressionText(expression);
@@ -306,42 +334,7 @@ namespace GStore.AppHtmlHelpers
 				expressionText = expressionText.Substring(expressionText.IndexOf('.') + 1);
 			}
 
-			return htmlHelper.ActionSortLink(displayName, action, expressionText, TabName, id);
-		}
-
-		/// <summary>
-		/// Creates a sort link that runs an action
-		/// internally uses Request["SortBy"] and Request["SortAscending"]
-		/// the controller action target needs to have parameters string SortBy and bool? SortAscending
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <param name="action"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ActionSortLinkFor<TModel, TValue>(this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper, Expression<Func<TModel, TValue>> expression, string action, bool useShortName = true)
-		{
-
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<TModel, TValue>(expression, new ViewDataDictionary<TModel>());
-			string expressionText = ExpressionHelper.GetExpressionText(expression);
-			string displayName = (useShortName ? metadata.ShortDisplayName : null) ?? metadata.DisplayName ?? (metadata.PropertyName ?? expressionText.Split(new char[] { '.' }).Last<string>());
-
-			string[] dotValues = expressionText.Split('.');
-			if (dotValues.Count() > 1)
-			{
-				string firstItem = dotValues[0];
-				if (useShortName)
-				{
-					displayName = htmlHelper.DisplayShortName(firstItem).ToHtmlString() + " " + displayName;
-				}
-				else
-				{
-					displayName = htmlHelper.DisplayName(firstItem).ToHtmlString() + " " + displayName;
-				}
-			}
-
-			return htmlHelper.ActionSortLink(displayName, action, expressionText);
+			return htmlHelper.ActionSortLink(displayName, action, expressionText, TabName, id, additionalRouteData: additionalRouteData);
 		}
 
 		/// <summary>
@@ -354,7 +347,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="action"></param>
 		/// <param name="sortField"></param>
 		/// <returns></returns>
-		public static MvcHtmlString ActionSortLink(this HtmlHelper helper, string linkText, string action, string sortField, string TabName = "", int? id = null)
+		public static MvcHtmlString ActionSortLink(this HtmlHelper helper, string linkText, string action, string sortField, string TabName = "", int? id = null, object additionalRouteData = null)
 		{
 
 			HttpRequestBase request = helper.ViewContext.HttpContext.Request;
@@ -404,29 +397,32 @@ namespace GStore.AppHtmlHelpers
 
 			}
 
-			MvcHtmlString returnValue = null;
-			if (id.HasValue)
+			RouteValueDictionary routeData = null;
+			if (additionalRouteData == null)
 			{
-				if (!string.IsNullOrWhiteSpace(TabName))
-				{
-					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { id= id.Value, SortBy = sortField, SortAscending = linkWillSortUp, Tab = TabName }, new { @title = title });
-				}
-				else
-				{
-					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { id = id.Value, SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
-				}
+				routeData = new RouteValueDictionary();
 			}
 			else
 			{
-				if (!string.IsNullOrWhiteSpace(TabName))
-				{
-					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp, Tab = TabName }, new { @title = title });
-				}
-				else
-				{
-					returnValue = helper.ActionLink(linkText + (currentFieldIsSorted ? "*" : ""), action, new { SortBy = sortField, SortAscending = linkWillSortUp }, new { @title = title });
-				}
+				routeData = HtmlHelper.AnonymousObjectToHtmlAttributes(additionalRouteData);
 			}
+
+			routeData["SortBy"] = sortField;
+			routeData["SortAscending"] = linkWillSortUp;
+			if (!string.IsNullOrEmpty(TabName))
+			{
+				routeData["TabName"] = TabName;
+			}
+			if (id.HasValue)
+			{
+				routeData["Id"] = id.Value;
+			}
+
+			RouteValueDictionary htmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(new { @title = title });
+
+			string finalLinkText = linkText + (currentFieldIsSorted ? "*" : "");
+
+			MvcHtmlString returnValue = helper.ActionLink(finalLinkText, action, routeData, htmlAttributes);
 
 			if (!string.IsNullOrEmpty(sortClue))
 			{
@@ -1227,13 +1223,15 @@ namespace GStore.AppHtmlHelpers
 				return new MvcHtmlString("");
 			}
 
-			returnValue.AppendLine("<!-- User Messages -->");
+			returnValue.AppendLine("<!-- Start of User Messages -->");
 			returnValue.AppendLine("<script>");
 			foreach (UserMessage userMessage in userMessages)
 			{
 				returnValue.AppendLine("AddUserMessage(" + userMessage.Title.ToJsValue() + ", " + userMessage.Message.ToJsValue() + ", " + userMessage.MessageType.ToString().ToLower().ToJsValue() + ");");
 			}
+			userMessages.Clear();
 			returnValue.AppendLine("</script>");
+			returnValue.AppendLine("<!-- End of User Messages -->");
 
 			return new MvcHtmlString(returnValue.ToString());
 		}
@@ -1254,7 +1252,7 @@ namespace GStore.AppHtmlHelpers
 			{
 				return new MvcHtmlString("");
 			}
-
+			userMessagesBottom.Clear();
 			returnValue.AppendLine("<!-- User Messages Bottom -->");
 			returnValue.AppendLine("<script>");
 			foreach (UserMessage userMessage in userMessagesBottom)
@@ -2081,7 +2079,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="sectionName">sectionName is the PageTemplateSections.Name</param>
 		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
 		/// <returns></returns>
-		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, bool editInTop, bool editInBottom)
+		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, bool editInTop, bool editInBottom)
 		{
 			if (index < 1)
 			{
@@ -2089,70 +2087,22 @@ namespace GStore.AppHtmlHelpers
 			}
 			if (string.IsNullOrWhiteSpace(sectionName))
 			{
-				throw new ArgumentOutOfRangeException("Index", "Template Error! Page Section Name cannot be blank");
+				throw new ArgumentOutOfRangeException("sectionName", "Template Error! Page Section Name cannot be blank");
 			}
 			if (string.IsNullOrWhiteSpace(description))
 			{
-				throw new ArgumentOutOfRangeException("Index", "Template Error! Section Description cannot be blank");
+				throw new ArgumentOutOfRangeException("description", "Template Error! Section Description cannot be blank");
 			}
 
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
+			if (pageViewModel == null)
+			{
+				throw new ArgumentNullException("pageViewModel");
+			}
+
 			if (pageViewModel.ForTemplateSyncOnly)
 			{
-				if (!pageViewModel.PageTemplateIdForSync.HasValue)
-				{
-					throw new ArgumentNullException("PageTemplateIdForSync", "PageTemplateIdForSync must be specified when ForTemplateSyncOnly is true");
-				}
-				int pageTemplateId = pageViewModel.PageTemplateIdForSync.Value;
-				IGstoreDb dbforSync = htmlHelper.GStoreDb();
-				PageTemplate template = dbforSync.PageTemplates.SingleOrDefault(pt => pt.PageTemplateId == pageTemplateId);
-				if (template == null)
-				{
-					throw new ApplicationException("Page Template not found by id: " + pageTemplateId);
-				}
-				PageTemplateSection sectionTest = template.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
-				if (sectionTest == null)
-				{
-					sectionTest = dbforSync.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, template.ClientId, editInTop, editInBottom, htmlHelper.CurrentUserProfile(true));
-					return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span><br/>");
-				}
-				bool update = false;
-				if (!string.IsNullOrEmpty(defaultRawHtmlValue) && (sectionTest.DefaultRawHtmlValue != defaultRawHtmlValue))
-				{
-					sectionTest.DefaultRawHtmlValue = defaultRawHtmlValue;
-					update = true;
-				}
-				if (sectionTest.Description != description)
-				{
-					sectionTest.Description = description;
-					update = true;
-				}
-				if (sectionTest.Order != 1000 + index)
-				{
-					sectionTest.Order = 1000 + index;
-					update = true;
-				}
-				if (sectionTest.EditInTop != editInTop)
-				{
-					sectionTest.EditInTop = editInTop;
-					update = true;
-				}
-				if (sectionTest.EditInBottom != editInBottom)
-				{
-					sectionTest.EditInBottom = editInBottom;
-					update = true;
-				}
-
-				if (!update)
-				{
-					return new MvcHtmlString("<span class=\"text-success\"><strong>Section OK '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
-				}
-				if (update)
-				{
-					dbforSync.PageTemplateSections.Update(sectionTest);
-					dbforSync.SaveChanges();
-					return new MvcHtmlString("<span class=\"text-info\"><strong>Section Updated '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
-				}
+				return SyncTemplateSectionHelper(htmlHelper, sectionName, index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, pageViewModel);
 			}
 
 			if (pageViewModel.Page == null)
@@ -2161,14 +2111,13 @@ namespace GStore.AppHtmlHelpers
 			}
 			Page page = pageViewModel.Page;
 			PageTemplate pageTemplate = page.PageTemplate;
-
 			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
 
 			if (pageTemplateSection == null)
 			{
 				System.Diagnostics.Trace.WriteLine("--Auto-creating page template section. Template: " + pageTemplate.Name + " [" + pageTemplate.PageTemplateId + "] Section Name: " + sectionName);
 				IGstoreDb db = htmlHelper.GStoreDb();
-				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, pageTemplate.ClientId, editInTop, editInBottom, db.SeedAutoMapUserBestGuess());
+				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, pageTemplate.ClientId, db.SeedAutoMapUserBestGuess());
 			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
@@ -2185,12 +2134,133 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns HTML value of the section section
+		/// Displays a page section as a copy; and does not enable in-line editing for this copy
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="sectionName"></param>
+		/// <returns></returns>
+		public static MvcHtmlString DisplayPageSectionCopy(this HtmlHelper<PageViewModel> htmlHelper, string sectionName)
+		{
+			if (string.IsNullOrWhiteSpace(sectionName))
+			{
+				throw new ArgumentOutOfRangeException("sectionName", "Template Error! Page Section Name cannot be blank");
+			}
+			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
+			if (pageViewModel == null)
+			{
+				throw new ArgumentNullException("pageViewModel");
+			}
+			if (pageViewModel.ForTemplateSyncOnly || pageViewModel.EditMode)
+			{
+				return null;
+			}
+			if (pageViewModel.Page == null)
+			{
+				throw new ArgumentNullException("Page", "Page cannot be null except in ForTemplateSyncOnly which is false");
+			}
+
+			Page page = pageViewModel.Page;
+			PageTemplate pageTemplate = page.PageTemplate;
+			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+			if (pageTemplateSection == null)
+			{
+				return null;
+			}
+
+			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
+				.Where(ps => ps.PageTemplateSectionId == pageTemplateSection.PageTemplateSectionId)
+				.OrderBy(ps => ps.Order).ThenBy(ps => ps.PageSectionId)
+				.FirstOrDefault();
+
+			return pageTemplateSection.HtmlDisplay(pageSection, htmlHelper);
+		}
+
+		private static MvcHtmlString SyncTemplateSectionHelper(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, bool editInTop, bool editInBottom, PageViewModel pageViewModel)
+		{
+			if (!pageViewModel.PageTemplateIdForSync.HasValue)
+			{
+				throw new ArgumentNullException("PageTemplateIdForSync", "PageTemplateIdForSync must be specified when ForTemplateSyncOnly is true");
+			}
+			int pageTemplateId = pageViewModel.PageTemplateIdForSync.Value;
+			IGstoreDb db = htmlHelper.GStoreDb();
+			PageTemplate template = db.PageTemplates.SingleOrDefault(pt => pt.PageTemplateId == pageTemplateId);
+			if (template == null)
+			{
+				throw new ApplicationException("Page Template not found by id: " + pageTemplateId);
+			}
+			PageTemplateSection sectionTest = template.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+			if (sectionTest == null)
+			{
+				sectionTest = db.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, template.ClientId, htmlHelper.CurrentUserProfile(true));
+				return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span><br/>");
+			}
+			bool update = false;
+			if (!string.IsNullOrEmpty(defaultRawHtmlValue) && (sectionTest.DefaultRawHtmlValue != defaultRawHtmlValue))
+			{
+				sectionTest.DefaultRawHtmlValue = defaultRawHtmlValue;
+				update = true;
+			}
+			if (!string.IsNullOrEmpty(preTextHtml) && (sectionTest.PreTextHtml != preTextHtml))
+			{
+				sectionTest.PreTextHtml = preTextHtml;
+				update = true;
+			}
+			if (!string.IsNullOrEmpty(postTextHtml) && (sectionTest.PostTextHtml != postTextHtml))
+			{
+				sectionTest.PostTextHtml = postTextHtml;
+				update = true;
+			}
+			if (!string.IsNullOrEmpty(defaultTextCssClass) && (sectionTest.DefaultTextCssClass != defaultTextCssClass))
+			{
+				sectionTest.DefaultTextCssClass = defaultTextCssClass;
+				update = true;
+			}
+
+
+			if (sectionTest.Description != description)
+			{
+				sectionTest.Description = description;
+				update = true;
+			}
+			if (sectionTest.Order != 1000 + index)
+			{
+				sectionTest.Order = 1000 + index;
+				update = true;
+			}
+			if (sectionTest.EditInTop != editInTop)
+			{
+				sectionTest.EditInTop = editInTop;
+				update = true;
+			}
+			if (sectionTest.EditInBottom != editInBottom)
+			{
+				sectionTest.EditInBottom = editInBottom;
+				update = true;
+			}
+
+			if (!update)
+			{
+				return new MvcHtmlString("<span class=\"text-success\"><strong>Section OK '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
+			}
+
+			db.PageTemplateSections.Update(sectionTest);
+			db.SaveChanges();
+			return new MvcHtmlString("<span class=\"text-info\"><strong>Section Updated '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "]</strong></span><br/>");
+
+		}
+
+		/// <summary>
+		/// Returns HTML value of the section
 		/// </summary>
 		/// <param name="pageSection"></param>
 		/// <returns></returns>
 		public static MvcHtmlString HtmlDisplay<TModel>(this PageTemplateSection pageTemplateSection, PageSection pageSection, HtmlHelper<TModel> htmlHelper)
 		{
+			if (pageTemplateSection == null)
+			{
+				throw new ArgumentNullException("pageTemplateSection");
+			}
+
 			string value = string.Empty;
 			if (pageSection != null && !pageSection.UseDefaultFromTemplate)
 			{
@@ -2204,7 +2274,8 @@ namespace GStore.AppHtmlHelpers
 				}
 				else if (pageSection.HasPlainText && !string.IsNullOrEmpty(pageSection.PlainText))
 				{
-					value = HttpUtility.HtmlEncode(htmlHelper.ReplaceVariables(pageSection.PlainText, string.Empty)).Replace("\n", "<br/>\n");
+					string cssClass = string.IsNullOrEmpty(pageSection.TextCssClass) ? pageTemplateSection.DefaultTextCssClass : pageSection.TextCssClass;
+					value = (pageTemplateSection.PreTextHtml ?? "") + "<span class=\"" + cssClass + "\">" + HttpUtility.HtmlEncode(htmlHelper.ReplaceVariables(pageSection.PlainText, string.Empty)).Replace("\n", "<br/>\n") + "</span>" + (pageTemplateSection.PostTextHtml ?? "");
 				}
 			}
 			else
@@ -2237,81 +2308,137 @@ namespace GStore.AppHtmlHelpers
 
 		}
 
-		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue)
+		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue = "")
 		{
+			if (text == null)
+			{
+				return null;
+			}
+
+			if (!text.HasVariables())
+			{
+				return text;
+			}
+
 			Client client = htmlHelper.CurrentClient(false);
 			StoreFrontConfiguration storeFront = htmlHelper.CurrentStoreFrontConfig(false);
 			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
 			Page page = htmlHelper.CurrentPage(false);
 
-			return text.ReplaceVariables(nullValue, client, storeFront, userProfile, page);
+			return text.ReplaceVariables(client, storeFront, userProfile, page, nullValue, true);
 		}
 
-		public static string ReplaceVariables(this string text, string nullValue, Client client, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, Page page)
+
+		/// <summary>
+		/// Checks if a string has variables to replace. Useful for dynamic HTML
+		/// Leave prefix = "" to check for all variables, or set it to the prefix i.e. "client"  to check for client. variables
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="prefix"></param>
+		/// <returns></returns>
+		public static bool HasVariables(this string text, string prefix = "")
 		{
-			if (nullValue == null)
+			if (text == null || string.IsNullOrWhiteSpace(text))
 			{
-				throw new ArgumentNullException("nullValue");
+				return false;
 			}
 
-			string clientNullValue = null;
-			if (client == null)
+			if (string.IsNullOrEmpty(prefix))
 			{
-				clientNullValue = nullValue;
+				return text.Contains(fieldCode);
 			}
 
-			text = text.Replace("::client.name::", clientNullValue ?? client.Name)
-				.Replace("::client.clientid::", clientNullValue ?? client.ClientId.ToString())
-				.Replace("::client.sendgridmailfromemail::", clientNullValue ?? client.SendGridMailFromEmail)
-				.Replace("::client.sendgridmailfromname::", clientNullValue ?? client.SendGridMailFromName)
-				.Replace("::client.twiliofromphone::", clientNullValue ?? client.TwilioFromPhone)
-				.Replace("::client.twiliosmsfromemail::", clientNullValue ?? client.TwilioSmsFromEmail)
-				.Replace("::client.twiliosmsfromname::", clientNullValue ?? client.TwilioSmsFromName);
+			return text.Contains(fieldCode + prefix + ".");
+		}
+
+		public const string fieldCode = ":::";
+
+		public static string ReplaceVariables(this string text, Client client, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, Page page, string nullValue = "", bool confirmedVariables = false)
+		{
+			if (!confirmedVariables)
+			{
+				if (!text.HasVariables())
+				{
+					return text;
+				}
+			}
+
+			if (text.HasVariables("client"))
+			{
+				string clientNullValue = null;
+				if (client == null)
+				{
+					clientNullValue = nullValue;
+				}
+
+				text = text.Replace(fieldCode + "client.name" + fieldCode, clientNullValue ?? client.Name)
+					.Replace(fieldCode + "client.clientid:::", clientNullValue ?? client.ClientId.ToString())
+					.Replace(fieldCode + "client.sendgridmailfromemail:::", clientNullValue ?? client.SendGridMailFromEmail)
+					.Replace(fieldCode + "client.sendgridmailfromname:::", clientNullValue ?? client.SendGridMailFromName)
+					.Replace(fieldCode + "client.twiliofromphone:::", clientNullValue ?? client.TwilioFromPhone)
+					.Replace(fieldCode + "client.twiliosmsfromemail:::", clientNullValue ?? client.TwilioSmsFromEmail)
+					.Replace(fieldCode + "client.twiliosmsfromname:::", clientNullValue ?? client.TwilioSmsFromName);
+			}
 			
-			string storeFrontNullValue = null;
-			if (storeFrontConfig == null)
+			if (text.HasVariables("storefront"))
 			{
-				storeFrontNullValue = nullValue;
+				string storeFrontNullValue = null;
+				if (storeFrontConfig == null)
+				{
+					storeFrontNullValue = nullValue;
+				}
+				text = text.Replace(fieldCode + "storefront.name:::", storeFrontNullValue ?? storeFrontConfig.Name)
+					.Replace(fieldCode + "storefront.clientid:::", storeFrontNullValue ?? storeFrontConfig.StoreFrontId.ToString())
+					.Replace(fieldCode + "storefront.accountadmin.fullname:::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.FullName)
+					.Replace(fieldCode + "storefront.accountadmin.email:::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.Email)
+					.Replace(fieldCode + "storefront.registerednotify.fullname:::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.FullName)
+					.Replace(fieldCode + "storefront.registerednotify.email:::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.Email)
+					.Replace(fieldCode + "storefront.welcomeperson.fullname:::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.FullName)
+					.Replace(fieldCode + "storefront.welcomeperson.email:::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.Email)
+					.Replace(fieldCode + "storefront.publicurl:::", storeFrontNullValue ?? storeFrontConfig.PublicUrl)
+					.Replace(fieldCode + "storefront.htmlfooter:::", storeFrontNullValue ?? storeFrontConfig.HtmlFooter);
 			}
-			text = text.Replace("::storefront.name::", storeFrontNullValue ?? storeFrontConfig.Name)
-				.Replace("::storefront.clientid::", storeFrontNullValue ?? storeFrontConfig.StoreFrontId.ToString())
-				.Replace("::storefront.accountadmin.fullname::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.FullName)
-				.Replace("::storefront.accountadmin.email::", storeFrontNullValue ?? storeFrontConfig.AccountAdmin.Email)
-				.Replace("::storefront.registerednotify.fullname::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.FullName)
-				.Replace("::storefront.registerednotify.email::", storeFrontNullValue ?? storeFrontConfig.RegisteredNotify.Email)
-				.Replace("::storefront.welcomeperson.fullname::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.FullName)
-				.Replace("::storefront.welcomeperson.email::", storeFrontNullValue ?? storeFrontConfig.WelcomePerson.Email)
-				.Replace("::storefront.publicurl::", storeFrontNullValue ?? storeFrontConfig.PublicUrl)
-				.Replace("::storefront.htmlfooter::", storeFrontNullValue ?? storeFrontConfig.HtmlFooter);
 
-			string userProfileNullValue = null;
-			if (userProfile == null)
+			if (text.HasVariables("userprofile"))
 			{
-				userProfileNullValue = nullValue;
+				string userProfileNullValue = null;
+				if (userProfile == null)
+				{
+					userProfileNullValue = nullValue;
+				}
+				text = text.Replace(fieldCode + "userprofile.email:::", userProfileNullValue ?? userProfile.Email)
+					.Replace(fieldCode + "userprofile.fullname:::", userProfileNullValue ?? userProfile.FullName)
+					.Replace(fieldCode + "userprofile.username:::", userProfileNullValue ?? userProfile.UserName)
+					.Replace(fieldCode + "userprofile.UserProfileId:::", userProfileNullValue ?? userProfile.UserProfileId.ToString());
 			}
-			text = text.Replace("::userprofile.email::", userProfileNullValue ?? userProfile.Email)
-				.Replace("::userprofile.fullname::", userProfileNullValue ?? userProfile.FullName)
-				.Replace("::userprofile.username::", userProfileNullValue ?? userProfile.UserName)
-				.Replace("::userprofile.UserProfileId::", userProfileNullValue ?? userProfile.UserProfileId.ToString());
 
-			string pageNullValue = null;
-			if (page == null)
+			if (text.HasVariables("page"))
 			{
-				pageNullValue = nullValue;
-			}
-			text = text.Replace("::page.title::", pageNullValue ?? page.PageTitle)
-				.Replace("::page.name::", pageNullValue ?? page.Name)
-				.Replace("::page.pageid::", pageNullValue ?? page.PageId.ToString())
-				.Replace("::page.url::", pageNullValue ?? page.Url);
+				string pageNullValue = null;
+				if (page == null)
+				{
+					pageNullValue = nullValue;
+				}
+				text = text.Replace(fieldCode + "page.title:::", pageNullValue ?? page.PageTitle)
+					.Replace(fieldCode + "page.name:::", pageNullValue ?? page.Name)
+					.Replace(fieldCode + "page.pageid:::", pageNullValue ?? page.PageId.ToString())
+					.Replace(fieldCode + "page.url:::", pageNullValue ?? page.Url);
 
-			DateTime today = DateTime.Today;
-			return text.Replace("::date::", today.ToString())
-				.Replace("::shortdate::", today.ToShortDateString().ToString())
-				.Replace("::shorttime::", DateTime.Now.ToShortTimeString())
-				.Replace("::dayofweek::", today.DayOfWeek.ToString())
-				.Replace("::monthname::", today.ToString("MMMM"))
-				.Replace("::dayofmonth::", today.Day.ToString())
-				.Replace("::year::", today.ToString("YYYY"));
+			}
+
+			if (text.HasVariables("date"))
+			{
+				DateTime today = DateTime.Today;
+				text = text.Replace(fieldCode + "date.today:::", today.ToString())
+					.Replace(fieldCode + "date.shortdate:::", today.ToShortDateString().ToString())
+					.Replace(fieldCode + "date.shorttime:::", DateTime.Now.ToShortTimeString())
+					.Replace(fieldCode + "date.dayofweek:::", today.DayOfWeek.ToString())
+					.Replace(fieldCode + "date.monthname:::", today.ToString("MMMM"))
+					.Replace(fieldCode + "date.dayofmonth:::", today.Day.ToString())
+					.Replace(fieldCode + "date.year:::", today.ToString("YYYY"));
+			}
+
+			return text;
 		}
 
 		public static MvcHtmlString DisplayPageForm<TModel>(this HtmlHelper<TModel> htmlHelper) where TModel: PageViewModel
@@ -2627,6 +2754,39 @@ namespace GStore.AppHtmlHelpers
 				throw new ArgumentNullException("session");
 			}
 			return session["entryReferrer"] as string;
+		}
+
+		public static char[] InvalidUrlNameCharactersArray(this string urlName)
+		{
+			return new char[] { '/', '\\', '%', '?', '<', '>', '*', ':', '&', '"', '\'', ' ' };
+		}
+
+		public static string InvalidUrlNameCharacters(this string urlName)
+		{
+			char[] invalidChars = urlName.InvalidUrlNameCharactersArray();
+			return "'" + string.Join("', '", invalidChars) + "'";
+		}
+
+		public static bool IsValidUrlName(this string urlName)
+		{
+			foreach (char charX in urlName.InvalidUrlNameCharacters())
+			{
+				if (urlName.Contains(charX))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public static string FixUrlName(this string urlName)
+		{
+			char[] invalidChars = urlName.InvalidUrlNameCharactersArray();
+			foreach (char charX in invalidChars)
+			{
+				urlName = urlName.Replace(charX, '-');
+			}
+			return urlName;
 		}
 
 		public static string ToFileName(this string value)

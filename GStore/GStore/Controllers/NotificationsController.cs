@@ -15,14 +15,6 @@ namespace GStore.Controllers
 	[Authorize]
 	public class NotificationsController : BaseClass.BaseController
     {
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontOrThrow.CurrentConfig().NotificationsLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

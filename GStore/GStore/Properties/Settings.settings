@@ -85,9 +85,6 @@
     <Setting Name="AppEnableBindingAutoMapToFirstStoreFront" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="AppDefaultLayoutName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Default</Value>
-    </Setting>
     <Setting Name="AppEnableBindingAutoMapCatchAll" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -95,7 +92,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppDefaultPageTemplateViewName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Welcome</Value>
+      <Value Profile="(Default)">Page Welcome</Value>
     </Setting>
     <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
       <Value Profile="(Default)">EntityFrameworkCodeFirstProvider</Value>
@@ -138,6 +135,12 @@
     </Setting>
     <Setting Name="AppEnableUserActionLog" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AppDefaultLayoutName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Default</Value>
+    </Setting>
+    <Setting Name="AppDefaultPageTemplateName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Welcome Template</Value>
     </Setting>
   </Settings>
 </SettingsFile>

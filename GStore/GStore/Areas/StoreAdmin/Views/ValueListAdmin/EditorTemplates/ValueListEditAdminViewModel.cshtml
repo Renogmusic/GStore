@@ -53,6 +53,6 @@
 @using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { id = Model.ValueListId, area = area, }, htmlAttributes: new { id = "ValueListEditForm" }))
 {
 	<div id="ValueListEdit_Target">
-		@Html.Partial("_ValueListEditPartial", Model)
+		@{ Html.RenderPartial("_ValueListEditPartial", Model); }
 	</div>
 }

@@ -67,12 +67,12 @@ namespace GStore.Data
 				case RepositoryProviderEnum.EntityFrameworkCodeFirstProvider:
 					return new Data.EntityFrameworkCodeFirstProvider.GStoreEFDbContext(userName);
 				case RepositoryProviderEnum.ListProvider :
-					//todo: note ListProvider uses a single static list, no copies or real separate contexts
+					//note ListProvider uses a single static list, no copies or real separate contexts
 					_listDb = new Data.ListProvider.ListContext();
 					SeedDataExtensions.AddSeedData(_listDb);
 					return _listDb;
-				//todo: allow for other repositories, perhaps by class or project name; and config mapping here
-				//Example: pull in a provider that takes some lists, some ef, some web services, some whoknowswhats
+					//allow for other repositories, perhaps by class or project name; and config mapping here
+					//Example: pull in a provider that takes some lists, some ef, some web services, some whoknowswhats
 				default:
 					break;
 			}
@@ -95,7 +95,7 @@ namespace GStore.Data
 				case "list":
 					return RepositoryProviderEnum.ListProvider;
 				default:
-					//todo: allow for other repositories, perhaps by class or project name; and config mapping here
+					//allow for other repositories, by class or project name; and config mapping here
 					//Example: pull in a provider that takes some lists, some ef, some web services, some whoknowswhats
 					break;
 			}

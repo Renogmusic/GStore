@@ -34,13 +34,6 @@ namespace GStore.Models
 		[Display(Name = "View Name (file name without .cshtml)", ShortName="View Name")]
 		public string ViewName { get; set; }
 
-		/// <summary>
-		/// Always "Default" until we have more layout master pages
-		/// </summary>
-		[Required]
-		[Display(Name = "Layout Name (always 'Default')", ShortName = "'Default'")]
-		public string LayoutName { get; set; }
-
 		public virtual ICollection<PageTemplateSection> Sections { get; set; }
 
 	}

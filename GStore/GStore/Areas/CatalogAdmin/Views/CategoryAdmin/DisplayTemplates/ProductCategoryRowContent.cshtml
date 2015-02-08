@@ -1,0 +1,40 @@
+﻿@model GStore.Data.TreeNode<GStore.Models.ProductCategory>
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool returnToFrontEnd = (ViewData["ReturnToFrontEnd"] as bool?) ?? false;
+		int key = Model.Entity.ProductCategoryId;
+		@Html.DisplayFor(model => model.Entity, "ProductCategory")
+		@:&nbsp;-&nbsp;
+		<a href="@(Url.Action("MoveUp", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))"><small>Move Up</small></a>
+		@:&nbsp;-&nbsp;
+		<a href="@(Url.Action("MoveDown", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))"><small>Move Down</small></a>
+		@:&nbsp;-&nbsp;
+		<a class="btn btn-xs btn-success" href="@(Url.Action("Details", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))">Details</a>
+		@:&nbsp;-&nbsp;
+		<a class="btn btn-xs btn-warning" href="@(Url.Action("Edit", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))">Edit</a>
+		@:&nbsp;-&nbsp;
+		<a class="btn btn-xs btn-danger" href="@(Url.Action("Delete", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))">Delete</a>
+		@:&nbsp;-&nbsp;
+		<a class="btn btn-xs btn-info" href="@(Url.Action("Create", new { id = key, ReturnToFrontEnd = returnToFrontEnd }))">Create Child</a>
+		@*@:&nbsp;-&nbsp;
+	<a class="btn btn-xs btn-success" href="@(Url.Action("Attributes", new { id = key, ReturnToFrontEnd = returnToFrontEnd  }))">Attributes</a>*@
+	
+		@:&nbsp;&nbsp;
+		if (Html.UserHasPermission(GStoreAction.Products_Manager))
+		{
+			@Html.ActionLink("Products:", "Manager", "ProductAdmin", new { ProductCategoryId = Model.Entity.ProductCategoryId, ReturnToFrontEnd = returnToFrontEnd }, null)
+		}
+		else
+		{
+			@:Products:
+		}
+		@: @(Model.Entity.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Entity.Products.Count) Total
+		@:&nbsp;&nbsp;&nbsp;&nbsp;Active Child Products: @(Model.Entity.ChildActiveCount)
+	}
+}

@@ -48,7 +48,7 @@ namespace GStore.Data
 		}
 		public static bool IsActiveDirect(this GStoreEntity record, DateTime dateTime)
 		{
-			if (!record.IsPending && (record.StartDateTimeUtc < dateTime) && (record.EndDateTimeUtc > dateTime))
+			if (record != null && !record.IsPending && (record.StartDateTimeUtc < dateTime) && (record.EndDateTimeUtc > dateTime))
 			{
 				return true;
 			}

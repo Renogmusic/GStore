@@ -1,0 +1,142 @@
+﻿@model GStore.Areas.CatalogAdmin.ViewModels.ProductEditAdminViewModel
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ReturnToFrontEnd)
+	<div class="row">
+		@if (Model.IsCreatePage)
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-info">Create a New Product</span>
+			</h1>
+		}
+		else
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-warning">Edit Product</span>
+				<br/>
+				<small>@Html.DisplayFor(model => model.Product)</small>
+			</h1>
+		}
+	</div>
+
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-danger" })
+					}
+				</center>
+			</div>
+		</div>
+	</div>
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(model => model.ProductId)
+		@Html.EditorFor(model => model.Name, "FieldText")
+		@Html.EditorFor(model => model.UrlName, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.ImageName, "FieldText")
+		@Html.EditorFor(model => model.ProductCategoryId, "FieldProductCategoryId")
+		@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+		@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+		@Html.EditorFor(model => model.DigitalDownload, "FieldCheckbox")
+
+		@Html.EditorFor(model => model.BaseListPrice, "FieldCurrency")
+		@Html.EditorFor(model => model.BaseUnitPrice, "FieldCurrency")
+		@Html.EditorFor(model => model.SummaryHtml, "FieldHtml")
+		@Html.EditorFor(model => model.DescriptionHtml, "FieldHtml")
+		@Html.EditorFor(model => model.FooterHtml, "FieldHtml")
+
+		@Html.EditorFor(model => model.DigitalDownloadFileName, "FieldText")
+		@Html.EditorFor(model => model.SampleAudioCaption, "FieldText")
+		@Html.EditorFor(model => model.SampleAudioFileName, "FieldText")
+		@Html.EditorFor(model => model.SampleDownloadCaption, "FieldText")
+		@Html.EditorFor(model => model.SampleDownloadFileName, "FieldText")
+		@Html.EditorFor(model => model.SampleImageCaption, "FieldText")
+		@Html.EditorFor(model => model.SampleImageFileName, "FieldText")
+
+		@Html.EditorFor(model => model.MaxQuantityPerOrder, "FieldInt")
+		@Html.EditorFor(model => model.MetaDescription, "FieldText")
+		@Html.EditorFor(model => model.MetaKeywords, "FieldText")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+
+	</div>
+
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-danger" })
+					}
+				</center>
+			</div>
+		</div>
+	</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+

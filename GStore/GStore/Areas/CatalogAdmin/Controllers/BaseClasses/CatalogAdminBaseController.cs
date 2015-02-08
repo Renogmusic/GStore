@@ -22,14 +22,6 @@ namespace GStore.Areas.CatalogAdmin.Controllers.BaseClasses
 			this._useInactiveStoreFrontConfigAsActive = true;
 		}
 
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrAny.CatalogAdminLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get
@@ -42,9 +34,16 @@ namespace GStore.Areas.CatalogAdmin.Controllers.BaseClasses
 		{
 			get
 			{
-				return new CatalogAdminViewModel(CurrentStoreFrontConfigOrAny, CurrentUserProfileOrThrow);
+				if (_catalogAdminViewModel != null)
+				{
+					return _catalogAdminViewModel;
+				}
+				_catalogAdminViewModel = new CatalogAdminViewModel(CurrentStoreFrontConfigOrAny, CurrentUserProfileOrThrow);
+				return _catalogAdminViewModel;
 			}
 		}
+		protected CatalogAdminViewModel _catalogAdminViewModel = null;
+
 
 
 	}

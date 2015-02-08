@@ -1,0 +1,121 @@
+﻿@model GStore.Models.ViewModels.CatalogViewModel
+<!-- Category View Child Categories Default Start -->
+@{
+	List<TreeNode<ProductCategory>> categoryNodes = null;
+	string catalogTopLinkText = string.Empty;
+	TreeNode<ProductCategory> singleCategoryNode = Model.CurrentCategoryNodeOrNull;
+	if (singleCategoryNode != null)
+	{
+		categoryNodes = new List<TreeNode<ProductCategory>>();
+		categoryNodes.Add(singleCategoryNode);
+	}
+	else
+	{
+		categoryNodes = Model.CategoryTree;
+	}
+
+	foreach (TreeNode<ProductCategory> categoryNode in categoryNodes)
+	{
+		bool isRoot = (Model.CurrentCategoryOrNull == null);
+		string rootClass = "";
+		if (isRoot)
+		{
+			rootClass = "CategoryRoot ";
+		}
+		<div class="row">
+			<div class="@(rootClass)CategoryPath col-xs-12 text-center">
+				<div class="CategoryListItemBox boxshadowjs">
+					@{
+						string url = Url.Action("ViewCategoryByName", "Catalog", new { urlName = categoryNode.Entity.UrlName });
+						string imageUrl = categoryNode.Entity.ImageUrl(Request.ApplicationPath);
+					}
+					@if (isRoot)
+					{
+						//this is for each category on the top of catalog
+						<a class="CategoryListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" alt="@(categoryNode.Entity.Name)" title="@(Html.AttributeEncode(categoryNode.Entity.Name))" /></a>
+						<br />
+						<a class="CategoryListTextLink" href="@(url)">@(categoryNode.Entity.Name)</a>
+					}
+					else
+					{
+						<img class="CategoryListImage" src="@(imageUrl)" alt="@(categoryNode.Entity.Name)" title="@(Html.AttributeEncode(categoryNode.Entity.Name))" />
+						<br />
+						<span class="CategoryListTextNoLink">@(categoryNode.Entity.Name)</span>
+					}
+				</div>
+			</div>
+		</div>
+
+		string offsets = "";
+		if (categoryNode.HasChildNodes())
+		{
+			
+			if (!isRoot)
+			{
+				if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ChildCategoryHeaderHtml))
+				{
+					@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ChildCategoryHeaderHtml))
+				}
+
+			}
+			@:<div class="row CategoryListContainerRow">
+			int childNodeCount = categoryNode.ChildNodes.Count();
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColSm) < 12)
+			{
+				int colsSm = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColSm;
+				int smOffset = (12 - colsSm) / 2;
+				offsets = " col-sm-offset-" + smOffset;
+			}
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColMd) < 12)
+			{
+				int colsMd = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColMd;
+				int mdOffset = (12 - colsMd) / 2;
+				offsets = " col-md-offset-" + mdOffset;
+			}
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColLg) < 12)
+			{
+				int colsLg = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColLg;
+				int lgOffset = (12 - colsLg) / 2;
+				offsets = " col-lg-offset-" + lgOffset;
+			}
+				}
+				foreach (TreeNode<ProductCategory> childCategory in categoryNode.ChildNodes)
+				{
+					@:<div class="CategoryListItem col-sm-@(Model.StoreFrontConfig.CatalogCategoryColSm) col-md-@(Model.StoreFrontConfig.CatalogCategoryColMd) col-lg-@(Model.StoreFrontConfig.CatalogCategoryColLg)@(offsets)">
+						@:<div class="CategoryListItemBox boxshadowjs">
+							string childUrl = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
+							string childImageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath);
+
+							@:<a class="CategoryListImageLink" href="@(childUrl)"><img class="CategoryListImage" src="@(childImageUrl)" alt="@(childCategory.Entity.Name)" title="@(Html.AttributeEncode(childCategory.Entity.Name))" /></a>
+							@:<br />
+							@:<a class="CategoryListTextLink" href="@(childUrl)">@(Html.Encode(childCategory.Entity.Name))</a>
+						@:</div>
+					@:</div>
+					offsets = "";
+				}
+
+				if (categoryNode.HasChildNodes())
+				{
+					@:</div>
+				}
+	}
+}
+<style>
+	.CategoryRoot.CategoryPath {
+	}
+
+	.CategoryPath {
+	}
+
+	.CategoryListItemBox {
+		padding-top: 0.5em;
+	}
+
+	.ProductListItem {
+	}
+
+	.ProductListItemBox {
+		padding-top: 0.5em;
+	}
+</style>
+<!-- Category View Child Categories Default End -->

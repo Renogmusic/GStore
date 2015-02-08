@@ -1,5 +1,19 @@
 ﻿@model GStore.Models.ViewModels.CatalogViewModel
+<!-- Catalog Index Start -->
 @{
-    ViewBag.Title = "Catalog";
+	ViewBag.Title = Model.StoreFrontConfig.CatalogTitle;
 }
-@Html.Partial("_CategoryListingPartial", Model)
+<div class="row">
+	<div class="col-xs-12 text-center">
+		<h1>@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+@{ Html.RenderPartial("_ViewCategory_" + Model.StoreFrontConfig.CatalogRootListTemplate.ToString() + "_Partial", Model); }
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+@if (Html.UserHasPermission(GStoreAction.Categories_Manager))
+{
+	<hr />
+	@Html.ActionLink("Manage Catalog", "Manager", "CategoryAdmin", new { area = "CatalogAdmin", ReturnToFrontEnd = true }, null)
+}
+<!-- Catalog Index End -->

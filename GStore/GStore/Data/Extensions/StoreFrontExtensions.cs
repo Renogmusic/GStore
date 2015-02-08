@@ -507,18 +507,14 @@ namespace GStore.Data
 			storeFrontConfig.MetaApplicationTileColor = "#880088";
 			storeFrontConfig.MetaDescription = "New GStore Storefront " + storeFrontConfig.Name;
 			storeFrontConfig.MetaKeywords = "GStore Storefront " + storeFrontConfig.Name;
-			storeFrontConfig.AdminLayoutName = "Default";
-			storeFrontConfig.AccountLayoutName = "Default";
-			storeFrontConfig.ProfileLayoutName = "Default";
-			storeFrontConfig.NotificationsLayoutName = "Default";
-			storeFrontConfig.CatalogLayoutName = "Default";
-			storeFrontConfig.CatalogAdminLayoutName = "Default";
-			storeFrontConfig.CartLayoutName = "Default";
-			storeFrontConfig.CheckoutLayoutName = "Default";
-			storeFrontConfig.OrdersLayoutName = "Default";
-			storeFrontConfig.OrderAdminLayoutName = "Default";
-			storeFrontConfig.DefaultNewPageLayoutName = "Default";
 			storeFrontConfig.CatalogPageInitialLevels = 6;
+			storeFrontConfig.CatalogTitle = storeFrontConfig.Name + " Catalog";
+			storeFrontConfig.CatalogLayout = CatalogLayoutEnum.Default;
+			storeFrontConfig.CatalogHeaderHtml = null;
+			storeFrontConfig.CatalogFooterHtml = null;
+			storeFrontConfig.CatalogRootListTemplate = CategoryListTemplateEnum.Default;
+			storeFrontConfig.CatalogRootHeaderHtml = null;
+			storeFrontConfig.CatalogRootFooterHtml = null;
 			storeFrontConfig.NavBarCatalogMaxLevels = 6;
 			storeFrontConfig.NavBarItemsMaxLevels = 6;
 			storeFrontConfig.CatalogCategoryColLg = 3;
@@ -936,6 +932,11 @@ namespace GStore.Data
 		/// <returns></returns>
 		public static string ImageUrl(this Product product, string applicationPath, bool forCart = false)
 		{
+			//todo: add Stores/StoreName here
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
 			if (string.IsNullOrEmpty(applicationPath))
 			{
 				throw new ArgumentNullException("applicationPath");
@@ -948,6 +949,29 @@ namespace GStore.Data
 			return "/" + applicationPath + "Images/Products/" + product.ImageName;
 		}
 
+		public static string AudioSampleUrl(this Product product, string applicationPath)
+		{
+			//todo: add Stores/StoreName here
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (string.IsNullOrEmpty(applicationPath))
+			{
+				throw new ArgumentNullException("applicationPath");
+			}
+
+			if (string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+			{
+				return null;
+			}
+			applicationPath = applicationPath.Trim('/');
+			if (!string.IsNullOrEmpty(applicationPath))
+			{
+				applicationPath += "/";
+			}
+			return "/" + applicationPath + "CatalogContent/" + product.SampleAudioFileName;
+		}
 
 		public static string ClientVirtualDirectoryToMap(this Models.BaseClasses.ClientRecord clientRecord, string applicationPath)
 		{
@@ -1019,7 +1043,7 @@ namespace GStore.Data
 			return messageBody;
 		}
 
-		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, string description, string defaultRawHtmlValue, int clientId, bool editInTop, bool editInBottom, UserProfile userProfile)
+		public static PageTemplateSection CreatePageTemplateSection(this IGstoreDb db, int pageTemplateId, string sectionName, int order, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, bool editInTop, bool editInBottom, int clientId, UserProfile userProfile)
 		{
 			db.UserName = userProfile.UserName;
 			PageTemplateSection newSection = db.PageTemplateSections.Create();
@@ -1028,6 +1052,9 @@ namespace GStore.Data
 			newSection.Name = sectionName;
 			newSection.Order = order;
 			newSection.DefaultRawHtmlValue = defaultRawHtmlValue;
+			newSection.PreTextHtml = preTextHtml;
+			newSection.PostTextHtml = postTextHtml;
+			newSection.DefaultTextCssClass = defaultTextCssClass;
 			newSection.Description = description;
 			newSection.IsPending = false;
 			newSection.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -1122,7 +1149,7 @@ namespace GStore.Data
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "Category", "Catalog", "CatalogAdmin", "Cart", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
+			string[] blockedUrls = { "Account", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{
@@ -1183,6 +1210,31 @@ namespace GStore.Data
 
 		}
 
+		public static bool ValidateProductUrlName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string urlName, int storeFrontId, int clientId, int? currentProductId)
+		{
+			string nameField = "UrlName";
+
+			if (string.IsNullOrWhiteSpace(urlName))
+			{
+				string errorMessage = "URL Name is required \n Please enter a unique URL name for this product";
+				controller.ModelState.AddModelError(nameField, errorMessage);
+				return false;
+			}
+
+			Product conflict = db.Products.Where(p => p.ClientId == clientId && p.StoreFrontId == storeFrontId && p.UrlName.ToLower() == urlName && (p.ProductId != currentProductId)).FirstOrDefault();
+
+			if (conflict == null)
+			{
+				return true;
+			}
+
+			string errorConflictMessage = "URL Name '" + urlName + "' is already in use for Product '" + conflict.Name + "' [" + conflict.ProductId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique URL Name or change the conflicting Product URL Name.";
+
+			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+			return false;
+
+		}
+
 		public static bool ValidateProductCategoryUrlName(this IGstoreDb db, Controllers.BaseClass.BaseController controller, string urlName, int storeFrontId, int clientId, int? currentProductCategoryId)
 		{
 			string nameField = "UrlName";
@@ -1201,7 +1253,7 @@ namespace GStore.Data
 				return true;
 			}
 
-			string errorConflictMessage = "URL Name '" + urlName + "' is already in use for Category '" + conflict.UrlName + "' [" + conflict.ProductCategoryId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique URL Name or change the conflicting Category URL Name.";
+			string errorConflictMessage = "URL Name '" + urlName + "' is already in use for Category '" + conflict.Name + "' [" + conflict.ProductCategoryId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique URL Name or change the conflicting Category URL Name.";
 
 			controller.ModelState.AddModelError(nameField, errorConflictMessage);
 			return false;
@@ -1565,7 +1617,102 @@ namespace GStore.Data
 			db.SaveChanges();
 		}
 
-		public static ProductCategory CreateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		public static Product CreateProduct(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			Product record = db.Products.Create();
+
+			record.Name = viewModel.Name;
+			record.Order = viewModel.Order;
+			record.ImageName = viewModel.ImageName;
+			record.UrlName = viewModel.UrlName;
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.DigitalDownload = viewModel.DigitalDownload;
+			record.MaxQuantityPerOrder = viewModel.MaxQuantityPerOrder;
+			record.MetaDescription = viewModel.MetaDescription;
+			record.MetaKeywords = viewModel.MetaKeywords;
+			record.ProductCategoryId = viewModel.ProductCategoryId;
+
+			record.StoreFrontId = storeFront.StoreFrontId;
+			record.ClientId = storeFront.ClientId;
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+
+			record.BaseListPrice = viewModel.BaseListPrice;
+			record.BaseUnitPrice = viewModel.BaseUnitPrice;
+			record.SummaryHtml = viewModel.SummaryHtml;
+			record.DescriptionHtml = viewModel.DescriptionHtml;
+			record.FooterHtml = viewModel.FooterHtml;
+
+			record.DigitalDownloadFileName = viewModel.DigitalDownloadFileName;
+			record.SampleAudioCaption = viewModel.SampleAudioCaption;
+			record.SampleAudioFileName = viewModel.SampleAudioFileName;
+			record.SampleDownloadCaption = viewModel.SampleDownloadCaption;
+			record.SampleDownloadFileName = viewModel.SampleDownloadFileName;
+			record.SampleImageCaption = viewModel.SampleImageCaption;
+			record.SampleImageFileName = viewModel.SampleImageFileName;
+
+			record.UpdateAuditFields(userProfile);
+
+			db.Products.Add(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		public static Product UpdateProduct(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		{
+			//find existing record, update it
+			Product record = storeFront.Products.SingleOrDefault(p => p.ProductId == viewModel.ProductId);
+			if (record == null)
+			{
+				throw new ApplicationException("Product not found in storefront Products. Product Id: " + viewModel.ProductId);
+			}
+
+			record.Name = viewModel.Name;
+			record.Order = viewModel.Order;
+			record.ImageName = viewModel.ImageName;
+			record.UrlName = viewModel.UrlName;
+			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
+			record.ForRegisteredOnly = viewModel.ForRegisteredOnly;
+			record.DigitalDownload = viewModel.DigitalDownload;
+			record.MaxQuantityPerOrder = viewModel.MaxQuantityPerOrder;
+			record.MetaDescription = viewModel.MetaDescription;
+			record.MetaKeywords = viewModel.MetaKeywords;
+			record.ProductCategoryId = viewModel.ProductCategoryId;
+
+			record.StoreFrontId = storeFront.StoreFrontId;
+			record.ClientId = storeFront.ClientId;
+			record.IsPending = viewModel.IsPending;
+			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
+			record.EndDateTimeUtc = viewModel.EndDateTimeUtc;
+
+			record.UpdatedBy = userProfile;
+			record.UpdateDateTimeUtc = DateTime.UtcNow;
+
+			record.BaseListPrice = viewModel.BaseListPrice;
+			record.BaseUnitPrice = viewModel.BaseUnitPrice;
+			record.SummaryHtml = viewModel.SummaryHtml;
+			record.DescriptionHtml = viewModel.DescriptionHtml;
+			record.FooterHtml = viewModel.FooterHtml;
+			record.DigitalDownloadFileName = viewModel.DigitalDownloadFileName;
+			record.SampleAudioCaption = viewModel.SampleAudioCaption;
+			record.SampleAudioFileName = viewModel.SampleAudioFileName;
+			record.SampleDownloadCaption = viewModel.SampleDownloadCaption;
+			record.SampleDownloadFileName = viewModel.SampleDownloadFileName;
+			record.SampleImageCaption = viewModel.SampleImageCaption;
+			record.SampleImageFileName = viewModel.SampleImageFileName;
+
+			db.Products.Update(record);
+			db.SaveChanges();
+
+			return record;
+
+		}
+
+		public static ProductCategory CreateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.CategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			ProductCategory record = db.ProductCategories.Create();
 
@@ -1584,7 +1731,15 @@ namespace GStore.Data
 			record.Order = viewModel.Order;
 			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
 			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
-
+			record.CategoryDetailTemplate = viewModel.CategoryDetailTemplate;
+			record.ProductListTemplate = viewModel.ProductListTemplate;
+			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
+			record.ChildCategoryHeaderHtml = viewModel.ChildCategoryHeaderHtml;
+			record.ChildCategoryFooterHtml = viewModel.ChildCategoryFooterHtml;
+			record.ProductHeaderHtml = viewModel.ProductHeaderHtml;
+			record.ProductFooterHtml = viewModel.ProductFooterHtml;
+			record.NoProductsMessageHtml = viewModel.NoProductsMessageHtml;
+			
 			record.StoreFrontId = storeFront.StoreFrontId;
 			record.ClientId = storeFront.ClientId;
 			record.IsPending = viewModel.IsPending;
@@ -1593,6 +1748,7 @@ namespace GStore.Data
 
 			record.UpdateAuditFields(userProfile);
 
+
 			db.ProductCategories.Add(record);
 			db.SaveChanges();
 
@@ -1600,7 +1756,7 @@ namespace GStore.Data
 
 		}
 
-		public static ProductCategory UpdateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
+		public static ProductCategory UpdateProductCategory(this IGstoreDb db, Areas.CatalogAdmin.ViewModels.CategoryEditAdminViewModel viewModel, StoreFront storeFront, UserProfile userProfile)
 		{
 			//find existing record, update it
 			ProductCategory record = storeFront.ProductCategories.SingleOrDefault(pc => pc.ProductCategoryId == viewModel.ProductCategoryId);
@@ -1622,6 +1778,14 @@ namespace GStore.Data
 			record.Order = viewModel.Order;
 			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
 			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+			record.CategoryDetailTemplate = viewModel.CategoryDetailTemplate;
+			record.ProductListTemplate = viewModel.ProductListTemplate;
+			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
+			record.ChildCategoryHeaderHtml = viewModel.ChildCategoryHeaderHtml;
+			record.ChildCategoryFooterHtml = viewModel.ChildCategoryFooterHtml;
+			record.ProductHeaderHtml = viewModel.ProductHeaderHtml;
+			record.ProductFooterHtml = viewModel.ProductFooterHtml;
+			record.NoProductsMessageHtml = viewModel.NoProductsMessageHtml;
 
 			record.IsPending = viewModel.IsPending;
 			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
@@ -2056,7 +2220,6 @@ namespace GStore.Data
 		public static void ApplyDefaultCartConfig(this StoreFrontConfiguration storeFrontConfig)
 		{
 			storeFrontConfig.UseShoppingCart = true;
-			storeFrontConfig.CartLayoutName = "Default";
 			storeFrontConfig.CartNavShowCartToAnonymous = true;
 			storeFrontConfig.CartNavShowCartToRegistered = true;
 			storeFrontConfig.CartNavShowCartWhenEmpty = true;
@@ -2108,7 +2271,6 @@ namespace GStore.Data
 
 		public static void ApplyDefaultCheckoutConfig(this StoreFrontConfiguration storeFrontConfig)
 		{
-			storeFrontConfig.CheckoutLayoutName = "Default";
 			if (storeFrontConfig.DefaultNewPageTheme != null)
 			{
 				storeFrontConfig.CheckoutTheme = storeFrontConfig.DefaultNewPageTheme;
@@ -2130,7 +2292,6 @@ namespace GStore.Data
 
 		public static void ApplyDefaultOrdersConfig(this StoreFrontConfiguration storeFrontConfig)
 		{
-			storeFrontConfig.OrdersLayoutName = "Default";
 			if (storeFrontConfig.DefaultNewPageTheme != null)
 			{
 				storeFrontConfig.OrdersTheme = storeFrontConfig.DefaultNewPageTheme;
@@ -2156,6 +2317,27 @@ namespace GStore.Data
 			newConfig.SetDefaults(userProfile);
 
 			return newConfig;
+		}
+
+		public static int ResetPagesToThemeId(this StoreFront storeFront, int themeId, IGstoreDb db)
+		{
+			int count = 0;
+			IEnumerable<Page> pages = db.Pages.Where(p => p.StoreFrontId == storeFront.StoreFrontId && p.ThemeId != themeId);
+			foreach (Page page in pages)
+			{
+				if (page.ThemeId != themeId)
+				{
+					page.ThemeId = themeId;
+					db.Pages.Update(page);
+				}
+				count++;
+			}
+			if (count != 0)
+			{
+				db.SaveChanges();
+			}
+
+			return count;
 		}
 	}
 }

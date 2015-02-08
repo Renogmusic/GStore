@@ -14,11 +14,6 @@ namespace GStore.Controllers.BaseClass
 {
 	public abstract class BaseController : Controller
 	{
-		/// <summary>
-		/// Layout name to use for display, used internally by LayoutNameToUse. this property may throw an error, then LayoutNameToUse will handle it
-		/// </summary>
-		protected abstract string LayoutName { get; }
-
 		protected abstract string ThemeFolderName { get; }
 
 		protected IGstoreDb _dbContext = null;
@@ -53,58 +48,6 @@ namespace GStore.Controllers.BaseClass
 				requestContext.HttpContext.Session["DiscountCode"] = requestContext.HttpContext.Request.QueryString["DiscountCode"];
 			}
 			base.Initialize(requestContext);
-		}
-
-		/// <summary>
-		/// Returns the controller layout name, or handles errors and decides which layout to use
-		/// </summary>
-		public virtual string LayoutNameToUse
-		{
-			get
-			{
-				try
-				{
-					try
-					{
-						return LayoutName;
-					}
-					catch (Exceptions.DynamicPageInactiveException dpiEx)
-					{
-						//dynamic page is inactive, return storefront default layout
-						return dpiEx.StoreFront.CurrentConfigOrAny().DefaultNewPageLayoutName;
-					}
-					catch (Exceptions.DynamicPageNotFoundException dpnfEx)
-					{
-						//dynamic page not found, return storefront default layout
-						return dpnfEx.StoreFront.CurrentConfigOrAny().DefaultNewPageLayoutName;
-					}
-					catch (Exceptions.NoMatchingBindingException)
-					{
-						//no storefront found, return app default layout
-						return Settings.AppDefaultLayoutName;
-					}
-					catch (Exceptions.StoreFrontInactiveException)
-					{
-						//storefront is inactive, return app default layout
-						return Settings.AppDefaultLayoutName;
-					}
-					catch (Exception)
-					{
-						//unknown exception, use storefront default layout
-						if (_currentStoreFrontError || CurrentStoreFrontOrNull == null)
-						{
-							//couldn't get storefront, use app default layout
-							return Settings.AppDefaultLayoutName;
-						}
-						return CurrentStoreFrontOrThrow.CurrentConfigOrAny().DefaultNewPageLayoutName;
-					}
-				}
-				catch (Exception)
-				{
-					return Settings.AppDefaultLayoutName;
-				}
-
-			}
 		}
 
 		public virtual string ThemeFolderNameToUse

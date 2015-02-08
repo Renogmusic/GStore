@@ -30,8 +30,8 @@ namespace GStore.Data
 			string browserFullName = "John Doe User";
 
 
-			string layout = Settings.AppDefaultLayoutName;
 			string pageTemplateViewName = Settings.AppDefaultPageTemplateViewName;
+			string pageTemplateName = Settings.AppDefaultPageTemplateName;
 			string preferedThemeName = "RenoG";
 			bool loadSampleProducts = Settings.AppSeedSampleProducts;
 
@@ -100,7 +100,7 @@ namespace GStore.Data
 			{
 				string storeFrontName = "Sample Storefront";
 				string storeFrontFolder = "SampleStoreFront";
-				firstStoreFrontConfig = storeDb.CreateSeedStoreFrontConfig(firstStoreFront, storeFrontName, storeFrontFolder, adminProfile, selectedTheme, layout);
+				firstStoreFrontConfig = storeDb.CreateSeedStoreFrontConfig(firstStoreFront, storeFrontName, storeFrontFolder, adminProfile, selectedTheme);
 			}
 
 			firstClient = firstStoreFront.Client;
@@ -112,7 +112,9 @@ namespace GStore.Data
 
 			if (storeDb.PageTemplates.IsEmpty())
 			{
-				PageTemplate newPageTemplate = storeDb.CreateSeedPageTemplate(layout + " Template", layout, pageTemplateViewName, firstClient);
+				string virtualPathToPageTemplates = "~/Views/Page";
+				PageTemplate newPageTemplate = storeDb.CreateSeedPageTemplate(pageTemplateName, pageTemplateViewName, firstClient);
+				storeDb.CreateSeedPageTemplates(virtualPathToPageTemplates, firstClient);
 			}
 
 			PageTemplate firstPageTemplate = storeDb.PageTemplates.All().First();
@@ -286,6 +288,60 @@ namespace GStore.Data
 			return profile;
 		}
 
+		public static void CreateSeedPageTemplates(this IGstoreDb storeDb, string virtualPath, Client client)
+		{
+			if (storeDb == null)
+			{
+				throw new ArgumentNullException("db");
+			}
+			if (string.IsNullOrEmpty(virtualPath))
+			{
+				throw new ArgumentNullException("virtualPath");
+			}
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+
+			string path = string.Empty;
+			if (HttpContext.Current == null)
+			{
+				string assemblyPath = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+				string directoryName = System.IO.Path.GetDirectoryName(assemblyPath);
+				path = System.IO.Path.Combine(directoryName, ".." + virtualPath.TrimStart('~').Replace('/', '\\')).Replace("%20", " ");
+			}
+			else
+			{
+				path = HttpContext.Current.Server.MapPath(virtualPath);
+			}
+
+			System.IO.DirectoryInfo folder = new System.IO.DirectoryInfo(path);
+			IEnumerable<System.IO.FileInfo> files = folder.EnumerateFiles("Page *.cshtml");
+			int counter = 0;
+			foreach (System.IO.FileInfo file in files)
+			{
+				string name = file.Name.Substring(5, ((file.Name.Length - 5) - 7)) + " Template";
+				if (!client.PageTemplates.Any(pt => pt.Name.ToLower() == name.ToLower()))
+				{
+					counter++;
+					PageTemplate pageTemplate = storeDb.PageTemplates.Create();
+					pageTemplate.Name = name;
+					pageTemplate.ViewName = file.Name.Replace(".cshtml", "");
+					pageTemplate.Order = 2000 + counter;
+					pageTemplate.Description = pageTemplate.Name;
+					pageTemplate.IsPending = false;
+					pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+					pageTemplate.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+					pageTemplate.Client = client;
+					pageTemplate.ClientId = client.ClientId;
+
+					storeDb.PageTemplates.Add(pageTemplate);
+				}
+
+			}
+			storeDb.SaveChangesEx(true, false, false, false);
+		}
+
 		public static void CreateSeedThemes(this IGstoreDb storeDb, string virtualPath, Client client)
 		{
 			string path = string.Empty;
@@ -357,7 +413,7 @@ namespace GStore.Data
 
 		}
 
-		public static StoreFrontConfiguration CreateSeedStoreFrontConfig(this IGstoreDb storeDb, StoreFront storeFront, string storeFrontName, string storeFrontFolder, UserProfile adminProfile, Theme selectedTheme, string layout)
+		public static StoreFrontConfiguration CreateSeedStoreFrontConfig(this IGstoreDb storeDb, StoreFront storeFront, string storeFrontName, string storeFrontFolder, UserProfile adminProfile, Theme selectedTheme)
 		{
 			if (storeFront == null)
 			{
@@ -384,21 +440,22 @@ namespace GStore.Data
 			storeFrontConfig.MetaApplicationTileColor = "#880088";
 			storeFrontConfig.MetaDescription = "New GStore Storefront " + storeFrontName;
 			storeFrontConfig.MetaKeywords = "GStore Storefront " + storeFrontName;
-			storeFrontConfig.AdminLayoutName = layout;
 			storeFrontConfig.AdminTheme = selectedTheme;
-			storeFrontConfig.AccountLayoutName = layout;
 			storeFrontConfig.AccountTheme = selectedTheme;
-			storeFrontConfig.ProfileLayoutName = layout;
 			storeFrontConfig.ProfileTheme = selectedTheme;
-			storeFrontConfig.NotificationsLayoutName = layout;
 			storeFrontConfig.NotificationsTheme = selectedTheme;
-			storeFrontConfig.CatalogLayoutName = layout;
 			storeFrontConfig.CatalogTheme = selectedTheme;
-			storeFrontConfig.CatalogAdminLayoutName = layout;
 			storeFrontConfig.CatalogAdminTheme = selectedTheme;
-			storeFrontConfig.DefaultNewPageLayoutName = layout;
 			storeFrontConfig.DefaultNewPageTheme = selectedTheme;
 			storeFrontConfig.CatalogPageInitialLevels = 6;
+			storeFrontConfig.CatalogTitle = storeFrontConfig.Name + " Catalog";
+			storeFrontConfig.CatalogLayout = CatalogLayoutEnum.Default;
+			storeFrontConfig.CatalogHeaderHtml = null;
+			storeFrontConfig.CatalogFooterHtml = null;
+			storeFrontConfig.CatalogRootListTemplate = CategoryListTemplateEnum.Default ;
+			storeFrontConfig.CatalogRootHeaderHtml = null;
+			storeFrontConfig.CatalogRootFooterHtml = null;
+
 			storeFrontConfig.NavBarCatalogMaxLevels = 6;
 			storeFrontConfig.NavBarItemsMaxLevels = 6;
 			storeFrontConfig.CatalogCategoryColLg = 3;
@@ -431,13 +488,9 @@ namespace GStore.Data
 			}
 
 			storeFrontConfig.ApplyDefaultCartConfig();
-			storeFrontConfig.CheckoutLayoutName = layout;
 			storeFrontConfig.CheckoutTheme = selectedTheme;
-			storeFrontConfig.OrdersLayoutName = layout;
 			storeFrontConfig.OrdersTheme = selectedTheme;
-			storeFrontConfig.CatalogLayoutName = layout;
 			storeFrontConfig.CatalogTheme = selectedTheme;
-			storeFrontConfig.OrderAdminLayoutName = layout;
 			storeFrontConfig.OrderAdminTheme = selectedTheme;
 
 			storeDb.StoreFrontConfigurations.Add(storeFrontConfig);
@@ -631,12 +684,11 @@ namespace GStore.Data
 			return storeBinding;
 		}
 
-		public static PageTemplate CreateSeedPageTemplate(this IGstoreDb storeDb, string name, string layout, string viewName, Client client)
+		public static PageTemplate CreateSeedPageTemplate(this IGstoreDb storeDb, string name, string viewName, Client client)
 		{
 			PageTemplate pageTemplate = storeDb.PageTemplates.Create();
 			pageTemplate.Name = name;
 			pageTemplate.Description = name;
-			pageTemplate.LayoutName = layout;
 			pageTemplate.ViewName = viewName;
 			pageTemplate.IsPending = false;
 			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -699,6 +751,22 @@ namespace GStore.Data
 
 		public static Page CreateAutoHomePage(this IGstoreDb db, HttpRequestBase request, StoreFrontConfiguration storeFrontConfig, Controllers.BaseClass.BaseController baseController)
 		{
+			if (db == null)
+			{
+				throw new ArgumentNullException("db");
+			}
+			if (request == null)
+			{
+				throw new ArgumentNullException("request");
+			}
+			if (baseController == null)
+			{
+				throw new ArgumentNullException("baseController");
+			}
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
 
 			UserProfile userProfile = db.SeedAutoMapUserBestGuess();
 			db.CachedStoreFront = null;
@@ -708,19 +776,12 @@ namespace GStore.Data
 			PageTemplate pageTemplate = null;
 			if (!db.PageTemplates.IsEmpty())
 			{
-				//look for match for storefront default new page layout name
-				pageTemplate = db.PageTemplates.All().Where(pt => pt.LayoutName == storeFrontConfig.DefaultNewPageLayoutName).OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
-				if (pageTemplate == null)
-				{
-					pageTemplate = db.PageTemplates.All().OrderBy(pt => pt.Order).ThenByDescending(pt => pt.PageTemplateId).FirstOrDefault();
-				}
+				pageTemplate = db.PageTemplates.Where(pt => pt.ClientId == storeFrontConfig.ClientId).ApplyDefaultSort().FirstOrDefault();
 			}
 			else
 			{
-				//no page templates in database, create two seed ones
-				pageTemplate = db.CreateSeedPageTemplate(storeFrontConfig.DefaultNewPageLayoutName + " Template", storeFrontConfig.DefaultNewPageLayoutName, Settings.AppDefaultPageTemplateViewName, storeFrontConfig.Client);
-
-				PageTemplate pageTemplate2 = db.CreateSeedPageTemplate("Simple 3x3 With Jumbo Tron", storeFrontConfig.DefaultNewPageLayoutName, "Simple3x3WithJumboTron", storeFrontConfig.Client);
+				//no page templates in database, create seed one
+				pageTemplate = db.CreateSeedPageTemplate(Settings.AppDefaultPageTemplateName, Settings.AppDefaultPageTemplateViewName, storeFrontConfig.Client);
 			}
 
 			Page page = db.CreateSeedPage(storeFrontConfig.Name, storeFrontConfig.Name, "/", 1000, storeFrontConfig, pageTemplate);

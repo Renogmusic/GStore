@@ -26,18 +26,14 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.StoreFrontConfigurationId = storeFrontConfig.StoreFrontConfigurationId;
 			this.AccountAdmin = storeFrontConfig.AccountAdmin;
 			this.AccountAdmin_UserProfileId = storeFrontConfig.AccountAdmin_UserProfileId;
-			this.AccountLayoutName = storeFrontConfig.AccountLayoutName;
 			this.AccountTheme = storeFrontConfig.AccountTheme;
 			this.AccountThemeId = storeFrontConfig.AccountThemeId;
 			this.AccountLoginRegisterLinkText = storeFrontConfig.AccountLoginRegisterLinkText;
 			this.AccountLoginShowRegisterLink = storeFrontConfig.AccountLoginShowRegisterLink;
-			this.AdminLayoutName = storeFrontConfig.AdminLayoutName;
 			this.AdminTheme = storeFrontConfig.AdminTheme;
 			this.AdminThemeId = storeFrontConfig.AdminThemeId;
-			this.CartLayoutName = storeFrontConfig.CartLayoutName;
 			this.CartTheme = storeFrontConfig.CartTheme;
 			this.CartThemeId = storeFrontConfig.CartThemeId;
-			this.CheckoutLayoutName = storeFrontConfig.CheckoutLayoutName;
 			this.CheckoutTheme = storeFrontConfig.CheckoutTheme;
 			this.CheckoutThemeId = storeFrontConfig.CheckoutThemeId;
 
@@ -57,17 +53,14 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.CatalogCategoryColLg = storeFrontConfig.CatalogCategoryColLg;
 			this.CatalogCategoryColMd = storeFrontConfig.CatalogCategoryColMd;
 			this.CatalogCategoryColSm = storeFrontConfig.CatalogCategoryColSm;
-			this.CatalogLayoutName = storeFrontConfig.CatalogLayoutName;
 			this.CatalogTheme = storeFrontConfig.CatalogTheme;
 			this.CatalogThemeId = storeFrontConfig.CatalogThemeId;
 			this.CatalogPageInitialLevels = storeFrontConfig.CatalogPageInitialLevels;
 			this.CatalogProductColLg = storeFrontConfig.CatalogProductColLg;
 			this.CatalogProductColMd = storeFrontConfig.CatalogProductColMd;
 			this.CatalogProductColSm = storeFrontConfig.CatalogProductColSm;
-			this.CatalogAdminLayoutName = storeFrontConfig.CatalogAdminLayoutName;
 			this.CatalogAdminThemeId = storeFrontConfig.CatalogAdminThemeId;
 			this.CatalogAdminTheme = storeFrontConfig.CatalogAdminTheme;
-			this.DefaultNewPageLayoutName = storeFrontConfig.DefaultNewPageLayoutName;
 			this.DefaultNewPageTheme = storeFrontConfig.DefaultNewPageTheme;
 			this.DefaultNewPageThemeId = storeFrontConfig.DefaultNewPageThemeId;
 			this.Folder = storeFrontConfig.Folder;
@@ -79,25 +72,30 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.MetaDescription = storeFrontConfig.MetaDescription;
 			this.MetaKeywords = storeFrontConfig.MetaKeywords;
 			this.Order = storeFrontConfig.Order;
-			this.OrderAdminLayoutName = storeFrontConfig.OrderAdminLayoutName;
 			this.OrderAdminThemeId = storeFrontConfig.OrderAdminThemeId;
 			this.OrderAdminTheme = storeFrontConfig.OrderAdminTheme;
-			this.OrdersLayoutName = storeFrontConfig.OrdersLayoutName;
 			this.OrdersThemeId = storeFrontConfig.OrdersThemeId;
 			this.OrdersTheme = storeFrontConfig.OrdersTheme;
 			this.BodyTopScriptTag = storeFrontConfig.BodyTopScriptTag;
 			this.BodyBottomScriptTag = storeFrontConfig.BodyBottomScriptTag;
 			this.Name = storeFrontConfig.Name;
+			this.CatalogTitle = storeFrontConfig.CatalogTitle;
+
+			this.CatalogLayout = storeFrontConfig.CatalogLayout;
+			this.CatalogHeaderHtml = storeFrontConfig.CatalogHeaderHtml;
+			this.CatalogFooterHtml = storeFrontConfig.CatalogFooterHtml;
+			this.CatalogRootListTemplate = storeFrontConfig.CatalogRootListTemplate;
+			this.CatalogRootHeaderHtml = storeFrontConfig.CatalogRootHeaderHtml;
+			this.CatalogRootFooterHtml = storeFrontConfig.CatalogRootFooterHtml;
+
 			this.NavBarCatalogMaxLevels = storeFrontConfig.NavBarCatalogMaxLevels;
 			this.NavBarItemsMaxLevels = storeFrontConfig.NavBarItemsMaxLevels;
 			this.NavBarRegisterLinkText = storeFrontConfig.NavBarRegisterLinkText;
 			this.NavBarShowRegisterLink = storeFrontConfig.NavBarShowRegisterLink;
 			this.NotFoundErrorPage = storeFrontConfig.NotFoundErrorPage;
 			this.NotFoundError_PageId = storeFrontConfig.NotFoundError_PageId;
-			this.NotificationsLayoutName = storeFrontConfig.NotificationsLayoutName;
 			this.NotificationsTheme = storeFrontConfig.NotificationsTheme;
 			this.NotificationsThemeId = storeFrontConfig.NotificationsThemeId;
-			this.ProfileLayoutName = storeFrontConfig.ProfileLayoutName;
 			this.ProfileTheme = storeFrontConfig.ProfileTheme;
 			this.ProfileThemeId = storeFrontConfig.ProfileThemeId;
 			this.PublicUrl = storeFrontConfig.PublicUrl;
@@ -151,11 +149,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Account Admin", Description = "Profile to use for sending Account Login notices such as Locked Out notification and Password Changed notification")]
 		public int AccountAdmin_UserProfileId { get; set; }
 
-		[Required]
-		[Display(Name = "Account (register and login) Layout", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string AccountLayoutName { get; set; }
-
 		[Display(Name = "Account Register/Login Theme", Description = "Choose a Theme for the Account Register/Login section of the site")]
 		public Theme AccountTheme { get; protected set; }
 
@@ -171,11 +164,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(50)]
 		public string AccountLoginRegisterLinkText { get; set; }
 
-		[Required]
-		[Display(Name = "Store Admin Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string AdminLayoutName { get; set; }
-
 		[Display(Name = "Store Admin Theme", Description = "Choose a Theme for the Store Admin section of the site")]
 		public Theme AdminTheme { get; protected set; }
 
@@ -183,10 +171,8 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Store Admin Theme", Description = "Choose a Theme for the Store Admin section of the site")]
 		public int AdminThemeId { get; set; }
 
-		[Required]
-		[Display(Name = "Shopping Cart Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string CartLayoutName { get; set; }
+		[Display(Name = "Reset All Pages to Theme", Description = "Set this box to a theme to reset the theme for ALL custom Pages.")]
+		public int? ResetPagesToThemeId { get; set; }
 
 		[Display(Name = "Shopping Cart Theme", Description = "Choose a Theme for the Shopping Cart section of the site")]
 		public Theme CartTheme { get; protected set; }
@@ -194,11 +180,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Required]
 		[Display(Name = "Shopping Cart Theme", Description = "Choose a Theme for the Shopping Cart section of the site")]
 		public int CartThemeId { get; set; }
-
-		[Required]
-		[Display(Name = "Checkout Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string CheckoutLayoutName { get; set; }
 
 		[Display(Name = "Checkout Theme", Description = "Choose a Theme for the Checkout section of the site")]
 		public Theme CheckoutTheme { get; protected set; }
@@ -243,11 +224,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Checkout Confirm Order Web Form", Description = "Custom fields for the checkout Confirm Order page")]
 		public WebForm CheckoutConfirmOrderWebForm { get; protected set; }
 
-		[Required]
-		[Display(Name = "Catalog Admin Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string CatalogAdminLayoutName { get; set; }
-
 		[Display(Name = "Catalog Admin Theme", Description = "Choose a Theme for the Catalog Admin section of the site")]
 		public Theme CatalogAdminTheme { get; protected set; }
 
@@ -255,22 +231,12 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Catalog Admin Theme", Description = "Choose a Theme for the Catalog Admin section of the site")]
 		public int CatalogAdminThemeId { get; set; }
 
-		[Required]
-		[Display(Name = "Order Status Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string OrdersLayoutName { get; set; }
-
 		[Display(Name = "Order Status Theme", Description = "Choose a Theme for the Order Status section of the site")]
 		public Theme OrdersTheme { get; protected set; }
 
 		[Required]
 		[Display(Name = "Order Status Theme", Description = "Choose a Theme for the Order Status section of the site")]
 		public int OrdersThemeId { get; set; }
-
-		[Required]
-		[Display(Name = "Order Admin Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string OrderAdminLayoutName { get; set; }
 
 		[Display(Name = "Order Admin Theme", Description = "Choose a Theme for the Order Admin section of the site")]
 		public Theme OrderAdminTheme { get; protected set; }
@@ -293,11 +259,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Catalog Category Column Span Small", Description = "Number of columns (12 max) to span each Category on the catalog page for Small displays (phone)")]
 		[Range(1, 12)]
 		public int CatalogCategoryColSm { get; set; }
-
-		[Required]
-		[Display(Name = "Catalog Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string CatalogLayoutName { get; set; }
 
 		[Display(Name = "Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
 		public Theme CatalogTheme { get; protected set; }
@@ -325,11 +286,6 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Catalog Product Column Span Small", Description = "Number of columns (12 max) to span each Product on the catalog page for Small displays (phone)")]
 		[Range(1, 12)]
 		public int CatalogProductColSm { get; set; }
-
-		[Required]
-		[Display(Name = "Default New Page Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string DefaultNewPageLayoutName { get; set; }
 
 		[Display(Name = "Default New Page Theme", Description = "Choose a Theme as the default for new pages")]
 		public Theme DefaultNewPageTheme { get; protected set; }
@@ -388,14 +344,46 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Name", Description = "Name of Store Front - this is added to the Page title of all pages on the web site.")]
 		public string Name { get; set; }
 
+		[Display(Name = "Catalog Title", Description = "Catalog Title shown on all catalog pages.")]
+		public string CatalogTitle { get; set; }
+
 		[Required]
-		[Display(Name = "Site Menu Catalog Max Levels", Description = "Enter the number of Category levels to expand on the Site Top menu. 0 for none, up to 6.")]
+		[Display(Name = "Catalog Layout", Description = "Catalog Layout template setting.")]
+		public CatalogLayoutEnum CatalogLayout { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Header Html", Description = "Catalog Header shown on all catalog pages.")]
+		public string CatalogHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Footer Html", Description = "Catalog Footer shown on all catalog pages.")]
+		public string CatalogFooterHtml { get; set; }
+
+		[Required]
+		[Display(Name = "Catalog Home List Template", Description = "Top (root) category display template to list root categories.")]
+		public CategoryListTemplateEnum CatalogRootListTemplate { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Home Header Html", Description = "Catalog Header shown on the Home (root) catalog page.")]
+		public string CatalogRootHeaderHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog Home Footer Html", Description = "Catalog Footer shown on the Home (root) catalog page.")]
+		public string CatalogRootFooterHtml { get; set; }
+
+
+		[Required]
 		[Range(0, 6)]
+		[Display(Name = "Site Menu Catalog Max Levels", Description = "Enter the number of Category levels to expand on the Site Top menu. 0 for none, up to 6.")]
 		public int NavBarCatalogMaxLevels { get; set; }
 
 		[Required]
-		[Display(Name = "Site Menu Max Levels", Description = "Enter the maximum number of levels to expand on the Site Menu. Does not include Products.\nExample: 6")]
 		[Range(1, 6)]
+		[Display(Name = "Site Menu Max Levels", Description = "Enter the maximum number of levels to expand on the Site Menu. Does not include Products.\nExample: 6")]
 		public int NavBarItemsMaxLevels { get; set; }
 
 		[Display(Name = "Nav Bar Show Register Link", Description = "Check this box to show the Register/Sign-Up link on the Site Menu (Nav Bar). Uncheck to NOT show it")]
@@ -422,22 +410,12 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Not Found Error Page", Description = "Choose a page to display for File Not Found (404) errors or use the system default not found page")]
 		public int? NotFoundError_PageId { get; set; }
 
-		[Required]
-		[Display(Name = "Notifications Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string NotificationsLayoutName { get; set; }
-
 		[Display(Name = "Notifications (messaging) Theme", Description = "Choose a Theme for the Notifications/Messaging section of the site")]
 		public Theme NotificationsTheme { get; protected set; }
 
 		[Required]
 		[Display(Name = "Notifications Theme", Description = "Choose a Theme for the Notifications/Messaging section of the site")]
 		public int NotificationsThemeId { get; set; }
-
-		[Required]
-		[Display(Name = "Profile Layout Name", Description = "Always 'Default'")]
-		[MaxLength(10)]
-		public string ProfileLayoutName { get; set; }
 
 		[Display(Name = "Profile Theme", Description = "Choose a Theme for the User Profile section of the site")]
 		public Theme ProfileTheme { get; protected set; }

@@ -256,6 +256,10 @@
 				@Html.EditorFor(model => model.CatalogAdminThemeId, "FieldThemeId")
 				@Html.EditorFor(model => model.AdminThemeId, "FieldThemeId")
 
+				<div style="border: 1px solid red;">
+					@Html.EditorFor(model => model.ResetPagesToThemeId, "FieldThemeIdNullable", new { OptionLabel = "(none: leave with current theme)" })
+				</div>
+
 			</div>
 
 			<div id="sectionCart" class="tab-pane fade in @(tabCartActive)">
@@ -308,7 +312,14 @@
 				<div class="row">
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Catalog Layout</h3>
 				</div>
-
+				
+				@Html.EditorFor(model => model.CatalogTitle, "FieldText")
+				@Html.EditorFor(model => model.CatalogLayout, "FieldEnum")
+				@Html.EditorFor(model => model.CatalogHeaderHtml, "FieldHtml")
+				@Html.EditorFor(model => model.CatalogFooterHtml, "FieldHtml")
+				@Html.EditorFor(model => model.CatalogRootListTemplate, "FieldEnum")
+				@Html.EditorFor(model => model.CatalogRootHeaderHtml, "FieldHtml")
+				@Html.EditorFor(model => model.CatalogRootFooterHtml, "FieldHtml")
 				@Html.EditorFor(model => model.NavBarCatalogMaxLevels, "FieldInt")
 				@Html.EditorFor(model => model.CatalogPageInitialLevels, "FieldInt")
 				@Html.EditorFor(model => model.CatalogCategoryColLg, "FieldInt")
@@ -349,18 +360,7 @@
 				<div class="row">
 					<h3 class="col-md-offset-3 col-md-7 @(bgcolor) title-align">Layouts</h3>
 				</div>
-
-				@Html.EditorFor(model => model.DefaultNewPageLayoutName, "FieldText")
-				@Html.EditorFor(model => model.CatalogLayoutName, "FieldText")
-				@Html.EditorFor(model => model.CartLayoutName, "FieldText")
-				@Html.EditorFor(model => model.CheckoutLayoutName, "FieldText")
-				@Html.EditorFor(model => model.OrdersLayoutName, "FieldText")
-				@Html.EditorFor(model => model.OrderAdminLayoutName, "FieldText")
-				@Html.EditorFor(model => model.AccountLayoutName, "FieldText")
-				@Html.EditorFor(model => model.ProfileLayoutName, "FieldText")
-				@Html.EditorFor(model => model.NotificationsLayoutName, "FieldText")
-				@Html.EditorFor(model => model.CatalogAdminLayoutName, "FieldText")
-				@Html.EditorFor(model => model.AdminLayoutName, "FieldText")
+				<h1>Coming Soon</h1>
 			</div>
 
 			<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">

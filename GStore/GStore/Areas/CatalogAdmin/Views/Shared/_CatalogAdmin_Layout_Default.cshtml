@@ -83,7 +83,7 @@
 @{
 	GStore.Areas.CatalogAdmin.ViewModels.CatalogAdminViewModel viewModel = new GStore.Areas.CatalogAdmin.ViewModels.CatalogAdminViewModel(Html.CurrentStoreFrontConfig(true), Html.CurrentUserProfile(true));
 
-		@Html.Partial("_CatalogAdminMenuPartial", viewModel)
+	Html.RenderPartial("_CatalogAdminMenuPartial", viewModel);
 }
 	<div class="container body-content storeadmin storeadmin-body-content@(containerClasses)">
 	<!-- top alert container for dynamic alerts-->
@@ -92,7 +92,7 @@
 	<hr />
 	<a name="UserMessagesBottom"></a>
 	<div id="usermessagebottomcontainer"></div>
-	@Html.Partial("_AdminFooterPartial")
+	@{ Html.RenderPartial("_AdminFooterPartial"); }
 	</div>
 
 	@RenderSection("scripts", required: false)

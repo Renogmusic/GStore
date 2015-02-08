@@ -91,8 +91,9 @@ namespace GStore.AppHtmlHelpers
 				return enumInfo;
 			}
 			DisplayAttribute[] displayAttributes = fieldInfo.GetCustomAttributes(typeof(DisplayAttribute), false) as DisplayAttribute[];
-			if (displayAttributes == null)
+			if (displayAttributes == null || displayAttributes.Count() == 0)
 			{
+				enumInfo.DisplayName = value.ToString();
 				return enumInfo;
 			}
 

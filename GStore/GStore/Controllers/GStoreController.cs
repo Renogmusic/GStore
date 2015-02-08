@@ -10,14 +10,6 @@ namespace GStore.Controllers
 {
     public class GStoreController : BaseClass.BaseController
     {
-		protected override string LayoutName
-		{
-			get
-			{
-				return CurrentStoreFrontConfigOrThrow.DefaultNewPageLayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get

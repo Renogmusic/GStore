@@ -1,4 +1,16 @@
-﻿#navbarbrandlink{
+﻿.Border3Red{
+	border: 3px solid red;
+}
+.Border3Green{
+	border: 3px solid green;
+}
+.Border3Black{
+	border: 3px solid black;
+}
+.Border3White{
+	border: 3px solid white;
+}
+#navbarbrandlink{
 	padding-top: 0;
 }
 #NavBarTinyLogo {

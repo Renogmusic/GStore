@@ -17,20 +17,6 @@ namespace GStore.Controllers.BaseClass
 	/// </summary>
     public abstract class PageBaseController : BaseController
     {
-		Models.Page _page = null;
-		protected override string LayoutName
-		{
-			get
-			{
-				Models.Page page = CurrentPageOrNull;
-				if (page == null)
-				{
-					return CurrentStoreFrontConfigOrThrow.DefaultNewPageLayoutName;
-				}
-				return page.PageTemplate.LayoutName;
-			}
-		}
-
 		protected override string ThemeFolderName
 		{
 			get
@@ -90,13 +76,21 @@ namespace GStore.Controllers.BaseClass
 
 		[HttpGet]
 		[AuthorizeGStoreAction(GStoreAction.Pages_Edit)]
-		public virtual ActionResult Edit(bool? AutoPost, string Tab)
+		public virtual ActionResult Edit(bool? AutoPost, string Tab, bool resetContentToDefault = false)
 		{
 			this._logActionsAsPageViews = false;
+			Page page = CurrentPageOrThrow;
 			bool autoPost = true;
 			if (AutoPost.HasValue)
 			{
 				autoPost = AutoPost.Value;
+			}
+
+			if (resetContentToDefault)
+			{
+				page = page.ResetContentToDefault(this.GStoreDb);
+				AddUserMessage("Content Reset", "Page content reset to defaults for page '" + page.Name.ToHtml() + "' [" + page.PageId + "]", UserMessageType.Info);
+				return RedirectToAction("Edit", new { resetContentToDefault = "" });
 			}
 
 			string rawUrl = Request.RawUrl;
@@ -133,8 +127,8 @@ namespace GStore.Controllers.BaseClass
 				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
 				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
 
-				messageBody = messageBody.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull);
-				messageTitle = messageTitle.ReplaceVariables(string.Empty, CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull);
+				messageBody = messageBody.ReplaceVariables(CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull, string.Empty);
+				messageTitle = messageTitle.ReplaceVariables(CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull, string.Empty);
 
 				ModelState.Clear();
 
@@ -349,6 +343,8 @@ namespace GStore.Controllers.BaseClass
 			}
 
 		}
+
+		protected Models.Page _page = null;
 
 		public Models.Page CurrentPageOrThrow
 		{

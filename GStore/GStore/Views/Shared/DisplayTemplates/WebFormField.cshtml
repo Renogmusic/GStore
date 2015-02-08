@@ -17,6 +17,8 @@
 	string fieldId = ViewData.TemplateInfo.GetFullHtmlFieldId(Model.Name);
 	string fieldName = Model.Name.ToHtmlAttribute();
 
+	string watermark = (string.IsNullOrEmpty(Model.Watermark) ? "Enter " + Model.LabelText : Model.Watermark) + (Model.IsRequired ? " (required)" : "");
+
 	string align = "title-align";
 }
 <div class="form-group @(align)">
@@ -61,11 +63,11 @@
 					{
 						rows = Model.TextAreaColumns.Value;
 					}
-					@Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols, placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") })
+					@Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols, placeholder = watermark })
 					usedCustomDisplay = true;
 					break;
 				case GStoreValueDataType.Html:
-					@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") }))
+					@(Html.TextArea(fieldName, textValue, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", placeholder = watermark }))
 					//if CKEditor is not in ViewData, add script for it and set viewdata flag
 					bool hasCkEditor = (ViewData["CKEditor"] as bool?) ?? false;
 					{
@@ -183,7 +185,7 @@
 			if (!usedCustomDisplay)
 			{
 				<!-- Default text box -->
-				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align, placeholder = Model.Watermark + (Model.IsRequired ? " (Required)" : "") })
+				@Html.TextBox(fieldName, textValue, htmlAttributes: new { @class = "form-control " + align, placeholder = watermark })
 			}
 
 			string popoverText = null;

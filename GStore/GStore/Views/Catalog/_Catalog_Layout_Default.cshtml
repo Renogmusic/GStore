@@ -1,0 +1,10 @@
+﻿@model CatalogViewModel
+@{
+	string layoutName = Html.LayoutNameToUse();
+	this.Layout = Layout = "~/Views/Shared/_Layout_" + layoutName + ".cshtml";
+}
+@RenderBody()
+@section scripts
+{
+	@RenderSection("scripts", false)
+}

@@ -2444,17 +2444,6 @@ namespace GStore.Data
 					}
 					break;
 
-				case "layoutname":
-					if (sortAscending)
-					{
-						orderedQuery = query.OrderBy(c => c.LayoutName);
-					}
-					else
-					{
-						orderedQuery = query.OrderByDescending(c => c.LayoutName);
-					}
-					break;
-
 				case "viewname":
 					if (sortAscending)
 					{
@@ -3324,6 +3313,185 @@ namespace GStore.Data
 		{
 			return query.OrderBy(p => p.Order).ThenBy(p => p.ProductId);
 		}
+
+		public static IOrderedQueryable<Product> ApplySort(this IQueryable<Product> query, Controllers.BaseClass.BaseController controller, string SortBy, bool? SortAscending)
+		{
+			string sortBy = (string.IsNullOrEmpty(SortBy) ? string.Empty : SortBy.Trim().ToLower());
+			bool sortAscending = (SortAscending.HasValue ? SortAscending.Value : true);
+			IOrderedQueryable<Product> orderedQuery = null;
+
+			bool defaultSort = false;
+			switch (sortBy ?? string.Empty)
+			{
+				case "productid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ProductId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ProductId);
+					}
+					break;
+
+				case "name":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Name);
+					}
+					break;
+
+				case "order":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Order);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Order);
+					}
+					break;
+
+				case "updatedby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdatedBy.UserName);
+					}
+					break;
+
+				case "updatedatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UpdateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UpdateDateTimeUtc);
+					}
+					break;
+
+				case "createdby":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreatedBy.UserName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreatedBy.UserName);
+					}
+					break;
+
+				case "createdatetimeutc":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.CreateDateTimeUtc);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.CreateDateTimeUtc);
+					}
+					break;
+
+				case "status":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => (c.IsPending || c.StartDateTimeUtc > DateTime.UtcNow || c.EndDateTimeUtc < DateTime.UtcNow));
+					}
+					break;
+
+				case "urlname":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.UrlName);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.UrlName);
+					}
+					break;
+
+				case "productcategoryid":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.ProductCategoryId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.ProductCategoryId);
+					}
+					break;
+
+				case "category":
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(c => c.Category.Name);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(c => c.Category.Name);
+					}
+					break;
+
+
+				case "":
+					//default sort
+					defaultSort = true;
+					if (sortAscending)
+					{
+						orderedQuery = query.OrderBy(p => p.Client.Order)
+							.ThenBy(p => p.ClientId)
+							.ThenBy(p => p.Order)
+							.ThenBy(p => p.ProductId);
+					}
+					else
+					{
+						orderedQuery = query.OrderByDescending(p => p.Client.Order)
+							.ThenByDescending(p => p.ClientId)
+							.ThenByDescending(p => p.Order)
+							.ThenByDescending(p => p.ProductId);
+					}
+					break;
+
+
+				default:
+					//unknown sort
+					if (controller != null)
+					{
+						System.Diagnostics.Trace.WriteLine("Unknown sort: " + SortBy);
+						controller.AddUserMessage("Unknown sort", "Unknown sort: " + SortBy.ToHtml(), AppHtmlHelpers.UserMessageType.Info);
+					}
+					goto case "";
+			}
+
+			if (!defaultSort && sortAscending)
+			{
+				orderedQuery = orderedQuery.ThenBy(p => p.Client.Order)
+					.ThenBy(p => p.ClientId)
+					.ThenBy(p => p.Order)
+					.ThenBy(p => p.ProductId);
+			}
+			else if (!defaultSort && !sortAscending)
+			{
+				orderedQuery = orderedQuery.ThenByDescending(p => p.Client.Order)
+					.ThenByDescending(p => p.ClientId)
+					.ThenByDescending(p => p.Order)
+					.ThenByDescending(p => p.ProductId);
+			}
+			return orderedQuery;
+		}
+
 
 		public static IOrderedQueryable<ProductCategory> ApplyDefaultSort(this IQueryable<ProductCategory> query)
 		{

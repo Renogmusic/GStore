@@ -1,0 +1,30 @@
+﻿@model GStore.Models.ProductCategory
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			<a href='@Url.Action("Details", "CategoryAdmin", new {id = Model.ProductCategoryId })' title="View Category '@(Model.Name)'">
+			'@(Model.Name)' [@(Model.ProductCategoryId)]
+			@if (!isActive)
+			{
+				@:[INACTIVE]
+			}
+			
+			</a>
+			@:&nbsp;&nbsp;&nbsp;&nbsp;Active Products: @(Model.Products.AsQueryable().WhereIsActive().Count()) / Total: @(Model.Products.Count)
+			@:&nbsp;&nbsp;&nbsp;&nbsp;Active Child Products: @(Model.ChildActiveCount)
+		@:</span>
+	}
+}
+<br/>
+<br/>

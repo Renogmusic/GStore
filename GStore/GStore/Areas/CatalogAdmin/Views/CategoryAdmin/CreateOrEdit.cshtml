@@ -1,9 +1,10 @@
-﻿@model GStore.Areas.CatalogAdmin.ViewModels.ProductCategoryEditAdminViewModel
+﻿@model GStore.Areas.CatalogAdmin.ViewModels.CategoryEditAdminViewModel
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
-    
+	@Html.HiddenFor(model => model.ReturnToFrontEnd)
+
 	<div class="row">
 		@if (Model.IsCreatePage)
 		{
@@ -15,7 +16,7 @@
 		{
 			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
 				<span class="text-warning">Edit Product Category</span>
-				<br /><small>'@(Model.Name)' [@(Model.ProductCategoryId)]</small>
+				<br /><small>@Html.DisplayFor(model => model.ProductCategory, "ProductCategoryWithProductsLink")</small>
 			</h1>
 		}
 	</div>
@@ -27,13 +28,33 @@
 					@if (Model.IsCreatePage)
 					{
 						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
 					}
 					else
 					{
 						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-danger" })
 					}
-					&nbsp;&nbsp;|&nbsp;&nbsp;
-					@Html.ActionLink("Ok / Cancel", "Manager", null, new { @class = "btn btn-default" })
 				</center>
 			</div>
 		</div>
@@ -49,12 +70,21 @@
 		@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
 		@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
 		@Html.EditorFor(model => model.Order, "FieldInt")
-		@Html.EditorFor(model => model.ParentCategoryId, "FieldInt")
+		@Html.EditorFor(model => model.ParentCategoryId, "FieldProductCategoryIdNullable")
 		@Html.EditorFor(model => model.UseDividerAfterOnMenu, "FieldCheckbox")
 		@Html.EditorFor(model => model.UseDividerBeforeOnMenu, "FieldCheckbox")
 		@Html.EditorFor(model => model.ShowInMenu, "FieldCheckbox")
 		@Html.EditorFor(model => model.ShowIfEmpty, "FieldCheckbox")
 		@Html.EditorFor(model => model.AllowChildCategoriesInMenu, "FieldCheckbox")
+		@Html.EditorFor(model => model.CategoryDetailTemplate, "FieldEnum")
+		@Html.EditorFor(model => model.ProductListTemplate, "FieldEnum")
+		@Html.EditorFor(model => model.ProductDetailTemplate, "FieldEnum")
+		@Html.EditorFor(model => model.ChildCategoryHeaderHtml, "FieldHtml")
+		@Html.EditorFor(model => model.ChildCategoryFooterHtml, "FieldHtml")
+		@Html.EditorFor(model => model.ProductHeaderHtml, "FieldHtml")
+		@Html.EditorFor(model => model.ProductFooterHtml, "FieldHtml")
+		@Html.EditorFor(model => model.NoProductsMessageHtml, "FieldHtml")
+
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
 		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
@@ -68,13 +98,33 @@
 					@if (Model.IsCreatePage)
 					{
 						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
 					}
 					else
 					{
 						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-danger" })
 					}
-					&nbsp;&nbsp;|&nbsp;&nbsp;
-					@Html.ActionLink("Ok / Cancel", "Manager", null, new { @class = "btn btn-default" })
 				</center>
 			</div>
 		</div>

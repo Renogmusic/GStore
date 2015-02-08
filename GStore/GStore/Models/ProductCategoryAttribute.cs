@@ -42,7 +42,8 @@ namespace GStore.Models
 		[Display(Name = "Value List Id")]
 		public int? ValueListId { get; set; }
 
-
+		[Display(Name = "Is Required")]
+		public bool IsRequired { get; set; }
 
 		[Display(Name = "Include in Search")]
 		public bool IncludeInSearch { get; set; }

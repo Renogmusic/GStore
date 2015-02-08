@@ -95,7 +95,6 @@ namespace GStore.Data
 				}
 			}
 			pageTemplate.Description = pageTemplate.Name;
-			pageTemplate.LayoutName = "Default";
 			pageTemplate.ViewName = string.Empty;
 			pageTemplate.IsPending = false;
 			pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -398,6 +397,37 @@ namespace GStore.Data
 			productCategory.IsPending = false;
 			productCategory.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			productCategory.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+
+		}
+
+		public static void SetDefaultsForNew(this Product product, StoreFront storeFront)
+		{
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			product.ClientId = storeFront.ClientId;
+			product.Client = storeFront.Client;
+			product.StoreFrontId = storeFront.StoreFrontId;
+			product.StoreFront = storeFront;
+			if (storeFront.Products == null || storeFront.Products.Count == 0)
+			{
+				product.Name = "New Product";
+				product.Order = 100;
+			}
+			else
+			{
+				product.Order = (storeFront.Products.Max(nb => nb.Order) + 10);
+				product.Name = "New Product " + product.Order;
+			}
+			product.UrlName = product.Name.Replace(' ', '_');
+			product.ImageName = product.UrlName + ".png";
+			product.MaxQuantityPerOrder = 0;
+			product.MetaDescription = product.Name;
+			product.MetaKeywords = product.Name;
+			product.IsPending = false;
+			product.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			product.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
 
 		}
 
