@@ -21,8 +21,7 @@
 				@: [INACTIVE]
 			}
 		@:</span>
-		<br/>
-		@Html.ActionLink("View Product in Site", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName, returnToFrontEnd = returnToFrontEnd }, new { @class = "btn btn-default" })
+		@Html.ActionLink("View Product in Site", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName, returnToFrontEnd = returnToFrontEnd }, new { @class = "btn btn-xs btn-default" })
 		<br/>
 		@:Category: @Html.DisplayFor(model => model.Category)
 

@@ -79,6 +79,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.BodyTopScriptTag = storeFrontConfig.BodyTopScriptTag;
 			this.BodyBottomScriptTag = storeFrontConfig.BodyBottomScriptTag;
 			this.Name = storeFrontConfig.Name;
+			this.TimeZoneId = storeFrontConfig.TimeZoneId;
 			this.CatalogTitle = storeFrontConfig.CatalogTitle;
 
 			this.CatalogLayout = storeFrontConfig.CatalogLayout;
@@ -260,11 +261,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Range(1, 12)]
 		public int CatalogCategoryColSm { get; set; }
 
-		[Display(Name = "Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
+		[Display(Name = "Store Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
 		public Theme CatalogTheme { get; protected set; }
 
 		[Required]
-		[Display(Name = "Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
+		[Display(Name = "Store Catalog Theme", Description = "Choose a Theme for the Catalog section of the site with products and categories")]
 		public int CatalogThemeId { get; set; }
 
 		[Required]
@@ -343,6 +344,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[MaxLength(100)]
 		[Display(Name = "Name", Description = "Name of Store Front - this is added to the Page title of all pages on the web site.")]
 		public string Name { get; set; }
+
+		[Required]
+		[MaxLength(50)]
+		[Display(Name = "Time Zone Id", Description = "Time zone for this store front.")]
+		public string TimeZoneId { get; set; }
 
 		[Display(Name = "Catalog Title", Description = "Catalog Title shown on all catalog pages.")]
 		public string CatalogTitle { get; set; }

@@ -1,0 +1,13 @@
+﻿@model GStore.Models.Theme
+
+@{
+	if (Model == null)
+	{
+		StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
+		@:(Default - Store Catalog theme: '@(storeFrontConfig.CatalogTheme.Name)' [@(storeFrontConfig.CatalogThemeId)])
+	}
+	else
+	{
+		@:'@(Model.Name)' [@(Model.ThemeId)]
+	}
+}

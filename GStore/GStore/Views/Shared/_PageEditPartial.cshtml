@@ -477,7 +477,8 @@
 					If you have a problem, keep in mind you can edit this page in the Store Admin menu even if you de-activate it.<br />
 					If you are unsure what to do, click the "Make It Active Now" button to turn the page on with default values.
 				</h4>
-				<p class="col-md-offset-2 col-md-8">Server Local Time: @(DateTime.Now.ToString())</p>
+
+				<p class="col-md-offset-3 col-md-8">Store Local Time: @(DateTime.UtcNow.ToStoreDateTime(Html).ToString())</p>
 				<p class="col-md-offset-2 col-md-8">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
 
 				<div class="form-group">

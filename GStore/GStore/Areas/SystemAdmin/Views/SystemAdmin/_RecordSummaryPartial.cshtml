@@ -17,7 +17,7 @@
 <div class="text-center">
 	@using (Ajax.BeginForm("RecordSummary", null, formOptions, htmlAttributes: new { id = "clientIdForm" }))
 	{
-		@DateTime.Now @:&nbsp;&nbsp;|&nbsp;&nbsp; <input type="submit" value="Refresh" class="btn btn-sm btn-primary" />
+		@DateTime.UtcNow.ToLocalTime() @:&nbsp;&nbsp;|&nbsp;&nbsp; <input type="submit" value="Refresh" class="btn btn-sm btn-primary" />
 		<br/>
 		@Html.DropDownList("ClientId", Html.ClientFilterList(), htmlAttributes: new { @class="form-control", onchange = "$('#clientIdForm').trigger('submit');" })
 	}

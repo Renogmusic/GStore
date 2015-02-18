@@ -4,7 +4,7 @@
 	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Create);
 	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit);
 	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Delete);
-	
+	bool userCanSyncFiles = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_SyncFiles);
 	object filterData = new { ProductCategoryId = Model.FilterProductCategoryId };
 	filterData = null;
 }
@@ -36,11 +36,24 @@
 	</div>
 </div>
 @{
-	if (userCanCreate)
+	if (userCanCreate || userCanSyncFiles)
 	{
 		<div class="row">
 			<div class="col-xs-12">
-				@Html.ActionLink("Create a New Product", "Create", null, new { @class = "btn btn-info" })
+				@if (userCanCreate)
+				{
+					@Html.ActionLink("Create a New Product", "Create", new { id = Model.FilterProductCategoryId }, new { @class = "btn btn-sm btn-info" })
+				}
+				@if (userCanCreate && userCanSyncFiles)
+				{
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+				}
+				@if (userCanSyncFiles)
+				{
+					@Html.ActionLink("Sync Files (preview)", "SyncFiles", new { productCategoryId = Model.FilterProductCategoryId, eraseFileNameIfNotFound = true, searchForFileIfBlank = true, preview = true, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink("Sync Files Now!", "SyncFiles", new { productCategoryId = Model.FilterProductCategoryId, eraseFileNameIfNotFound = true, searchForFileIfBlank = true, preview = false, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+				}
 			</div>
 		</div>
 	}
@@ -50,7 +63,15 @@
 	{
 		<div class="row">
 			<div class="col-xs-12">
-				<h2 class="text-warning">No Products found for this store front.</h2>
+				@if (Model.FilterProductCategoryId.HasValue)
+				{
+					<h2 class="text-warning">No Products found for this Category</h2>
+					@Html.ActionLink("Click here to View All Categories", "Manager")
+				}
+				else
+				{
+					<h2 class="text-warning">No Products found for this store front.</h2>
+				}
 			</div>
 		</div>
 	}

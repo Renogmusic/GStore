@@ -198,6 +198,7 @@
 				@Html.EditorFor(model => model.Name, "FieldText")
 				@Html.EditorFor(model => model.ConfigurationName, "FieldText")
 				@Html.EditorFor(model => model.PublicUrl, "FieldUrl")
+				@Html.EditorFor(model => model.TimeZoneId, "FieldTimeZone")
 				@Html.EditorFor(model => model.HtmlFooter, "FieldHtml")
 				@Html.EditorFor(model => model.NavBarItemsMaxLevels, "FieldInt")
 				@Html.EditorFor(model => model.Order, "FieldInt")
@@ -373,8 +374,8 @@
 					You can always log in and edit these values even if you de-activate your site.
 				</h4>
 				<div class="row">
+					<p class="col-md-offset-3 col-md-6">Store Local Time: @(DateTime.UtcNow.ToStoreDateTime(Html).ToString())</p>
 					<p class="col-md-offset-3 col-md-6">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
-					<p class="col-md-offset-3 col-md-6">Server Local Time: @(DateTime.Now.ToString())</p>
 				</div>
 
 				<div class="form-group">

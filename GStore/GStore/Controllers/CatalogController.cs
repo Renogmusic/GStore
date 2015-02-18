@@ -15,7 +15,7 @@ namespace GStore.Controllers
         // GET: Catalog
 		public ActionResult Index()
 		{
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogList(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null);
 			return View("Index", this.LayoutNameForCatalog, model);
 		}
 
@@ -27,7 +27,13 @@ namespace GStore.Controllers
 				return Index();
 			}
 
-			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().Where(cat => cat.UrlName.ToLower() == urlName.ToLower()).WhereIsActive().SingleOrDefault();
+			Models.ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable()
+				.WhereRegisteredAnonymousCheck(User.Identity.IsAuthenticated)
+				.Where(cat => cat.UrlName.ToLower() == urlName.ToLower())
+				.WhereIsActive()
+				.WhereShowInCatalogByName()
+				.SingleOrDefault();
+
 			if (category == null)
 			{
 				GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewCategoryNotFound, urlName, false, categoryUrlName: urlName);
@@ -35,6 +41,7 @@ namespace GStore.Controllers
 			}
 
 			GStoreDb.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Catalog, UserActionActionEnum.Catalog_ViewCategory, urlName, true, categoryUrlName: urlName);
+
 			return ViewCategory(category);
 		}
 
@@ -81,10 +88,14 @@ namespace GStore.Controllers
 			}
 			/// get current catalog item
 
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, category, null);
+			List<TreeNode<ProductCategory>> categoryTree = CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.Identity.IsAuthenticated);
 
-			//get products
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, categoryTree, CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, category, null);
 
+			if (category.Theme != null)
+			{
+				ViewData.Theme(category.Theme);
+			}
 			return View("ViewCategory", this.LayoutNameForCatalog, model);
 		}
 
@@ -95,7 +106,16 @@ namespace GStore.Controllers
 				throw new ApplicationException("Product is null, be sure product is set before calling ViewProduct");
 			}
 			/// get current catalog item
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActive(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product);
+
+			if (product.Theme != null)
+			{
+				ViewData.Theme(product.Theme);
+			}
+			else if (product.Category.Theme != null)
+			{
+				ViewData.Theme(product.Category.Theme);
+			}
 			return View("ViewProduct", this.LayoutNameForCatalog, model);
 		}
 

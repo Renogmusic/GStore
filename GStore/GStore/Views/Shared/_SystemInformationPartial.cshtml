@@ -88,10 +88,42 @@
 		</tr>
 		<tr>
 			<td class="header">
+				User Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToUserDateTime(Html).ToString()) - Time Zone: @(Html.UserTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Store Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToStoreDateTime(Html).ToString()) - Time Zone: @(Html.StoreFrontTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Client Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToClientDateTime(Html).ToString()) - Time Zone: @(Html.ClientTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				GStore System Default Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToStoreDateTime(null, null).ToString()) - Time Zone: @(Html.GStoreSystemDefaultTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
 				Server Time:
 			</td>
 			<td class="data">
-				@DateTime.Now.ToString()
+				@DateTime.UtcNow.ToLocalTime().ToString() - Time Zone: @(Html.ServerTimeZone().DisplayName)
 			</td>
 		</tr>
 		<tr>
@@ -99,7 +131,7 @@
 				UTC Time:
 			</td>
 			<td class="data">
-				@DateTime.UtcNow.ToString()
+				@DateTime.UtcNow.ToString()  - Time Zone: @(Html.UtcTimeZone().DisplayName)
 			</td>
 		</tr>
 		<tr>

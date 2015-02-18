@@ -91,5 +91,30 @@
 			@:[@(Html.ActionLink("Add", "AddPhoneNumber"))]
 		}
 	</div>
+
+@using (Html.BeginForm("UpdateTimeZone", null, FormMethod.Post))
+	{
+		@Html.AntiForgeryToken()
+		<div class="header col-sm-offset-2 col-sm-2">
+			Time Zone:
+		</div>
+		<div class="data col-sm-5">
+			@{
+				string timeZoneId = Model.UserProfile.TimeZoneId;
+				if (string.IsNullOrEmpty(timeZoneId))
+				{
+					timeZoneId = Html.CurrentStoreFrontConfig(true).TimeZoneId;
+					if (string.IsNullOrEmpty(timeZoneId))
+					{
+						timeZoneId = Html.CurrentClient(true).TimeZoneId;
+					}
+				}
+			}
+			@Html.EditorFor(model => model.UserProfile.TimeZoneId, "FieldTimeZoneFieldOnly")
+			<br/>
+			<input type="submit" value="Save" class="btn btn-warning" />
+		</div>
+	}
+
 </div>
 

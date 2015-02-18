@@ -9,6 +9,10 @@ using GStore.AppHtmlHelpers;
 using GStore.Models.ViewModels;
 using GStore.Areas.StoreAdmin.ViewModels;
 using GStore.Models.BaseClasses;
+using System.Linq.Expressions;
+using System.Web.Mvc;
+using System.Text;
+using System.Reflection;
 
 namespace GStore.Data
 {
@@ -391,7 +395,7 @@ namespace GStore.Data
 			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_CatalogAdminArea);
 		}
 
-		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActive(this StoreFront storeFront, bool isRegistered)
+		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActiveForNavBar(this StoreFront storeFront, bool isRegistered)
 		{
 			if (storeFront == null)
 			{
@@ -399,12 +403,41 @@ namespace GStore.Data
 			}
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
-				.Where(pc => 
-					(isRegistered || !pc.ForRegisteredOnly) 
-					&& 
-					(!isRegistered || !pc.ForAnonymousOnly ))
-				.Where(cat => isRegistered || !cat.ForRegisteredOnly)
-				.Where(cat => cat.ShowInMenu && (cat.ShowIfEmpty || cat.ChildActiveCount > 0))
+				.WhereRegisteredAnonymousCheck(isRegistered)
+				.WhereShowInNavBarMenu()
+				.OrderBy(cat => cat.Order)
+				.ThenBy(cat => cat.Name)
+				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
+			return query.ToList();
+		}
+
+
+		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActiveForCatalogList(this StoreFront storeFront, bool isRegistered)
+		{
+			if (storeFront == null)
+			{
+				return new List<TreeNode<ProductCategory>>();
+			}
+			var query = storeFront.ProductCategories.AsQueryable()
+				.WhereIsActive()
+				.WhereRegisteredAnonymousCheck(isRegistered)
+				.WhereShowInCatalogList()
+				.OrderBy(cat => cat.Order)
+				.ThenBy(cat => cat.Name)
+				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
+			return query.ToList();
+		}
+
+		public static List<TreeNode<ProductCategory>> CategoryTreeWhereActiveForCatalogByName(this StoreFront storeFront, bool isRegistered)
+		{
+			if (storeFront == null)
+			{
+				return new List<TreeNode<ProductCategory>>();
+			}
+			var query = storeFront.ProductCategories.AsQueryable()
+				.WhereIsActive()
+				.WhereRegisteredAnonymousCheck(isRegistered)
+				.WhereShowInCatalogByName()
 				.OrderBy(cat => cat.Order)
 				.ThenBy(cat => cat.Name)
 				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
@@ -468,6 +501,33 @@ namespace GStore.Data
 			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfigOrAny().Folder.ToFileName());
 		}
 
+		public static string CatalogCategoryContentVirtualDirectoryToMap(this StoreFront storeFront, string applicationPath)
+		{
+			if (storeFront.CurrentConfig() == null)
+			{
+				throw new ArgumentNullException("storeFront.CurrentConfig()");
+			}
+			return storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/CatalogContent/Categories";
+		}
+
+		public static string CatalogProductContentVirtualDirectoryToMap(this StoreFront storeFront, string applicationPath)
+		{
+			if (storeFront.CurrentConfig() == null)
+			{
+				throw new ArgumentNullException("storeFront.CurrentConfig()");
+			}
+			return storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/CatalogContent/Products";
+		}
+
+		public static string ProductDigitalDownloadVirtualDirectoryToMap(this StoreFront storeFront, string applicationPath)
+		{
+			if (storeFront.CurrentConfig() == null)
+			{
+				throw new ArgumentNullException("storeFront.CurrentConfig()");
+			}
+			return storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/DigitalDownload/Products";
+		}
+
 		public static void SetDefaultsForNew(this StoreFront storeFront, Client client)
 		{
 			if (client != null)
@@ -492,7 +552,7 @@ namespace GStore.Data
 				storeFrontConfig.Client = client;
 				storeFrontConfig.ClientId = client.ClientId;
 			}
-			string dateTimeString = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+			string dateTimeString = DateTime.UtcNow.ToLocalTime().ToString("yyyy_MM_dd_HH_mm_ss");
 
 			storeFrontConfig.ConfigurationName = "Default";
 			storeFrontConfig.Name = "Store Front " + (storeFrontConfig.StoreFrontId == 0 ? dateTimeString : storeFrontConfig.StoreFrontId.ToString());
@@ -500,6 +560,7 @@ namespace GStore.Data
 			storeFrontConfig.HtmlFooter = storeFrontConfig.Name.ToHtml();
 			storeFrontConfig.Order = 100;
 			storeFrontConfig.PublicUrl = "http://www.gstore.renog.info";
+			storeFrontConfig.TimeZoneId = (client == null ? Settings.AppDefaultTimeZoneId : client.TimeZoneId); 
 			storeFrontConfig.IsPending = false;
 			storeFrontConfig.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeFrontConfig.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -638,7 +699,7 @@ namespace GStore.Data
 				string messageBody = "New User Registered on " + storeFront.CurrentConfig().Name + "!"
 					+ "\n-Name: " + newProfile.FullName
 					+ "\n-Email: " + newProfile.Email
-					+ "\n-Date/Time: " + DateTime.Now.ToString()
+					+ "\n-Date/Time: " + DateTime.UtcNow.ToLocalTime().ToString()
 					+ "\n-Send Me More Info: " + newProfile.SendMoreInfoToEmail.ToString()
 					+ "\n-Notify Of Site Updates: " + newProfile.NotifyOfSiteUpdatesToEmail.ToString()
 					+ "\n-Sign-up Notes: " + newProfile.SignupNotes;
@@ -910,58 +971,26 @@ namespace GStore.Data
 		/// <param name="category"></param>
 		/// <param name="applicationPath"></param>
 		/// <returns></returns>
-		public static string ImageUrl(this ProductCategory category, string applicationPath, bool forCart = false)
+		public static string ImageUrl(this ProductCategory category, string applicationPath, RouteData routeData, bool forCart = false)
 		{
 			if (string.IsNullOrEmpty(applicationPath))
 			{
 				throw new ArgumentNullException("applicationPath");
 			}
-			applicationPath = applicationPath.Trim('/');
-			if (!string.IsNullOrEmpty(applicationPath))
+			if (string.IsNullOrWhiteSpace(category.ImageName))
 			{
-				applicationPath += "/";
+				return null;
 			}
-			return "/" + applicationPath + "Images/Categories/" + category.ImageName;
+			return category.StoreFront.ProductCategoryCatalogFileUrl(applicationPath, routeData, category.ImageName);
 		}
 
-		/// <summary>
-		/// Main product image
-		/// </summary>
-		/// <param name="product"></param>
-		/// <param name="applicationPath"></param>
-		/// <returns></returns>
-		public static string ImageUrl(this Product product, string applicationPath, bool forCart = false)
+		public static string ProductCategoryCatalogFileUrl(this StoreFront storeFront, string applicationPath, RouteData routeData, string fileName)
 		{
-			//todo: add Stores/StoreName here
-			if (product == null)
-			{
-				throw new ArgumentNullException("product");
-			}
 			if (string.IsNullOrEmpty(applicationPath))
 			{
 				throw new ArgumentNullException("applicationPath");
 			}
-			applicationPath = applicationPath.Trim('/');
-			if (!string.IsNullOrEmpty(applicationPath))
-			{
-				applicationPath += "/";
-			}
-			return "/" + applicationPath + "Images/Products/" + product.ImageName;
-		}
-
-		public static string AudioSampleUrl(this Product product, string applicationPath)
-		{
-			//todo: add Stores/StoreName here
-			if (product == null)
-			{
-				throw new ArgumentNullException("product");
-			}
-			if (string.IsNullOrEmpty(applicationPath))
-			{
-				throw new ArgumentNullException("applicationPath");
-			}
-
-			if (string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+			if (string.IsNullOrWhiteSpace(fileName))
 			{
 				return null;
 			}
@@ -970,7 +999,203 @@ namespace GStore.Data
 			{
 				applicationPath += "/";
 			}
-			return "/" + applicationPath + "CatalogContent/" + product.SampleAudioFileName;
+			if (routeData != null)
+			{
+				string storeName = routeData.UrlStoreName();
+				if (!string.IsNullOrEmpty(storeName))
+				{
+					applicationPath += "Stores/" + HttpUtility.UrlEncode(storeName) + "/";
+				}
+			}
+			return "/" + applicationPath + "CatalogContent/Categories/" + fileName;
+		}
+
+		public static string ImagePath(this ProductCategory category, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (routeData == null)
+			{
+				throw new ArgumentNullException("routeData");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			if (category == null || string.IsNullOrEmpty(category.ImageName))
+			{
+				return null;
+			}
+
+			return category.StoreFront.ProductCategoryCatalogFilePath(applicationPath, routeData, server, category.ImageName);
+		}
+
+		public static string ProductCategoryCatalogFilePath(this StoreFront storeFront, string applicationPath, RouteData routeData, HttpServerUtilityBase server, string fileName)
+		{
+			if (routeData == null)
+			{
+				throw new ArgumentNullException("routeData");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			if (string.IsNullOrEmpty(fileName))
+			{
+				return null;
+			}
+
+			string path = "/CatalogContent/Categories/" + fileName;
+			return storeFront.ChooseFilePath(storeFront.Client, path, applicationPath, server);
+		}
+
+		/// <summary>
+		/// Main product image
+		/// </summary>
+		/// <param name="product"></param>
+		/// <param name="applicationPath"></param>
+		/// <returns></returns>
+		public static string ImageUrl(this Product product, string applicationPath, RouteData routeData, bool forCart = false)
+		{
+			if (product == null)
+			{
+				return null;;
+			}
+			return product.StoreFront.ProductCatalogFileUrl(applicationPath, routeData, product.ImageName);
+		}
+
+		public static string ImagePath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (product == null)
+			{
+				return null;
+			}
+			return product.StoreFront.ProductCatalogFilePath(applicationPath, routeData, server, product.ImageName);
+		}
+
+		public static string SampleAudioUrl(this Product product, string applicationPath, RouteData routeData)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			return product.StoreFront.ProductCatalogFileUrl(applicationPath, routeData, product.SampleAudioFileName);
+		}
+
+		public static string SampleAudioPath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (product == null)
+			{
+				return null;
+			}
+			return product.StoreFront.ProductCatalogFilePath(applicationPath, routeData, server, product.SampleAudioFileName);
+		}
+
+		public static string DigitalDownloadFilePath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (product == null)
+			{
+				return null;
+			}
+			return product.StoreFront.ProductDigitalDownloadFilePath(applicationPath, routeData, server, product.DigitalDownloadFileName);
+		}
+
+		public static string SampleDownloadFileUrl(this Product product, string applicationPath, RouteData routeData)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			return product.StoreFront.ProductCatalogFileUrl(applicationPath, routeData, product.SampleDownloadFileName);
+		}
+
+		public static string SampleDownloadFilePath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (product == null)
+			{
+				return null;
+			}
+			return product.StoreFront.ProductCatalogFilePath(applicationPath, routeData, server, product.SampleDownloadFileName);
+		}
+
+		public static string SampleImageFileUrl(this Product product, string applicationPath, RouteData routeData)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			return product.StoreFront.ProductCatalogFileUrl(applicationPath, routeData, product.SampleImageFileName);
+		}
+
+		public static string SampleImageFilePath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
+		{
+			if (product == null)
+			{
+				return null;
+			}
+			return product.StoreFront.ProductCatalogFilePath(applicationPath, routeData, server, product.SampleImageFileName);
+		}
+
+		public static string ProductCatalogFileUrl(this StoreFront storeFront, string applicationPath, RouteData routeData, string fileName)
+		{
+			if (string.IsNullOrEmpty(applicationPath))
+			{
+				throw new ArgumentNullException("applicationPath");
+			}
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				return null;
+			}
+			applicationPath = applicationPath.Trim('/');
+			if (!string.IsNullOrEmpty(applicationPath))
+			{
+				applicationPath += "/";
+			}
+			if (routeData != null)
+			{
+				string storeName = routeData.UrlStoreName();
+				if (!string.IsNullOrEmpty(storeName))
+				{
+					applicationPath += "Stores/" + HttpUtility.UrlEncode(storeName) + "/";
+				}
+			}
+			return "/" + applicationPath + "CatalogContent/Products/" + fileName;
+		}
+
+		public static string ProductCatalogFilePath(this StoreFront storeFront, string applicationPath, RouteData routeData, HttpServerUtilityBase server, string fileName)
+		{
+			if (routeData == null)
+			{
+				throw new ArgumentNullException("routeData");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			if (string.IsNullOrEmpty(fileName))
+			{
+				return null;
+			}
+
+			string path = "/CatalogContent/Products/" + fileName;
+			return storeFront.ChooseFilePath(storeFront.Client, path, applicationPath, server);
+		}
+
+		public static string ProductDigitalDownloadFilePath(this StoreFront storeFront, string applicationPath, RouteData routeData, HttpServerUtilityBase server, string fileName)
+		{
+			if (routeData == null)
+			{
+				throw new ArgumentNullException("routeData");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			if (string.IsNullOrEmpty(fileName))
+			{
+				return null;
+			}
+
+			string path = "/DigitalDownload/Products/" + fileName;
+			return storeFront.ChooseFilePath(storeFront.Client, path, applicationPath, server);
 		}
 
 		public static string ClientVirtualDirectoryToMap(this Models.BaseClasses.ClientRecord clientRecord, string applicationPath)
@@ -990,6 +1215,15 @@ namespace GStore.Data
 				throw new ArgumentNullException("record.CurrentConfigOrAny()");
 			}
 			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + record.StoreFront.CurrentConfigOrAny().Folder.ToFileName();
+		}
+
+		public static string StoreFrontVirtualDirectoryToMapThisConfig(this StoreFrontConfiguration storeFrontConfig, string applicationPath)
+		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+			return storeFrontConfig.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + storeFrontConfig.Folder.ToFileName();
 		}
 
 		public static string EmailConfirmationCodeSubject(this StoreFront storeFront, string callbackUrl, Uri currentUrl)
@@ -1641,8 +1875,15 @@ namespace GStore.Data
 
 			record.BaseListPrice = viewModel.BaseListPrice;
 			record.BaseUnitPrice = viewModel.BaseUnitPrice;
+			record.ThemeId = viewModel.ThemeId;
+			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
+
+			record.SummaryCaption = viewModel.SummaryCaption;
 			record.SummaryHtml = viewModel.SummaryHtml;
-			record.DescriptionHtml = viewModel.DescriptionHtml;
+			record.TopDescriptionCaption = viewModel.TopDescriptionCaption;
+			record.TopDescriptionHtml = viewModel.TopDescriptionHtml;
+			record.BottomDescriptionCaption = viewModel.BottomDescriptionCaption;
+			record.BottomDescriptionHtml = viewModel.BottomDescriptionHtml;
 			record.FooterHtml = viewModel.FooterHtml;
 
 			record.DigitalDownloadFileName = viewModel.DigitalDownloadFileName;
@@ -1694,8 +1935,16 @@ namespace GStore.Data
 
 			record.BaseListPrice = viewModel.BaseListPrice;
 			record.BaseUnitPrice = viewModel.BaseUnitPrice;
+			record.ThemeId = viewModel.ThemeId;
+			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
+
+			record.SummaryCaption = viewModel.SummaryCaption;
 			record.SummaryHtml = viewModel.SummaryHtml;
-			record.DescriptionHtml = viewModel.DescriptionHtml;
+			record.TopDescriptionCaption = viewModel.TopDescriptionCaption;
+			record.TopDescriptionHtml = viewModel.TopDescriptionHtml;
+			record.BottomDescriptionCaption = viewModel.BottomDescriptionCaption;
+			record.BottomDescriptionHtml = viewModel.BottomDescriptionHtml;
+
 			record.FooterHtml = viewModel.FooterHtml;
 			record.DigitalDownloadFileName = viewModel.DigitalDownloadFileName;
 			record.SampleAudioCaption = viewModel.SampleAudioCaption;
@@ -1721,8 +1970,10 @@ namespace GStore.Data
 			record.DirectActiveCount = 0;
 			record.ImageName = viewModel.ImageName;
 			record.ParentCategoryId = viewModel.ParentCategoryId;
-			record.ShowIfEmpty = viewModel.ShowIfEmpty;
+			record.HideInMenuIfEmpty = viewModel.HideInMenuIfEmpty;
 			record.ShowInMenu = viewModel.ShowInMenu;
+			record.DisplayForDirectLinks = viewModel.DisplayForDirectLinks;
+			record.ShowInCatalogIfEmpty = viewModel.ShowInCatalogIfEmpty;
 			record.UrlName = viewModel.UrlName;
 
 			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
@@ -1731,6 +1982,7 @@ namespace GStore.Data
 			record.Order = viewModel.Order;
 			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
 			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+			record.ThemeId = viewModel.ThemeId;
 			record.CategoryDetailTemplate = viewModel.CategoryDetailTemplate;
 			record.ProductListTemplate = viewModel.ProductListTemplate;
 			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
@@ -1740,6 +1992,13 @@ namespace GStore.Data
 			record.ProductFooterHtml = viewModel.ProductFooterHtml;
 			record.NoProductsMessageHtml = viewModel.NoProductsMessageHtml;
 			
+			record.DefaultSummaryCaption = viewModel.DefaultSummaryCaption;
+			record.DefaultTopDescriptionCaption = viewModel.DefaultTopDescriptionCaption;
+			record.DefaultBottomDescriptionCaption = viewModel.DefaultBottomDescriptionCaption;
+			record.DefaultSampleImageCaption = viewModel.DefaultSampleImageCaption;
+			record.DefaultSampleAudioCaption = viewModel.DefaultSampleAudioCaption;
+			record.DefaultSampleDownloadCaption = viewModel.DefaultSampleDownloadCaption;
+
 			record.StoreFrontId = storeFront.StoreFrontId;
 			record.ClientId = storeFront.ClientId;
 			record.IsPending = viewModel.IsPending;
@@ -1768,8 +2027,10 @@ namespace GStore.Data
 			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
 			record.ImageName = viewModel.ImageName;
 			record.ParentCategoryId = viewModel.ParentCategoryId;
-			record.ShowIfEmpty = viewModel.ShowIfEmpty;
+			record.HideInMenuIfEmpty = viewModel.HideInMenuIfEmpty;
 			record.ShowInMenu = viewModel.ShowInMenu;
+			record.ShowInCatalogIfEmpty = viewModel.ShowInCatalogIfEmpty;
+			record.DisplayForDirectLinks = viewModel.DisplayForDirectLinks;
 			record.UrlName = viewModel.UrlName;
 
 			record.ForAnonymousOnly = viewModel.ForAnonymousOnly;
@@ -1778,6 +2039,7 @@ namespace GStore.Data
 			record.Order = viewModel.Order;
 			record.UseDividerAfterOnMenu = viewModel.UseDividerAfterOnMenu;
 			record.UseDividerBeforeOnMenu = viewModel.UseDividerBeforeOnMenu;
+			record.ThemeId = viewModel.ThemeId;
 			record.CategoryDetailTemplate = viewModel.CategoryDetailTemplate;
 			record.ProductListTemplate = viewModel.ProductListTemplate;
 			record.ProductDetailTemplate = viewModel.ProductDetailTemplate;
@@ -1786,6 +2048,13 @@ namespace GStore.Data
 			record.ProductHeaderHtml = viewModel.ProductHeaderHtml;
 			record.ProductFooterHtml = viewModel.ProductFooterHtml;
 			record.NoProductsMessageHtml = viewModel.NoProductsMessageHtml;
+
+			record.DefaultSummaryCaption = viewModel.DefaultSummaryCaption;
+			record.DefaultTopDescriptionCaption = viewModel.DefaultTopDescriptionCaption;
+			record.DefaultBottomDescriptionCaption = viewModel.DefaultBottomDescriptionCaption;
+			record.DefaultSampleImageCaption = viewModel.DefaultSampleImageCaption;
+			record.DefaultSampleAudioCaption = viewModel.DefaultSampleAudioCaption;
+			record.DefaultSampleDownloadCaption = viewModel.DefaultSampleDownloadCaption;
 
 			record.IsPending = viewModel.IsPending;
 			record.StartDateTimeUtc = viewModel.StartDateTimeUtc;
@@ -2338,6 +2607,539 @@ namespace GStore.Data
 			}
 
 			return count;
+		}
+
+		/// <summary>
+		/// Returns a queryable filter to check ForanonymousOnly and ForRegisteredOnly against the current user
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="isRegistered"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategory> WhereRegisteredAnonymousCheck(this IQueryable<ProductCategory> query, bool isRegistered)
+		{
+			return query.Where(pc =>
+					(isRegistered || !pc.ForRegisteredOnly)
+					&&
+					(!isRegistered || !pc.ForAnonymousOnly));
+		}
+
+		/// <summary>
+		/// Returns a queryable filter for whether to show this category in the navbar menu
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategory> WhereShowInNavBarMenu(this IQueryable<ProductCategory> query)
+		{
+			return query.Where(cat => cat.ShowInMenu && (!cat.HideInMenuIfEmpty || cat.ChildActiveCount > 0));
+		}
+
+		/// <summary>
+		/// Returns a queryable filter whether this category should be navigable in the catalog
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategory> WhereShowInCatalogList(this IQueryable<ProductCategory> query)
+		{
+			return query.Where(cat => 
+				(cat.ChildActiveCount > 0)
+				||
+				(cat.ShowInCatalogIfEmpty)
+				|| 
+				(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+				);
+		}
+
+		/// <summary>
+		/// Returns a queryable filter whether this category should show when targetted by name in category details
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategory> WhereShowInCatalogByName(this IQueryable<ProductCategory> query)
+		{
+			return query.Where(cat =>
+				cat.DisplayForDirectLinks
+				||
+				(cat.ChildActiveCount > 0)
+				||
+				(cat.ShowInCatalogIfEmpty)
+				||
+				(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+				);
+		}
+
+		/// <summary>
+		/// Checks for a file in storefront, client, or storefront folders. Returns path to first file found or Null if file does not exist in any location
+		/// Example: for a path of /Images/File1.png   this function will check for [storefrontfolder]/Images/File1.png, if the file is found it will return the physical path
+		/// if the file is not found, it will check [client folder]/Images/File1.png. if file is found in client folder, it will return that physical path
+		/// If the file is not found in the client folder, it will check the server folder [/Content/Server]/Images/File1.png. If file is found that path will be returned.
+		/// If file is not found in any of these locations, null is returned
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <param name="path">Path to file, can start with / or not, / is implied</param>
+		/// <param name="applicationPath"></param>
+		/// <param name="client">Client to search if file is not found in the storefront, or storefront is null</param>
+		/// <param name="server">HTTP Server</param>
+		/// <returns></returns>
+		public static string ChooseFilePath(this StoreFront storeFront, Client client, string path, string applicationPath, HttpServerUtilityBase server)
+		{
+			string fullVirtualPath = null;
+			string fullPath = null;
+
+			if (storeFront != null && storeFront.IsActiveBubble())
+			{
+				fullVirtualPath = storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/" + path.TrimStart('/');
+				fullPath = server.MapPath(fullVirtualPath);
+				if (System.IO.File.Exists(fullPath))
+				{
+					return fullPath;
+				}
+			}
+
+			if (client != null && client.IsActiveDirect())
+			{
+				fullVirtualPath = client.ClientVirtualDirectoryToMap(applicationPath) + "/" + path.TrimStart('/');
+				fullPath = server.MapPath(fullVirtualPath);
+				if (System.IO.File.Exists(fullPath))
+				{
+					return fullPath;
+				}
+			}
+
+			fullVirtualPath = "~/Content/Server/" + path.TrimStart('/');
+			fullPath = server.MapPath(fullVirtualPath);
+			if (!System.IO.File.Exists(fullPath))
+			{
+				return null;
+			}
+			return fullPath;
+
+		}
+
+		/// <summary>
+		/// Checks for a file in storefront, client, or storefront folders. Returns path to first file found or Null if file does not exist in any location
+		/// Example: for a virtua;l folder '/Images' and fileNameStart of 'File1'   this function will check for [storefrontfolder]/Images/File1.*, if the file is found it will return the physical path
+		/// if the file is not found, it will check [client folder]/Images/File1.*. if file is found in client folder, it will return that physical path
+		/// If the file is not found in the client folder, it will check the server folder [/Content/Server]/Images/File1.*. If file is found that path will be returned.
+		/// If file is not found in any of these locations, null is returned
+		/// </summary>
+		/// <param name="storeFront"></param>
+		/// <param name="path">Path to file, can start with / or not, / is implied</param>
+		/// <param name="applicationPath"></param>
+		/// <param name="client">Client to search if file is not found in the storefront, or storefront is null</param>
+		/// <param name="server">HTTP Server</param>
+		/// <returns></returns>
+		public static string ChooseFileNameWildcard(this StoreFront storeFront, Client client, string virtualFolder, string fileNameStart, string applicationPath, HttpServerUtilityBase server)
+		{
+			string virtualPath = null;
+			string folderPath = null;
+
+			if (storeFront != null && storeFront.IsActiveBubble())
+			{
+				virtualPath = storeFront.StoreFrontVirtualDirectoryToMap(applicationPath) + "/" + virtualFolder.Trim('/');
+				folderPath = server.MapPath(virtualPath);
+				if (System.IO.Directory.Exists(folderPath))
+				{
+					IOrderedEnumerable<string> files = System.IO.Directory.GetFiles(folderPath, fileNameStart + ".*")
+						.OrderByDescending(s => s.EndsWith(".png"))
+						.ThenByDescending(s => s.EndsWith(".jpg"))
+						.ThenByDescending(s => s.EndsWith(".jpeg"))
+						.ThenByDescending(s => s.EndsWith(".gif"))
+						.ThenByDescending(s => s.EndsWith(".pdf"))
+						.ThenByDescending(s => s.EndsWith(".doc"))
+						.ThenByDescending(s => s.EndsWith(".xls"))
+						.ThenByDescending(s => s.EndsWith(".mp3"))
+						.ThenByDescending(s => s.EndsWith(".txt"));
+
+					if (files.Count() != 0)
+					{
+						return new System.IO.FileInfo(files.First()).Name;
+					}
+				}
+			}
+
+			if (client != null && client.IsActiveDirect())
+			{
+				virtualPath = client.ClientVirtualDirectoryToMap(applicationPath) + "/" + virtualFolder.Trim('/');
+				folderPath = server.MapPath(virtualPath);
+				if (System.IO.Directory.Exists(folderPath))
+				{
+					IOrderedEnumerable<string> files = System.IO.Directory.GetFiles(folderPath, fileNameStart + ".*")
+						.OrderByDescending(s => s.EndsWith(".png"))
+						.ThenByDescending(s => s.EndsWith(".jpg"))
+						.ThenByDescending(s => s.EndsWith(".jpeg"))
+						.ThenByDescending(s => s.EndsWith(".gif"))
+						.ThenByDescending(s => s.EndsWith(".pdf"))
+						.ThenByDescending(s => s.EndsWith(".doc"))
+						.ThenByDescending(s => s.EndsWith(".xls"))
+						.ThenByDescending(s => s.EndsWith(".mp3"))
+						.ThenByDescending(s => s.EndsWith(".txt"));
+
+					if (files.Count() != 0)
+					{
+						return new System.IO.FileInfo(files.First()).Name;
+					}
+				}
+			}
+
+			virtualPath = "~/Content/Server/" + virtualFolder.Trim('/');
+			folderPath = server.MapPath(virtualPath);
+			if (System.IO.Directory.Exists(folderPath))
+			{
+				IOrderedEnumerable<string> serverFiles = System.IO.Directory.GetFiles(folderPath, fileNameStart + ".*")
+					.OrderByDescending(s => s.EndsWith(".png"))
+					.ThenByDescending(s => s.EndsWith(".jpg"))
+					.ThenByDescending(s => s.EndsWith(".jpeg"))
+					.ThenByDescending(s => s.EndsWith(".gif"))
+					.ThenByDescending(s => s.EndsWith(".pdf"))
+					.ThenByDescending(s => s.EndsWith(".doc"))
+					.ThenByDescending(s => s.EndsWith(".xls"))
+					.ThenByDescending(s => s.EndsWith(".mp3"))
+					.ThenByDescending(s => s.EndsWith(".txt"));
+
+				if (serverFiles.Count() != 0)
+				{
+					return new System.IO.FileInfo(serverFiles.First()).Name;
+				}
+			}
+
+
+			return null;
+		}
+
+		public static string SyncCatalogFile(this Product product, Expression<Func<Product, String>> expression, string defaultFileName, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			return product.SyncFileHelper(expression, false, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SyncDigitalDownloadFile(this Product product, Expression<Func<Product, String>> expression, string defaultFileName, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			return product.SyncFileHelper(expression, true, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		private static string SyncFileHelper(this Product product, Expression<Func<Product, String>> expression, bool digitalDownload, string defaultFileName, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			StoreFront storeFront = product.StoreFront;
+			StoreFrontConfiguration storeFrontConfig = storeFront.CurrentConfigOrAny();
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("product.StoreFront.CurrentConfigOrAny");
+			}
+
+			ModelMetadata metadata = ModelMetadata.FromLambdaExpression<Product, String>(expression, new ViewDataDictionary<Product>());
+			string expressionText = ExpressionHelper.GetExpressionText(expression);
+			string displayName = metadata.DisplayName ?? metadata.PropertyName;
+			PropertyInfo property = typeof(Product).GetProperty(expressionText);
+			string currentFileName = (property.GetValue(product) ?? "").ToString();
+
+
+			hasDbChanges = false;
+			StringBuilder results = new StringBuilder();
+
+			if (!string.IsNullOrEmpty(currentFileName))
+			{
+				if (eraseFileNameIfNotFound)
+				{
+					//file name is set, verify file and set to null if not found
+					string filePath = null;
+					if (digitalDownload)
+					{
+						filePath = storeFront.ProductDigitalDownloadFilePath(applicationPath, routeData, server, currentFileName);
+					}
+					else
+					{
+						filePath = storeFront.ProductCatalogFilePath(applicationPath, routeData, server, currentFileName);
+					}
+					if (string.IsNullOrEmpty(filePath))
+					{
+						results.AppendLine("- - - - - Product '" + product.Name + "' [" + product.ProductId + "] " + displayName + " - '" + currentFileName + "' not found, setting to null - - - - -");
+						currentFileName = null;
+						property.SetValue(product, null);
+						hasDbChanges = true;
+					}
+					else
+					{
+						if (verbose)
+						{
+							results.AppendLine("OK - Product '" + product.Name + "' [" + product.ProductId + "] " + displayName + " - '" + currentFileName + "' File Confirmed");
+						}
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(currentFileName))
+			{
+				if (searchForFileIfBlank)
+				{
+					//if file name is not set (or file was not found and set to blank), see if there is a suitable file in the file system
+					string newFileName = null;
+					if (digitalDownload)
+					{
+						newFileName = storeFront.ChooseFileNameWildcard(storeFrontConfig.Client, "DigitalDownload/Products", defaultFileName, applicationPath, server);
+					}
+					else
+					{
+						newFileName = storeFront.ChooseFileNameWildcard(storeFrontConfig.Client, "CatalogContent/Products", defaultFileName, applicationPath, server);
+					}
+
+					if (string.IsNullOrEmpty(newFileName))
+					{
+						if (verbose)
+						{
+							results.AppendLine("OK - Product '" + product.Name + "' [" + product.ProductId + "] " + displayName + " - File is null and no file found starting with '" + defaultFileName + "'");
+						}
+					}
+					else
+					{
+						results.AppendLine("- - - - - Product '" + product.Name + "' [" + product.ProductId + "] " + displayName + " - New File '" + newFileName + "' - - - - -");
+						currentFileName = newFileName;
+						property.SetValue(product, newFileName);
+						hasDbChanges = true;
+					}
+				}
+				else
+				{
+					if (verbose)
+					{
+						results.AppendLine("OK Product '" + product.Name + "' [" + product.ProductId + "] " + displayName + " - Ignoring Blank file link because searchForFileIfBlank = false");
+					}
+				}
+			}
+			return results.ToString();
+		}
+
+
+		public static string SyncImageFile(this Product product, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			string defaultFileName = product.UrlName + "_Image";
+			return product.SyncCatalogFile(model => model.ImageName, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SyncDigitalDownloadFile(this Product product, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			string defaultFileName = product.UrlName + "_DigitalDownload";
+			return product.SyncDigitalDownloadFile(model => model.DigitalDownloadFileName, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SyncSampleAudioFile(this Product product, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			string defaultFileName = product.UrlName + "_SampleAudio";
+			return product.SyncCatalogFile(model => model.SampleAudioFileName, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SyncSampleDownloadFile(this Product product, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			string defaultFileName = product.UrlName + "_SampleDownload";
+			return product.SyncCatalogFile(model => model.SampleDownloadFileName, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SyncSampleImageFile(this Product product, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			string defaultFileName = product.UrlName + "_SampleImage";
+			return product.SyncCatalogFile(model => model.SampleImageFileName, defaultFileName, eraseFileNameIfNotFound, searchForFileIfBlank, preview, verbose, applicationPath, routeData, server, out hasDbChanges);
+		}
+
+		public static string SummaryCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.SummaryCaption))
+			{
+				return product.SummaryCaption;
+			}
+			return product.Category.DefaultSummaryCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string TopDescriptionCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.TopDescriptionCaption))
+			{
+				return product.TopDescriptionCaption;
+			}
+			return product.Category.DefaultTopDescriptionCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string BottomDescriptionCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.BottomDescriptionCaption))
+			{
+				return product.BottomDescriptionCaption;
+			}
+			return product.Category.DefaultBottomDescriptionCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string SampleImageCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.SampleImageCaption))
+			{
+				return product.SampleImageCaption;
+			}
+			return product.Category.DefaultSampleImageCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string SampleDownloadCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.SampleDownloadCaption))
+			{
+				return product.SampleDownloadCaption;
+			}
+			return product.Category.DefaultSampleDownloadCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string SampleAudioCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			if (!string.IsNullOrEmpty(product.SampleAudioCaption))
+			{
+				return product.SampleAudioCaption;
+			}
+			return product.Category.DefaultSampleAudioCaptionOrSystemDefault(product.Name);
+		}
+
+		public static string DefaultSummaryCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSummaryCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultSummaryCaption + "')";
+				}
+				return category.DefaultSummaryCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Summary')";
+			}
+			return "Summary";
+		}
+
+		public static string DefaultTopDescriptionCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultTopDescriptionCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultTopDescriptionCaption + "')";
+				}
+				return category.DefaultTopDescriptionCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Description for " + productName + "')";
+			}
+			return "Description for " + productName;
+		}
+
+		public static string DefaultBottomDescriptionCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultBottomDescriptionCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultBottomDescriptionCaption + "')";
+				}
+				return category.DefaultBottomDescriptionCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Details for " + productName + "')";
+			}
+			return "Details for " + productName;
+		}
+
+		public static string DefaultSampleImageCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleImageCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultSampleImageCaption + "')";
+				}
+				return category.DefaultSampleImageCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Image for " + productName + "')";
+			}
+			return "Sample Image for " + productName;
+		}
+
+		public static string DefaultSampleDownloadCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleDownloadCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultSampleDownloadCaption + "')";
+				}
+				return category.DefaultSampleDownloadCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Download for " + productName + "')";
+			}
+			return "Sample Download for " + productName;
+		}
+
+		public static string DefaultSampleAudioCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleAudioCaption)))
+			{
+				if (wrapForAdmin)
+				{
+					return "(Category Default: '" + category.DefaultSampleAudioCaption + "')";
+				}
+				return category.DefaultSampleAudioCaption;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Audio for " + productName + "')";
+			}
+			return "Sample Audio for " + productName;
 		}
 	}
 }

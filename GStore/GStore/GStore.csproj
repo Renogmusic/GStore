@@ -249,6 +249,7 @@
     <Compile Include="Areas\CatalogAdmin\Controllers\CatalogAdminController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\CatalogAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\DigitalDownloadFileError.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\ProductEditAdminViewModel.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\CategoryEditAdminViewModel.cs" />
     <Compile Include="Areas\OrderAdmin\Controllers\GiftCardAdminController.cs" />
@@ -468,7 +469,6 @@
     <Content Include="Content\bootstrap\mixins.min.css">
       <DependentUpon>mixins.css</DependentUpon>
     </Content>
-    <Content Include="Content\Clients\SampleClient\CatalogContent\sample.mp3" />
     <Content Include="Content\Clients\SampleClient\Images\Categories\songs.png" />
     <Content Include="Content\Clients\SampleClient\Images\Products\sample.png" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
@@ -1520,6 +1520,15 @@
     <Content Include="Areas\CatalogAdmin\Views\CatalogAdmin\DisplayTemplates\ProductCategory.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\CatalogAdmin\DisplayTemplates\Product.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\ProductCategoryWithProductsLink.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ProductCategoryFileInfo.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\_DetailsPartial.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\_EditPartial.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\_DetailsPartial.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\_EditPartial.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Html.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Text.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\Theme.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\DisplayTemplates\Theme.cshtml" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1997,6 +2006,14 @@
     <Content Include="Views\Page\Page Simple 3x3 With Carousel.cshtml" />
     <Content Include="Views\Catalog\ViewProduct.cshtml" />
     <Content Include="Views\Catalog\_ViewCategory_Default_Partial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Theme.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldTimeZone.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldTimeZoneFieldOnly.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldProductDigitalDownloadFile.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ProductCatalogFileInfo.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ProductDigitalDownloadFileInfo.cshtml" />
+    <None Include="Views\Shared\EditorTemplates\FieldProductCategoryFile.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldProductCatalogFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

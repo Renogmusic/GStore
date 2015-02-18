@@ -48,7 +48,9 @@ namespace GStore.Controllers.BaseClass
 		public ActionResult HtmlFile(string path)
 		{
 			this._logActionsAsPageViews = true;
-			string fullFilePath = ChooseFilePath(CurrentStoreFrontOrThrow, "/Pages/" + path, Request.ApplicationPath);
+			StoreFront storeFront = CurrentStoreFrontOrThrow;
+
+			string fullFilePath = storeFront.ChooseFilePath(storeFront.Client, "/Pages/" + path, Request.ApplicationPath, Server);
 			if (fullFilePath == null)
 			{
 				return HttpNotFound("HTML File not Found for '" + path + "'");

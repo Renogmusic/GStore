@@ -34,7 +34,7 @@ namespace GStore.Models.ViewModels
 
 			this.StoreFront = (storeFrontConfig == null ? null : storeFrontConfig.StoreFront);
 			this.StoreFrontConfig = storeFrontConfig;
-			this.CategoryTree = this.StoreFront.CategoryTreeWhereActive(isRegistered);
+			this.CategoryTree = this.StoreFront.CategoryTreeWhereActiveForNavBar(isRegistered);
 			this.NavBarItemTree = this.StoreFront.NavBarTreeWhereActive(isRegistered);
 			this.UserProfile = userProfile;
 

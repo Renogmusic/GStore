@@ -188,18 +188,17 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			string storeFrontRootFolder = newConfig.StoreFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
 
 			string clientFrontFolderVirtualPath = storeFront.ClientVirtualDirectoryToMap(Request.ApplicationPath);
-			string storeFrontFolderVirtualPath = storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath);
+			string storeFrontFolderVirtualPath = newConfig.StoreFrontVirtualDirectoryToMapThisConfig(Request.ApplicationPath);
 
 			if (!System.IO.Directory.Exists(Server.MapPath(clientFrontFolderVirtualPath)))
 			{
-				SysAdminActivationExtensions.CreateClientFolders(Server.MapPath(storeFront.ClientVirtualDirectoryToMap(Request.ApplicationPath)));
+				storeFront.Client.CreateClientFolders(Request.ApplicationPath, Server);
 				AddUserMessage("Client Folders Created.", "Client Folders Created for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] in '" + clientFrontFolderVirtualPath.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
 			}
 
-
 			if (!System.IO.Directory.Exists(Server.MapPath(storeFrontFolderVirtualPath)))
 			{
-				SysAdminActivationExtensions.CreateStoreFrontFolders(Server.MapPath(storeFrontFolderVirtualPath));
+				newConfig.CreateStoreFrontFolders(Request.ApplicationPath, Server);
 				AddUserMessage("Store Front Folders Created.", "Store Front Folders Created for New Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] in '" + storeFrontFolderVirtualPath.ToHtml() + "'.", AppHtmlHelpers.UserMessageType.Success);
 			}
 
@@ -237,6 +236,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = GStoreDb.StoreFronts.Update(storeFront);
 				GStoreDb.SaveChanges();
+				storeFront.CurrentConfigOrAny().CreateStoreFrontFolders(Request.ApplicationPath, Server);
 				AddUserMessage("Store Front Updated", "Store Front [" + storeFront.StoreFrontId + "] for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was updated successfully!", AppHtmlHelpers.UserMessageType.Success);
 				return RedirectToAction("Index");
 			}

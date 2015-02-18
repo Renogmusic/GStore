@@ -380,18 +380,18 @@ namespace GStore.Data
 			productCategory.Client = storeFront.Client;
 			productCategory.StoreFrontId = storeFront.StoreFrontId;
 			productCategory.StoreFront = storeFront;
-			if (storeFront.NavBarItems == null || storeFront.NavBarItems.Count == 0)
+			if (storeFront.ProductCategories == null || storeFront.ProductCategories.Count == 0)
 			{
 				productCategory.Name = "New Category";
 				productCategory.Order = 100;
 			}
 			else
 			{
-				productCategory.Order = (storeFront.NavBarItems.Max(nb => nb.Order) + 10);
+				productCategory.Order = (storeFront.ProductCategories.Max(nb => nb.Order) + 10);
 				productCategory.Name = "New Category " + productCategory.Order;
 			}
 			productCategory.UrlName = productCategory.Name.Replace(' ', '_');
-			productCategory.ImageName = productCategory.UrlName + ".png";
+			productCategory.ImageName = null;
 			productCategory.ForRegisteredOnly = false;
 			productCategory.UseDividerAfterOnMenu = true;
 			productCategory.IsPending = false;
@@ -421,7 +421,7 @@ namespace GStore.Data
 				product.Name = "New Product " + product.Order;
 			}
 			product.UrlName = product.Name.Replace(' ', '_');
-			product.ImageName = product.UrlName + ".png";
+			product.ImageName = null;
 			product.MaxQuantityPerOrder = 0;
 			product.MetaDescription = product.Name;
 			product.MetaKeywords = product.Name;
@@ -670,6 +670,79 @@ namespace GStore.Data
 			items.AddRange(navBarItems.ToSelectList(selectedNavBarItemId));
 
 			return items;
+		}
+
+		public static void CreateClientFolders(this Client client, string applicationPath, HttpServerUtilityBase server)
+		{
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			string path = server.MapPath(client.ClientVirtualDirectoryToMap(applicationPath));
+			CreateClientFolders(path);
+		}
+
+		public static void CreateStoreFrontFolders(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
+		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			string path = server.MapPath(storeFrontConfig.StoreFrontVirtualDirectoryToMapThisConfig(applicationPath));
+			CreateStoreFrontFolders(path);
+		}
+
+		public static void CreateClientFolders(string basePath)
+		{
+			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Categories");
+			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Products");
+			CreateFolderIfNotExists(basePath + "\\DigitalDownload\\Products");
+			CreateFolderIfNotExists(basePath + "\\ErrorPages");
+			CreateFolderIfNotExists(basePath + "\\Fonts");
+			CreateFolderIfNotExists(basePath + "\\Images");
+			CreateFolderIfNotExists(basePath + "\\Pages");
+			CreateFolderIfNotExists(basePath + "\\Scripts");
+			CreateFolderIfNotExists(basePath + "\\StoreFronts");
+			CreateFolderIfNotExists(basePath + "\\Styles");
+		}
+
+		/// <summary>
+		/// Creates storefront folders if they don't exist. Uses physical file path as BasePath parameter
+		/// </summary>
+		/// <param name="basePath"></param>
+		public static void CreateStoreFrontFolders(string basePath)
+		{
+			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Categories");
+			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Products");
+			CreateFolderIfNotExists(basePath + "\\DigitalDownload\\Products");
+			CreateFolderIfNotExists(basePath + "\\ErrorPages");
+			CreateFolderIfNotExists(basePath + "\\Fonts");
+			CreateFolderIfNotExists(basePath + "\\Forms");
+			CreateFolderIfNotExists(basePath + "\\Images");
+			CreateFolderIfNotExists(basePath + "\\Pages");
+			CreateFolderIfNotExists(basePath + "\\Scripts");
+			CreateFolderIfNotExists(basePath + "\\Styles");
+		}
+
+		/// <summary>
+		/// Creates a folder if it does not exist
+		/// </summary>
+		/// <param name="folder"></param>
+		public static void CreateFolderIfNotExists(string folderPath)
+		{
+			if (!System.IO.Directory.Exists(folderPath))
+			{
+				System.IO.Directory.CreateDirectory(folderPath);
+				System.Diagnostics.Trace.WriteLine("--File System: Created folder: " + folderPath);
+			}
 		}
 
 	}

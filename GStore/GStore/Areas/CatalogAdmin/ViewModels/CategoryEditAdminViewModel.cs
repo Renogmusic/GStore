@@ -82,9 +82,13 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 			this.UseDividerAfterOnMenu = productCategory.UseDividerAfterOnMenu;
 			this.UseDividerBeforeOnMenu = productCategory.UseDividerBeforeOnMenu;
 			this.ShowInMenu = productCategory.ShowInMenu;
-			this.ShowIfEmpty = productCategory.ShowIfEmpty;
+			this.HideInMenuIfEmpty = productCategory.HideInMenuIfEmpty;
+			this.ShowInCatalogIfEmpty = productCategory.ShowInCatalogIfEmpty;
+			this.DisplayForDirectLinks = productCategory.DisplayForDirectLinks;
 			this.AllowChildCategoriesInMenu = productCategory.AllowChildCategoriesInMenu;
 			this.ImageName = productCategory.ImageName;
+			this.ThemeId = productCategory.ThemeId;
+			this.Theme = productCategory.Theme;
 			this.CategoryDetailTemplate = productCategory.CategoryDetailTemplate;
 			this.ProductListTemplate = productCategory.ProductListTemplate;
 			this.ProductDetailTemplate = productCategory.ProductDetailTemplate;
@@ -93,6 +97,12 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 			this.ProductHeaderHtml = productCategory.ProductHeaderHtml;
 			this.ProductFooterHtml = productCategory.ProductFooterHtml;
 			this.NoProductsMessageHtml = productCategory.NoProductsMessageHtml;
+			this.DefaultSummaryCaption = productCategory.DefaultSummaryCaption;
+			this.DefaultTopDescriptionCaption = productCategory.DefaultTopDescriptionCaption;
+			this.DefaultBottomDescriptionCaption = productCategory.DefaultBottomDescriptionCaption;
+			this.DefaultSampleImageCaption = productCategory.DefaultSampleImageCaption;
+			this.DefaultSampleAudioCaption = productCategory.DefaultSampleAudioCaption;
+			this.DefaultSampleDownloadCaption = productCategory.DefaultSampleDownloadCaption;
 		}
 
 		public void FillListsIfEmpty(Client client, StoreFront storeFront)
@@ -130,7 +140,7 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		public int ProductCategoryId { get; set; }
 
 		[Editable(false)]
-		[Display(Name = "Category Item", Description = "")]
+		[Display(Name = "Category")]
 		public ProductCategory ProductCategory { get; protected set; }
 
 		[Display(Name = "For Registered Users Only", Description = "Check this box to make this Category appear only for registered users")]
@@ -140,10 +150,12 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		public bool ForAnonymousOnly { get; set; }
 
 		[Required]
+		[DataType(DataType.Text)]
 		[Display(Name = "Name", Description = "Name of the category. This name appears on the menu as text.")]
 		public string Name { get; set; }
 
 		[Required]
+		[DataType(DataType.Text)]
 		[Display(Name = "URL Name", Description = "Unique URL name of the category. This is the name as shown in the web browser address bar and links.")]
 		public string UrlName { get; set; }
 
@@ -163,14 +175,27 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		[Display(Name = "Add Divider After", Description = "Check this box to add a divider after this item in a dropdown menu.")]
 		public bool UseDividerBeforeOnMenu { get; set; }
 
-		[Display(Name = "Show In Menu", Description = "Check this box to show this category in the top menu.")]
+		[Display(Name = "Show In Menu", Description = "Check this box to show this category in the top menu. If unchecked, this category will not show in the top menu.")]
 		public bool ShowInMenu { get; set; }
 
+		[Display(Name = "Hide in Menu if Empty", Description = "Check this box to Hide this category in the menu when it is empty (has no active products). Uncheck this box to show this category in the top menu even if it has no active products (Show In Menu must be checked also for it to show).")]
+		public bool HideInMenuIfEmpty { get; set; }
+
+		[Display(Name = "Show in Catalog If Empty", Description="Check this box to show this category in the catalog even if it has no active products.")]
+		public bool ShowInCatalogIfEmpty { get; set; }
+
+		[Display(Name = "Always Display Details for Direct Links", Description="Check this box to have this category always show up when it is linked to directly from outside of the site (recommended).")]
+		public bool DisplayForDirectLinks { get; set; }
+
+		[DataType(DataType.Text)]
 		[Display(Name = "Image Name", Description = "Name of the image file to use for this category.")]
 		public string ImageName { get; set; }
 
-		[Display(Name = "Show If Empty", Description = "Check this box to show this category even if it has no products. Uncheck this box to only show this category when it has active products.")]
-		public bool ShowIfEmpty { get; set; }
+		[Display(Name = "Theme Id", Description = "Theme for Category Details page and products that do not have a theme defined.\nLeave this blank to use the store catalog theme")]
+		public int? ThemeId { get; set; }
+
+		[Display(Name = "Theme", Description = "Theme for Category Details page and products that do not have a theme defined. Leave blank to use the store catalog theme")]
+		public Theme Theme { get; protected set; }
 
 		[Display(Name = "Show Children in Menu", Description = "Check this box to show child categories in the menu, uncheck to not show child categories.")]
 		public bool AllowChildCategoriesInMenu { get; set; }
@@ -212,6 +237,29 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		[Display(Name = "No Products Message Html", Description = "Message shown when there are no products in this category.")]
 		public string NoProductsMessageHtml { get; set; }
 
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Summary Caption", Description="Default Summary caption for products that do not have one defined.\nLeave this blank to use the system default 'Summary'\nExample: 'Summary' or 'Overview'")]
+		public string DefaultSummaryCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Top Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Description for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string DefaultTopDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Bottom Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Details for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string DefaultBottomDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Image Caption", Description = "Default Sample Image caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Image for [product name]'.\nExample: 'Sample Image' or 'Photo'")]
+		public string DefaultSampleImageCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Audio Caption", Description = "Default Sample Audio caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Audio for [product name]'.\nExample: 'Sample Sound' or 'Music'")]
+		public string DefaultSampleAudioCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Download File Caption", Description = "Default Sample Download File caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Download for [product name]'.\nExample: 'Sample File' or 'Demo File'")]
+		public string DefaultSampleDownloadCaption { get; set; }
 
 		#region StoreFrontRecord fields
 
@@ -265,9 +313,11 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		public int UpdatedBy_UserProfileId { get; protected set; }
 
 		[Editable(false)]
+		[Display(Name = "Is Active Direct", Description = "If checked, this record is currently active. If unchecked, this record is NOT active.")]
 		public bool IsActiveDirect { get; set; }
 
 		[Editable(false)]
+		[Display(Name = "Is Active Bubble", Description = "If checked, this record and its related records are currently active. If unchecked, this record or its parent records are NOT active.")]
 		public bool IsActiveBubble { get; set; }
 
 		#endregion

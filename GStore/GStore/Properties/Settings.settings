@@ -142,5 +142,11 @@
     <Setting Name="AppDefaultPageTemplateName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Welcome Template</Value>
     </Setting>
+    <Setting Name="AppDefaultTimeZoneIdX" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Pacific Standard Time</Value>
+    </Setting>
+    <Setting Name="AppDefaultTimeZoneId" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">US Mountain Standard Time</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

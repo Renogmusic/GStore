@@ -5,10 +5,6 @@
 	{
 		throw new ApplicationException("Model.CurrentCategoryOrNull is null, set in controller for this page");
 	}
-	if (Model.CurrentCategoryNodeOrNull == null)
-	{
-		throw new ApplicationException("Model.CurrentCategoryNodeOrNull is null, problem finding category in tree. Check view CatalogViewModel.");
-	}
 
 	ProductCategory category = Model.CurrentCategoryOrNull;
 	ViewBag.Title = category.Name;

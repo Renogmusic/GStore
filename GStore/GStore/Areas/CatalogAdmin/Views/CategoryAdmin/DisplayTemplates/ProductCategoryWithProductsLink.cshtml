@@ -19,7 +19,10 @@
 			{
 				@: [INACTIVE]
 			}
-			@:&nbsp;&nbsp;
+			@Html.ActionLink("View Category in Site", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-sm btn-default" })
+
+			@:<br/>
+
 			if (Html.UserHasPermission(GStoreAction.Products_Manager))
 			{
 				@Html.ActionLink("Products:", "Manager", "ProductAdmin", new { ProductCategoryId = Model.ProductCategoryId }, null)
@@ -29,9 +32,6 @@
 			{
 				@:Products: @(Model.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Products.Count) Total
 			}
-			<br/>
-			@Html.ActionLink("View Category in Site", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
-
 		@:</span>
 	}
 }

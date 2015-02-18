@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using GStore.Data;
+using GStore.Models;
 
 namespace GStore.Controllers
 {
@@ -70,7 +71,7 @@ namespace GStore.Controllers
 				return HttpForbidden("Directory Listing Denied: /");
 			}
 
-			Models.StoreFront storeFront = null;
+			StoreFront storeFront = null;
 			try
 			{
 				storeFront = base.CurrentStoreFrontOrThrow;
@@ -98,12 +99,18 @@ namespace GStore.Controllers
 				}
 			}
 
-			string fullPath = ChooseFilePath(storeFront, path, Request.ApplicationPath);
+			Client client = null;
+			if (storeFront != null)
+			{
+				client = storeFront.Client;
+			}
+
+			string fullPath = storeFront.ChooseFilePath(client, path, Request.ApplicationPath, Server);
 
 			if (string.IsNullOrEmpty(fullPath) && isImage)
 			{
 				path = "Images/NotFound.png";
-				fullPath = ChooseFilePath(storeFront, path, Request.ApplicationPath);
+				fullPath = storeFront.ChooseFilePath(client, path, Request.ApplicationPath, Server);
 			}
 
 			if (string.IsNullOrEmpty(fullPath))

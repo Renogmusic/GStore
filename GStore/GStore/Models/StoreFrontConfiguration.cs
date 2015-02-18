@@ -36,6 +36,11 @@ namespace GStore.Models
 		[MaxLength(200)]
 		public string PublicUrl { get; set; }
 
+		[Required]
+		[Display(Name = "Time Zone Id")]
+		[MaxLength(50)]
+		public string TimeZoneId { get; set; }
+
 		[AllowHtml]
 		[Display(Name = "Footer Html")]
 		[MaxLength(250)]
@@ -125,10 +130,10 @@ namespace GStore.Models
 		public virtual Theme DefaultNewPageTheme { get; set; }
 
 		[Required]
-		[Display(Name = "Catalog Theme Id")]
+		[Display(Name = "Store Catalog Theme Id")]
 		public int CatalogThemeId { get; set; }
 
-		[Display(Name = "Catalog Theme")]
+		[Display(Name = "Store Catalog Theme")]
 		[ForeignKey("CatalogThemeId")]
 		public virtual Theme CatalogTheme { get; set; }
 

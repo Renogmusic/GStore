@@ -17,7 +17,7 @@
 			<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThis link to view a product does not do anything.\nIt is only here to give you an idea how your cart looks.');">@Model.Name</a>
 		</div>
 		<div class="row">
-			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, true)))" />
+			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, ViewContext.RouteData, true)))" />
 		</div>
 	}
 	else
@@ -26,7 +26,7 @@
 			@(Html.ActionLink(Model.Name, "ViewProductByName", "Catalog", new { urlName = Model.UrlName }, null))
 		</div>
 		<div class="row">
-			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, true)))" />
+			<img src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, ViewContext.RouteData, true)))" />
 		</div>
 	}
 }

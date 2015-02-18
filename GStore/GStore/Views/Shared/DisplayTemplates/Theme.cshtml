@@ -1,0 +1,12 @@
+﻿@model GStore.Models.Theme
+
+@{
+	if (Model == null)
+	{
+		@:(default theme)
+	}
+	else
+	{
+		@:'@(Model.Name)' [@(Model.ThemeId)]
+	}
+}

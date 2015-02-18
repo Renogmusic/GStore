@@ -3,10 +3,12 @@
 @{
 
 	UserProfile profile = Html.CurrentUserProfile(true);
-	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Create);
-	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit);
-	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Delete);
-	ViewData.Add("ReturnToFrontEnd", true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_Delete);
+	bool userCanSyncImages = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_SyncImages);
+	
+	ViewData.Add("ReturnToFrontEnd", Model.ReturnToFrontEnd);
 }
 
 <script>
@@ -106,23 +108,28 @@
 		Category Manager
 	</h2>
 </div>
-@{
-	if (userCanCreate)
-	{
-		<div class="row">
-			<div class="col-xs-12">
-				@if (Model.ReturnToFrontEnd)
-				{
-					@Html.ActionLink("OK / Cancel", "Index", "Catalog", new { area = "" }, new { @class = "btn btn-default" })
-					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+<div class="row">
+	<div class="col-xs-12">
+		@if (Model.ReturnToFrontEnd)
+		{
+			@Html.ActionLink("OK / Cancel", "Index", "Catalog", new { area = "" }, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+		}
+				
+		@if (userCanCreate)
+		{
+			@Html.ActionLink("Create a New Product Category", "Create", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+		}
+		@if (userCanSyncImages)
+		{
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Sync Images (preview)", "SyncImages", new { eraseImageFileNameIfNotFound = true, searchForImageIfImageFileNameIsBlank = true, preview = true, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Sync Images Now!", "SyncImages", new { eraseImageFileNameIfNotFound = true, searchForImageIfImageFileNameIsBlank = true, preview = false, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+		}
 
-				}
-				@Html.ActionLink("Create a New Product Category", "Create", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
-			</div>
-		</div>
-	}
-}
-
+	</div>
+</div>
 @{
 	if (Model.ProductCategories.Count() == 0)
 	{

@@ -329,24 +329,6 @@
 	display: block;
 }
 
-.CategoryListImage {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	min-height: 100px;
-	min-width: 100px;
-}
-
-.CategoryListImageLink {
-}
-
-.CategoryListTextLink {
-}
-
-.CategoryListContainer {
-	text-align: center;
-}
-
 body {
 	text-align: center;
 	padding-top: 60px;
@@ -579,3 +561,50 @@ dd label.help-label-top, label.help-label-top {
 .CategoryPath{
 	padding-bottom: 2em;
 }
+
+/*start of themable defaults */
+.ViewProductImage
+{
+	width: auto;
+	height: auto;
+	max-height: 300px;
+}
+.ViewProductSampleImage
+{
+	width: auto;
+	height: auto;
+	max-height: 300px;
+}
+
+
+.CategoryListImage
+{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 300px;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+.CategoryListChildImage
+{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.CategoryListImageLink {
+}
+
+.CategoryListTextLink {
+}
+
+.CategoryListContainer {
+	text-align: center;
+}
+
+/* end of themable defaults*/

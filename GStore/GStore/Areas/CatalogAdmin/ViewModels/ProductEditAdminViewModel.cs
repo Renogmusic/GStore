@@ -81,12 +81,15 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 			this.UpdatedBy = product.UpdatedBy;
 			this.UpdatedBy_UserProfileId = product.UpdatedBy_UserProfileId;
 
-			this.DigitalDownload = product.DigitalDownload;
 			this.MaxQuantityPerOrder = product.MaxQuantityPerOrder;
 			this.MetaDescription = product.MetaDescription;
 			this.MetaKeywords = product.MetaKeywords;
 			this.BaseListPrice = product.BaseListPrice;
 			this.BaseUnitPrice = product.BaseUnitPrice;
+			this.Theme = product.Theme;
+			this.ThemeId = product.ThemeId;
+			this.ProductDetailTemplate = product.ProductDetailTemplate;
+			this.DigitalDownload = product.DigitalDownload;
 			this.DigitalDownloadFileName = product.DigitalDownloadFileName;
 			this.SampleAudioCaption = product.SampleAudioCaption;
 			this.SampleAudioFileName = product.SampleAudioFileName;
@@ -94,8 +97,12 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 			this.SampleDownloadFileName = product.SampleDownloadFileName;
 			this.SampleImageCaption = product.SampleImageCaption;
 			this.SampleImageFileName = product.SampleImageFileName;
+			this.SummaryCaption = product.SummaryCaption;
 			this.SummaryHtml = product.SummaryHtml;
-			this.DescriptionHtml = product.DescriptionHtml;
+			this.TopDescriptionCaption = product.TopDescriptionCaption;
+			this.TopDescriptionHtml = product.TopDescriptionHtml;
+			this.BottomDescriptionCaption = product.BottomDescriptionCaption;
+			this.BottomDescriptionHtml = product.BottomDescriptionHtml;
 			this.FooterHtml = product.FooterHtml;
 		}
 
@@ -136,25 +143,28 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		[Display(Name = "Product", Description = "")]
 		public Product Product { get; protected set; }
 
-		[Display(Name = "For Registered Users Only", Description = "Check this box to make this Category appear only for registered users")]
+		[Display(Name = "For Registered Users Only", Description = "Check this box to make this Product appear only for registered users")]
 		public bool ForRegisteredOnly { get; set; }
 
-		[Display(Name = "For Anonymous Users Only", Description = "Check this box to make this Category appear only for anonymous users")]
+		[Display(Name = "For Anonymous Users Only", Description = "Check this box to make this Product appear only for anonymous users")]
 		public bool ForAnonymousOnly { get; set; }
 
 		[Required]
-		[Display(Name = "Name", Description = "Name of the category. This name appears on the menu as text.")]
+		[DataType(DataType.Text)]
+		[Display(Name = "Name", Description = "Name of the Product. This name appears on the menu as text.")]
 		public string Name { get; set; }
 
 		[Required]
-		[Display(Name = "URL Name", Description = "Unique URL name of the category. This is the name as shown in the web browser address bar and links.")]
+		[DataType(DataType.Text)]
+		[Display(Name = "URL Name", Description = "Unique URL name of the Product. This is the name as shown in the web browser address bar and links.")]
 		public string UrlName { get; set; }
 
 		[Required]
-		[Display(Name = "Order", Description = "Index in the menu for this item. \nUse this to move a Category up or down on the list.")]
+		[Display(Name = "Order", Description = "Index in the menu for this item. \nUse this to move a Product up or down on the list.")]
 		public int Order { get; set; }
 
-		[Display(Name = "Image Name", Description = "Name of the image file to use for this category.")]
+		[DataType(DataType.Text)]
+		[Display(Name = "Product Main Image", Description = "Name of the image file to use for this Product.")]
 		public string ImageName { get; set; }
 
 		[Display(Name = "Product Category Id", Description = "Category for this product")]
@@ -164,55 +174,96 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		[Display(Name = "Category", Description = "Category for this product")]
 		public ProductCategory Category { get; protected set; }
 
-		[Display(Name = "Digital Download")]
-		public bool DigitalDownload { get; set; }
-
-		[Display(Name = "Max Quantity Per Order or 0 for no limit")]
+		[Required]
+		[Display(Name = "Max Quantity Per Order or 0 for no limit", Description="Maximum number of this product that can be ordered in one order, or 0 for no limit.")]
 		public int MaxQuantityPerOrder { get; set; }
 
-		[Display(Name = "Meta Tag Description")]
+		[DataType(DataType.Text)]
+		[Display(Name = "Meta Tag Description", Description = "META Description tag for search engines. Description tag to describe the page to search engines.")]
 		public string MetaDescription { get; set; }
 
-		[Display(Name = "Meta Tag Keywords")]
+		[DataType(DataType.Text)]
+		[Display(Name = "Meta Tag Keywords", Description = "META Keywords tags for search engines. Keywords separated by a space for search engines.")]
 		public string MetaKeywords { get; set; }
 
 		[Required]
+		[Display(Name = "Unit Price", Description="Unit price for 1 of this product.")]
 		public decimal BaseUnitPrice { get; set; }
 
 		[Required]
+		[Display(Name = "List Unit Price", Description="List price for 1 of this product (may be more than the unit price actually charged.")]
 		public decimal BaseListPrice { get; set; }
 
+		[DataType(DataType.Text)]
+		[Display(Name = "Summary Caption", Description = "Caption for the Summary field of the product display page.\nLeave this field blank to use the Category default Summary Caption.\nExample: 'Summary' or 'Overview'")]
+		public string SummaryCaption { get; set; }
+
 		[AllowHtml]
 		[DataType(DataType.Html)]
+		[Display(Name = "Summary Html", Description="Summary description of this product.")]
 		public string SummaryHtml { get; set; }
 
-		[AllowHtml]
-		[DataType(DataType.Html)]
-		public string DescriptionHtml { get; set; }
+		[DataType(DataType.Text)]
+		[Display(Name = "Top Description Caption", Description = "Caption for the Top Description field of the product display page.\nLeave this field blank to use the Category default Top Description Caption.\nExample: 'Description' or 'Details'")]
+		public string TopDescriptionCaption { get; set; }
 
 		[AllowHtml]
 		[DataType(DataType.Html)]
-		public string FooterHtml { get; set; }
+		[Display(Name = "Top Description Html", Description = "Top Description for this product.")]
+		public string TopDescriptionHtml { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Bottom Description Caption", Description = "Caption for the Bottom Description field of the product display page.\nLeave this field blank to use the Category default Bottom Description Caption.\nExample: 'Description' or 'Details'")]
+		public string BottomDescriptionCaption { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Bottom Description Html", Description = "Bottom Description for this product.")]
+		public string BottomDescriptionHtml { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Footer Html", Description = "Footer information shown at the bottom of the product details page.")]
+		public string FooterHtml { get; set; }
+
+		[Display(Name = "Theme", Description = "Theme for Product Details page, or blank to use the category or store catalog theme")]
+		public int? ThemeId { get; set; }
+
+		[Display(Name = "Theme", Description = "Theme for Product Details page, or blank to use the category or store catalog theme")]
+		public Theme Theme { get; protected set; }
+
+		[Display(Name = "Product Details Template", Description = "Template for product details. Is set, this overrides the Details Template set on the category.")]
+		public ProductDetailTemplateEnum? ProductDetailTemplate { get; set; }
+
+		[Display(Name = "Digital Download", Description="Digital Download. Check this box if this product has a digital download when purchased. Be sure to set the Digital Download file name.")]
+		public bool DigitalDownload { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Digital Download File", Description="Digital Download File. If this is a digital download, select the file to send the user when purchased. Be sure to check the Digital Download box as well.")]
 		public string DigitalDownloadFileName { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Image File", Description = "Sample Image File. If you have a sample image for this product, include it here to show it on the product details page.")]
 		public string SampleImageFileName { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Image Caption", Description = "Sample Image Caption. Caption shown under the sample image file.\nLeave this field blank to use the Category default Sample Image Caption.\nExample: Photo of this product.")]
 		public string SampleImageCaption { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Audio File", Description = "Sample Audio File. If you have a sample audio file for this product, include it here to show it on the product details page.")]
 		public string SampleAudioFileName { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Audio Caption", Description = "Sample Audio Caption. Caption shown under the sample audio file.\nLeave this field blank to use the Category default Sample Audio Caption.\nExample: 'Sample recording'")]
 		public string SampleAudioCaption { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Download File", Description = "Sample Download File. If you have a sample download file for this product, include it here to show it on the product details page.")]
 		public string SampleDownloadFileName { get; set; }
 
 		[DataType(DataType.Text)]
+		[Display(Name = "Sample Download Caption", Description = "Sample Download Caption. Caption shown under the sample download file.\nLeave this field blank to use the Category default Sample Download Caption.\nExample: PDF user's guide.")]
 		public string SampleDownloadCaption { get; set; }
 
 
@@ -227,24 +278,24 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		public int ClientId { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created On", Description = "Date and time this Category was created.")]
+		[Display(Name = "Created On", Description = "Date and time this Product was created.")]
 		public DateTime CreateDateTimeUtc { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created By", Description = "The User who created this Category")]
+		[Display(Name = "Created By", Description = "The User who created this Product")]
 		public UserProfile CreatedBy { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Created By User Id", Description = "The User who created this Category")]
+		[Display(Name = "Created By User Id", Description = "The User who created this Product")]
 		public int CreatedBy_UserProfileId { get; protected set; }
 
-		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Category to go INACTIVE on. \nIf this date is in the past, your Category will not show on the page \nExample: 12/31/2199 11:59 PM")]
+		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Product to go INACTIVE on. \nIf this date is in the past, your Product will not show on the page \nExample: 12/31/2199 11:59 PM")]
 		public DateTime EndDateTimeUtc { get; set; }
 
-		[Display(Name = "Inactive", Description = "Check this box to Inactivate a Category immediately. \nIf checked, this Category will not be shown on any pages.")]
+		[Display(Name = "Inactive", Description = "Check this box to Inactivate a Product immediately. \nIf checked, this Product will not be shown on any pages.")]
 		public bool IsPending { get; set; }
 
-		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Category to be ACTIVE on. \nIf this date is in the future, your Category will not show on the page \nExample: 1/1/2000 12:00 PM")]
+		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this Product to be ACTIVE on. \nIf this date is in the future, your Product will not show on the page \nExample: 1/1/2000 12:00 PM")]
 		public DateTime StartDateTimeUtc { get; set; }
 
 		[Editable(false)]
@@ -256,21 +307,23 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 		public int StoreFrontId { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated On", Description = "Date and time this Category was last updated.")]
+		[Display(Name = "Updated On", Description = "Date and time this Product was last updated.")]
 		public DateTime UpdateDateTimeUtc { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated By", Description = "The user that last updated this Category.")]
+		[Display(Name = "Updated By", Description = "The user that last updated this Product.")]
 		public UserProfile UpdatedBy { get; protected set; }
 
 		[Editable(false)]
-		[Display(Name = "Updated By User Id", Description = "The user ID of the user that last updated this Category.")]
+		[Display(Name = "Updated By User Id", Description = "The user ID of the user that last updated this Product.")]
 		public int UpdatedBy_UserProfileId { get; protected set; }
 
 		[Editable(false)]
+		[Display(Name = "Is Active Direct", Description = "If checked, this record is currently active. If unchecked, this record is NOT active.")]
 		public bool IsActiveDirect { get; set; }
 
 		[Editable(false)]
+		[Display(Name = "Is Active Bubble", Description = "If checked, this record and its related records are currently active. If unchecked, this record or its parent records are NOT active.")]
 		public bool IsActiveBubble { get; set; }
 
 		#endregion
@@ -289,6 +342,14 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 				fieldDisplay = this.GetDisplayName("UrlName");
 				result.Add(new ValidationResult(fieldDisplay + " value of '" + this.UrlName + "' is invalid. You cannot use any of the following characters: " + UrlName.InvalidUrlNameCharacters(), new string[] { fieldName }));
 				this.UrlName = this.UrlName.FixUrlName();
+			}
+
+			if (this.DigitalDownload && string.IsNullOrWhiteSpace(this.DigitalDownloadFileName))
+			{
+				string dlCheckboxName = this.GetDisplayName("DigitalDownload");
+				string dlFileName = this.GetDisplayName("DigitalDownloadFileName");
+				
+				result.Add(new ValidationResult(dlFileName + " is required when '" + dlCheckboxName + "' is checked.", new string[] { "DigitalDownloadFileName" }));
 			}
 			return result;
 		}

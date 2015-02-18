@@ -1,0 +1,138 @@
+﻿@model ProductEditAdminViewModel
+@{
+	Tuple<string, int> digitalDownloadInfo = new Tuple<string, int>(Model.DigitalDownloadFileName, Model.ProductId);
+	string defaultTheme = "";
+	if (Model.Category == null || Model.Category.Theme == null)
+	{
+		StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
+		Theme catalogTheme = storeFrontConfig.CatalogTheme;
+		defaultTheme = "Store Catalog Theme: '" + catalogTheme.Name + "[" + catalogTheme.ThemeId + "]";
+	}
+	else
+	{
+		defaultTheme = "Category Theme: '" + Model.Category.Theme.Name + "' [" + Model.Category.ThemeId + "]";
+	}
+}
+<div class="form-horizontal">
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+	@Html.HiddenFor(model => model.ProductId)
+	@Html.EditorFor(model => model.Name, "FieldText")
+	@Html.EditorFor(model => model.UrlName, "FieldText")
+	@Html.EditorFor(model => model.Order, "FieldInt")
+	@Html.EditorFor(model => model.ProductCategoryId, "FieldProductCategoryId")
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Theme</label>
+		<div class="col-md-7 title-align">
+			@Html.DisplayFor(model => model.Category.Theme)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.ThemeId, "FieldThemeIdNullable", new { optionLabel = "(Default - " + defaultTheme + ")" })
+	@Html.EditorFor(model => model.BaseListPrice, "FieldCurrency")
+	@Html.EditorFor(model => model.BaseUnitPrice, "FieldCurrency")
+	@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.DigitalDownload, "FieldCheckbox")
+
+	@Html.EditorFor(model => model.ImageName, "FieldProductCatalogFile")
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.ImageName)) Preview</label>
+		<div class="col-md-7 title-align">
+			@Html.DisplayFor(model => model.ImageName, "ProductCatalogFileInfo")
+		</div>
+	</div>
+
+	@Html.EditorFor(model => model.DigitalDownloadFileName, "FieldProductDigitalDownloadFile")
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.DigitalDownloadFileName)) Preview</label>
+		<div class="col-md-7 title-align">
+			@{
+			}
+			@Html.DisplayFor(model => digitalDownloadInfo, "ProductDigitalDownloadFileInfo")
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Audio Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultSampleAudioCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.SampleAudioCaption, "FieldText")
+	@Html.EditorFor(model => model.SampleAudioFileName, "FieldProductCatalogFile")
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleAudioFileName)) Preview</label>
+		<div class="col-md-7 title-align">
+			@Html.DisplayFor(model => model.SampleAudioFileName, "ProductCatalogFileInfo")
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Download Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultSampleDownloadCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.SampleDownloadCaption, "FieldText")
+	@Html.EditorFor(model => model.SampleDownloadFileName, "FieldProductCatalogFile")
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleDownloadFileName)) Preview</label>
+		<div class="col-md-7 title-align">
+			@Html.DisplayFor(model => model.SampleDownloadFileName, "ProductCatalogFileInfo")
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Image Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultSampleImageCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.SampleImageCaption, "FieldText")
+	@Html.EditorFor(model => model.SampleImageFileName, "FieldProductCatalogFile")
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleImageFileName)) Preview</label>
+		<div class="col-md-7 title-align">
+			@Html.DisplayFor(model => model.SampleImageFileName, "ProductCatalogFileInfo")
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Summary Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultSummaryCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.SummaryCaption, "FieldText")
+	@Html.EditorFor(model => model.SummaryHtml, "FieldHtml")
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Top Description Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.TopDescriptionCaption, "FieldText")
+	@Html.EditorFor(model => model.TopDescriptionHtml, "FieldHtml")
+
+
+	<div class="form-group">
+		<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Bottom Description Caption</label>
+		<div class="col-md-7 title-align">
+			@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(Model.Name)
+		</div>
+	</div>
+	@Html.EditorFor(model => model.BottomDescriptionCaption, "FieldText")
+	@Html.EditorFor(model => model.BottomDescriptionHtml, "FieldHtml")
+	@Html.EditorFor(model => model.FooterHtml, "FieldHtml")
+
+	@Html.EditorFor(model => model.MaxQuantityPerOrder, "FieldInt")
+	@Html.EditorFor(model => model.MetaDescription, "FieldText")
+	@Html.EditorFor(model => model.MetaKeywords, "FieldText")
+	@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+	@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+	@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+
+</div>
+

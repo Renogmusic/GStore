@@ -469,8 +469,8 @@
 		<div class="row form-group text-left-md text-left-lg">
 			<h3 class="col-md-offset-3 col-md-9 bg-success">Activation</h3>
 
+			<p class="col-md-offset-3 col-md-9">Store Local Time: @(DateTime.UtcNow.ToStoreDateTime(Html).ToString())</p>
 			<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
-			<p class="col-md-offset-3 col-md-9">Server Local Time: @(DateTime.Now.ToString())</p>
 
 			<div class="form-group">
 				<label class="text-right control-label col-md-3">Status</label>

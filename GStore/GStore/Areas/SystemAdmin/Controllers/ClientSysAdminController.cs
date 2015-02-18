@@ -95,7 +95,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 				string clientFolderVirtualPath = client.ClientVirtualDirectoryToMap(Request.ApplicationPath);
 				try
 				{
-					SysAdminActivationExtensions.CreateClientFolders(Server.MapPath(clientFolderVirtualPath));
+					client.CreateClientFolders(Request.ApplicationPath, Server);
 					AddUserMessage("Client Folders Created", "Client Folders were created in '" + clientFolderVirtualPath.ToHtml(), AppHtmlHelpers.UserMessageType.Success);
 				}
 				catch (Exception ex)
@@ -150,7 +150,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 
 				if (client.Folder == originalFolderName && !System.IO.Directory.Exists(newClientFolder))
 				{
-					SysAdminActivationExtensions.CreateClientFolders(newClientFolder);
+					client.CreateClientFolders(Request.ApplicationPath, Server);
 					AddUserMessage("Folders Created", "Client folders were not found, so they were created in '" + client.ClientVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'", AppHtmlHelpers.UserMessageType.Info);
 				}
 				else if (client.Folder != originalFolderName)
@@ -174,7 +174,7 @@ namespace GStore.Areas.SystemAdmin.Controllers
 					{
 						try
 						{
-							SysAdminActivationExtensions.CreateClientFolders(newClientFolder);
+							client.CreateClientFolders(Request.ApplicationPath, Server);
 							AddUserMessage("Folders Created", "Client folders were created: " + client.ClientVirtualDirectoryToMap(Request.ApplicationPath).ToHtml(), AppHtmlHelpers.UserMessageType.Info);
 						}
 						catch (Exception ex)
@@ -182,6 +182,10 @@ namespace GStore.Areas.SystemAdmin.Controllers
 							AddUserMessage("Error Creating Client Folders!", "There was an error creating the client folders in '" + client.ClientVirtualDirectoryToMap(Request.ApplicationPath).ToHtml() + "'. You will need to create the folders manually. Error: " + ex.Message, AppHtmlHelpers.UserMessageType.Warning);
 						}
 					}
+				}
+				else
+				{
+					client.CreateClientFolders(Request.ApplicationPath, Server);
 				}
 
                 return RedirectToAction("Index");

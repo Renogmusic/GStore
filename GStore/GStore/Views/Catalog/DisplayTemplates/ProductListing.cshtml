@@ -7,12 +7,19 @@
 	else
 	{
 		string url = Url.Action("ViewProductByName", "Catalog", new { urlName = Model.UrlName });
-		string imageUrl = Model.ImageUrl(Request.ApplicationPath);
+		string imageUrl = Model.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
 
 		<div class="ProductListItemBox boxshadowjs">
-			<a class="ProductListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(Model.Name)))" title="@(Html.Raw(Html.AttributeEncode(Model.Name)))" /></a>
-			<br />
-			<a class="ProductListTextLink" href="@(url)">@(Model.Name)</a>
+			@if (imageUrl != null)
+			{
+				<a class="ProductListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(Model.Name)))" title="@(Html.Raw(Html.AttributeEncode(Model.Name)))" /></a>
+				<br />
+				<a class="ProductListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(Model.Name)))">@(Model.Name)</a>
+			}
+			else
+			{
+				<a class="ProductListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(Model.Name)))"><h3 style="margin-top: 0">@(Model.Name)</h3></a>
+			}
 		</div>
 	}
 }

@@ -43,8 +43,14 @@ namespace GStore.Models
 		[Display(Name = "Show in Menu")]
 		public bool ShowInMenu { get; set; }
 
-		[Display(Name = "Show If Empty")]
-		public bool ShowIfEmpty { get; set; }
+		[Display(Name = "Hide in Menu If Empty")]
+		public bool HideInMenuIfEmpty { get; set; }
+
+		[Display(Name = "Always Display Details for Direct Links")]
+		public bool DisplayForDirectLinks { get; set; }
+
+		[Display(Name = "Show in Catalog If Empty")]
+		public bool ShowInCatalogIfEmpty { get; set; }
 
 		[Display(Name = "For Registered Users Only")]
 		public bool ForRegisteredOnly { get; set; }
@@ -64,6 +70,12 @@ namespace GStore.Models
 		[Display(Name = "Child Active Product Count")]
 		public int ChildActiveCount { get; set; }
 
+		[Display(Name = "Theme Id", Description = "Theme for Category Details page and products that do not have a theme defined. Leave blank to use the store catalog theme")]
+		public int? ThemeId { get; set; }
+
+		[Display(Name = "Theme", Description = "Theme for Category Details page and products that do not have a theme defined. Leave blank to use the store catalog theme")]
+		public virtual Theme Theme { get; set; }
+
 		[Required]
 		[Display(Name = "Category Details Template", Description = "Template for Category details.")]
 		public CategoryListTemplateEnum CategoryDetailTemplate { get; set; }
@@ -73,7 +85,7 @@ namespace GStore.Models
 		public ProductListTemplateEnum ProductListTemplate { get; set; }
 
 		[Required]
-		[Display(Name = "Product Details Template", Description = "Template for product details.")]
+		[Display(Name = "Product Details Template", Description = "Template for product details. Template can also be set per product, this sets the default.")]
 		public ProductDetailTemplateEnum ProductDetailTemplate { get; set; }
 
 		[AllowHtml]
@@ -100,6 +112,30 @@ namespace GStore.Models
 		[DataType(DataType.Html)]
 		[Display(Name = "No Products Message Html", Description = "Message shown when there are no products in this category.")]
 		public string NoProductsMessageHtml { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Summary Caption", Description = "Default Summary caption for products that do not have one defined.\nLeave this blank to use the system default 'Summary'\nExample: 'Summary' or 'Overview'")]
+		public string DefaultSummaryCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Top Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Description for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string DefaultTopDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Bottom Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Details for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string DefaultBottomDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Image Caption", Description = "Default Sample Image caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Image for [product name]'.\nExample: 'Sample Image' or 'Photo'")]
+		public string DefaultSampleImageCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Audio Caption", Description = "Default Sample Audio caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Audio for [product name]'.\nExample: 'Sample Sound' or 'Music'")]
+		public string DefaultSampleAudioCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Download File Caption", Description = "Default Sample Download File caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Download for [product name]'.\nExample: 'Sample File' or 'Demo File'")]
+		public string DefaultSampleDownloadCaption { get; set; }
 
 		public virtual ICollection<Product> Products { get; set; }
 

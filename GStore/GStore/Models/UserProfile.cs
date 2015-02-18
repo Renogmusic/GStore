@@ -94,6 +94,9 @@ namespace GStore.Models
 		[Display(Name = "Session Entry Date and Time")]
 		public DateTime EntryDateTime { get; set; }
 
+		[Display(Name = "Time Zone")]
+		public string TimeZoneId { get; set; }
+
 		[Display(Name = "Register Web Form Response Id")]
 		public int? RegisterWebFormResponseId { get; set; }
 

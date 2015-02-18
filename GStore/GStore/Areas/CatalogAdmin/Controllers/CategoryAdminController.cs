@@ -7,18 +7,19 @@ using GStore.AppHtmlHelpers;
 using System.Collections.Generic;
 using System.Linq;
 using GStore.Areas.CatalogAdmin.ViewModels;
+using System.Text;
 
 namespace GStore.Areas.CatalogAdmin.Controllers
 {
 	public class CategoryAdminController : BaseClasses.CatalogAdminBaseController
-    {
+	{
 		[AuthorizeGStoreAction(GStoreAction.Categories_Manager)]
-        public ActionResult Manager(bool returnToFrontEnd = false)
-        {
+		public ActionResult Manager(bool returnToFrontEnd = false)
+		{
 			CatalogAdminViewModel model = new CatalogAdminViewModel(CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrThrow);
 			model.ReturnToFrontEnd = returnToFrontEnd;
 			return View("Manager", model);
-        }
+		}
 
 		[AuthorizeGStoreAction(GStoreAction.Categories_Create)]
 		public ActionResult Create(int? id, bool returnToFrontEnd = false)
@@ -43,7 +44,7 @@ namespace GStore.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Categories_Create)]
-		public ActionResult Create(CategoryEditAdminViewModel viewModel)
+		public ActionResult Create(CategoryEditAdminViewModel viewModel, string createAndView)
 		{
 
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
@@ -53,9 +54,28 @@ namespace GStore.Areas.CatalogAdmin.Controllers
 			{
 				try
 				{
+					var file = Request.Files["ImageName_File"];
+					if (file != null && file.ContentLength != 0)
+					{
+						string newFileName = viewModel.UrlName + "_Image." + file.FileName.FileExtension();
+						string virtualFolder = storeFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
+						string fileFolder = Server.MapPath(virtualFolder);
+						if (!System.IO.Directory.Exists(fileFolder))
+						{
+							System.IO.Directory.CreateDirectory(fileFolder);
+						}
+						file.SaveAs(fileFolder + "\\" + newFileName);
+						viewModel.ImageName = newFileName;
+						AddUserMessage("Image Uploaded!", "Image '" + file.FileName.ToHtml() + "' " + file.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+					}
+
 					ProductCategory productCategory = GStoreDb.CreateProductCategory(viewModel, storeFront, CurrentUserProfileOrThrow);
 					AddUserMessage("Category Created!", "Category '" + productCategory.Name.ToHtml() + "' [" + productCategory.ProductCategoryId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
+					if (!string.IsNullOrWhiteSpace(createAndView))
+					{
+						return RedirectToAction("Details", new { id = productCategory.ProductCategoryId, returnToFrontEnd = viewModel.ReturnToFrontEnd });
+					}
 					if (viewModel.ReturnToFrontEnd)
 					{
 						return RedirectToAction("ViewCategoryByName", "Catalog", new { area = "", urlName = productCategory.UrlName });
@@ -119,7 +139,7 @@ namespace GStore.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Categories_Edit)]
-		public ActionResult Edit(CategoryEditAdminViewModel viewModel, string Tab)
+		public ActionResult Edit(CategoryEditAdminViewModel viewModel, string Tab, string saveAndView)
 		{
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
@@ -138,8 +158,28 @@ namespace GStore.Areas.CatalogAdmin.Controllers
 
 			if (ModelState.IsValid && nameIsValid)
 			{
+				var file = Request.Files["ImageName_File"];
+				if (file != null && file.ContentLength != 0)
+				{
+					string newFileName = viewModel.UrlName + "_Image." + file.FileName.FileExtension();
+					string virtualFolder = storeFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
+					string fileFolder = Server.MapPath(virtualFolder);
+					if (!System.IO.Directory.Exists(fileFolder))
+					{
+						System.IO.Directory.CreateDirectory(fileFolder);
+					}
+					file.SaveAs(fileFolder + "\\" + newFileName);
+					viewModel.ImageName = newFileName;
+					AddUserMessage("Image Uploaded!", "Image '" + file.FileName.ToHtml() + "' " + file.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				}
+
 				productCategory = GStoreDb.UpdateProductCategory(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Category updated successfully!", "Category updated successfully. Category '" + productCategory.Name.ToHtml() + "' [" + productCategory.ProductCategoryId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
+
+				if (!string.IsNullOrWhiteSpace(saveAndView))
+				{
+					return RedirectToAction("Details", new { id = productCategory.ProductCategoryId, returnToFrontEnd = viewModel.ReturnToFrontEnd });
+				}
 				if (viewModel.ReturnToFrontEnd)
 				{
 					return RedirectToAction("ViewCategoryByName", "Catalog", new { area = "", urlName = productCategory.UrlName });
@@ -400,6 +440,122 @@ namespace GStore.Areas.CatalogAdmin.Controllers
 			GStoreDb.ProductCategories.Update(category);
 			GStoreDb.SaveChanges();
 			return RedirectToAction("Manager");
+		}
+
+		/// <summary>
+		/// Runs a sync over category images.
+		/// This operation is long, and it will check each category in the storefront categories
+		/// For each category it will check 1 - if the CategoryImage exists in the file system,
+		/// </summary>
+		/// <returns></returns>
+		[AuthorizeGStoreAction(GStoreAction.Categories_SyncImages)]
+		public ActionResult SyncImages(bool eraseImageFileNameIfNotFound = true, bool searchForImageIfImageFileNameIsBlank = true, bool preview = true, bool verbose = true, bool returnToFrontEnd = false)
+		{
+			StringBuilder results = new StringBuilder();
+
+			bool hasDbChanges = false;
+			StoreFrontConfiguration storeFrontConfig = CurrentStoreFrontConfigOrAny;
+
+			results.AppendLine("Starting Category Image sync");
+			int counter = 0;
+			foreach (ProductCategory category in storeFrontConfig.StoreFront.ProductCategories.AsQueryable().ApplyDefaultSort())
+			{
+				if (!string.IsNullOrEmpty(category.ImageName))
+				{
+					if (eraseImageFileNameIfNotFound)
+					{
+						//image name is set, verify image and set to null if not found
+						string filePath = category.ImagePath(Request.ApplicationPath, RouteData, Server);
+						if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+						{
+							results.AppendLine("- - - - - Category '" + category.Name + "' [" + category.ProductCategoryId + "] Image '" + category.ImageName + "' not found, setting to null - - - - -");
+							category.ImageName = null;
+							if (!preview)
+							{
+								GStoreDb.ProductCategories.Update(category);
+							}
+							hasDbChanges = true;
+							counter++;
+						}
+						else
+						{
+							if (verbose)
+							{
+								results.AppendLine("OK Category '" + category.Name + "' [" + category.ProductCategoryId + "] Image '" + category.ImageName + "' OK");
+							}
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(category.ImageName) && searchForImageIfImageFileNameIsBlank)
+				{
+					if (searchForImageIfImageFileNameIsBlank)
+					{
+						//if image name is not set, see if there is a suitable image with the url name of the category
+
+						//choose file path on urlname, with filenames
+						string imageFolder = storeFrontConfig.StoreFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
+						string newFileName = storeFrontConfig.StoreFront.ChooseFileNameWildcard(storeFrontConfig.Client, imageFolder, category.UrlName + "_Image", Request.ApplicationPath, Server);
+
+						if (string.IsNullOrEmpty(newFileName))
+						{
+							if (verbose)
+							{
+								results.AppendLine("OK Category '" + category.Name + "' [" + category.ProductCategoryId + "] Image is null and no file found starting with '" + category.UrlName + "'");
+							}
+						}
+						else
+						{
+							category.ImageName = newFileName;
+							results.AppendLine("- - - - - New file to link to Category '" + category.Name + "' [" + category.ProductCategoryId + "] New Image '" + newFileName + "' - - - - -");
+							if (!preview)
+							{
+								GStoreDb.ProductCategories.Update(category);
+							}
+							results.AppendLine();
+							hasDbChanges = true;
+							counter++;
+						}
+					}
+					else
+					{
+						if (verbose)
+						{
+							results.AppendLine("OK Category '" + category.Name + "' [" + category.ProductCategoryId + "] Image is blank - not searching for files because searchForImageIfImageFileNameIsBlank = false");
+						}
+					}
+				}
+				if (verbose)
+				{
+					results.AppendLine();
+				}
+			}
+
+			results.AppendLine();
+			if (hasDbChanges)
+			{
+				if (preview)
+				{
+					results.AppendLine("- - - - - Database update needed for " + counter.ToString("N0") + " Categor" + (counter == 1 ? "y" : "ies") + ". - - - - -");
+				}
+				else
+				{
+					GStoreDb.SaveChangesDirect();
+					results.AppendLine("- - - - - Database updated successfully for " + counter.ToString("N0") + " Categor" + (counter == 1 ? "y" : "ies") + ". - - - - -");
+				}
+			}
+			else
+			{
+				results.AppendLine("No changes to save to database. Up-to-date.");
+			}
+
+
+			AddUserMessage("Category Image Sync Results", results.ToString().ToHtmlLines(), UserMessageType.Info);
+			if (storeFrontConfig.StoreFront.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.Categories_Manager))
+			{
+				return RedirectToAction("Manager", new { returnToFrontEnd = returnToFrontEnd });
+			}
+			return RedirectToAction("Index", "CatalogAdmin", new { returnToFrontEnd = returnToFrontEnd });
 		}
 	}
 }

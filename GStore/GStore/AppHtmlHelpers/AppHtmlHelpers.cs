@@ -171,14 +171,17 @@ namespace GStore.AppHtmlHelpers
 		/// <returns></returns>
 		public static string ThemeFolderName(this HtmlHelper htmlHelper)
 		{
+			Theme theme = htmlHelper.ViewData.Theme();
+			if (theme != null)
+			{
+				return theme.FolderName;
+			}
 			Controllers.BaseClass.BaseController controller = htmlHelper.ViewContext.Controller as Controllers.BaseClass.BaseController;
 			if (controller == null)
 			{
 				return Settings.AppDefaultThemeFolderName;
 			}
-
 			return controller.ThemeFolderNameToUse;
-
 		}
 
 
@@ -596,17 +599,15 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
 		}
 
-		public static MvcHtmlString HelpLabelPopover(this HtmlHelper htmlHelper, string displayName, string helpText, string label = "?", string topLineText = "", string bottomLineText = "")
+		public static MvcHtmlString HelpLabelPopover(this HtmlHelper htmlHelper, string displayName, string helpText, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
 		{
-			string message = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
+			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
 				+ (string.IsNullOrEmpty(helpText) ? "" : helpText + "\n")
 				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
 
-			string html = "<a href=\"javascript://\" tabindex=\"100\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" "
-				+ "data-container=\"body\" onclick=\"return false;\""
-				+ "title=\"Help for " + displayName.ToHtmlAttribute() + "\" "
-				+ "data-content=\"" + message.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() + "</a>";
-			return new MvcHtmlString(html);
+			string title = "Help for " + displayName;
+
+			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
 		}
 
 		/// <summary>
@@ -617,7 +618,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="topLineText"></param>
 		/// <param name="bottomLineText"></param>
 		/// <returns></returns>
-		public static MvcHtmlString HelpLabelPopoverForModel(this HtmlHelper htmlHelper, string label = "?", string topLineText = "", string bottomLineText = "")
+		public static MvcHtmlString HelpLabelPopoverForModel(this HtmlHelper htmlHelper, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
 		{
 			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
 			if (string.IsNullOrEmpty(metadata.Description))
@@ -627,15 +628,13 @@ namespace GStore.AppHtmlHelpers
 
 			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
 
-			string message = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
+			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
 				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
 				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
 
-			string html = "<a href=\"javascript://\" tabindex=\"100\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" "
-				+ "data-container=\"body\" onclick=\"return false;\""
-				+ "title=\"Help for " + propertyName.ToHtmlAttribute() + "\" "
-				+ "data-content=\"" + message.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() + "</a>";
-			return new MvcHtmlString(html);
+			string title = "Help for " + propertyName;
+			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
+
 		}
 
 		/// <summary>
@@ -649,7 +648,7 @@ namespace GStore.AppHtmlHelpers
 		/// <param name="topLineText"></param>
 		/// <param name="bottomLineText"></param>
 		/// <returns></returns>
-		public static MvcHtmlString HelpLabelPopoverFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string label = "?", string topLineText = "", string bottomLineText = "")
+		public static MvcHtmlString HelpLabelPopoverFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right )
 		{
 			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
 			if (string.IsNullOrEmpty(metadata.Description))
@@ -658,16 +657,24 @@ namespace GStore.AppHtmlHelpers
 			}
 
 			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+			string title = "Help for " + propertyName;
 
-			string message = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
+			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
 				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
 				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
 
-			string html = "<a href=\"javascript://\" tabindex=\"0\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" " 
-				+ "data-container=\"body\" onclick=\"return false;\""
-				+ "title=\"Help for " + propertyName.ToHtmlAttribute() + "\" " 
-				+ "data-content=\"" + message.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() +"</a>";
-			return new MvcHtmlString(html);
+			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
+		}
+
+		public static MvcHtmlString HelpLabelPopoverHelper(this HtmlHelper htmlHelper, string title, string dataContent, string label = "?", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
+		{
+			return new MvcHtmlString(
+			"<a href=\"javascript://\" tabindex=\"0\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" "
+				+ "data-container=\"body\" onclick=\"return false;\" "
+				+ "data-placement=\"" + placement.ToString() + "\" "
+				+ "title=\"" + title.ToHtmlAttribute() + "\" "
+				+ "data-content=\"" + dataContent.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() + "</a>"
+				);
 		}
 
 		/// <summary>
@@ -1110,12 +1117,12 @@ namespace GStore.AppHtmlHelpers
 			return new MvcHtmlString(htmlHelper.ViewData.ModelMetadata.PropertyName);
 		}
 
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true)
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false)
 		{
-			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, doNotAddFormControlClass, addIdToPropertyName);
+			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, doNotAddFormControlClass, addIdToPropertyName, removeHtmlFieldPrefix);
 		}
 
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList,  object htmlAttributes, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true)
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, object htmlAttributes, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
 			string fieldName = metaData.PropertyName;
@@ -1149,7 +1156,14 @@ namespace GStore.AppHtmlHelpers
 			{
 				selectList = new List<SelectListItem>();
 			}
-			return htmlHelper.DropDownList("", selectList, optionLabel, htmlAttribs);
+
+			string dropdownField = "";
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+				dropdownField = fieldName;
+			}
+			return htmlHelper.DropDownList(dropdownField, selectList, optionLabel, htmlAttribs);
 		}
 
 
@@ -2039,9 +2053,19 @@ namespace GStore.AppHtmlHelpers
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		public static string ToByteString(this int byteCount)
+		{
+			return ToByteString((long)byteCount);
+		}
+
+		/// <summary>
+		/// Returns a string representing the number of bytes, kb, mb, gb, tb
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static string ToByteString(this long byteCount)
 		{
-			long value = byteCount;
+			decimal value = byteCount;
 			if (value < 1024)
 			{
 				return value + " B";
@@ -2049,24 +2073,24 @@ namespace GStore.AppHtmlHelpers
 			value = value / 1024;
 			if (value < 1024)
 			{
-				return value + " KB";
+				return value.ToString("N2") + " KB";
 			}
 			value = value / 1024;
 			if (value < 1024)
 			{
-				return value + " MB";
+				return value.ToString("N2") + " MB";
 			}
 			value = value / 1024;
 			if (value < 1024)
 			{
-				return value + " GB";
+				return value.ToString("N2") + " GB";
 			}
 			value = value / 1024;
 			if (value < 1024)
 			{
-				return value + " TB";
+				return value.ToString("N2") + " TB";
 			}
-			return value + " (over limit)";
+			return value.ToString() + " (over 1,024 TB limit)";
 
 		}
 
@@ -2431,7 +2455,7 @@ namespace GStore.AppHtmlHelpers
 				DateTime today = DateTime.Today;
 				text = text.Replace(fieldCode + "date.today:::", today.ToString())
 					.Replace(fieldCode + "date.shortdate:::", today.ToShortDateString().ToString())
-					.Replace(fieldCode + "date.shorttime:::", DateTime.Now.ToShortTimeString())
+					.Replace(fieldCode + "date.shorttime:::", DateTime.UtcNow.ToLocalTime().ToShortTimeString())
 					.Replace(fieldCode + "date.dayofweek:::", today.DayOfWeek.ToString())
 					.Replace(fieldCode + "date.monthname:::", today.ToString("MMMM"))
 					.Replace(fieldCode + "date.dayofmonth:::", today.Day.ToString())
@@ -2794,6 +2818,71 @@ namespace GStore.AppHtmlHelpers
 			return HttpUtility.UrlEncode(value);
 		}
 
+		public static string FileExtension(this string fileName)
+		{
+			if (string.IsNullOrEmpty(fileName))
+			{
+				return null;
+			}
+			int lastDot = fileName.LastIndexOf('.');
+			if (lastDot == -1)
+			{
+				return null;
+			}
+
+			return fileName.Substring(lastDot + 1).ToUpper();
+		}
+
+		public static bool FileExtensionIsImage(this string fileName)
+		{
+			return fileName.FileExtensionIsAny("png", "jpg", "gif", "jpeg", "bmp");
+		}
+
+		public static bool FileExtensionIsAudio(this string fileName)
+		{
+			return fileName.FileExtensionIsAny("mp3", "wma", "ogg", "wav");
+		}
+
+		public static string FileMimeType(this string fileName)
+		{
+			return MimeMapping.GetMimeMapping(fileName);
+		}
+
+		public static bool FileExtensionIs(this string fileName, string extension)
+		{
+			string fileExtension = fileName.FileExtension();
+			if (string.IsNullOrEmpty(fileExtension))
+			{
+				return false;
+			}
+
+			if (fileExtension.ToLower() == extension.ToLower())
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static bool FileExtensionIsAny(this string fileName, params string[] extensions)
+		{
+			string fileExtension = fileName.FileExtension();
+			if (string.IsNullOrEmpty(fileExtension))
+			{
+				return false;
+			}
+
+			fileExtension = fileExtension.ToLower();
+
+			foreach (string ext in extensions)
+			{
+				if (fileExtension == ext.ToLower())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public static string Action(this RouteData routeData)
 		{
 			if (routeData == null)
@@ -3023,6 +3112,26 @@ namespace GStore.AppHtmlHelpers
 		}
 
 		/// <summary>
+		/// Gets the Theme if it is set in ViewData[Theme]
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <returns></returns>
+		public static Theme Theme(this ViewDataDictionary viewData)
+		{
+			return viewData["Theme"] as Theme;
+		}
+
+		/// <summary>
+		/// Sets the Theme set in ViewData[Theme]
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="theme"></param>
+		public static void Theme(this ViewDataDictionary viewData, Theme theme)
+		{
+			viewData["Theme"] = theme;
+		}
+
+		/// <summary>
 		/// returns a stack trace with highlighting applicable inside a PRE element
 		/// </summary>
 		/// <param name="stackTrace"></param>
@@ -3170,5 +3279,217 @@ namespace GStore.AppHtmlHelpers
 		{
 			session[Session_SystemAdminVisitLogged] = value;
 		}
+
+		public enum PopoverPlacementEnum : int
+		{
+			left = 0,
+			top = 1,
+			right = 2,
+			bottom = 3
+		}
+
+		public static TimeZoneInfo StoreFrontTimeZone(this HtmlHelper htmlHelper)
+		{
+			StoreFrontConfiguration storeFrontConfig = htmlHelper.CurrentStoreFrontConfig(false);
+			Client client = htmlHelper.CurrentClient(false);
+			return StoreFrontTimeZone(storeFrontConfig, client);
+		}
+
+		public static TimeZoneInfo UserTimeZone(this HtmlHelper htmlHelper)
+		{
+			UserProfile userProfile = htmlHelper.CurrentUserProfile(false);
+			if (userProfile != null && (!string.IsNullOrEmpty(userProfile.TimeZoneId)))
+			{
+				try
+				{
+					return TimeZoneInfo.FindSystemTimeZoneById(userProfile.TimeZoneId);
+				}
+				catch (Exception)
+				{
+					//user time zone is not found in system time zones
+				}
+			}
+			StoreFrontConfiguration storeFrontConfig = htmlHelper.CurrentStoreFrontConfig(false);
+			Client client = htmlHelper.CurrentClient(false);
+			return StoreFrontTimeZone(storeFrontConfig, client);
+		}
+
+		public static TimeZoneInfo StoreFrontTimeZone(this StoreFrontConfiguration storeFrontConfig, Client client)
+		{
+			if (storeFrontConfig != null)
+			{
+				if (!string.IsNullOrEmpty(storeFrontConfig.TimeZoneId))
+				{
+					try
+					{
+						return TimeZoneInfo.FindSystemTimeZoneById(storeFrontConfig.TimeZoneId);
+					}
+					catch (Exception)
+					{
+						//store front time zone is not found in system time zones
+					}
+				}
+			}
+
+			if (client != null)
+			{
+				if (!string.IsNullOrEmpty(client.TimeZoneId))
+				{
+					try
+					{
+						return TimeZoneInfo.FindSystemTimeZoneById(client.TimeZoneId);
+					}
+					catch (Exception)
+					{
+						//client time zone is not found in system time zones
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(Settings.AppDefaultTimeZoneId))
+			{
+				return TimeZoneInfo.Local;
+			}
+			try
+			{
+				return TimeZoneInfo.FindSystemTimeZoneById(Settings.AppDefaultTimeZoneId);
+			}
+			catch (Exception)
+			{
+				//can't find the time zone in settings, return server local time
+			}
+			return TimeZoneInfo.Local;
+		}
+
+		public static TimeZoneInfo ClientTimeZone(this HtmlHelper htmlHelper)
+		{
+			Client client = htmlHelper.CurrentClient(false);
+			return ClientTimeZone(client);
+		}
+
+		public static TimeZoneInfo ClientTimeZone(this Client client)
+		{
+			if (client != null)
+			{
+				if (!string.IsNullOrEmpty(client.TimeZoneId))
+				{
+					try
+					{
+						return TimeZoneInfo.FindSystemTimeZoneById(client.TimeZoneId);
+					}
+					catch (Exception)
+					{
+						//client time zone is not found in system time zones
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(Settings.AppDefaultTimeZoneId))
+			{
+				return TimeZoneInfo.Local;
+			}
+			try
+			{
+				return TimeZoneInfo.FindSystemTimeZoneById(Settings.AppDefaultTimeZoneId);
+			}
+			catch (Exception)
+			{
+				//can't find the time zone in settings, return server local time
+			}
+			return TimeZoneInfo.Local;
+		}
+
+		public static TimeZoneInfo GStoreSystemDefaultTimeZone(this HtmlHelper htmlHelper)
+		{
+			return GStoreSystemDefaultTimeZone();
+		}
+
+		public static TimeZoneInfo GStoreSystemDefaultTimeZone()
+		{
+			if (string.IsNullOrEmpty(Settings.AppDefaultTimeZoneId))
+			{
+				return TimeZoneInfo.Local;
+			}
+			try
+			{
+				return TimeZoneInfo.FindSystemTimeZoneById(Settings.AppDefaultTimeZoneId);
+			}
+			catch (Exception)
+			{
+				//can't find the time zone in settings, return server local time
+			}
+			return TimeZoneInfo.Local;
+		}
+
+		public static TimeZoneInfo ServerTimeZone(this HtmlHelper htmlHelper)
+		{
+			return ServerTimeZone();
+		}
+
+		public static TimeZoneInfo ServerTimeZone()
+		{
+			return TimeZoneInfo.Local;
+		}
+
+		public static TimeZoneInfo UtcTimeZone(this HtmlHelper htmlHelper)
+		{
+			return UtcTimeZone();
+		}
+
+		public static TimeZoneInfo UtcTimeZone()
+		{
+			return TimeZoneInfo.Utc;
+		}
+
+		public static DateTime ToGStoreSystemDefaultDateTime(this DateTime utcTime)
+		{
+			return TimeZoneInfo.ConvertTime(utcTime, GStoreSystemDefaultTimeZone());
+		}
+
+		public static DateTime ToUserDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		{
+			TimeZoneInfo timeZone = htmlhelper.UserTimeZone();
+			if (timeZone != null)
+			{
+				return TimeZoneInfo.ConvertTime(utcTime, timeZone);
+			}
+			return utcTime.ToLocalTime();
+		}
+
+		public static DateTime ToStoreDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		{
+			StoreFrontConfiguration storeFrontConfig = htmlhelper.CurrentStoreFrontConfig(false);
+			Client client = htmlhelper.CurrentClient(false);
+			return utcTime.ToStoreDateTime(storeFrontConfig, client);
+		}
+
+		public static DateTime ToClientDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		{
+			Client client = htmlhelper.CurrentClient(false);
+			return utcTime.ToClientDateTime(client);
+		}
+
+		public static DateTime ToStoreDateTime(this DateTime utcTime, StoreFrontConfiguration storeFrontConfig, Client client)
+		{
+			TimeZoneInfo storeFrontTimeZone = storeFrontConfig.StoreFrontTimeZone(client);
+
+			if (storeFrontTimeZone != null)
+			{
+				return TimeZoneInfo.ConvertTime(utcTime, storeFrontTimeZone);
+			}
+			return utcTime.ToLocalTime();
+		}
+
+		public static DateTime ToClientDateTime(this DateTime utcTime, Client client)
+		{
+			TimeZoneInfo clientTimeZone = client.ClientTimeZone();
+
+			if (clientTimeZone != null)
+			{
+				return TimeZoneInfo.ConvertTime(utcTime, clientTimeZone);
+			}
+			return utcTime.ToLocalTime();
+		}
+
 	}
 }

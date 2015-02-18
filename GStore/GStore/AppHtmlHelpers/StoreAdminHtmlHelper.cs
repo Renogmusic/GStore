@@ -11,6 +11,7 @@ using GStore.AppHtmlHelpers;
 using GStore.Models;
 using System.Linq.Expressions;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace GStore.AppHtmlHelpers
 {
@@ -38,6 +39,75 @@ namespace GStore.AppHtmlHelpers
 			});
 
 			return new SelectList(items, "Value", "Text");
+		}
+
+		public static IEnumerable<SelectListItem> ProductCategoryFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		{
+			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
+
+			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+
+			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
+			string virtualPath = storeFront.CatalogCategoryContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string folderPath = http.Server.MapPath(virtualPath);
+
+			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
+
+			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
+
+			return files.Select(fil =>
+				new SelectListItem()
+				{
+					Value = fil.Name,
+					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+					Selected = fil.Name.ToLower() == selectedFileName
+				});
+		}
+
+		public static IEnumerable<SelectListItem> ProductFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		{
+			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
+
+			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+
+			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
+			string virtualPath = storeFront.CatalogProductContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string folderPath = http.Server.MapPath(virtualPath);
+
+			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
+
+			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
+
+			return files.Select(fil =>
+				new SelectListItem()
+				{
+					Value = fil.Name,
+					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+					Selected = fil.Name.ToLower() == selectedFileName
+				});
+		}
+
+		public static IEnumerable<SelectListItem> ProductDigitalDownloadFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		{
+			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
+
+			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+
+			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
+			string virtualPath = storeFront.ProductDigitalDownloadVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string folderPath = http.Server.MapPath(virtualPath);
+
+			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
+
+			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
+
+			return files.Select(fil =>
+				new SelectListItem()
+				{
+					Value = fil.Name,
+					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+					Selected = fil.Name.ToLower() == selectedFileName
+				});
 		}
 
 		public static IEnumerable<SelectListItem> PageList(this HtmlHelper htmlHelper)
@@ -139,6 +209,40 @@ namespace GStore.AppHtmlHelpers
 					Value = wf.WebFormId.ToString(),
 					Text = wf.Name + " [" + wf.WebFormId + "]" + (wf.IsActiveBubble() ? "" : " [INACTIVE]") + " Fields: " + wf.WebFormFields.Count(),
 					Selected = wf.WebFormId == selectedWebFormId
+				});
+		}
+
+		public static IEnumerable<SelectListItem> TimeZoneList(this HtmlHelper htmlHelper)
+		{
+			string selectedTimeZoneId = (htmlHelper.ViewData.Model as string) ?? "";
+
+			TimeZoneInfo userTimeZone = htmlHelper.UserTimeZone();
+			TimeZoneInfo storeFrontTimeZone = htmlHelper.StoreFrontTimeZone();
+			TimeZoneInfo clientTimeZone = htmlHelper.ClientTimeZone();
+			TimeZoneInfo gstoreDefault = htmlHelper.GStoreSystemDefaultTimeZone();
+			TimeZoneInfo serverTimeZone = TimeZoneInfo.Local;
+
+			List<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones()
+				.OrderByDescending(tz => tz.Id == userTimeZone.Id)
+				.ThenByDescending(tz => tz.Id == storeFrontTimeZone.Id)
+				.ThenByDescending(tz => tz.Id == clientTimeZone.Id)
+				.ThenByDescending(tz => tz.Id == gstoreDefault.Id)
+				.ThenByDescending(tz => tz.Id == serverTimeZone.Id)
+				.ThenBy(tz => tz.BaseUtcOffset).ToList();
+
+			return timeZones.Select(tz =>
+				new SelectListItem()
+				{
+					Value = tz.Id,
+					Text = tz.Id + " - " + tz.DisplayName
+						+ (tz.Id.ToLower() == selectedTimeZoneId.ToLower() ? " [SELECTED]" : "")
+						+ (tz.Id == userTimeZone.Id ? " [User Time Zone]" : "")
+						+ (tz.Id == storeFrontTimeZone.Id ? " [Store Front Time Zone]" : "")
+						+ (tz.Id == clientTimeZone.Id ? " [Client Time Zone]" : "")
+						+ (tz.Id == gstoreDefault.Id ? " [GStore System Default Time Zone]" : "")
+						+ (tz.Id == serverTimeZone.Id ? " [Server Time Zone]" : "")
+					,
+					Selected = tz.Id == selectedTimeZoneId
 				});
 		}
 

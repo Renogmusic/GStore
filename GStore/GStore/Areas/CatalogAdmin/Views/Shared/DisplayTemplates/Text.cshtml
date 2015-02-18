@@ -1,0 +1,9 @@
+﻿@model string
+@if (string.IsNullOrEmpty(Model))
+{
+	@:(none / blank / empty)
+}
+else
+{
+	@Model
+}

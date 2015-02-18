@@ -15,7 +15,7 @@
 <h2 class="text-danger">An error occurred while processing your request.</h2>
 <h2 class="text-danger">If you need assistance with this error, email me at <a href="mailto:renogmusic@yahoo.com">renogmusic@yahoo.com</a></h2>
 <h3>@Html.GStoreLocalLink("Click here for the " + (storeFrontConfig == null ? string.Empty : storeFrontConfig.Name + " ") + "home page", "/")</h3>
-<p><small>@DateTime.Now.ToLocalTime()</small></p>
+<p><small>@DateTime.UtcNow.ToLocalTime()</small></p>
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
 	Html.RenderPartial("_ErrorDetailsPartial", Model);

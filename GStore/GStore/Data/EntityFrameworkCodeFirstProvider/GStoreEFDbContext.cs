@@ -482,9 +482,5 @@ namespace GStore.Data.EntityFrameworkCodeFirstProvider
 
 		}
 
-		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.CategoryEditAdminViewModel> CategoryEditAdminViewModels { get; set; }
-
-		public System.Data.Entity.DbSet<GStore.Areas.CatalogAdmin.ViewModels.ProductEditAdminViewModel> ProductEditAdminViewModels { get; set; }
-
 	}
 }

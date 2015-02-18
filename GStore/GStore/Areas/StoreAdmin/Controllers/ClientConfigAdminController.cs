@@ -53,6 +53,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				client.EnableNewUserRegisteredBroadcast = model.EnableNewUserRegisteredBroadcast;
 				client.EnablePageViewLog = model.EnablePageViewLog;
 				client.Name = model.Name;
+				client.TimeZoneId = model.TimeZoneId;
 				client.SendGridMailAccount = model.SendGridMailAccount;
 				client.SendGridMailFromEmail = model.SendGridMailFromEmail;
 				client.SendGridMailFromName = model.SendGridMailFromName;
@@ -66,6 +67,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				client.UseTwilioSms = model.UseTwilioSms;
 				GStoreDb.Clients.Update(client);
 				GStoreDb.SaveChanges();
+				client.CreateClientFolders(Request.ApplicationPath, Server);
 				return RedirectToAction("ClientView", new { Tab = model.ActiveTab });
 			}
 
@@ -300,8 +302,8 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.MetaDescription = model.MetaDescription;
 				config.MetaKeywords = model.MetaKeywords;
 				config.Name = model.Name;
+				config.TimeZoneId = model.TimeZoneId;
 				config.CatalogTitle = model.CatalogTitle;
-
 				config.CatalogLayout = model.CatalogLayout;
 				config.CatalogHeaderHtml = model.CatalogHeaderHtml;
 				config.CatalogFooterHtml = model.CatalogFooterHtml;
@@ -354,6 +356,9 @@ namespace GStore.Areas.StoreAdmin.Controllers
 						AddUserMessage("Page Themes Updated", pagesUpdated + " Page(s) were changed to theme '" + config.Client.Themes.Single(t => t.ThemeId == model.ResetPagesToThemeId).Name.ToHtml() + "' [" + model.ResetPagesToThemeId.Value + "] for Store Front '" + config.Name.ToHtml() + "' [" + storeFrontToEdit.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 					}
 				}
+
+				config.CreateStoreFrontFolders(Request.ApplicationPath, Server);
+
 				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId, Tab = model.ActiveTab });
 			}
 
@@ -496,6 +501,7 @@ namespace GStore.Areas.StoreAdmin.Controllers
 				config.MetaDescription = model.MetaDescription;
 				config.MetaKeywords = model.MetaKeywords;
 				config.Name = model.Name;
+				config.TimeZoneId = model.TimeZoneId;
 				config.CatalogTitle = model.CatalogTitle;
 
 				config.CatalogLayout = model.CatalogLayout;

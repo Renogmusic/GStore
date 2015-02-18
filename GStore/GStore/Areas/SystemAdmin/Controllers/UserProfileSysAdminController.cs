@@ -101,8 +101,11 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			ViewData.Add("SendWelcomeMessage", true);
 			ViewData.Add("SendRegisteredNotify", true);
 
+			Client client = CurrentClientOrNull;
+			StoreFront storeFront = CurrentStoreFrontOrNull;
+
 			UserProfile model = GStoreDb.UserProfiles.Create();
-			model.SetDefaultsForNew(clientId, storeFrontId);
+			model.SetDefaultsForNew(client, storeFront);
 			this.BreadCrumbsFunc = htmlHelper => this.UserProfileBreadcrumb(htmlHelper, clientId, storeFrontId, model, false);
 			return View(model);
 		}

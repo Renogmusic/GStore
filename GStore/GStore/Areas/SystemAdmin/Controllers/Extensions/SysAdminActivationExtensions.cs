@@ -397,44 +397,5 @@ namespace GStore.Areas.SystemAdmin.Controllers
 			return binding;
 		}
 
-		/// <summary>
-		/// Creates storefront folders if they don't exist. Uses physical file path as BasePath parameter
-		/// </summary>
-		/// <param name="basePath"></param>
-		public static void CreateStoreFrontFolders(string basePath)
-		{
-			CreateFolderIfNotExists(basePath + "\\ErrorPages");
-			CreateFolderIfNotExists(basePath + "\\Fonts");
-			CreateFolderIfNotExists(basePath + "\\Forms");
-			CreateFolderIfNotExists(basePath + "\\Images");
-			CreateFolderIfNotExists(basePath + "\\Pages");
-			CreateFolderIfNotExists(basePath + "\\Scripts");
-			CreateFolderIfNotExists(basePath + "\\Styles");
-		}
-
-		/// <summary>
-		/// Creates a folder if it does not exist
-		/// </summary>
-		/// <param name="folder"></param>
-		public static void CreateFolderIfNotExists(string folderPath)
-		{
-			if (!System.IO.Directory.Exists(folderPath))
-			{
-				System.IO.Directory.CreateDirectory(folderPath);
-				System.Diagnostics.Trace.WriteLine("--File System: Created folder: " + folderPath);
-			}
-		}
-
-		public static void CreateClientFolders(string basePath)
-		{
-			CreateFolderIfNotExists(basePath + "\\ErrorPages");
-			CreateFolderIfNotExists(basePath + "\\Fonts");
-			CreateFolderIfNotExists(basePath + "\\Images");
-			CreateFolderIfNotExists(basePath + "\\Pages");
-			CreateFolderIfNotExists(basePath + "\\Scripts");
-			CreateFolderIfNotExists(basePath + "\\StoreFronts");
-			CreateFolderIfNotExists(basePath + "\\Styles");
-		}
-
 	}
 }

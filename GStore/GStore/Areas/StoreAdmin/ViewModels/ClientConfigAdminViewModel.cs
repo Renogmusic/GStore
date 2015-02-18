@@ -22,6 +22,7 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 			this.EnableNewUserRegisteredBroadcast = client.EnableNewUserRegisteredBroadcast;
 			this.EnablePageViewLog = client.EnablePageViewLog;
 			this.Name = client.Name;
+			this.TimeZoneId = client.TimeZoneId;
 			this.SendGridMailAccount = client.SendGridMailAccount;
 			this.SendGridMailFromEmail = client.SendGridMailFromEmail;
 			this.SendGridMailFromName = client.SendGridMailFromName;
@@ -49,6 +50,11 @@ namespace GStore.Areas.StoreAdmin.ViewModels
 		[Required]
 		[Display(Name = "Client Name", Description = "Internal Name used on your reports and your administration pages. \nExample: Your Store Name")]
 		public string Name { get; set; }
+
+		[Required]
+		[Display(Name = "Time Zone Id", Description = "Time zone")]
+		[MaxLength(50)]
+		public string TimeZoneId { get; set; }
 
 		[Display(Name = "Use SendGrid Email", Description = "Check this box to use a SendGrid Email account to send email. If not selected, email will be disabled.")]
 		public bool UseSendGridEmail { get; set; }

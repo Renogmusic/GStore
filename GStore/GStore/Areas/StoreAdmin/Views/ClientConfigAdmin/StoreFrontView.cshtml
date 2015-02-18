@@ -173,6 +173,15 @@
 			</dd>
 
 			<dt>
+				@Html.DisplayNameFor(model => model.TimeZoneId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.TimeZoneId)
+				<br />@Html.HelpLabelFor(model => model.TimeZoneId, new { @class = "help-label" })
+			</dd>
+
+			<dt>
 				@Html.DisplayNameFor(model => model.HtmlFooter)
 			</dt>
 
@@ -832,8 +841,8 @@
 			You can always log in and edit these values even if you de-activate your site.
 		</h4>
 
+		<p class="col-md-offset-3 col-md-6">Store Local Time: @(DateTime.UtcNow.ToStoreDateTime(Html).ToString())</p>
 		<p class="col-md-offset-3 col-md-6">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
-		<p class="col-md-offset-3 col-md-6">Server Local Time: @(DateTime.Now.ToString())</p>
 
 		<dl class="dl-horizontal">
 

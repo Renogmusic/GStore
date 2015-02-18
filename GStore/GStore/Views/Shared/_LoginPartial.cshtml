@@ -95,7 +95,7 @@ else
 			}
 		}
 
-		<li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink", title="Log in to the site", AccessKey="l" })</li>
+		<li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { returnUrl = Request.RawUrl }, htmlAttributes: new { id = "loginLink", title = "Log in to the site", AccessKey = "l" })</li>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 	</ul>
 }

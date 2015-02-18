@@ -19,7 +19,7 @@
 	If this is your store and you wish to activate this site, contact us at<br />
 	<a href="http://www.gstore.renog.info/contact">http://www.gstore.renog.info/contact</a>
 </h3>
-<p><small>@DateTime.Now.ToLocalTime()</small></p>
+<p><small>@DateTime.UtcNow.ToLocalTime()</small></p>
 @if (Request.IsLocal || User.IsInRole("SystemAdmin"))
 {
 	Html.RenderPartial("_ErrorDetailsPartial", Model);

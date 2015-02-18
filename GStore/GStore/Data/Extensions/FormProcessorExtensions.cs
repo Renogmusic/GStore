@@ -323,7 +323,7 @@ namespace GStore.Data
 				throw new ApplicationException("Model State is invalid. Be sure model state is valid before calling BuildFormSubject");
 			}
 
-			return request.Url.Host + " Form '" + webForm.Name + "' [" + webForm.WebFormId + "] submitted at " + DateTime.Now;
+			return request.Url.Host + " Form '" + webForm.Name + "' [" + webForm.WebFormId + "] submitted at " + DateTime.UtcNow.ToLocalTime();
 		}
 
 		private static string BuildFormBodyText(ModelStateDictionary modelStateDictionary, WebForm webForm, Page page, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, HttpRequestBase request, bool fieldDataOnly)

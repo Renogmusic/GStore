@@ -132,6 +132,7 @@ namespace GStore.Identity
 		Categories_View = 21130,
 		Categories_Edit = 21140,
 		Categories_Delete = 21150,
+		Categories_SyncImages = 21160,
 
 		Products_CatalogAdminMenuItem = 22000,
 		Products_Manager = 22110,
@@ -139,6 +140,7 @@ namespace GStore.Identity
 		Products_View = 22130,
 		Products_Edit = 22140,
 		Products_Delete = 22150,
+		Products_SyncFiles = 22160
 
 		#endregion
 

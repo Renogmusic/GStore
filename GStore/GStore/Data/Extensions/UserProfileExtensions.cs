@@ -242,16 +242,24 @@ namespace GStore.Data
 			return false;
 		}
 
-		public static void SetDefaultsForNew(this UserProfile profile, int? clientId, int? storeFrontId)
+		public static void SetDefaultsForNew(this UserProfile profile, Client client, StoreFront storeFront)
 		{
-			if (clientId.HasValue)
+			if (client != null)
 			{
-				profile.ClientId = clientId.Value;
+				profile.Client = client;
+				profile.ClientId = client.ClientId;
+				profile.TimeZoneId = client.TimeZoneId;
 			}
 
-			if (storeFrontId.HasValue)
+			if (storeFront != null)
 			{
-				profile.StoreFrontId = storeFrontId.Value;
+				profile.StoreFront = storeFront;
+				profile.StoreFrontId = storeFront.StoreFrontId;
+				StoreFrontConfiguration storeFrontConfig = storeFront.CurrentConfigOrAny();
+				if (storeFrontConfig != null)
+				{
+					profile.TimeZoneId = storeFrontConfig.TimeZoneId;
+				}
 			}
 
 			profile.EntryDateTime = DateTime.UtcNow;

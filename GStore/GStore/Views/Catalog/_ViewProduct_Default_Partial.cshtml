@@ -13,16 +13,18 @@
 
 	ViewBag.Title = product.Name + " - " + product.Category.Name;
 
-}
-@if (!string.IsNullOrWhiteSpace(product.ImageName))
-{
-	string imageUrl = product.ImageUrl(Request.ApplicationPath);
+	string imageUrl = product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+
+	bool showSampleAudioDownloadLink = true;
 
 	<div class="row">
 		<div class="col-md-offset-3 col-md-6 ProductListItemBox">
 			<center>
-				<img class="ViewProductImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" />
-				<br />
+				@if (imageUrl != null)
+				{
+					<img class="ViewProductImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" />
+					<br />
+				}
 				<h2>@Html.DisplayFor(model => product.Name)</h2>
 			</center>
 		</div>
@@ -37,74 +39,114 @@
 }
 
 <hr/>
-@if (!string.IsNullOrWhiteSpace(product.SampleAudioFileName))
-{
-	<div class="row">
-		<audio controls="controls" title="Sample of @(product.Name)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Play", product.Name, "Product Details Page")">
-			<source title="Sample" src="@Html.Raw(product.AudioSampleUrl(Request.ApplicationPath))" type="audio/mpeg" />
-		</audio>
-		<br />
-		@Html.DisplayFor(model => product.SampleAudioCaption)
-		<hr />
-	</div>
-}
-
 @if (!string.IsNullOrWhiteSpace(product.SummaryHtml))
 {
+	string summaryCaption = product.SummaryCaptionOrDefault();
+	<div class="btn btn-info NoClick">
+		@summaryCaption
+	</div>
 	<div class="row">
 		@Html.Raw(Html.ReplaceVariables(product.SummaryHtml))
 		<hr />
 	</div>
 }
 
-@if (!string.IsNullOrWhiteSpace(product.SampleDownloadFileName))
+@if (!string.IsNullOrWhiteSpace(product.TopDescriptionHtml))
 {
-	<div class="btn btn-info NoClick">
-		@Html.DisplayNameFor(model => product.SampleDownloadFileName)
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@product.TopDescriptionCaptionOrDefault()
+		</div>
 	</div>
 	<div class="row">
-		@Html.DisplayFor(model => product.SampleDownloadFileName)
+		@Html.Raw(Html.ReplaceVariables(product.TopDescriptionHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+{
+	string audioType = "audio/mpeg";
+	if (product.SampleAudioFileName.FileExtensionIs("wav"))
+	{
+		audioType = "audio/wav";
+	}
+	else if (product.SampleAudioFileName.FileExtensionIs("ogg"))
+	{
+		audioType = "audio/ogg";
+	}
+	string sampleAudioCaption = product.SampleAudioCaptionOrDefault();
+	string sampleAudioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+	<div class="btn btn-info NoClick">
+		@sampleAudioCaption
+	</div>
+	<div class="row">
+		<audio controls="controls" title="@(sampleAudioCaption)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Play", product.Name, "Product Details Page")">
+			<source title="Sample" src="@Html.Raw(sampleAudioUrl)" type="@(audioType)" />
+		</audio>
+		@if (showSampleAudioDownloadLink)
+		{
+			<br/>
+			<a href="@(Html.Raw(sampleAudioUrl))">Download Audio File</a>
+		}
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleDownloadFileName))
+{
+	string sampleDownloadCaption = product.SampleDownloadCaptionOrDefault();
+	string sampleDownloadUrl = product.SampleDownloadFileUrl(Request.ApplicationPath, ViewContext.RouteData);
+	<div class="btn btn-info NoClick">
+		@sampleDownloadCaption
+	</div>
+	<div class="row">
+		<a href="@(Html.Raw(sampleDownloadUrl))">Download @(sampleDownloadCaption)</a>
 		<hr />
 	</div>
 }
 
 @if (!string.IsNullOrWhiteSpace(product.SampleImageFileName))
 {
+	string sampleImageCaption = product.SampleImageCaptionOrDefault();
+	string sampleImageUrl = product.SampleImageFileUrl(Request.ApplicationPath, ViewContext.RouteData);
 	<div class="btn btn-info NoClick">
-		@Html.DisplayNameFor(model => product.SampleImageFileName)
+		@sampleImageCaption
 	</div>
 	<div class="row">
-		@Html.DisplayFor(model => product.SampleImageFileName)
+		<a href="@(Html.Raw(sampleImageUrl))">
+			<img class="ViewProductSampleImage" src="@(Html.Raw(sampleImageUrl))" alt="@(sampleImageCaption)" title="@(sampleImageCaption)" />
+			<br/>Click here to view full size
+		</a>
 		<hr />
 	</div>
+
 }
 
 @if (product.DigitalDownload)
 {
 	<div class="btn btn-info NoClick">
-		@Html.DisplayNameFor(model => product.DigitalDownload)
+		Digital Download
 	</div>
 	<div class="row">
-		@Html.DisplayFor(model => product.DigitalDownload)
+		You will receive an email link to download this file after checkout.
 		<hr />
 	</div>
 }
 
-
-@if (!string.IsNullOrWhiteSpace(product.DescriptionHtml))
+@if (!string.IsNullOrWhiteSpace(product.BottomDescriptionHtml))
 {
+	string bottomDescriptionCaption = product.BottomDescriptionCaptionOrDefault();
 	<div class="row">
 		<div class="btn btn-info NoClick">
-			@Html.DisplayNameFor(model => product.DescriptionHtml)
+			@bottomDescriptionCaption
 		</div>
 	</div>
 	<div class="row">
-		@Html.Raw(Html.ReplaceVariables(product.DescriptionHtml))
-		<hr/>
+		@Html.Raw(Html.ReplaceVariables(product.BottomDescriptionHtml))
+		<hr />
 	</div>
 }
-
-
 
 @if (showAddToCart)
 {
@@ -116,5 +158,4 @@
 {
 	@Html.Raw(Html.ReplaceVariables(product.FooterHtml))
 }
-<hr/>
 <!-- View Product Details Default End -->

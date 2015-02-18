@@ -59,6 +59,14 @@
             }
         }
         
+		public static string AppDefaultTimeZoneId
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppDefaultTimeZoneId") ?? _projectSettings.AppDefaultTimeZoneId;
+			}
+		}
+
         public static bool AppEnableSMS
 		{
             get

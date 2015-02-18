@@ -27,6 +27,11 @@ namespace GStore.Models
 
 		public int Order { get; set; }
 
+		[Required]
+		[MaxLength(50)]
+		[Display(Name = "Time Zone Id")]
+		public string TimeZoneId { get; set; }
+
 		[Display(Name = "Log Page Views")]
 		public bool EnablePageViewLog { get; set; }
 

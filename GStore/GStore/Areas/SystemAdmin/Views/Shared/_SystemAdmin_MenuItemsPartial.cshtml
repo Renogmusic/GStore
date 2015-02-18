@@ -129,11 +129,51 @@
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
-				UTC Time: @DateTime.UtcNow.ToString()
+				User Local Time
+				<br />
+				@Html.UserTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToUserDateTime(Html).ToString()
 			</li>
 			<li class="divider"></li>
 			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
-				Server Local Time: @DateTime.UtcNow.ToLocalTime().ToString()
+				Store Local Time
+				<br />
+				@Html.StoreFrontTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToStoreDateTime(Html).ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Client Local Time
+				<br />
+				@Html.ClientTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToClientDateTime(Html).ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				GStore System Default Time
+				<br />
+				@Html.GStoreSystemDefaultTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToGStoreSystemDefaultDateTime().ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time
+				<br />
+				@Html.ServerTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToLocalTime().ToString()
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time
+				<br />
+				@Html.UtcTimeZone().DisplayName
+				<br />
+				@DateTime.UtcNow.ToString()
 			</li>
 		</ul>
 	</li>

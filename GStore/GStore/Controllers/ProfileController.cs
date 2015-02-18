@@ -78,6 +78,16 @@ namespace GStore.Controllers
 			return View(model);
 		}
 
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public ActionResult UpdateTimeZone(string timeZoneId)
+		{
+			UserProfile userProfile = CurrentUserProfileOrThrow;
+			userProfile.TimeZoneId = timeZoneId;
+			GStoreDb.UserProfiles.Update(userProfile);
+			GStoreDb.SaveChanges();
+			return RedirectToAction("Index");
+		}
 
 		public ActionResult SendTestEmail()
 		{

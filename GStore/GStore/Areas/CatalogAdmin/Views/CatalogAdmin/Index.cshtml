@@ -44,3 +44,20 @@
 	}
 </div>
 
+@*@{
+	var t = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+	if (t == null)
+	{
+		@:null<br/>
+	}
+	else
+	{
+		@: @(t.DisplayName)<br />
+	}
+	<hr/>
+	var x = TimeZoneInfo.GetSystemTimeZones();
+	foreach (var y in x)
+	{
+		@:@(y.Id) - @(y.DisplayName)<br/>
+	}
+}*@

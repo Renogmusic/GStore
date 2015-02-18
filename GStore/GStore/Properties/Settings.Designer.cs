@@ -429,5 +429,23 @@ namespace GStore.Properties {
                 return ((string)(this["AppDefaultPageTemplateName"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Pacific Standard Time")]
+        public string AppDefaultTimeZoneIdX {
+            get {
+                return ((string)(this["AppDefaultTimeZoneIdX"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("US Mountain Standard Time")]
+        public string AppDefaultTimeZoneId {
+            get {
+                return ((string)(this["AppDefaultTimeZoneId"]));
+            }
+        }
     }
 }
