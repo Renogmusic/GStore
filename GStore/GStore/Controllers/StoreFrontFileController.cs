@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using GStore.Data;
 using GStore.Models;
+using GStore.AppHtmlHelpers;
 
 namespace GStore.Controllers
 {
@@ -55,7 +56,8 @@ namespace GStore.Controllers
 
 		public ActionResult CatalogContent(string path)
 		{
-			return StoreFile("/CatalogContent/" + path);
+			bool isImage = path.FileExtensionIsImage();
+			return StoreFile("/CatalogContent/" + path, isImage);
 		}
 
 

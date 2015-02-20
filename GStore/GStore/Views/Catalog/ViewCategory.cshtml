@@ -17,17 +17,28 @@
 
 }
 
-
-<div class="row">
-	<div class="col-xs-12 text-center">
-		<h1>@(Model.StoreFrontConfig.CatalogTitle)</h1>
+<div class="row CatalogTitleRow">
+	<div class="col-xs-12 text-center CatalogTitleCol">
+		<h1 class="CatalogTitleText">@(Model.StoreFrontConfig.CatalogTitle)</h1>
 	</div>
 </div>
-@Html.ProductCategoryWithParentLinks(Model.CurrentCategoryOrNull, "Top", (Model.CurrentCategoryOrNull == null))
 
-@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+<div class="CatalogHeader">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+</div>
+
+<div class="row CategoryPathRow">
+	<div class="CategoryPath col-xs-12 text-center">
+		@Html.ProductCategoryWithParentLinks(Model.CurrentCategoryOrNull, "Top", (Model.CurrentCategoryOrNull == null))
+	</div>
+</div>
+
 @{ Html.RenderPartial("_ViewCategory_" + Model.CurrentCategoryOrNull.CategoryDetailTemplate.ToString().OrDefault("Default") + "_Partial", Model);}
-@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+
+<div class="CatalogFooter">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+</div>
+
 @if (userCanEditCategory)
 {
 	if (Html.UserHasPermission(GStoreAction.Categories_Manager))

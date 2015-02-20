@@ -41,73 +41,323 @@ namespace GStore.AppHtmlHelpers
 			return new SelectList(items, "Value", "Text");
 		}
 
-		public static IEnumerable<SelectListItem> ProductCategoryFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		public static IEnumerable<SelectListItem> ProductCategoryFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*", bool filterForImages = false, bool filterForAudio = false)
 		{
 			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
 
 			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+			Client client = storeFront.Client;
 
 			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
-			string virtualPath = storeFront.CatalogCategoryContentVirtualDirectoryToMap(http.Request.ApplicationPath);
-			string folderPath = http.Server.MapPath(virtualPath);
 
-			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
-
-			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
-
-			return files.Select(fil =>
-				new SelectListItem()
+			string storeFrontVirtualPath = storeFront.CatalogCategoryContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string storeFrontFolderPath = http.Server.MapPath(storeFrontVirtualPath);
+			List<SelectListItem> storeFrontListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(storeFrontFolderPath))
+			{
+				DirectoryInfo storeFrontFolder = new System.IO.DirectoryInfo(storeFrontFolderPath);
+				List<FileInfo> storeFrontFiles = storeFrontFolder.GetFiles(searchPattern).ToList();
+				if (filterForImages && filterForAudio)
 				{
-					Value = fil.Name,
-					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
-					Selected = fil.Name.ToLower() == selectedFileName
-				});
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage() || f.Name.FileExtensionIsAudio()).ToList();
+				}
+				else if (filterForImages)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup storeFrontGroup = new SelectListGroup() { Name = "Store Front" };
+				storeFrontListItems = storeFrontFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = storeFrontGroup
+					}).ToList();
+			}
+
+			string clientVirtualPath = client.CatalogCategoryContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string clientFolderPath = http.Server.MapPath(clientVirtualPath);
+			List<SelectListItem> clientListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(clientFolderPath))
+			{
+				DirectoryInfo clientFolder = new System.IO.DirectoryInfo(clientFolderPath);
+				List<FileInfo> clientFiles = clientFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup clientGroup = new SelectListGroup() { Name = "Client" };
+				clientListItems = clientFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = clientGroup
+					}).ToList();
+			}
+
+			string serverVirtualPath = "~/Content/Server/CatalogContent/Categories";
+			string serverFolderPath = http.Server.MapPath(serverVirtualPath);
+			List<SelectListItem> serverListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(serverFolderPath))
+			{
+				DirectoryInfo serverFolder = new System.IO.DirectoryInfo(serverFolderPath);
+				List<FileInfo> serverFiles = serverFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				serverListItems = serverFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = serverGroup
+					}).ToList();
+			}
+
+			return storeFrontListItems.Concat(clientListItems).Concat(serverListItems);
+
 		}
 
-		public static IEnumerable<SelectListItem> ProductFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		public static IEnumerable<SelectListItem> ProductFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*", bool filterForImages = false, bool filterForAudio = false)
 		{
 			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
 
 			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+			Client client = storeFront.Client;
 
 			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
-			string virtualPath = storeFront.CatalogProductContentVirtualDirectoryToMap(http.Request.ApplicationPath);
-			string folderPath = http.Server.MapPath(virtualPath);
 
-			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
-
-			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
-
-			return files.Select(fil =>
-				new SelectListItem()
+			string storeFrontVirtualPath = storeFront.CatalogProductContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string storeFrontFolderPath = http.Server.MapPath(storeFrontVirtualPath);
+			List<SelectListItem> storeFrontListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(storeFrontFolderPath))
+			{
+				DirectoryInfo storeFrontFolder = new System.IO.DirectoryInfo(storeFrontFolderPath);
+				List<FileInfo> storeFrontFiles = storeFrontFolder.GetFiles(searchPattern).ToList();
+				if (filterForImages && filterForAudio)
 				{
-					Value = fil.Name,
-					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
-					Selected = fil.Name.ToLower() == selectedFileName
-				});
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage() || f.Name.FileExtensionIsAudio()).ToList();
+				}
+				else if (filterForImages)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup storeFrontGroup = new SelectListGroup() { Name = "Store Front" };
+				storeFrontListItems = storeFrontFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = storeFrontGroup
+					}).ToList();
+			}
+
+			string clientVirtualPath = client.CatalogProductContentVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string clientFolderPath = http.Server.MapPath(clientVirtualPath);
+			List<SelectListItem> clientListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(clientFolderPath))
+			{
+				DirectoryInfo clientFolder = new System.IO.DirectoryInfo(clientFolderPath);
+				List<FileInfo> clientFiles = clientFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup clientGroup = new SelectListGroup() { Name = "Client" };
+				clientListItems = clientFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = clientGroup
+					}).ToList();
+			}
+
+			string serverVirtualPath = "~/Content/Server/CatalogContent/Products";
+			string serverFolderPath = http.Server.MapPath(serverVirtualPath);
+			List<SelectListItem> serverListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(serverFolderPath))
+			{
+				DirectoryInfo serverFolder = new System.IO.DirectoryInfo(serverFolderPath);
+				List<FileInfo> serverFiles = serverFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				serverListItems = serverFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = serverGroup
+					}).ToList();
+			}
+
+			return storeFrontListItems.Concat(clientListItems).Concat(serverListItems);
+
 		}
 
-		public static IEnumerable<SelectListItem> ProductDigitalDownloadFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*")
+		public static IEnumerable<SelectListItem> ProductDigitalDownloadFileListForModel(this HtmlHelper htmlHelper, string searchPattern = "*.*", bool filterForImages = false, bool filterForAudio = false)
 		{
+
 			string selectedFileName = (htmlHelper.ViewData.Model as string ?? "").ToLower();
 
 			StoreFront storeFront = htmlHelper.CurrentStoreFront(true);
+			Client client = storeFront.Client;
 
 			HttpContextBase http = htmlHelper.ViewContext.RequestContext.HttpContext;
-			string virtualPath = storeFront.ProductDigitalDownloadVirtualDirectoryToMap(http.Request.ApplicationPath);
-			string folderPath = http.Server.MapPath(virtualPath);
 
-			DirectoryInfo folder = new System.IO.DirectoryInfo(folderPath);
-
-			List<FileInfo> files = folder.EnumerateFiles(searchPattern).ToList();
-
-			return files.Select(fil =>
-				new SelectListItem()
+			string storeFrontVirtualPath = storeFront.ProductDigitalDownloadVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string storeFrontFolderPath = http.Server.MapPath(storeFrontVirtualPath);
+			List<SelectListItem> storeFrontListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(storeFrontFolderPath))
+			{
+				DirectoryInfo storeFrontFolder = new System.IO.DirectoryInfo(storeFrontFolderPath);
+				List<FileInfo> storeFrontFiles = storeFrontFolder.GetFiles(searchPattern).ToList();
+				if (filterForImages && filterForAudio)
 				{
-					Value = fil.Name,
-					Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
-					Selected = fil.Name.ToLower() == selectedFileName
-				});
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage() || f.Name.FileExtensionIsAudio()).ToList();
+				}
+				else if (filterForImages)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					storeFrontFiles = storeFrontFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup storeFrontGroup = new SelectListGroup() { Name = "Store Front" };
+				storeFrontListItems = storeFrontFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = storeFrontGroup
+					}).ToList();
+			}
+
+			string clientVirtualPath = client.ProductDigitalDownloadVirtualDirectoryToMap(http.Request.ApplicationPath);
+			string clientFolderPath = http.Server.MapPath(clientVirtualPath);
+			List<SelectListItem> clientListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(clientFolderPath))
+			{
+				DirectoryInfo clientFolder = new System.IO.DirectoryInfo(clientFolderPath);
+				List<FileInfo> clientFiles = clientFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					clientFiles = clientFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup clientGroup = new SelectListGroup() { Name = "Client" };
+				clientListItems = clientFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = clientGroup
+					}).ToList();
+			}
+
+			string serverVirtualPath = "~/Content/Server/DigitalDownload/Products";
+			string serverFolderPath = http.Server.MapPath(serverVirtualPath);
+			List<SelectListItem> serverListItems = new List<SelectListItem>();
+			if (System.IO.Directory.Exists(serverFolderPath))
+			{
+				DirectoryInfo serverFolder = new System.IO.DirectoryInfo(serverFolderPath);
+				List<FileInfo> serverFiles = serverFolder.EnumerateFiles(searchPattern).ToList();
+				if (filterForAudio && filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio() || f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForImages)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsImage()).ToList();
+				}
+				else if (filterForAudio)
+				{
+					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
+				}
+
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				serverListItems = serverFiles.Select(fil =>
+					new SelectListItem()
+					{
+						Value = fil.Name,
+						Text = fil.Name + (fil.Name.ToLower() == selectedFileName ? " [SELECTED]" : "") + " " + fil.Length.ToByteString(),
+						Selected = fil.Name.ToLower() == selectedFileName,
+						Group = serverGroup
+					}).ToList();
+			}
+
+			return storeFrontListItems.Concat(clientListItems).Concat(serverListItems);
+
 		}
 
 		public static IEnumerable<SelectListItem> PageList(this HtmlHelper htmlHelper)

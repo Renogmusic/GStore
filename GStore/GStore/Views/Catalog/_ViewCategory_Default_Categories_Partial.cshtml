@@ -16,13 +16,14 @@
 
 	foreach (TreeNode<ProductCategory> categoryNode in categoryNodes)
 	{
+		@:<div class="CategoryListCategoryAndChildren">
 		bool isRoot = (Model.CurrentCategoryOrNull == null);
 		string rootClass = "";
 		if (isRoot)
 		{
 			rootClass = "CategoryRoot ";
 		}
-		<div class="row">
+		<div class="row CategoryListCategoryOnly">
 			<div class="@(rootClass)CategoryPath col-xs-12 text-center">
 				<div class="CategoryListItemBox boxshadowjs">
 					@{
@@ -119,6 +120,7 @@
 				{
 					@:</div>
 				}
+		@:</div>
 	}
 }
 <style>

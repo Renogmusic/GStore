@@ -16,15 +16,29 @@
 	}
 
 }
-<div class="row">
+
+<div class="row CatalogTitleRow">
+	<div class="col-xs-12 text-center CatalogTitleCol">
+		<h1 class="CatalogTitleText">@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+
+<div class="row CategoryPathRow">
 	<div class="CategoryPath col-xs-12 text-center">
-		<h1>@(Model.StoreFrontConfig.CatalogTitle)</h1>
 		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true) &gt; @product.Name
 	</div>
 </div>
-@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+
+<div class="CatalogHeader">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+</div>
+
 @{ Html.RenderPartial("_ViewProduct_" + Model.CurrentProductOrNull.Category.ProductDetailTemplate.ToString().OrDefault("Default") + "_Partial", Model);}
-@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+
+<div class="CatalogFooter">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+</div>
+
 @if (userCanEditProduct)
 {
 	<hr />

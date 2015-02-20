@@ -346,10 +346,14 @@ namespace GStore.Areas.CatalogAdmin.ViewModels
 
 			if (this.DigitalDownload && string.IsNullOrWhiteSpace(this.DigitalDownloadFileName))
 			{
-				string dlCheckboxName = this.GetDisplayName("DigitalDownload");
-				string dlFileName = this.GetDisplayName("DigitalDownloadFileName");
-				
-				result.Add(new ValidationResult(dlFileName + " is required when '" + dlCheckboxName + "' is checked.", new string[] { "DigitalDownloadFileName" }));
+				HttpContext http = HttpContext.Current;
+				if (http == null || http.Request.Files["DigitalDownloadFileName_File"] == null || http.Request.Files["DigitalDownloadFileName_File"].ContentLength == 0)
+				{
+					string dlCheckboxName = this.GetDisplayName("DigitalDownload");
+					string dlFileName = this.GetDisplayName("DigitalDownloadFileName");
+
+					result.Add(new ValidationResult(dlFileName + " is required when '" + dlCheckboxName + "' is checked.", new string[] { "DigitalDownloadFileName" }));
+				}
 			}
 			return result;
 		}

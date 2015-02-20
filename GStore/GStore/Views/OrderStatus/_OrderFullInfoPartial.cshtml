@@ -2,6 +2,11 @@
 @{
 	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
 	
+	bool showDigitalDownloadColumn = false;
+	if (Model.DigitalDownloadItemCount > 0)
+	{
+		showDigitalDownloadColumn = true;
+	}
 	if (Model.OrderItems.Count > 0)
 	{
 		<div class="table-responsive">
@@ -22,6 +27,12 @@
 							@config.CartItemTotalColumnLabel.OrDefault("Total")
 						</th>
 					}
+					@if (showDigitalDownloadColumn)
+					{
+						<th class="text-center">
+							Digital Download
+						</th>
+					}
 				</tr>
 				@{
 		foreach (OrderItem item in Model.OrderItems)
@@ -35,6 +46,19 @@
 				@if (config.CartItemTotalColumnShow)
 				{
 					<td class="text-center">@item.LineTotal</td>
+				}
+				@if (showDigitalDownloadColumn)
+				{
+					<td class="text-center">
+						@if (item.Product.DigitalDownload)
+						{
+							@Html.ActionLink("Click HERE to Download", "Download", new { id = Model.OrderNumber, email = Model.Email, orderItemId = item.OrderItemId }, null)
+						}
+						else
+						{
+							@:-
+						}
+					</td>
 				}
 			</tr>
 		}

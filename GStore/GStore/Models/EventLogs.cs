@@ -65,6 +65,7 @@ namespace GStore.Models
 		public string EmailAddress { get; set; }
 		public string SMSPhone { get; set; }
 		public string OrderNumber { get; set; }
+		public int? OrderItemId { get; set; }
 		public int? PageId { get; set; }
 		public string UploadFileName { get; set; }
 
@@ -216,6 +217,12 @@ namespace GStore.Models
 
 		[Display(Name = "", Description = "", GroupName = "Order Status")]
 		Orders_NotFound = 60020,
+
+		[Display(Name = "", Description = "", GroupName = "Order Status")]
+		Orders_DigitalDownload_Success = 60030,
+
+		[Display(Name = "", Description = "", GroupName = "Order Status")]
+		Orders_DigitalDownload_Failure = 60040,
 
 		[Display(Name = "", Description = "", GroupName = "Page")]
 		Page_Edited = 70010,

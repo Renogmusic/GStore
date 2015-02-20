@@ -888,7 +888,7 @@ namespace GStore.Data
 			category.Name = name;
 			category.UrlName = urlName;
 			category.Order = order;
-			category.ImageName = urlName + ".png";
+			category.ImageName = "";
 			category.ShowInMenu = true;
 			category.HideInMenuIfEmpty = hideInMenuIfEmpty;
 			category.DisplayForDirectLinks = true;

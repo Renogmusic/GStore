@@ -558,8 +558,12 @@ dd label.help-label-top, label.help-label-top {
  pointer-events: none;
 }
 
+.CategoryListCategoryAndChildren
+{
+	padding-bottom: 3em;
+}
 .CategoryPath{
-	padding-bottom: 2em;
+	padding-bottom: 1em;
 }
 
 /*start of themable defaults */
@@ -607,4 +611,23 @@ dd label.help-label-top, label.help-label-top {
 	text-align: center;
 }
 
+.CartItemImage{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 6em;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.CheckoutItemImage{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 3em;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
 /* end of themable defaults*/

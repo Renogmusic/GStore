@@ -35,7 +35,7 @@
 	@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
 	@Html.EditorFor(model => model.DigitalDownload, "FieldCheckbox")
 
-	@Html.EditorFor(model => model.ImageName, "FieldProductCatalogFile")
+	@Html.EditorFor(model => model.ImageName, "FieldProductCatalogFile", new { filterForImages = true })
 	<div class="form-group">
 		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.ImageName)) Preview</label>
 		<div class="col-md-7 title-align">
@@ -60,7 +60,7 @@
 		</div>
 	</div>
 	@Html.EditorFor(model => model.SampleAudioCaption, "FieldText")
-	@Html.EditorFor(model => model.SampleAudioFileName, "FieldProductCatalogFile")
+	@Html.EditorFor(model => model.SampleAudioFileName, "FieldProductCatalogFile", new { filterForAudio = true })
 	<div class="form-group">
 		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleAudioFileName)) Preview</label>
 		<div class="col-md-7 title-align">
@@ -90,7 +90,7 @@
 		</div>
 	</div>
 	@Html.EditorFor(model => model.SampleImageCaption, "FieldText")
-	@Html.EditorFor(model => model.SampleImageFileName, "FieldProductCatalogFile")
+	@Html.EditorFor(model => model.SampleImageFileName, "FieldProductCatalogFile", new { filterForImages = true })
 	<div class="form-group">
 		<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleImageFileName)) Preview</label>
 		<div class="col-md-7 title-align">

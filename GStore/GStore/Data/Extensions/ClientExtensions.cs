@@ -42,6 +42,35 @@ namespace GStore.Data
 			return "/" + applicationPath + "Content/Clients/" + client.Folder.ToFileName();
 		}
 
+		public static string CatalogCategoryContentVirtualDirectoryToMap(this Client client, string applicationPath)
+		{
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			return client.ClientVirtualDirectoryToMap(applicationPath) + "/CatalogContent/Categories";
+		}
+
+		public static string CatalogProductContentVirtualDirectoryToMap(this Client client, string applicationPath)
+		{
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			return client.ClientVirtualDirectoryToMap(applicationPath) + "/CatalogContent/Products";
+		}
+
+		public static string ProductDigitalDownloadVirtualDirectoryToMap(this Client client, string applicationPath)
+		{
+			if (client == null)
+			{
+				throw new ArgumentNullException("client");
+			}
+			return client.ClientVirtualDirectoryToMap(applicationPath) + "/DigitalDownload/Products";
+		}
+
+
+
 		public static void SetDefaultsForNew(this Client client, IGstoreDb db)
 		{
 			client.Name = "New Client";
@@ -394,6 +423,11 @@ namespace GStore.Data
 			productCategory.ImageName = null;
 			productCategory.ForRegisteredOnly = false;
 			productCategory.UseDividerAfterOnMenu = true;
+			productCategory.ShowInMenu = true;
+			productCategory.AllowChildCategoriesInMenu = true;
+			productCategory.HideInMenuIfEmpty = true;
+			productCategory.ShowInCatalogIfEmpty = false;
+
 			productCategory.IsPending = false;
 			productCategory.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			productCategory.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);

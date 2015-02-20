@@ -1,8 +1,13 @@
 ﻿@model CheckoutViewModelBase
 @{
 	Cart cart = Model.Cart;
+	bool showDigitalDownload = false;
+	if (cart.DigitalDownloadItemCount > 0)
+	{
+		showDigitalDownload = true;
+	}
+	
 }
-
 @{
 	if (cart.CartItems.Count > 0)
 	{
@@ -18,6 +23,12 @@
 							@Model.Config.CartItemQuantityColumnLabel.OrDefault("Quantity")
 						</th>
 					}
+					@if (showDigitalDownload)
+					{
+						<th class="text-center">
+							Digital Download
+						</th>
+					}
 					@if (Model.Config.CartItemTotalColumnShow)
 					{
 						<th class="text-center">
@@ -29,10 +40,25 @@
 		foreach (CartItem item in cart.CartItems)
 		{
 			<tr>
-				<td class="text-center">@item.Product.Name</td>
+				<td class="text-center">
+					@Html.DisplayFor(model => item.Product, "CheckoutProduct")
+				</td>
 				@if (Model.Config.CartItemQuantityColumnShow)
 				{
 					<td class="text-center">@item.Quantity</td>
+				}
+				@if (showDigitalDownload)
+				{
+					<td class="text-center">
+						@if (item.Product.DigitalDownload)
+						{
+							@:Download link will be provided at checkout 
+						}
+						else
+						{
+							@:-
+						}
+					</td>
 				}
 				@if (Model.Config.CartItemTotalColumnShow)
 				{

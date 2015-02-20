@@ -10,7 +10,7 @@
 	@Html.HiddenFor(model => model.ProductCategoryId)
 	@Html.EditorFor(model => model.Name, "FieldText")
 	@Html.EditorFor(model => model.UrlName, "FieldText")
-	@Html.EditorFor(model => model.ImageName, "FieldProductCategoryFile")
+	@Html.EditorFor(model => model.ImageName, "FieldProductCategoryFile", new { filterForImages = true })
 
 	<div class="form-group">
 		<label class="col-md-offset-1 col-md-3 title-align-right" for="ImageName">Image Preview</label>

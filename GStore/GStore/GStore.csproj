@@ -120,19 +120,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="SendGrid.SmtpApi">
-      <HintPath>..\packages\SendGrid.SmtpApi.1.1.3\lib\net40\SendGrid.SmtpApi.dll</HintPath>
+    <Reference Include="SendGrid.SmtpApi, Version=1.2.1.0, Culture=neutral, PublicKeyToken=2ae73662c35d80e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SendGrid.SmtpApi.1.2.1\lib\net40\SendGrid.SmtpApi.dll</HintPath>
     </Reference>
-    <Reference Include="SendGridMail">
-      <HintPath>..\packages\Sendgrid.5.0.0\lib\SendGridMail.dll</HintPath>
+    <Reference Include="SendGridMail, Version=5.1.0.0, Culture=neutral, PublicKeyToken=2ae73662c35d80e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Sendgrid.5.1.0\lib\SendGridMail.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -147,46 +149,47 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.OData, Version=5.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http.OData, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.3.1\lib\net45\System.Web.Http.OData.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.4.0\lib\net45\System.Web.Http.OData.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.Tracing">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Tracing.5.2.2\lib\net45\System.Web.Http.Tracing.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http.Tracing, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Tracing.5.2.3\lib\net45\System.Web.Http.Tracing.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
@@ -205,7 +208,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Twilio.3.6.25\lib\3.5\Twilio.Api.dll</HintPath>
+      <HintPath>..\packages\Twilio.3.6.26\lib\3.5\Twilio.Api.dll</HintPath>
     </Reference>
     <Reference Include="Twilio.Mvc">
       <HintPath>..\packages\Twilio.Mvc.3.1.12\lib\3.5\Twilio.Mvc.dll</HintPath>
@@ -457,6 +460,10 @@
     <Content Include="Content\Archive\bootstrap-theme.min.css" />
     <Content Include="Content\Archive\bootstrap.css" />
     <Content Include="Content\Archive\bootstrap.min.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -469,9 +476,10 @@
     <Content Include="Content\bootstrap\mixins.min.css">
       <DependentUpon>mixins.css</DependentUpon>
     </Content>
-    <Content Include="Content\Clients\SampleClient\Images\Categories\songs.png" />
-    <Content Include="Content\Clients\SampleClient\Images\Products\sample.png" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_Audio.mp3" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_Audio.mp3" />
+    <Content Include="Content\Server\DigitalDownload\Products\Sample_DigitalDownload_Audio.mp3" />
     <Content Include="Content\Server\ErrorPages\Error_AppError.html" />
     <Content Include="Content\Server\ErrorPages\Error_BadRequest.html" />
     <Content Include="Content\Server\ErrorPages\Error_GStoreInactive.html" />
@@ -480,6 +488,34 @@
     <Content Include="Content\Server\ErrorPages\Error_InvalidOperation.html" />
     <Content Include="Content\Server\ErrorPages\Error_NotFound.html" />
     <Content Include="Content\Server\ErrorPages\Error_UnknownError.html" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_590.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_bay.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_candle-in-dark.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_cherry-34.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_choccake_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_coffee-beans-2.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_creditcards_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_festivebauble_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_glass-wine-7.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_integratedcircuit_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k4805-2x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k5302-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k6084-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k7229-19x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k7743-13x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k8570-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_k9608-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_magnifierhand_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_metalchain_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_metallic-part-13.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_padlock_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_pennies.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_peppers_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_ring_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_rose_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_san-diego-morning-2.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_spanners_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Categories\Sample_sportcanoe_small.jpg" />
     <Content Include="Content\Server\Images\Logo\large.png" />
     <Content Include="Content\Archive\base\accordion.css" />
     <Content Include="Content\Archive\base\all.css" />
@@ -520,6 +556,34 @@
     <Content Include="Content\Server\Images\Logo\square.png" />
     <Content Include="Content\Server\Images\Logo\tiny.png" />
     <Content Include="Content\Server\Images\Logo\wide.png" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_590.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_bay.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_candle-in-dark.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_cherry-34.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_choccake_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_coffee-beans-2.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_creditcards_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_festivebauble_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_glass-wine-7.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_integratedcircuit_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k4805-2x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k5302-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k6084-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k7229-19x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k7743-13x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k8570-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_k9608-1x.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_magnifierhand_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_metalchain_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_metallic-part-13.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_padlock_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_pennies.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_peppers_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_ring_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_rose_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_san-diego-morning-2.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_spanners_small.jpg" />
+    <Content Include="Content\Server\CatalogContent\Products\Sample_sportcanoe_small.jpg" />
     <Content Include="Content\Server\Images\Utility\LeftUpArrow.png" />
     <Content Include="Content\Server\Scripts\Scripts.js" />
     <Content Include="Content\Server\Styles\Styles.css" />
@@ -899,6 +963,39 @@
       <DependentUpon>variables.css</DependentUpon>
     </Content>
     <Content Include="Content\Server\Themes\_ReadMe.txt" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\Server\Fonts\glyphicons-halflings-regular.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -971,9 +1068,6 @@
     <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Create.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Edit.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\BindingsSysAdmin\Delete.cshtml" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Create.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Delete.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\UserProfileSysAdmin\Details.cshtml" />
@@ -1053,6 +1147,13 @@
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormField.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\WebFormFieldNoLinks.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebForm.cshtml" />
+    <Content Include="Scripts\jquery-ui-1.11.3.js" />
+    <Content Include="Scripts\jquery-ui-1.11.3.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\npm.js" />
     <Content Include="Views\Shared\DisplayTemplates\StoreFront.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Client.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\PageTemplate.cshtml" />
@@ -1204,79 +1305,8 @@
     <Content Include="Areas\StoreAdmin\Views\StoreAdmin\DisplayTemplates\Top7ProductsViewed.cshtml" />
     <Content Include="Areas\OrderAdmin\Views\DiscountAdmin\Manager.cshtml" />
     <Content Include="Areas\OrderAdmin\Views\GiftCardAdmin\Manager.cshtml" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap\wells.less" />
-    <Content Include="Content\bootstrap\variables.less" />
-    <Content Include="Content\bootstrap\utilities.less" />
-    <Content Include="Content\bootstrap\type.less" />
-    <Content Include="Content\bootstrap\tooltip.less" />
-    <Content Include="Content\bootstrap\thumbnails.less" />
-    <Content Include="Content\bootstrap\theme.less" />
-    <Content Include="Content\bootstrap\tables.less" />
-    <Content Include="Content\bootstrap\scaffolding.less" />
-    <Content Include="Content\bootstrap\responsive-utilities.less" />
-    <Content Include="Content\bootstrap\responsive-embed.less" />
-    <Content Include="Content\bootstrap\progress-bars.less" />
-    <Content Include="Content\bootstrap\print.less" />
-    <Content Include="Content\bootstrap\popovers.less" />
-    <Content Include="Content\bootstrap\panels.less" />
-    <Content Include="Content\bootstrap\pagination.less" />
-    <Content Include="Content\bootstrap\pager.less" />
-    <Content Include="Content\bootstrap\normalize.less" />
-    <Content Include="Content\bootstrap\navs.less" />
-    <Content Include="Content\bootstrap\navbar.less" />
-    <Content Include="Content\bootstrap\modals.less" />
-    <Content Include="Content\bootstrap\mixins\vendor-prefixes.less" />
-    <Content Include="Content\bootstrap\mixins\text-overflow.less" />
-    <Content Include="Content\bootstrap\mixins\text-emphasis.less" />
-    <Content Include="Content\bootstrap\mixins\table-row.less" />
-    <Content Include="Content\bootstrap\mixins\tab-focus.less" />
-    <Content Include="Content\bootstrap\mixins\size.less" />
-    <Content Include="Content\bootstrap\mixins\responsive-visibility.less" />
-    <Content Include="Content\bootstrap\mixins\resize.less" />
-    <Content Include="Content\bootstrap\mixins\reset-filter.less" />
-    <Content Include="Content\bootstrap\mixins\progress-bar.less" />
-    <Content Include="Content\bootstrap\mixins\panels.less" />
-    <Content Include="Content\bootstrap\mixins\pagination.less" />
-    <Content Include="Content\bootstrap\mixins\opacity.less" />
-    <Content Include="Content\bootstrap\mixins\nav-vertical-align.less" />
-    <Content Include="Content\bootstrap\mixins\nav-divider.less" />
-    <Content Include="Content\bootstrap\mixins\list-group.less" />
-    <Content Include="Content\bootstrap\mixins\labels.less" />
-    <Content Include="Content\bootstrap\mixins\image.less" />
-    <Content Include="Content\bootstrap\mixins\hide-text.less" />
-    <Content Include="Content\bootstrap\mixins\grid-framework.less" />
-    <Content Include="Content\bootstrap\mixins\grid.less" />
-    <Content Include="Content\bootstrap\mixins\gradients.less" />
-    <Content Include="Content\bootstrap\mixins\forms.less" />
-    <Content Include="Content\bootstrap\mixins\clearfix.less" />
-    <Content Include="Content\bootstrap\mixins\center-block.less" />
-    <Content Include="Content\bootstrap\mixins\buttons.less" />
-    <Content Include="Content\bootstrap\mixins\border-radius.less" />
-    <Content Include="Content\bootstrap\mixins\background-variant.less" />
-    <Content Include="Content\bootstrap\mixins\alerts.less" />
     <Content Include="Content\bootstrap\mixins.less" />
-    <Content Include="Content\bootstrap\media.less" />
-    <Content Include="Content\bootstrap\list-group.less" />
-    <Content Include="Content\bootstrap\labels.less" />
-    <Content Include="Content\bootstrap\jumbotron.less" />
-    <Content Include="Content\bootstrap\input-groups.less" />
-    <Content Include="Content\bootstrap\grid.less" />
-    <Content Include="Content\bootstrap\glyphicons.less" />
-    <Content Include="Content\bootstrap\forms.less" />
-    <Content Include="Content\bootstrap\dropdowns.less" />
-    <Content Include="Content\bootstrap\component-animations.less" />
-    <Content Include="Content\bootstrap\code.less" />
-    <Content Include="Content\bootstrap\close.less" />
-    <Content Include="Content\bootstrap\carousel.less" />
-    <Content Include="Content\bootstrap\buttons.less" />
-    <Content Include="Content\bootstrap\button-groups.less" />
-    <Content Include="Content\bootstrap\breadcrumbs.less" />
     <Content Include="Content\bootstrap\bootstrap.less" />
-    <Content Include="Content\bootstrap\badges.less" />
-    <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Content\bootstrap\bootstrap.css.map">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>
@@ -1529,6 +1559,84 @@
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Text.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\CategoryAdmin\DisplayTemplates\Theme.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\DisplayTemplates\Theme.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap\wells.less" />
+    <Content Include="Content\bootstrap\variables.less" />
+    <Content Include="Content\bootstrap\utilities.less" />
+    <Content Include="Content\bootstrap\type.less" />
+    <Content Include="Content\bootstrap\tooltip.less" />
+    <Content Include="Content\bootstrap\thumbnails.less" />
+    <Content Include="Content\bootstrap\theme.less" />
+    <Content Include="Content\bootstrap\tables.less" />
+    <Content Include="Content\bootstrap\scaffolding.less" />
+    <Content Include="Content\bootstrap\responsive-utilities.less" />
+    <Content Include="Content\bootstrap\responsive-embed.less" />
+    <Content Include="Content\bootstrap\progress-bars.less" />
+    <Content Include="Content\bootstrap\print.less" />
+    <Content Include="Content\bootstrap\popovers.less" />
+    <Content Include="Content\bootstrap\panels.less" />
+    <Content Include="Content\bootstrap\pagination.less" />
+    <Content Include="Content\bootstrap\pager.less" />
+    <Content Include="Content\bootstrap\normalize.less" />
+    <Content Include="Content\bootstrap\navs.less" />
+    <Content Include="Content\bootstrap\navbar.less" />
+    <Content Include="Content\bootstrap\modals.less" />
+    <Content Include="Content\bootstrap\mixins\vendor-prefixes.less" />
+    <Content Include="Content\bootstrap\mixins\text-overflow.less" />
+    <Content Include="Content\bootstrap\mixins\text-emphasis.less" />
+    <Content Include="Content\bootstrap\mixins\table-row.less" />
+    <Content Include="Content\bootstrap\mixins\tab-focus.less" />
+    <Content Include="Content\bootstrap\mixins\size.less" />
+    <Content Include="Content\bootstrap\mixins\responsive-visibility.less" />
+    <Content Include="Content\bootstrap\mixins\resize.less" />
+    <Content Include="Content\bootstrap\mixins\reset-filter.less" />
+    <Content Include="Content\bootstrap\mixins\progress-bar.less" />
+    <Content Include="Content\bootstrap\mixins\panels.less" />
+    <Content Include="Content\bootstrap\mixins\pagination.less" />
+    <Content Include="Content\bootstrap\mixins\opacity.less" />
+    <Content Include="Content\bootstrap\mixins\nav-vertical-align.less" />
+    <Content Include="Content\bootstrap\mixins\nav-divider.less" />
+    <Content Include="Content\bootstrap\mixins\list-group.less" />
+    <Content Include="Content\bootstrap\mixins\labels.less" />
+    <Content Include="Content\bootstrap\mixins\image.less" />
+    <Content Include="Content\bootstrap\mixins\hide-text.less" />
+    <Content Include="Content\bootstrap\mixins\grid-framework.less" />
+    <Content Include="Content\bootstrap\mixins\grid.less" />
+    <Content Include="Content\bootstrap\mixins\gradients.less" />
+    <Content Include="Content\bootstrap\mixins\forms.less" />
+    <Content Include="Content\bootstrap\mixins\clearfix.less" />
+    <Content Include="Content\bootstrap\mixins\center-block.less" />
+    <Content Include="Content\bootstrap\mixins\buttons.less" />
+    <Content Include="Content\bootstrap\mixins\border-radius.less" />
+    <Content Include="Content\bootstrap\mixins\background-variant.less" />
+    <Content Include="Content\bootstrap\mixins\alerts.less" />
+    <Content Include="Content\bootstrap\media.less" />
+    <Content Include="Content\bootstrap\list-group.less" />
+    <Content Include="Content\bootstrap\labels.less" />
+    <Content Include="Content\bootstrap\jumbotron.less" />
+    <Content Include="Content\bootstrap\input-groups.less" />
+    <Content Include="Content\bootstrap\grid.less" />
+    <Content Include="Content\bootstrap\glyphicons.less" />
+    <Content Include="Content\bootstrap\forms.less" />
+    <Content Include="Content\bootstrap\dropdowns.less" />
+    <Content Include="Content\bootstrap\component-animations.less" />
+    <Content Include="Content\bootstrap\code.less" />
+    <Content Include="Content\bootstrap\close.less" />
+    <Content Include="Content\bootstrap\carousel.less" />
+    <Content Include="Content\bootstrap\buttons.less" />
+    <Content Include="Content\bootstrap\button-groups.less" />
+    <Content Include="Content\bootstrap\breadcrumbs.less" />
+    <Content Include="Content\bootstrap\badges.less" />
+    <Content Include="Content\bootstrap\alerts.less" />
     <None Include="Properties\PublishProfiles\renogplay-gstore.pubxml" />
     <None Include="Properties\PublishProfiles\renogplay.pubxml" />
     <None Include="Properties\Settings.settings">
@@ -1859,18 +1967,11 @@
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
-    <Content Include="Scripts\jquery-ui-1.11.2.js" />
-    <Content Include="Scripts\jquery-ui-1.11.2.min.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\npm.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
@@ -2012,6 +2113,8 @@
     <Content Include="Views\Shared\EditorTemplates\FieldProductDigitalDownloadFile.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\ProductCatalogFileInfo.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\ProductDigitalDownloadFileInfo.cshtml" />
+    <Content Include="Views\Catalog\_ViewCategory_Default_Categories_Partial - Copy.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CheckoutProduct.cshtml" />
     <None Include="Views\Shared\EditorTemplates\FieldProductCategoryFile.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCatalogFile.cshtml" />
   </ItemGroup>
@@ -2024,15 +2127,18 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\StoreAdmin\Views\Shared\EditorTemplates\" />
+    <Folder Include="Content\Clients\SampleClient\CatalogContent\Categories\" />
+    <Folder Include="Content\Clients\SampleClient\CatalogContent\Products\" />
+    <Folder Include="Content\Clients\SampleClient\DigitalDownload\Products\" />
     <Folder Include="Content\Clients\SampleClient\Fonts\" />
     <Folder Include="Content\Clients\SampleClient\Images\Logo\" />
     <Folder Include="Content\Clients\SampleClient\Pages\" />
     <Folder Include="Content\Clients\SampleClient\Scripts\" />
-    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\ErrorPages\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\CatalogContent\Categories\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\CatalogContent\Products\" />
+    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\DigitalDownload\Products\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Fonts\" />
-    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Categories\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Logo\" />
-    <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Images\Products\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Pages\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Scripts\" />
     <Folder Include="Content\Clients\SampleClient\StoreFronts\SampleStoreFront\Styles\" />

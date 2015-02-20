@@ -95,5 +95,8 @@ namespace GStore.Models
 		[Display(Name = "Item Returned", Description = "User returned this item for a refund.")]
 		public bool StatusItemReturned { get; set; }
 
+		[Display(Name = "Item Downloaded", Description = "User downloaded this item digitally.")]
+		public bool StatusItemDownloaded { get; set; }
+
 	}
 }
