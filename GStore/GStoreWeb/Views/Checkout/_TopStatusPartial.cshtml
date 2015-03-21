@@ -1,0 +1,176 @@
+﻿@model CheckoutViewModelBase
+
+@{
+	bool showLogInOrGuest = true;
+	bool showDeliveryInfo = true;
+	bool showDeliveryMethod = true;
+	bool showPaymentInfo = true;
+	bool showConfirmOrder = true;
+
+	bool linkToLogInOrGuest = true;
+	bool linkToDeliveryInfo = true;
+	bool linkToDeliveryMethod = true;
+	bool linkToPaymentInfo = true;
+	bool linkToConfirmOrder = true;
+
+	if (Html.CurrentUserProfile(false) != null)
+	{
+		showLogInOrGuest = false;
+	}
+
+	if (Model.Cart.AllItemsAreDigitalDownload)
+	{
+		showDeliveryMethod = false;
+	}
+
+	//basic rules
+	//1 - you cannot go forward until you complete a step
+	switch ((Model.CurrentAction ?? string.Empty).ToLower())
+	{
+		case "loginorguest":
+			linkToLogInOrGuest = false;
+			linkToDeliveryInfo = Model.Cart.StatusSelectedLogInOrGuest;
+			linkToDeliveryMethod = Model.Cart.StatusCompletedDeliveryInfo;
+			linkToPaymentInfo = Model.Cart.StatusSelectedDeliveryMethod;
+			linkToConfirmOrder = Model.Cart.StatusPaymentInfoConfirmed;
+			break;
+
+		case "deliveryinfo":
+		case "deliveryinfoshipping":
+		case "deliveryinfodigitalonly":
+			linkToDeliveryInfo = false;
+			linkToDeliveryMethod = Model.Cart.StatusCompletedDeliveryInfo;
+			linkToPaymentInfo = Model.Cart.StatusSelectedDeliveryMethod;
+			linkToConfirmOrder = Model.Cart.StatusPaymentInfoConfirmed;
+			break;
+
+		case "deliverymethod":
+			linkToDeliveryMethod = false;
+			linkToPaymentInfo = Model.Cart.StatusSelectedDeliveryMethod;
+			linkToConfirmOrder = Model.Cart.StatusPaymentInfoConfirmed;
+			break;
+
+		case "paymentinfo":
+			linkToPaymentInfo = false;
+			linkToConfirmOrder = Model.Cart.StatusPaymentInfoConfirmed;
+			break;
+
+		case "confirmorder":
+			linkToConfirmOrder = false;
+			break;
+
+
+		default:
+			linkToLogInOrGuest = false;
+			linkToDeliveryInfo = false;
+			linkToDeliveryMethod = false;
+			linkToPaymentInfo = false;
+			linkToConfirmOrder = false;
+			break;
+	}
+
+	string labelLogInOrGuest = "Log In or Guest";
+	string labelDeliveryInfo = "Delivery Info";
+	string labelDeliveryMethod = "Delivery Method";
+	string labelPaymentInfo = "Payment Info";
+	string labelConfirmOrder = "Confirm Order";
+
+	string classLogInOrGuest = Model.CurrentAction.IfMatch("LogInOrGuest", "Current ") + (linkToLogInOrGuest ? "" : "disabled ") + "CheckoutProcessButton btn btn-sm btn-danger";
+
+	string classDeliveryInfo = (linkToDeliveryInfo ? "" : "disabled ") + "CheckoutProcessButton btn btn-sm btn-primary";
+	if (Model.CurrentAction.ToLower() == "deliveryinfo"
+		|| Model.CurrentAction.ToLower() == "deliveryinfoshipping"
+		|| Model.CurrentAction.ToLower() == "deliveryinfodigitalonly"
+		)
+	{
+		classDeliveryInfo = "Current " + classDeliveryInfo;
+	}
+
+	string classDeliveryMethod = Model.CurrentAction.IfMatch("DeliveryMethod", "Current ") + (linkToDeliveryMethod ? "" : "disabled ") + "CheckoutProcessButton btn btn-sm btn-warning";
+	string classPaymentInfo = Model.CurrentAction.IfMatch("PaymentInfo", "Current ") + (linkToPaymentInfo ? "" : "disabled ") + "CheckoutProcessButton btn btn-sm btn-info";
+	string classConfirmOrder = Model.CurrentAction.IfMatch("ConfirmOrder", "Current ") + (linkToConfirmOrder ? "" : "disabled ") + "CheckoutProcessButton btn btn-sm btn-success";
+
+	//tricky logic: show divider only if the immediate item after is being shown, and if there was an item before
+	MvcHtmlString divider1 = new MvcHtmlString(" - ");
+	MvcHtmlString divider2 = new MvcHtmlString(" - ");
+	MvcHtmlString divider3 = new MvcHtmlString(" - ");
+	MvcHtmlString divider4 = new MvcHtmlString(" - ");
+}
+<hr />
+<style>
+	.form-control
+	{
+		display: inline;
+	}
+
+	.form-group
+	{
+		margin-bottom: 20px;
+	}
+
+	.btn.btn-warning
+	{
+		color: GrayText;
+		font-weight: bold;
+	}
+
+	.CheckoutProcessButton
+	{
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+
+		.CheckoutProcessButton.Current
+		{
+			font-weight: bolder;
+			opacity: 1;
+			border: 6px solid red;
+			border-width: thick;
+		}
+</style>
+<div class="row">
+	@if (showLogInOrGuest)
+	{
+		<a class="@(classLogInOrGuest)" href="@(Url.Action("LogInOrGuest"))">@labelLogInOrGuest</a>
+	}
+	@if (showDeliveryInfo)
+	{
+		if (showLogInOrGuest)
+		{
+			@divider1
+		}
+		<a class="@(classDeliveryInfo)" href="@(Url.Action("DeliveryInfo"))">@labelDeliveryInfo</a>
+	}
+	@if (showDeliveryMethod)
+	{
+		if (showLogInOrGuest || showDeliveryInfo)
+		{
+			@divider2
+		}
+		<a class="@(classDeliveryMethod)" href="@(Url.Action("DeliveryMethod"))">@labelDeliveryMethod</a>
+	}
+	@if (showPaymentInfo)
+	{
+		if (showLogInOrGuest || showDeliveryInfo)
+		{
+			@divider3
+		}
+		<a class="@(classPaymentInfo)" href="@(Url.Action("PaymentInfo"))">@labelPaymentInfo</a>
+	}
+	@if (showConfirmOrder)
+	{
+		if (showLogInOrGuest || showDeliveryInfo || showDeliveryMethod || showPaymentInfo)
+		{
+			@divider4
+		}
+		<a class="@(classConfirmOrder)" href="@(Url.Action("ConfirmOrder"))">@labelConfirmOrder</a>
+	}
+</div>
+@if (Model.Cart.DeliveryInfoShipping != null)
+{
+	@Html.DisplayFor(model => model.Cart.DeliveryInfoShipping)
+}
+else if (Model.Cart.DeliveryInfoDigital != null)
+{
+	@Html.DisplayFor(model => model.Cart.DeliveryInfoDigital)
+}

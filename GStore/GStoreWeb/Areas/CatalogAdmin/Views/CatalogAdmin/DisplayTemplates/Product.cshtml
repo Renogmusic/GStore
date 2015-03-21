@@ -1,0 +1,28 @@
+﻿@model Product
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			<a href='@Url.Action("Details", "ProductAdmin", new {id = Model.ProductCategoryId })' title="View Product '@(Model.Name)'">
+			'@(Model.Name)' [@(Model.ProductId)]
+			@if (!isActive)
+			{
+				@:[INACTIVE]
+			}
+			
+			</a>
+		@:</span>
+	}
+}
+<br/>
+<br/>

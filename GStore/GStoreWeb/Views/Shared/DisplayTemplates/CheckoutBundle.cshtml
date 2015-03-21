@@ -1,0 +1,19 @@
+﻿@model ProductBundle
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		<div class="row CheckoutBundleRow">
+			@Model.Name
+		</div>
+		if (!string.IsNullOrEmpty(Model.ImageName))
+		{
+			<div class="row CheckoutBundleImageRow">
+				<img class="CheckoutBundleImage" src="@(Html.Raw(Model.ImageUrl(Request.ApplicationPath, ViewContext.RouteData, true)))" />
+			</div>
+		}
+	}
+}

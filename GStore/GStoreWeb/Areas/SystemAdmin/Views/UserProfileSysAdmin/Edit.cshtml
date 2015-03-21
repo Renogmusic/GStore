@@ -1,0 +1,73 @@
+﻿@model UserProfile
+
+@{ ViewData.SetColDisplay(0, 2, 8); }
+@using (Html.BeginForm())
+{
+	SelectList userProfileList = ViewBag.UserProfileList as SelectList;
+
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning title-align">
+			Edit User Profile
+			<br />
+			'@(Model.FullName)' &lt;@(Model.Email)&gt; [@(Model.UserProfileId)]
+		</h2>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenAuditFieldsOptional()
+		</div>
+	</div>
+
+	<div class="row form-horizontal">
+		@Html.EditorFor(model => model.UserProfileId, "FieldKey")
+		@Html.EditorFor(model => model.ClientId, "FieldClientIdNullableWithPostback")
+		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontIdNullable")
+		@Html.EditorFor(model => model.UserId, "FieldText")
+		@Html.EditorFor(model => model.UserName, "FieldText")
+		@Html.EditorFor(model => model.Email, "FieldEmail")
+		@Html.EditorFor(model => model.FullName, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.TimeZoneId, "FieldTimeZone")
+		@Html.EditorFor(model => model.SignupNotes, "FieldTextArea")
+		@Html.EditorFor(model => model.SendMoreInfoToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.EntryDateTime, "FieldDateTime")
+		@Html.EditorFor(model => model.EntryRawUrl, "FieldText")
+		@Html.EditorFor(model => model.EntryUrl, "FieldUrl")
+		@Html.EditorFor(model => model.EntryReferrer, "FieldUrl")
+		@Html.EditorFor(model => model.AllowUsersToSendSiteMessages, "FieldCheckbox")
+		@Html.EditorFor(model => model.NotifyAllWhenLoggedOn, "FieldCheckbox")
+		@Html.EditorFor(model => model.NotifyOfSiteUpdatesToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SubscribeToNewsletterEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendSiteMessagesToEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendSiteMessagesToSms, "FieldCheckbox")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Details", new { id = Model.UserProfileId }, new { @class = "btn btn-default" })
+		</div>
+	</div>
+}
+
+<hr />
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>

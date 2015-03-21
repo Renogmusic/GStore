@@ -1,0 +1,1036 @@
+﻿@model StoreFrontConfigAdminViewModel
+
+@{
+	string tabBasicActive = string.Empty;
+	string tabAdminsActive = string.Empty;
+	string tabMetaTagsActive = string.Empty;
+	string tabTrackingActive = string.Empty;
+	string tabThemesActive = string.Empty;
+	string tabCartActive = string.Empty;
+	string tabCheckoutActive = string.Empty;
+	string tabPaymentsActive = string.Empty;
+	string tabCatalogLayoutActive = string.Empty;
+	string tabErrorPagesActive = string.Empty;
+	string tabRegistrationActive = string.Empty;
+	string tabLayoutsActive = string.Empty;
+	string tabActivationActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "admins":
+			tabAdminsActive = "active";
+			break;
+		case "metatags":
+			tabMetaTagsActive = "active";
+			break;
+		case "tracking":
+			tabTrackingActive = "active";
+			break;
+		case "themes":
+			tabThemesActive = "active";
+			break;
+		case "cart":
+			tabCartActive = "active";
+			break;
+		case "checkout":
+			tabCheckoutActive = "active";
+			break;
+		case "payments":
+			tabPaymentsActive = "active";
+			break;
+		case "cataloglayout":
+			tabCatalogLayoutActive = "active";
+			break;
+		case "errorpages":
+			tabErrorPagesActive = "active";
+			break;
+		case "registration":
+			tabRegistrationActive = "active";
+			break;
+		case "layouts":
+			tabLayoutsActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+
+
+}
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-success">
+		View Store Front Configuration<br/>
+		<small>
+			@(Html.DisplayNameFor(model => model.ConfigurationName)): '@(Html.DisplayFor(model => model.ConfigurationName))' [@(Model.StoreFrontConfigurationId)]<br />
+			@(Html.DisplayNameFor(model => model.StoreFront)): '@(Model.Name)' [@(Model.StoreFrontId)]
+		</small>
+	</h2>
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a class="btn btn-warning" href="#" onclick="JumpToEditTab();">Edit</a>
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View without Tabs", "StoreFrontViewNoTabs", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-primary" })
+	</div>
+</div>
+
+<hr />
+<script>
+	function JumpToEditTab() {
+		var url = '@(Html.Raw(Url.Action("StoreFrontEdit", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId, Tab = "XXXX"}).ToJavaScriptString()))';
+		var tabName = GetActiveTab();
+		document.location = url.replace("XXXX", tabName);
+	}
+	function GetActiveTab()
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName) {
+		if (document.getElementById('ActiveTab')) {
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+</script>
+<div class="row">
+	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
+		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+		<li class="@(tabAdminsActive)"><a data-toggle="tab" href="#sectionAdmins" onclick="SetActiveTab('Admins');">Admins</a></li>
+		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+		<li class="@(tabTrackingActive)"><a data-toggle="tab" href="#sectionTracking" onclick="SetActiveTab('Tracking');">Tracking</a></li>
+		<li class="@(tabThemesActive)"><a data-toggle="tab" href="#sectionThemes" onclick="SetActiveTab('Themes');">Themes</a></li>
+		<li class="@(tabCartActive)"><a data-toggle="tab" href="#sectionCart" onclick="SetActiveTab('Cart');">Cart</a></li>
+		<li class="@(tabCheckoutActive)"><a data-toggle="tab" href="#sectionCheckout" onclick="SetActiveTab('Checkout');">Checkout</a></li>
+		<li class="@(tabPaymentsActive)"><a data-toggle="tab" href="#sectionPayments" onclick="SetActiveTab('Payments');">Payments</a></li>
+		<li class="@(tabCatalogLayoutActive)"><a data-toggle="tab" href="#sectionCatalogLayout" onclick="SetActiveTab('CatalogLayout');">Catalog Layout</a></li>
+		<li class="@(tabErrorPagesActive)"><a data-toggle="tab" href="#sectionErrorPages" onclick="SetActiveTab('ErrorPages');">Error Pages</a></li>
+		<li class="@(tabRegistrationActive)"><a data-toggle="tab" href="#sectionRegistration" onclick="SetActiveTab('Registration');">Registration</a></li>
+		<li class="@(tabLayoutsActive)"><a data-toggle="tab" href="#sectionLayouts" onclick="SetActiveTab('Layouts');">Layouts</a></li>
+		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+	</ul>
+</div>
+@Html.HiddenFor(model => model.ActiveTab)
+
+<div class="tab-content">
+
+	<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Basic Info</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+			<dt>
+				@Html.DisplayNameFor(model => model.StoreFrontId)
+			</dt>
+			<dd>
+				@Html.DisplayFor(model => model.StoreFrontId)
+				<br />@Html.HelpLabelFor(model => model.StoreFrontId, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.StoreFrontConfigurationId)
+			</dt>
+			<dd>
+				@Html.DisplayFor(model => model.StoreFrontConfigurationId)
+				<br />@Html.HelpLabelFor(model => model.StoreFrontConfigurationId, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.Name)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.Name)
+				<br />@Html.HelpLabelFor(model => model.Name, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ConfigurationName)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ConfigurationName)
+				<br />@Html.HelpLabelFor(model => model.ConfigurationName, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.PublicUrl)
+			</dt>
+
+			<dd>
+				<a target="_blank" href="@(Html.Raw(Model.PublicUrl))">@Html.Encode(Model.PublicUrl)</a> (opens in new window)
+				<br />@Html.HelpLabelFor(model => model.PublicUrl, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.TimeZoneId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.TimeZoneId)
+				<br />@Html.HelpLabelFor(model => model.TimeZoneId, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.HtmlFooter)
+			</dt>
+
+			<dd>
+				@Html.Raw(Model.HtmlFooter)
+				<br />@Html.HelpLabelFor(model => model.HtmlFooter, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.HomePageUseCatalog)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.HomePageUseCatalog)
+				<br />@Html.HelpLabelFor(model => model.HomePageUseCatalog, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NavBarItemsMaxLevels)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NavBarItemsMaxLevels)
+				<br />@Html.HelpLabelFor(model => model.NavBarItemsMaxLevels, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.Order)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.Order)
+				<br />@Html.HelpLabelFor(model => model.Order, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.Folder)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.Folder)
+				<br />@Html.HelpLabelFor(model => model.Folder, new { @class = "help-label" })
+			</dd>
+		</dl>
+	</div>
+
+	<div id="sectionAdmins" class="tab-pane fade in @(tabAdminsActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Admin Users</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.AccountAdmin)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.AccountAdmin)
+				<br />@Html.HelpLabelFor(model => model.AccountAdmin, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.RegisteredNotify_UserProfileId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.RegisteredNotify)
+				<br />@Html.HelpLabelFor(model => model.RegisteredNotify, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.WelcomePerson_UserProfileId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.WelcomePerson)
+				<br />@Html.HelpLabelFor(model => model.WelcomePerson, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.OrderAdmin_UserProfileId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.OrderAdmin)
+				<br />@Html.HelpLabelFor(model => model.OrderAdmin, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Meta Tags</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.MetaApplicationName)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.MetaApplicationName)
+				<br />@Html.HelpLabelFor(model => model.MetaApplicationName, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.MetaApplicationTileColor)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.MetaApplicationTileColor)
+				<br />@Html.HelpLabelFor(model => model.MetaApplicationTileColor, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.MetaDescription)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.MetaDescription)
+				<br />@Html.HelpLabelFor(model => model.MetaDescription, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.MetaKeywords)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.MetaKeywords)
+				<br />@Html.HelpLabelFor(model => model.MetaKeywords, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.BodyTopScriptTag)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.BodyTopScriptTag)
+				<br />@Html.HelpLabelFor(model => model.BodyTopScriptTag, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.BodyBottomScriptTag)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.BodyBottomScriptTag)
+				<br />@Html.HelpLabelFor(model => model.BodyBottomScriptTag, new { @class = "help-label" })
+			</dd>
+		</dl>
+	</div>
+
+	<div id="sectionTracking" class="tab-pane fade in @(tabTrackingActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Tracking</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.EnableGoogleAnalytics)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.EnableGoogleAnalytics)
+				<br />@Html.HelpLabelFor(model => model.EnableGoogleAnalytics, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.GoogleAnalyticsWebPropertyId)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.GoogleAnalyticsWebPropertyId)
+				<br />@Html.HelpLabelFor(model => model.GoogleAnalyticsWebPropertyId, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionThemes" class="tab-pane fade in @(tabThemesActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Themes</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.DefaultNewPageTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.DefaultNewPageTheme)
+				<br />@Html.HelpLabelFor(model => model.DefaultNewPageTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogTheme)
+				<br />@Html.HelpLabelFor(model => model.CatalogTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.AccountTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.AccountTheme)
+				<br />@Html.HelpLabelFor(model => model.AccountTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CartTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CartTheme)
+				<br />@Html.HelpLabelFor(model => model.CartTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutTheme)
+				<br />@Html.HelpLabelFor(model => model.CheckoutTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.OrdersTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.OrdersTheme)
+				<br />@Html.HelpLabelFor(model => model.OrdersTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.OrderAdminTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.OrderAdminTheme)
+				<br />@Html.HelpLabelFor(model => model.OrderAdminTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NotificationsTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NotificationsTheme)
+				<br />@Html.HelpLabelFor(model => model.NotificationsTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ProfileTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ProfileTheme)
+				<br />@Html.HelpLabelFor(model => model.ProfileTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogAdminTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogAdminTheme)
+				<br />@Html.HelpLabelFor(model => model.CatalogAdminTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.AdminTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.AdminTheme)
+				<br />@Html.HelpLabelFor(model => model.AdminTheme, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionCart" class="tab-pane fade in @(tabCartActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Cart Info</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+			<dt>
+				@Html.DisplayNameFor(model => model.UseShoppingCart)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.UseShoppingCart)
+				<br />@Html.HelpLabelFor(model => model.UseShoppingCart, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CartNavShowCartToAnonymous)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CartNavShowCartToAnonymous)
+				<br />@Html.HelpLabelFor(model => model.CartNavShowCartToAnonymous, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CartNavShowCartToRegistered)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CartNavShowCartToRegistered)
+				<br />@Html.HelpLabelFor(model => model.CartNavShowCartToRegistered, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CartNavShowCartWhenEmpty)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CartNavShowCartWhenEmpty)
+				<br />@Html.HelpLabelFor(model => model.CartNavShowCartWhenEmpty, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CartRequireLogin)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CartRequireLogin)
+				<br />@Html.HelpLabelFor(model => model.CartRequireLogin, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				Cart Configuration
+			</dt>
+			<dd>
+				@Html.ActionLink("Preview Cart (new window)", "Preview", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-info", target="_blank" })
+				&nbsp;&nbsp;|&nbsp;&nbsp;
+				@Html.ActionLink("View Cart Configuration (new window)", "ViewConfig", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-success", target = "_blank" })
+				&nbsp;&nbsp;|&nbsp;&nbsp;
+				@Html.ActionLink("Edit Cart Configuration (new window)", "EditConfig", "Cart", new { Area = "", id = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning", target = "_blank" })
+				<br/><br/><br/>
+			</dd>
+		</dl>
+	</div>
+
+	<div id="sectionCheckout" class="tab-pane fade in @(tabCheckoutActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Checkout Info</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutLogInOrGuestWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutLogInOrGuestWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutLogInOrGuestWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutDeliveryInfoDigitalOnlyWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutDeliveryInfoShippingWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutDeliveryInfoShippingWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutDeliveryInfoShippingWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutDeliveryMethodWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutDeliveryMethodWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutDeliveryMethodWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutPaymentInfoWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutPaymentInfoWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutPaymentInfoWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CheckoutConfirmOrderWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CheckoutConfirmOrderWebForm)
+				<br />@Html.HelpLabelFor(model => model.CheckoutConfirmOrderWebForm, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionPayments" class="tab-pane fade in @(tabPaymentsActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Payment Info</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+			<dt>
+				@Html.DisplayNameFor(model => model.Orders_AutoAcceptPaid)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.Orders_AutoAcceptPaid)
+				<br />@Html.HelpLabelFor(model => model.Orders_AutoAcceptPaid, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.PaymentMethod_PayPal_Enabled)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.PaymentMethod_PayPal_Enabled)
+				<br />@Html.HelpLabelFor(model => model.PaymentMethod_PayPal_Enabled, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.PaymentMethod_PayPal_UseLiveServer)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.PaymentMethod_PayPal_UseLiveServer)
+				<br />@Html.HelpLabelFor(model => model.PaymentMethod_PayPal_UseLiveServer, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.PaymentMethod_PayPal_Client_Id)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.PaymentMethod_PayPal_Client_Id)
+				<br />@Html.HelpLabelFor(model => model.PaymentMethod_PayPal_Client_Id, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.PaymentMethod_PayPal_Client_Secret)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.PaymentMethod_PayPal_Client_Secret)
+				<br />@Html.HelpLabelFor(model => model.PaymentMethod_PayPal_Client_Secret, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionCatalogLayout" class="tab-pane fade in @(tabCatalogLayoutActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Catalog Layout</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogTitle)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogTitle)
+				<br />@Html.HelpLabelFor(model => model.CatalogTitle, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogLayout)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogLayout)
+				<br />@Html.HelpLabelFor(model => model.CatalogLayout, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogHeaderHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogHeaderHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogHeaderHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogFooterHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogFooterHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogFooterHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootListTemplate)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootListTemplate)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootListTemplate, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootHeaderHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootHeaderHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootHeaderHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogRootFooterHtml)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogRootFooterHtml)
+				<br />@Html.HelpLabelFor(model => model.CatalogRootFooterHtml, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NavBarCatalogMaxLevels)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NavBarCatalogMaxLevels)
+				<br />@Html.HelpLabelFor(model => model.NavBarCatalogMaxLevels, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogPageInitialLevels)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogPageInitialLevels)
+				<br />@Html.HelpLabelFor(model => model.CatalogPageInitialLevels, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogCategoryColLg)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogCategoryColLg)
+				<br />@Html.HelpLabelFor(model => model.CatalogCategoryColLg, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogCategoryColMd)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogCategoryColMd)
+				<br />@Html.HelpLabelFor(model => model.CatalogCategoryColMd, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogCategoryColSm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogCategoryColSm)
+				<br />@Html.HelpLabelFor(model => model.CatalogCategoryColSm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductColLg)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductColLg)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductColLg, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductColMd)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductColMd)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductColMd, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductColSm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductColSm)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductColSm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleColLg)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleColLg)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleColLg, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleColMd)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleColMd)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleColMd, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleColSm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleColSm)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleColSm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleItemColLg)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleItemColLg)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleItemColLg, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleItemColMd)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleItemColMd)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleItemColMd, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.CatalogProductBundleItemColSm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.CatalogProductBundleItemColSm)
+				<br />@Html.HelpLabelFor(model => model.CatalogProductBundleItemColSm, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionErrorPages" class="tab-pane fade in @(tabErrorPagesActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Error Pages</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NotFoundErrorPage)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NotFoundErrorPage)
+				<br />@Html.HelpLabelFor(model => model.NotFoundErrorPage, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.StoreErrorPage)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.StoreErrorPage)
+				<br />@Html.HelpLabelFor(model => model.StoreErrorPage, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionRegistration" class="tab-pane fade in @(tabRegistrationActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Registration</h3>
+		</div>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NavBarShowRegisterLink)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NavBarShowRegisterLink)
+				@Html.HelpLabelFor(model => model.NavBarShowRegisterLink, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.NavBarRegisterLinkText)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.NavBarRegisterLinkText)
+				<br />@Html.HelpLabelFor(model => model.NavBarRegisterLinkText, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.AccountLoginShowRegisterLink)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.AccountLoginShowRegisterLink)
+				@Html.HelpLabelFor(model => model.AccountLoginShowRegisterLink, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.AccountLoginRegisterLinkText)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.AccountLoginRegisterLinkText)
+				<br />@Html.HelpLabelFor(model => model.AccountLoginRegisterLinkText, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.RegisterWebForm)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.RegisterWebForm)
+				<br />@Html.HelpLabelFor(model => model.RegisterWebForm, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.RegisterSuccessPage)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.RegisterSuccessPage)
+				<br />@Html.HelpLabelFor(model => model.RegisterSuccessPage, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+	<div id="sectionLayouts" class="tab-pane fade in @(tabLayoutsActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Layouts</h3>
+		</div>
+
+		<h1>Coming Soon</h1>
+
+	</div>
+
+	<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
+		<div class="row">
+			<h3 class="col-md-offset-3 col-md-6 bg-success">Activation</h3>
+		</div>
+
+		<h4 class="col-md-offset-3 col-md-6 text-warning">
+			Warning: editing these values incorrectly will de-activate your site.<br />
+			If you are unsure what to do, click the "Make It Active Now" button to turn the configuration on with default values.<br/>
+			You can always log in and edit these values even if you de-activate your site.
+		</h4>
+
+		<p class="col-md-offset-3 col-md-6">Store Local Time: @(DateTime.UtcNow.ToStoreDateTimeString(Html))</p>
+		<p class="col-md-offset-3 col-md-6">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+
+		<dl class="dl-horizontal">
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ConfigIsActiveDirect)
+			</dt>
+			<dd>
+				<strong class="@(Model.ConfigIsActiveDirect ? "text-success" : "text-warning")">@(Model.ConfigIsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
+				<br />@Html.HelpLabelFor(model => model.ConfigIsActiveDirect, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.IsPending)
+			</dt>
+			<dd>
+				@Html.DisplayFor(model => model.IsPending)
+				<br />@Html.HelpLabelFor(model => model.IsPending, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+			</dt>
+			<dd>
+				@Html.DisplayFor(model => model.StartDateTimeUtc)
+				<br />@Html.HelpLabelFor(model => model.StartDateTimeUtc, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+			</dt>
+			<dd>
+				@Html.DisplayFor(model => model.EndDateTimeUtc)
+				<br />@Html.HelpLabelFor(model => model.EndDateTimeUtc, new { @class = "help-label" })
+			</dd>
+
+		</dl>
+	</div>
+
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a class="btn btn-warning" href="#" onclick="JumpToEditTab();">Edit</a>
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View without Tabs", "StoreFrontViewNoTabs", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-primary" })
+	</div>
+</div>
+<hr />
+<div>
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+			}
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</div>

@@ -1,0 +1,238 @@
+﻿@model WebFormField
+@using GStoreData.Models.BaseClasses
+@{
+	WebFormFieldResponse oldResponse = ViewData["WebFormFieldResponse"] as WebFormFieldResponse;
+	
+	int? viewDataColOffset = ViewData["ColOffset"] as int?;
+	int? viewDataColLabel = ViewData["ColLabel"] as int?;
+	int? viewDataColData = ViewData["ColData"] as int?;
+
+	int offsetMdColspan = viewDataColOffset ?? 0;
+	int labelMdColspan = viewDataColLabel ?? Model.WebForm.LabelMdColSpan;
+	int fieldMdColspan = viewDataColData ?? Model.WebForm.FieldMdColSpan;
+	if (labelMdColspan < 1 || labelMdColspan > 11)
+	{
+		labelMdColspan = 3;
+	}
+	if (fieldMdColspan < 1 || fieldMdColspan > 11)
+	{
+		fieldMdColspan = 7;
+	}
+
+	string prefix = Html.NameForModel().ToHtmlString();
+	string value1String = null;
+	if (ViewData.ModelState.ContainsKey(prefix + Model.Name.ToHtmlAttribute()))
+	{
+		value1String = (Html.GetModelStateValue(prefix + Model.Name.ToHtmlAttribute(), typeof(string)) ?? string.Empty).ToString();
+	}
+	else if (oldResponse != null)
+	{
+		value1String = oldResponse.Value1String;
+	}
+	
+	
+	string fieldId = ViewData.TemplateInfo.GetFullHtmlFieldId(Model.Name);
+	string fieldName = Model.Name.ToHtmlAttribute();
+
+
+	string watermark = (string.IsNullOrEmpty(Model.Watermark) ? "Enter " + Model.LabelText : Model.Watermark);
+	if (Model.IsRequired && !watermark.ToLower().Contains("required"))
+	{
+		watermark += " (required)";
+	}
+		
+	string align = "title-align";
+}
+<div class="form-group @(align)">
+	@{
+		if (!string.IsNullOrEmpty(Model.HelpLabelTopText))
+		{
+			<label class="col-xs-12 col-md-offset-@(labelMdColspan + offsetMdColspan) col-md-@(fieldMdColspan) help-label help-label-top @(align)">@(Model.HelpLabelTopText)</label>
+		}
+	}
+	<label class="@(offsetMdColspan > 0 ? "col-md-offset-" + offsetMdColspan + " " : "")col-md-@(labelMdColspan) control-label @(align)">@(Model.LabelText)</label>
+	<div class="col-md-@(fieldMdColspan) @(align)">
+		@{
+			bool usedCustomDisplay = false;
+
+			switch (Model.DataType)
+			{
+				case GStoreValueDataType.EmailAddress:
+					break;
+				case GStoreValueDataType.Url:
+					break;
+				case GStoreValueDataType.CheckboxYesNo:
+					break;
+				case GStoreValueDataType.Integer:
+					break;
+				case GStoreValueDataType.Decimal:
+					break;
+				case GStoreValueDataType.IntegerRange:
+					break;
+				case GStoreValueDataType.DecimalRange:
+					break;
+				case GStoreValueDataType.SingleLineText:
+					break;
+				case GStoreValueDataType.MultiLineText:
+
+					int rows = 10;
+					if ((Model.TextAreaRows.HasValue) && (Model.TextAreaRows.Value > 0))
+					{
+						rows = Model.TextAreaRows.Value;
+					}
+					int cols = 40;
+					if ((Model.TextAreaColumns.HasValue) && (Model.TextAreaColumns.Value > 10))
+					{
+						rows = Model.TextAreaColumns.Value;
+					}
+					@Html.TextArea(fieldName, value1String, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", rows = rows, cols = cols, placeholder = watermark })
+					usedCustomDisplay = true;
+					break;
+				case GStoreValueDataType.Html:
+					@(Html.TextArea(fieldName, value1String, Model.TextAreaRows ?? 8, Model.TextAreaColumns ?? 40, htmlAttributes: new { @class = "form-control", placeholder = watermark }))
+					//if CKEditor is not in ViewData, add script for it and set viewdata flag
+					bool hasCkEditor = (ViewData["CKEditor"] as bool?) ?? false;
+					{
+						if (!hasCkEditor)
+						{
+							<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+							ViewData["CKEditor"] = true;
+						}
+					}
+					<script>CKEDITOR.replace('@(fieldId.ToJavaScriptString())');</script>
+					usedCustomDisplay = true;
+					break;
+				case GStoreValueDataType.ValueListItemDropdown:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						if (!string.IsNullOrEmpty(Model.ValueListNullText))
+						{
+							selectList = Model.ValueList.ToSelectListWithNull(null, Model.ValueListNullText);
+						}
+						else
+						{
+							selectList = Model.ValueList.ToSelectList(null);
+						}
+						if (selectList.Any(sl => sl.Value != ""))
+						{
+							@Html.DropDownList(fieldName, selectList, new { @class = "form-control" })
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
+					break;
+				case GStoreValueDataType.ValueListItemRadio:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						selectList = Model.ValueList.ToSelectList(null);
+						if (selectList.Count != 0)
+						{
+							foreach (SelectListItem item in selectList)
+							{
+								@(Html.RadioButton(fieldName, item.Value, item.Selected, new { id = (fieldName + "_" + item.Value.ToHtmlAttribute()) }))
+								@:&nbsp;<label for="@(fieldName + "_" + item.Value.ToHtmlAttribute())">@(item.Text)</label><br />
+							}
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
+					break;
+				case GStoreValueDataType.ValueListItemMultiCheckbox:
+					if (Model.ValueList != null)
+					{
+						List<SelectListItem> selectList = null;
+						selectList = Model.ValueList.ToSelectList(null);
+						if (selectList.Count != 0)
+						{
+							object modelStateValue = Html.GetModelStateValue("Page.WebForm.item." + fieldName, typeof(string));
+							string[] values = null;
+							if (modelStateValue != null)
+							{
+								values = modelStateValue.ToString().Split(',');
+							}
+
+							foreach (SelectListItem item in selectList)
+							{
+								bool isSelected = false;
+								if (values != null && values.Any(v => v.ToLower() == item.Value.ToLower()))
+								{
+									isSelected = true;
+								}
+								//check if item is selected in modelstate
+								<input type="checkbox" name="Page.WebForm.item.@(fieldName)" id="@(fieldName + "_" + item.Value.ToHtmlAttribute())" value="@(item.Value)" @(isSelected ? "checked='checked'" : "") />
+								<label for="@(fieldName + "_" + item.Value.ToHtmlAttribute())">@(item.Text)</label><br />
+							}
+							usedCustomDisplay = true;
+						}
+						else
+						{
+							@:No Value List Values<br />
+						}
+					}
+					else
+					{
+						@:No Value List Selected<br />
+					}
+					break;
+				case GStoreValueDataType.ExternalLinkToPage:
+					break;
+				case GStoreValueDataType.ExternalLinkToImage:
+					break;
+				case GStoreValueDataType.InternalLinkToPageById:
+					break;
+				case GStoreValueDataType.InternalLinkToPageByUrl:
+					break;
+				case GStoreValueDataType.InternalLinkToImageByUrl:
+					break;
+				default:
+					break;
+			}
+
+			if (!usedCustomDisplay)
+			{
+				<!-- Default text box -->
+				@Html.TextBox(fieldName, value1String, htmlAttributes: new { @class = "form-control " + align, placeholder = watermark })
+			}
+
+			string popoverText = null;
+			if (!string.IsNullOrEmpty(Model.HelpLabelTopText) && !string.IsNullOrEmpty(Model.HelpLabelBottomText))
+			{
+				popoverText = Model.HelpLabelTopText + "\n\n" + Model.HelpLabelBottomText;
+			}
+			else if (string.IsNullOrEmpty(Model.HelpLabelTopText) && string.IsNullOrEmpty(Model.HelpLabelBottomText))
+			{
+				popoverText = "Enter a Value";
+			}
+			else
+			{
+				popoverText = Model.HelpLabelTopText + Model.HelpLabelBottomText;
+			}
+
+			@Html.HelpLabelPopover(Model.LabelText, popoverText)
+		}
+
+	</div>
+	@Html.ValidationMessage(Model.Name.ToHtmlAttribute(), new { @class = "text-danger row col-md-offset-" + labelMdColspan + " col-md-" + fieldMdColspan + " help-label " + align })
+	@{
+		if (!string.IsNullOrEmpty(Model.HelpLabelBottomText))
+		{
+			<label class="col-xs-12 col-md-offset-@(offsetMdColspan + labelMdColspan) col-md-@(fieldMdColspan) help-label help-label-bottom @(align)">@(Model.HelpLabelBottomText)</label>
+		}
+	}
+</div>

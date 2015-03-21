@@ -1,0 +1,23 @@
+﻿@model ProductCategory
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			@:'@(Model.Name)' [@(Model.ProductCategoryId)]
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+		@:</span>
+	}
+}

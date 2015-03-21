@@ -1,0 +1,46 @@
+﻿@model StoreFrontConfigAdminViewModel
+
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-success">
+		View Store Front Configuration<br/>
+		<small>
+			@(Html.DisplayNameFor(model => model.ConfigurationName)): '@(Html.DisplayFor(model => model.ConfigurationName))' [@(Model.StoreFrontConfigurationId)]<br/>
+			@(Html.DisplayNameFor(model => model.StoreFront)): '@(Model.Name)' [@(Model.StoreFrontId)]
+		</small>
+	</h2>
+</div>
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning" })
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View in Tabs", "StoreFrontView", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-primary" })
+	</div>
+</div>
+<hr />
+@{ Html.RenderPartial("_StoreFrontViewNoTabsPartial", Model); }
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ClientConfig_StoreFrontConfig_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning" })
+		}
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("View in Tabs", "StoreFrontView", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-primary" })
+	</div>
+</div>
+<hr />
+<div>
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+	}
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</div>

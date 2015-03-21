@@ -1,0 +1,52 @@
+﻿@model CatalogViewModel
+<!-- Product List Start -->
+@{
+	
+	List<Product> products = Model.CurrentProductsListOrNull(Html.CurrentUserProfile(false));
+	if (products == null || products.Count == 0)
+	{
+		if (Model.CurrentCategoryOrNull == null)
+		{
+			@:There are no products in this category
+		}
+		else
+		{
+			@Html.Raw(Model.CurrentCategoryOrNull.NoProductsMessageHtml.OrDefault("<h2>There are no current products in Category: " + Model.CurrentCategoryOrNull.Name + "</h2>"))
+		}
+	}
+	else
+	{
+		string offsets = "";
+		int productCount = products.Count();
+		if ((productCount * Model.StoreFrontConfig.CatalogProductColSm) < 12)
+		{
+			int colsSm = productCount * Model.StoreFrontConfig.CatalogProductColSm;
+			int smOffset = (12 - colsSm) / 2;
+			offsets = " col-sm-offset-" + smOffset;
+		}
+		if ((productCount * Model.StoreFrontConfig.CatalogProductColMd) < 12)
+		{
+			int colsMd = productCount * Model.StoreFrontConfig.CatalogProductColMd;
+			int mdOffset = (12 - colsMd) / 2;
+			offsets = " col-md-offset-" + mdOffset;
+		}
+		if ((productCount * Model.StoreFrontConfig.CatalogProductColLg) < 12)
+		{
+			int colsLg = productCount * Model.StoreFrontConfig.CatalogProductColLg;
+			int lgOffset = (12 - colsLg) / 2;
+			offsets = " col-lg-offset-" + lgOffset;
+		}
+
+		
+		@:<div class="row ProductListContainer">
+		foreach (Product product in products)
+		{
+			@:<div class="ProductListRow col-sm-@(Model.StoreFrontConfig.CatalogProductColSm) col-md-@(Model.StoreFrontConfig.CatalogProductColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductColLg)@(offsets)">
+			Html.RenderCatalogProductForListPartial(product);
+			@:</div>
+			offsets = "";
+		}
+		@:</div>
+	}
+}
+<!-- Product List End -->

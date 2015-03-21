@@ -1,0 +1,54 @@
+﻿@model CatalogViewModel
+@{
+	if (Model.CurrentProductBundleOrNull == null)
+	{
+		throw new ArgumentNullException("Model.CurrentProductBundleOrNull");
+	}
+	ProductBundle bundle = Model.CurrentProductBundleOrNull;
+
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	string url = Url.Action("ViewBundleByName", "Catalog", new { urlName = bundle.UrlName });
+	string imageUrl = bundle.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+	decimal? unitPrice = bundle.UnitPrice(1);
+	decimal? listPrice = bundle.ListPrice(1);
+	bool showListPrice = config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+
+	<div class="ProductBundleListItemBox boxshadowjs">
+		@if (imageUrl != null)
+		{
+			<a class="BundleListImageLink" href="@(url)"><img class="BundleListImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(bundle.Name)))" title="@(Html.Raw(Html.AttributeEncode(bundle.Name)))" /></a>
+			<br />
+			if (showListPrice)
+			{
+				<div class="BundleListListPriceRow">
+					<span class="BundleListListPriceLabel">@(listPrice.HasValue ? config.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</span>
+					<span class="BundleListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span>
+				</div>
+			}
+			<div class="BundleListUnitPriceRow">
+				<span class="BundleListUnitPriceLabel">
+					@(unitPrice.HasValue ? config.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")
+				</span>
+				<span class="BundleListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span>
+			</div>
+			<a class="BundleListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(bundle.Name)))">@(bundle.Name)</a>
+		}
+		else
+		{
+			<a class="BundleListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(bundle.Name)))"><h3 style="margin-top: 0">@(bundle.Name)</h3></a>
+			if (showListPrice)
+			{
+				<div class="BundleListListPriceRow">
+					<span class="BundleListListPriceLabel">@(listPrice.HasValue ? config.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</span>
+					<span class="BundleListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span>
+				</div>
+			}
+			<div class="BundleListUnitPriceRow">
+				<span class="BundleListUnitPriceLabel">
+					@(unitPrice.HasValue ? config.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")
+				</span>
+				<span class="BundleListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span>
+			</div>
+		}
+	</div>
+}

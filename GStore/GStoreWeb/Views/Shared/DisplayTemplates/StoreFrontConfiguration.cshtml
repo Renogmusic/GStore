@@ -1,0 +1,14 @@
+﻿@model StoreFrontConfiguration
+
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@:'@(Model.Name)' [@(Model.StoreFrontId)]
+		@:<br/>Configuration: '@(Model.ConfigurationName)' [@(Model.StoreFrontConfigurationId)]
+		@:<br/>@(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client))
+	}
+}

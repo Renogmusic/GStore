@@ -1,0 +1,49 @@
+﻿@model CategoryEditAdminViewModel
+
+<div class="row">
+	<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-warning">Category Details</span>
+		<br /><small>@(Html.DisplayFor(model => model.ProductCategory, "ProductCategoryWithProductsLink"))</small>
+	</h1>
+</div>
+
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-2 col-md-7">
+		<center>
+			@if (Model.ReturnToFrontEnd)
+			{
+				@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+			}
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab=Model.ActiveTab }, new { id="EditTop", @class = "btn btn-warning" })
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DeleteTop", @class = "btn btn-danger" })
+		</center>
+	</div>
+</div>
+
+@{ Html.RenderPartial("_DetailsPartial"); }
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-2 col-md-7">
+		<center>
+			@if (Model.ReturnToFrontEnd)
+			{
+				@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+			}
+			else
+			{
+				@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+			}
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "EditBottom", @class = "btn btn-warning" })
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DeleteBottom", @class = "btn btn-danger" })
+		</center>
+	</div>
+</div>

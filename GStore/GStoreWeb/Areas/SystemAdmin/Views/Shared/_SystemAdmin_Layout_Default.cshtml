@@ -1,0 +1,100 @@
+﻿@using GStoreData.Areas.SystemAdmin.ControllerBase
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@{
+
+		if (!(this.ViewContext.Controller is SystemAdminBaseController))
+		{
+			throw new ApplicationException("Controller type: " + this.ViewContext.Controller.GetType().FullName + " is not the right controller type for this layout. Controllers must inherit from SystemAdminBaseController");
+		}
+
+		string title = "GStore System Admin"
+			+ " - " + this.ViewContext.RouteData.Values["controller"]
+			+ " - " + this.ViewContext.RouteData.Values["action"];
+		if (ViewBag.Title != null && (!string.IsNullOrWhiteSpace(ViewBag.Title)))
+		{
+			title = ViewBag.Title + " - " + title;
+		}
+
+		string containerClasses = string.Empty;
+		RouteData routeData = ViewContext.RouteData;
+		if (routeData != null)
+		{
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				containerClasses += " area-" + routeData.DataTokens["area"].ToString().ToLower();
+			}
+			containerClasses += " controller-" + routeData.Values["controller"].ToString().ToLower();
+			containerClasses += " action-" + routeData.Values["action"].ToString().ToLower();
+		}
+		if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
+		{
+			containerClasses += " modelinvalid";
+		}
+
+		bool needsCKEditor = (ViewData["CKEditor"] as bool?) ?? false;
+
+	}
+	<title>@title</title>
+
+	<meta name="application-name" content="GStore System Admin" />
+	<meta name="msapplication-TileColor" content="#880088" />
+	<meta name="msapplication-square70x70logo" content="~/Content/Server/Images/Logo/tiny.png" />
+	<meta name="msapplication-square150x150logo" content="~/Content/Server/Images/Logo/square.png" />
+	<meta name="msapplication-wide310x150logo" content="~/Content/Server/Images/Logo/wide.png" />
+	<meta name="msapplication-square310x310logo" content="~/Content/Server/Images/Logo/large.png" />
+
+	<link rel="shortcut icon" href="~/Content/Server/Images/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="~/Content/Server/Images/favicon.ico" type="image/x-icon">
+	<meta name="description" content="GStore System Admin" />
+	<meta name="keywords" content="GStore System Admin" />
+	<link rel="apple-touch-icon" href="~/Content/Server/Images/Logo/Logo.png" />
+	<link rel="apple-touch-startup-image" href="~/Content/Server/Images/Logo/Logo.png" />
+
+	<script>
+		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(null));
+	</script>
+
+	@Styles.Render("~/Content/Server/Themes/" + GStoreData.Settings.SystemAdminThemeFolderName + "/Bootstrap.min.css")
+	@Styles.Render("~/Content/Server/Styles/GStoreApp.css")
+	@Styles.Render("~/Content/Server/Styles/Styles.css")
+
+	@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/jqueryval")
+	@Scripts.Render("~/bundles/jqueryui")
+	@Scripts.Render("~/bundles/bootstrap")
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/signalr/hubs"></script>
+	@Scripts.Render("~/Content/Server/Scripts/GStoreApp.js")
+	@Scripts.Render("~/Content/Server/Scripts/Scripts.js")
+	@if (needsCKEditor)
+	{
+		<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+	}
+</head>
+<body>
+	@{ Html.RenderPartial("_SystemAdmin_MenuPartial"); }
+	<div class="container body-content sysadmin sysadmin-body-content@(containerClasses)">
+		<!-- top alert container for dynamic alerts-->
+		<div id="usermessagecontainer"></div>
+		@Html.Breadcrumbs()
+		@RenderBody()
+		<hr />
+		<a name="UserMessagesBottom"></a>
+		<div id="usermessagebottomcontainer"></div>
+		@{ Html.RenderPartial("_AdminFooterPartial"); }
+	</div>
+
+	@RenderSection("scripts", required: false)
+
+	@Html.RenderUserMessages()
+	@Html.RenderUserMessagesBottom()
+	@Html.RenderAnnouncements()
+	@Html.RenderGaEvents()
+</body>
+</html>

@@ -1,0 +1,147 @@
+﻿@model NavBarItemManagerAdminViewModel
+
+@{
+
+	UserProfile profile = Html.CurrentUserProfile(true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Delete);
+
+}
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminIndexPageTitle">
+		Advanced Menu Manager
+		<br /><small>@(Html.DisplayNameFor(model => model.StoreFront)) @Html.DisplayFor(model => model.StoreFront)</small>
+	</h2>
+</div>
+<script>
+	function GoToDetails(index)
+	{
+		var url = '@(Url.Action("AdvancedDetails", new { id = "XXXX" }).ToJavaScriptString())';
+		url = url.replace("XXXX", index);
+		window.location.href = url;
+	}
+</script>
+@{
+	if (userCanCreate)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@Html.ActionLink("Create a New Menu Item", "AdvancedCreate", null, new { @class = "btn btn-sm btn-info" })
+			</div>
+		</div>
+	}
+}
+
+@{
+	if (Model.NavBarItemEditViewModels.Count() == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<h2 class="text-warning">No Menu Items found for this store front.</h2>
+			</div>
+		</div>
+	}
+
+	else
+	{
+		NavBarItemEditAdminViewModel itemEditModel = null;
+		
+		<div class="table-responsive">
+			<table class="table table-condensed table-bordered table-hover">
+
+				<tr>
+					<th class="text-center"><small>@(Html.ActionSortLink("Default", "AdvancedManager", string.Empty))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.ParentNavBarItemId, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>(parent) @(Html.ActionSortLinkForItem(model => itemEditModel.ParentNavBarItem.Order, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>(parent) @(Html.ActionSortLinkForItem(model => itemEditModel.ParentNavBarItem.Name, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.Order, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.NavBarItemId, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.Name, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.ForRegisteredOnly, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.ForAnonymousOnly, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.Page, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Status", "AdvancedManager", "Status"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.UpdateDateTimeUtc, "AdvancedManager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => itemEditModel.UpdatedBy, "AdvancedManager", true))</small></th>
+					<th class="text-center">&nbsp;</th>
+				</tr>
+
+				@{
+		foreach (NavBarItemEditAdminViewModel item in Model.NavBarItemEditViewModels)
+		{
+			bool isActive = item.IsActiveBubble;
+			string rowClass = (isActive ? string.Empty : "text-warning");
+			
+			<tr class="@(rowClass)">
+				<td>
+					@Html.ActionLink("Details", "AdvancedDetails", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-success" })
+					@{
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "AdvancedEdit", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-warning" })
+						}
+
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "AdvancedDelete", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-danger" })
+						}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.ParentNavBarItemId))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.ParentNavBarItem.Order))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.ParentNavBarItem.Name))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.NavBarItemId))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.ForRegisteredOnly))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.ForAnonymousOnly))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.Page.Name)) [@(Html.DisplayFor(model => item.PageId))]</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));">
+					<span class="@(item.IsActiveDirect ? "text-success": "text-warning")">
+						@(item.IsActiveDirect ? "Active" : "Inactive")
+					</span>
+					<br/>
+						@{
+							if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_Edit))
+							{
+								@Html.ActionLink("Activation", "AdvancedEdit", new { id = item.NavBarItemId, Tab = "Activation" }, new { @class = "" })
+							}
+							else if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Pages_View))
+							{
+								@Html.ActionLink("Activation", "AdvancedDetails", new { id = item.NavBarItemId, Tab = "Activation" }, new { @class = "" })
+							}
+						}
+				</td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td onclick="GoToDetails(@(item.NavBarItemId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td>
+					@Html.ActionLink("Details", "AdvancedDetails", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-success" })
+					@{
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "AdvancedEdit", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-warning" })
+						}
+
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "AdvancedDelete", new { id = item.NavBarItemId }, new { @class = "btn btn-sm btn-danger" })
+						}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+			</tr>
+		}
+
+				}
+
+			</table>
+		</div>
+	}
+
+}

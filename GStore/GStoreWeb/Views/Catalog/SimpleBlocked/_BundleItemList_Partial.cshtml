@@ -1,0 +1,45 @@
+﻿@model CatalogViewModel
+<!-- Bundle Item List Start -->
+@{
+	List<ProductBundleItem> bundleItems = Model.CurrentProductBundleItemsListOrNull();
+
+	if (bundleItems == null || bundleItems.Count == 0)
+	{
+		@:There are no items for this bundle
+	}
+	else
+	{
+		string offsets = "";
+		int bundleItemCount = bundleItems.Count();
+		if ((bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColSm) < 12)
+		{
+			int colsSm = bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColSm;
+			int smOffset = (12 - colsSm) / 2;
+			offsets = " col-sm-offset-" + smOffset;
+		}
+		if ((bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColMd) < 12)
+		{
+			int colsMd = bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColMd;
+			int mdOffset = (12 - colsMd) / 2;
+			offsets = " col-md-offset-" + mdOffset;
+		}
+		if ((bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColLg) < 12)
+		{
+			int colsLg = bundleItemCount * Model.StoreFrontConfig.CatalogProductBundleItemColLg;
+			int lgOffset = (12 - colsLg) / 2;
+			offsets = " col-lg-offset-" + lgOffset;
+		}
+
+		
+		@:<div class="row BundleItemListContainer">
+		foreach (ProductBundleItem bundleItem in bundleItems)
+		{
+			@:<div class="BundleItemListRow col-sm-@(Model.StoreFrontConfig.CatalogProductBundleItemColSm) col-md-@(Model.StoreFrontConfig.CatalogProductBundleItemColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductBundleItemColLg)@(offsets)">
+			Html.RenderCatalogBundleItemForListPartial(bundleItem);
+			@:</div>
+			offsets = "";
+		}
+		@:</div>
+	}
+}
+<!-- Bundle Item List End -->

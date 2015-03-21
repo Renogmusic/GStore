@@ -1,0 +1,50 @@
+﻿@model CatalogViewModel
+<!-- View Category Start -->
+@{
+	if (Model.CurrentCategoryOrNull == null)
+	{
+		throw new ApplicationException("Model.CurrentCategoryOrNull is null, set in controller for this page");
+	}
+
+	ProductCategory category = Model.CurrentCategoryOrNull;
+	ViewBag.Title = category.Name;
+	bool userCanEditCategory = false;
+	UserProfile profile = Html.CurrentUserProfile(false);
+	if (profile != null && Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Categories_Edit))
+	{
+		userCanEditCategory = true;
+	}
+
+}
+
+<div class="row CatalogTitleRow">
+	<div class="col-xs-12 text-center CatalogTitleCol">
+		<h1 class="CatalogTitleText">@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+
+<div class="CatalogHeader">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+</div>
+
+<div class="row CategoryPathRow">
+	<div class="CategoryPath col-xs-12 text-center">
+		@Html.ProductCategoryWithParentLinks(Model.CurrentCategoryOrNull, "Top", (Model.CurrentCategoryOrNull == null))
+	</div>
+</div>
+
+@{ Html.RenderCatalogCategoryDetailsPartial();}
+
+<div class="CatalogFooter">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+</div>
+
+@if (userCanEditCategory)
+{
+	if (Html.UserHasPermission(GStoreAction.Categories_Manager))
+	{
+		<hr />
+		@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	}
+}
+<!-- View Category End -->

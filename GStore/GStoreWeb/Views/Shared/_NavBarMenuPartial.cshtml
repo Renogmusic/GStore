@@ -1,0 +1,84 @@
+﻿@model MenuViewModel
+<!-- NavBar Catalog Menu-->
+@{
+	int navBarItemsMaxLevels = 6;
+	if (Model.StoreFront != null)
+	{
+		navBarItemsMaxLevels = Model.StoreFrontConfig.NavBarItemsMaxLevels;
+	}
+	
+	if (navBarItemsMaxLevels > 6)
+	{
+		//this code item only iterates up to 6 levels
+		navBarItemsMaxLevels = 6;
+	}
+	if (navBarItemsMaxLevels > 0)
+	{
+		foreach (TreeNode<NavBarItem> level1NavBarItem in Model.NavBarItemTree)
+		{
+			//Level 1 (root)
+			bool level1HasChildMenuItems = level1NavBarItem.HasChildMenuItems(navBarItemsMaxLevels);
+			@Html.NavBarItemMenuItemStart(level1NavBarItem, 1, navBarItemsMaxLevels)
+			if (level1HasChildMenuItems)
+			{
+				@Html.NavBarItemChildContainerStart(level1NavBarItem, 1, navBarItemsMaxLevels)
+				foreach (TreeNode<NavBarItem> level2NavBarItem in level1NavBarItem.ChildNodes)
+				{
+					//Level 2
+					bool level2HasChildMenuItems = level2NavBarItem.HasChildMenuItems(navBarItemsMaxLevels);
+					@Html.NavBarItemMenuItemStart(level2NavBarItem, 2, navBarItemsMaxLevels)
+					if (level2HasChildMenuItems)
+					{
+						@Html.NavBarItemChildContainerStart(level2NavBarItem, 2, navBarItemsMaxLevels)
+						foreach (TreeNode<NavBarItem> level3NavBarItem in level2NavBarItem.ChildNodes)
+						{
+							//Level 3
+							bool level3HasChildMenuItems = level3NavBarItem.HasChildMenuItems(navBarItemsMaxLevels);
+							@Html.NavBarItemMenuItemStart(level3NavBarItem, 3, navBarItemsMaxLevels)
+							if (level3HasChildMenuItems)
+							{
+								@Html.NavBarItemChildContainerStart(level3NavBarItem, 3, navBarItemsMaxLevels)
+								foreach (TreeNode<NavBarItem> level4NavBarItem in level3NavBarItem.ChildNodes)
+								{
+									//Level 4
+									bool level4HasChildMenuItems = level4NavBarItem.HasChildMenuItems(navBarItemsMaxLevels);
+									@Html.NavBarItemMenuItemStart(level4NavBarItem, 4, navBarItemsMaxLevels)
+									if (level4HasChildMenuItems)
+									{
+										@Html.NavBarItemChildContainerStart(level4NavBarItem, 4, navBarItemsMaxLevels)
+										foreach (TreeNode<NavBarItem> level5NavBarItem in level4NavBarItem.ChildNodes)
+										{
+											//Level 5
+											bool level5HasChildMenuItems = level5NavBarItem.HasChildMenuItems(navBarItemsMaxLevels);
+											@Html.NavBarItemMenuItemStart(level5NavBarItem, 5, navBarItemsMaxLevels)
+											if (level5HasChildMenuItems)
+											{
+												@Html.NavBarItemChildContainerStart(level5NavBarItem, 5, navBarItemsMaxLevels)
+												foreach (TreeNode<NavBarItem> level6NavBarItem in level5NavBarItem.ChildNodes)
+												{
+													//Level 6
+													@Html.NavBarItemMenuItemStart(level6NavBarItem, 6, navBarItemsMaxLevels)
+													@Html.NavBarItemMenuItemEnd(level6NavBarItem, 6, navBarItemsMaxLevels)
+												}
+												@Html.NavBarItemChildContainerEnd(level1NavBarItem, 5, navBarItemsMaxLevels)
+											}
+											@Html.NavBarItemMenuItemEnd(level5NavBarItem, 5, navBarItemsMaxLevels)
+										}
+										@Html.NavBarItemChildContainerEnd(level4NavBarItem, 4, navBarItemsMaxLevels)
+									}
+									@Html.NavBarItemMenuItemEnd(level4NavBarItem, 4, navBarItemsMaxLevels)
+								}
+								@Html.NavBarItemChildContainerEnd(level3NavBarItem, 3, navBarItemsMaxLevels)
+							}
+							@Html.NavBarItemMenuItemEnd(level3NavBarItem, 3, navBarItemsMaxLevels)
+						}
+						@Html.NavBarItemChildContainerEnd(level2NavBarItem, 2, navBarItemsMaxLevels)
+					}
+					@Html.NavBarItemMenuItemEnd(level2NavBarItem, 2, navBarItemsMaxLevels)
+				}
+				@Html.NavBarItemChildContainerEnd(level1NavBarItem, 1, navBarItemsMaxLevels)
+			}
+			@Html.NavBarItemMenuItemEnd(level1NavBarItem, 1, navBarItemsMaxLevels)
+		}
+	}
+}

@@ -1,0 +1,128 @@
+﻿@model IEnumerable<Notification>
+@{
+	ViewBag.Title = "My Messages";
+	int unread = Model.AsQueryable().Count(msg => msg.Read == false);
+}
+<style>
+	.readEven {
+		background-color: #112238;
+	}
+	.readOdd {
+		background-color: #020406;
+	}
+
+	.unreadEven {
+		background-color: #235d74;
+	}
+	.unreadOdd {
+		background-color: #1d4d60;
+	}
+</style>
+@{
+	if (User.IsInRole("SystemAdmin"))
+	{
+		using (Html.BeginForm("Index", "Notifications", FormMethod.Post, new { name = "userform" }))
+		{
+			int selectedUserProfileId = (ViewData["SelectedUserProfileId"] == null ? 0 : (int)ViewData["SelectedUserProfileId"]);
+			
+			List<SelectListItem> users = new List<SelectListItem>();
+			IGstoreDb ctx = Html.GStoreDb();
+			var query = from profile in ctx.UserProfiles.All()
+						orderby profile.Email
+						select new SelectListItem { Value = profile.UserProfileId.ToString()
+							, Text = profile.Email + " <" + profile.FullName + "> " + (profile.AllowUsersToSendSiteMessages ? "(public)": "(private)")
+							, Selected = (selectedUserProfileId == profile.UserProfileId)
+						};
+
+			bool myselfSelected = true;
+			if (selectedUserProfileId != 0)
+			{
+				myselfSelected = false;
+			}
+			users.Add(new SelectListItem() { Value = "", Text = "Me - " + User.Identity.Name, Selected = myselfSelected });
+			users.AddRange(query.ToList());
+			@:View Messages For
+			@Html.DropDownList("ViewForUserProfileId", users, new { @class = "form-control", onchange = "document.forms['userform'].submit();" })
+		}
+	}
+}
+<h3>
+	<strong>My Messages</strong>
+	<small> - You have @unread unread message@(unread == 1 ? "" : "s") out of @Model.Count() total.</small>
+	<strong>@Html.ActionLink("Send A Message!", "Create", null, new {@class = "btn btn-success", title="Click here to send a message on the site"} )</strong>
+</h3>
+@if (Model.Count() != 0)
+{
+	<table class="table table-bordered table-hover">
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.From)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Importance)
+			</th>
+			<th>
+				Sent
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Read)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.Subject)
+			</th>
+			<th>&nbsp;</th>
+		</tr>
+
+
+		@{ int counter = 0; }
+		@foreach (var item in Model)
+		{
+			counter++;
+			string rowClass = item.Read ? "read" : "unread";
+
+			if (counter % 2 == 0)
+			{
+				//even
+				rowClass += "Even";
+			}
+			else
+			{
+				//odd
+				rowClass += "Odd";
+			}
+
+
+			@:<tr class="@rowClass" onclick='window.location.href ="@Url.Action("Details", "Notifications", new { id = item.NotificationId })";'>
+				<td>
+					@Html.DisplayFor(modelItem => item.From)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Importance)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDateTimeUtc)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Read)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Subject)
+				</td>
+				<td>&nbsp;</td>
+		<tr class="@rowClass" onclick='window.location.href ="@Url.Action("Details", "Notifications", new { id = item.NotificationId })";'>
+			<td align="right" valign="top">Message</td>
+			<td colspan="4">
+				@Html.DisplayTextMaxLines(modelItem => item.Message, 5, 100)
+			</td>
+			<td>
+				@Html.ActionLink("Open", "Details", new { id = item.NotificationId }, new { @class = "btn btn-info" })
+				|
+				@Html.ActionLink("Delete", "Delete", new { id = item.NotificationId }, new { @class = "btn btn-danger" })
+			</td>
+		</tr>
+		}
+
+	</table>
+}
+<hr />
+<p>@Html.ActionLink("Back to My Profile", "Index", "Profile")</p>

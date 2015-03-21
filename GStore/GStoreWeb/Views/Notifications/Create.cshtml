@@ -1,0 +1,177 @@
+﻿@model NotificationCreateViewModel
+
+@{
+	ViewBag.Title = "New Message";
+
+	string link1Checked = string.IsNullOrEmpty(Model.Link1Text) && string.IsNullOrEmpty(Model.Link1Url) ? "" : "checked=checked";
+	string link2Checked = string.IsNullOrEmpty(Model.Link2Text) && string.IsNullOrEmpty(Model.Link2Url) ? "" : "checked=checked";
+	string link3Checked = string.IsNullOrEmpty(Model.Link3Text) && string.IsNullOrEmpty(Model.Link3Url) ? "" : "checked=checked";
+	string link4Checked = string.IsNullOrEmpty(Model.Link4Text) && string.IsNullOrEmpty(Model.Link4Url) ? "" : "checked=checked";
+}
+
+<h2>New Message</h2>
+<script>
+	$(document).ready(function () { SetLinks(); });
+
+	function SetLinks()
+	{
+		LinkClick(1);
+		LinkClick(2);
+		LinkClick(3);
+		LinkClick(4);
+	}
+	function LinkClick(index)
+	{
+		var checkbox = $('#Link' + index + 'Checkbox');
+		var linkDiv = $('#Link' + index + 'Div');
+		var linkUrl = $('#Link' + index + 'Url');
+		var linkText = $('#Link' + index + 'Text');
+
+		if (checkbox.prop('checked') == true)
+		{
+			linkDiv.show(true);
+		}
+		else
+		{
+			linkDiv.hide(true);
+			linkUrl.val("");
+			linkText.val("");
+		}
+	}
+</script>
+
+@using (Html.BeginForm("Create", "Notifications", FormMethod.Post))
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.OrderId)
+	@Html.HiddenFor(model => model.OrderEmail)
+
+	<div class="form-horizontal">
+		<h4>Notification</h4>
+		<hr />
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		<hr />
+		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+		@if (Model.OrderId.HasValue)
+		{
+			<div class="form-group">
+				<label class="control-label col-md-2">Order</label>
+				<div class="col-md-10">
+					<input type="text" class="form-control" readonly="readonly" value="@(Model.Order.OrderNumber + " - " + Model.Order.CreateDateTimeUtc.ToUserDateTimeString(Html))" />
+					<br />@Html.ActionLink("Order Status (new window)", "View", "OrderStatus", new { id = Model.Order.OrderNumber }, new { @class = "btn btn-sm btn-info", target = "_blank" })
+				</div>
+			</div>
+		}
+		
+		<div class="form-group">
+			<label class="control-label col-md-2">To</label>
+			<div class="col-md-10">
+				@Html.DropDownList("ToUserProfileId", null, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ToUserProfileId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-md-2">To</label>
+			<div class="col-md-10">
+				@Html.DropDownList("ToUserProfileId", null, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.ToUserProfileId, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control" } })
+				@Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(model => model.Importance, htmlAttributes: new { @class = "control-label col-md-2" })
+			<div class="col-md-10">
+				@Html.DropDownList("Importance", null, htmlAttributes: new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.Importance, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		@Html.EditorFor(model => model.Message, "FieldTextArea", new { ColData= 9, ColLabel=2, ColOffset=0, TextCols = 80, TextRows = 15 })
+
+		<div class="form-group">
+			<label class="control-label col-md-2">Link 1 <input id="Link1Checkbox" type="checkbox" @(link1Checked) onclick="LinkClick(1);" value="true" /></label>
+			<div id="Link1Div" class="col-md-10">
+				@Html.LabelFor(model => model.Link1Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link1Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link1Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
+				@Html.LabelFor(model => model.Link1Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link1Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link1Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
+				<br />
+				@Html.ValidationMessageFor(model => model.Link1Text, "", new { @class = "text-danger" })
+				@Html.ValidationMessageFor(model => model.Link1Url, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-md-2">Link 2 <input id="Link2Checkbox" type="checkbox" @(link2Checked) onclick="LinkClick(2);" value="true" /></label>
+			<div id="Link2Div" class="col-md-10">
+				@Html.LabelFor(model => model.Link2Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link2Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link2Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
+				@Html.LabelFor(model => model.Link2Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link2Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link2Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
+				<br />
+				@Html.ValidationMessageFor(model => model.Link2Text, "", new { @class = "text-danger" })
+				@Html.ValidationMessageFor(model => model.Link2Url, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-md-2">Link 3 <input id="Link3Checkbox" type="checkbox" @(link3Checked) onclick="LinkClick(3);" value="true" /></label>
+			<div id="Link3Div" class="col-md-10">
+				@Html.LabelFor(model => model.Link3Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link3Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link3Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
+				@Html.LabelFor(model => model.Link3Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link3Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link3Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
+				<br />
+				@Html.ValidationMessageFor(model => model.Link3Text, "", new { @class = "text-danger" })
+				@Html.ValidationMessageFor(model => model.Link3Url, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="control-label col-md-2">Link 4 <input id="Link4Checkbox" type="checkbox" @(link4Checked) onclick="LinkClick(4);" value="true" /></label>
+			<div id="Link4Div" class="col-md-10">
+				@Html.LabelFor(model => model.Link4Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link4Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link4Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
+				@Html.LabelFor(model => model.Link4Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
+				@Html.HelpLabelPopoverFor(model => model.Link4Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.EditorFor(model => model.Link4Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
+				<br />
+				@Html.ValidationMessageFor(model => model.Link4Text, "", new { @class = "text-danger" })
+				@Html.ValidationMessageFor(model => model.Link4Url, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10">
+				<input type="submit" value="Send" class="btn btn-primary" />
+				&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning" })
+			</div>
+		</div>
+	</div>
+}
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+}

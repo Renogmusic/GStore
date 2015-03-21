@@ -1,0 +1,28 @@
+﻿@model CatalogViewModel
+<!-- Catalog Index Start -->
+@{
+	ViewBag.Title = Model.StoreFrontConfig.CatalogTitle;
+}
+
+<div class="row CatalogTitleRow">
+	<div class="col-xs-12 text-center CatalogTitleCol">
+		<h1 class="CatalogTitleText">@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+
+<div class="CatalogHeader">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+</div>
+
+@{ Html.RenderCatalogTopPartial(); }
+
+<div class="CatalogFooter">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+</div>
+
+@if (Html.UserHasPermission(GStoreAction.Categories_Manager))
+{
+	<hr />
+	@Html.ActionLink("Manage Catalog", "Manager", "CategoryAdmin", new { area = "CatalogAdmin", ReturnToFrontEnd = true }, null)
+}
+<!-- Catalog Index End -->

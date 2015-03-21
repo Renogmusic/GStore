@@ -1,0 +1,57 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	IQueryable<Order> orderQuery = Html.GStoreDb().Orders
+		.Where(o => o.StoreFrontId == storeFrontId && o.CreateDateTimeUtc > startDateTimeUtc && o.CreateDateTimeUtc < endDateTimeUtc);
+
+	IQueryable<OrderItem> orderItemQuery = Html.GStoreDb().OrderItems
+		.Where(o => o.StoreFrontId == storeFrontId && o.CreateDateTimeUtc > startDateTimeUtc && o.CreateDateTimeUtc < endDateTimeUtc);
+
+	int countOrdersAwaitingProcessing = orderQuery.Where(o => !o.StatusOrderAccepted)
+		.Count();
+		
+	int countOrderItemsAwaitingProcessing = orderItemQuery.Where(oi => !oi.StatusItemAccepted)
+		.Count();
+
+	int countOrdersAwaitingPayment = orderQuery.Where(o => !o.StatusOrderPaymentProcessed)
+		.Count();
+
+	int countOrderItemsAwaitingPayment = orderItemQuery.Where(oi => !oi.StatusItemPaymentReceived)
+		.Count();
+
+	int countOrdersAwaitingDelivery = orderQuery.Where(o => !o.AllItemsAreDigitalDownload && !o.StatusOrderDelivered)
+		.Count();
+
+	int countOrderItemsAwaitingDelivery = orderItemQuery.Where(oi => !oi.IsDigitalDownload && !oi.StatusItemDelivered)
+		.Count();
+		
+	int countOrdersAwaitingDownload = orderQuery.Where(o => o.AllItemsAreDigitalDownload && !o.StatusOrderDownloaded)
+		.Count();
+
+	int countOrderItemsAwaitingDownload = orderItemQuery.Where(oi => oi.IsDigitalDownload && !oi.StatusItemDownloaded)
+		.Count();
+
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<h4>
+		@(countOrdersAwaitingProcessing.ToString("N0")) Order@(countOrdersAwaitingProcessing == 1 ? "" : "s") Awaiting Processing
+		/ @(countOrderItemsAwaitingProcessing.ToString("N0")) Item@(countOrderItemsAwaitingProcessing == 1 ? "" : "s")
+		<br />
+		@(countOrdersAwaitingPayment.ToString("N0")) Order@(countOrdersAwaitingPayment == 1 ? "" : "s") Awaiting Payment
+		/ @(countOrderItemsAwaitingPayment.ToString("N0")) Item@(countOrderItemsAwaitingPayment == 1 ? "" : "s")
+		<br />
+		@(countOrderItemsAwaitingDelivery.ToString("N0")) Order@(countOrdersAwaitingDelivery == 1 ? "" : "s") Awaiting Delivery
+		/ @(countOrderItemsAwaitingDelivery.ToString("N0")) Item@(countOrderItemsAwaitingDelivery == 1 ? "" : "s")
+		<br />
+		@(countOrdersAwaitingDownload.ToString("N0")) Order@(countOrdersAwaitingDownload == 1 ? "" : "s") Awaiting Download 
+		/ @(countOrderItemsAwaitingDownload.ToString("N0")) Item@(countOrderItemsAwaitingDownload == 1 ? "" : "s")
+	</h4>
+</div>

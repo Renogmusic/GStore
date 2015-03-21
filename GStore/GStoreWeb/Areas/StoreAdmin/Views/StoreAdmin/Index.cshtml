@@ -1,0 +1,76 @@
+﻿@model StoreAdminViewModel
+@using System.ComponentModel.DataAnnotations
+@{
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+}
+@functions
+{
+	ViewDataDictionary DashboardInfo(string location, string dashboard, string title, DashboardDateTimeRange dateTimeRange)
+	{
+		ViewDataDictionary dict = new ViewDataDictionary();
+		dict.Add("Dashboard", dashboard);
+		dict.Add("DashboardTitle", title);
+		dict.Add("DashboardLocation", location);
+		dict.Add("DashboardDateTimeRange", dateTimeRange);
+		return dict;
+	}
+}
+<div class="row">
+	<div class="col-xs-12">
+		<h1 class="jumbotron NoTopMarginOrPad NoBottomMarginOrPad" style="margin-bottom: 0; margin-top: 0; padding-top:0; padding-bottom: 0;">
+			Store Front Dashboard
+			<br /><small>@(Model.StoreFrontConfig.Name) [@(Model.StoreFront.StoreFrontId)] - Client: @(Model.Client.Name) [@(Model.Client.ClientId)]</small>
+		</h1>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		@using (Html.BeginForm())
+		{
+			@:Activity for
+			@Html.EnumDropDownListFor(model => dateTimeRange, new { @class = "form-control", onchange = "this.form.submit();" })
+		}
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-4">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col1", "Top10CategoriesViewed", "Top 10 Categories Viewed", dateTimeRange)); }
+	</div>
+	<div class="col-md-4">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col1", "Top10ProductsViewed", "Top 10 Products Viewed", dateTimeRange)); }
+	</div>
+	<div class="col-md-4">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col1", "Top10ProductsAddedToCart", "Top 10 Products Added to Cart", dateTimeRange)); }
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row1Col1", "PageViews", "Page Views", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row1Col4", "AnonymousVisitors", "Anonymous Visitors", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row1Col2", "NewUsers", "New User Registrations", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row1Col3", "Logins", "Logins", dateTimeRange)); }
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col2", "CheckoutStarted", "Checkout", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col3", "CheckoutPayment", "Cart Payments", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col1", "OrderStatus", "Order Status", dateTimeRange)); }
+	</div>
+	<div class="col-md-3">
+		@{ Html.RenderPartial("_DashboardPartial", DashboardInfo("Row2Col4", "OrderTotals", "Order Totals", dateTimeRange)); }
+	</div>
+</div>

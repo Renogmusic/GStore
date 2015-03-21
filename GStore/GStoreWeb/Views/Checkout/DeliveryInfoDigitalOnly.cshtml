@@ -1,0 +1,39 @@
+﻿@model CheckoutDeliveryInfoDigitalOnlyViewModel
+@{
+	ViewBag.Title = "Digital Delivery";
+}
+@{
+	WebFormResponse oldWebFormResponse = null;
+	if (Model.Cart.DeliveryInfoDigital != null)
+	{
+		oldWebFormResponse = Model.Cart.DeliveryInfoDigital.WebFormResponse;
+	}
+
+}
+<script>
+	$(document).ready(function () { $('#EmailAddress').focus(); });
+</script>
+<h1 style="display: inline">Digital Delivery Information</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+
+<h3>Your will receive a link to download your items after checkout.</h3>
+<h4>Enter your Email address for order confirmation and to receive the download link for your items.</h4>
+@using (Html.BeginForm("DeliveryInfoDigitalOnly", "Checkout"))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	@Html.EditorFor(model => model.FullName, "FieldText")
+	@Html.EditorFor(model => model.EmailAddress, "FieldEmail")
+
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutDeliveryInfoDigitalOnlyWebForm, oldWebFormResponse));
+	<div class="row">
+		<div class="col-xs-12">
+			<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+		</div>
+	</div>
+}

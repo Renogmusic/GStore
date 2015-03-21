@@ -1,0 +1,223 @@
+﻿@model NavBarItemEditAdminViewModel
+
+<div class="form-horizontal">
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.NavBarItemId, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.NavBarItemId)
+			@Html.HiddenFor(model => model.NavBarItemId)
+			<br />
+			@Html.HelpLabelFor(model => model.NavBarItemId)
+		</div>
+	</div>
+
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Name)
+			<br />
+			@Html.HelpLabelFor(model => model.Name)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Order)
+			<br />
+			@Html.HelpLabelFor(model => model.Order)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ParentNavBarItemId, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.ParentNavBarItem)
+			<br />
+			@Html.HelpLabelFor(model => model.ParentNavBarItemId)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForRegisteredOnly, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.ForRegisteredOnly)
+			<br />
+			@Html.HelpLabelFor(model => model.ForRegisteredOnly)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ForAnonymousOnly, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.ForAnonymousOnly)
+			<br />
+			@Html.HelpLabelFor(model => model.ForAnonymousOnly)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.UseDividerBeforeOnMenu, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.UseDividerBeforeOnMenu)
+			<br/>
+			@Html.HelpLabelFor(model => model.UseDividerBeforeOnMenu)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.UseDividerAfterOnMenu, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.UseDividerAfterOnMenu)
+			<br/>
+			@Html.HelpLabelFor(model => model.UseDividerAfterOnMenu)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.OpenInNewWindow, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.OpenInNewWindow)
+			<br/>
+			@Html.HelpLabelFor(model => model.OpenInNewWindow)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.htmlAttributes, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.htmlAttributes)
+			<br/>
+			@Html.HelpLabelFor(model => model.htmlAttributes)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsPage, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.IsPage)
+			<br/>
+			@Html.HelpLabelFor(model => model.IsPage)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.PageId, "PageId", htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Page)
+			<br/>
+			@Html.HelpLabelFor(model => model.PageId)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsLocalHRef, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.IsLocalHRef)
+			<br />
+			@Html.HelpLabelFor(model => model.IsLocalHRef)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.LocalHRef, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.LocalHRef)
+			<br />
+			@Html.HelpLabelFor(model => model.LocalHRef)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsRemoteHRef, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.IsRemoteHRef)
+			<br />
+			@Html.HelpLabelFor(model => model.IsRemoteHRef)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.RemoteHRef, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.RemoteHRef)
+			<br />
+			@Html.HelpLabelFor(model => model.RemoteHRef)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsAction, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.IsAction)
+			<br />
+			@Html.HelpLabelFor(model => model.IsAction)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Action, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Action)
+			<br />
+			@Html.HelpLabelFor(model => model.Action)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.ActionIdParam, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.ActionIdParam)
+			<br />
+			@Html.HelpLabelFor(model => model.ActionIdParam)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Area, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Area)
+			<br />
+			@Html.HelpLabelFor(model => model.Area)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.Controller, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.Controller)
+			<br />
+			@Html.HelpLabelFor(model => model.Controller)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.IsPending)
+			<br />
+			@Html.HelpLabelFor(model => model.IsPending)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+			<br />
+			@Html.HelpLabelFor(model => model.StartDateTimeUtc)
+		</div>
+	</div>
+
+	<div class="form-group">
+		@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "control-label col-md-offset-1 col-md-3" })
+		<div class="col-md-7">
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+			<br />
+			@Html.HelpLabelFor(model => model.EndDateTimeUtc)
+		</div>
+	</div>
+
+</div>

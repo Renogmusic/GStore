@@ -1,0 +1,18 @@
+﻿@model CatalogViewModel
+<!-- Top Catalog Start -->
+@{
+	bool hasChildCategories = false;
+	
+	//root display
+	hasChildCategories = Model.CategoryTree.Count != 0;
+	ViewBag.Title = Model.StoreFrontConfig.CatalogTitle;
+	UserProfile profile = Html.CurrentUserProfile(false);
+}	
+
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogRootHeaderHtml))
+
+@{ Html.RenderCatalogTopCategoryListPartial(); }
+	
+@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogRootFooterHtml))
+
+<!-- Top Catalog End -->

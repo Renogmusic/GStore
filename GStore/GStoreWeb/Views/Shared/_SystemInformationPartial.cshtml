@@ -1,0 +1,376 @@
+﻿@using System.Reflection
+@{
+	Assembly assembly = typeof(StoreFront).Assembly;
+
+	StoreFront currentStoreFront = Html.CurrentStoreFront(false);
+	Client currentClient = Html.CurrentClient(false);
+	UserProfile currentUserProfile = Html.CurrentUserProfile(true);
+	StoreBinding currentStoreBinding = null;
+	try
+	{
+		currentStoreBinding = Html.GetCurrentStoreBinding(false);
+	}
+	catch
+	{
+	}
+}
+
+<h2>System Information</h2>
+<strong>
+	You are using GStore Version @Html.GStoreVersionNumber()<br />
+	Build @Html.GStoreVersionDateString()
+</strong>
+<hr />
+<div class="table-responsive">
+	<table id="SystemInfo" class="table-hover table-bordered table-striped">
+		<tr>
+			<td class="header">
+				GStore Version:
+			</td>
+			<td class="data">
+				@Html.GStoreVersionNumber()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Build:
+			</td>
+			<td class="data">
+				@Html.GStoreVersionDateString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				DLL File Date:
+			</td>
+			<td class="data">
+				@try
+				{
+					@System.IO.File.GetLastWriteTimeUtc(assembly.Location).ToLocalTime()
+				}
+				catch (Exception)
+				{
+				}
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Assembly Full Name:
+			</td>
+			<td class="data">
+				@assembly.FullName
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Assembly Version:
+			</td>
+			<td class="data">
+				@assembly.GetName().Version.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				DLL Location:
+			</td>
+			<td class="data">
+				@assembly.Location
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Machine Name:
+			</td>
+			<td class="data">
+				@Environment.MachineName.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				User Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToUserDateTimeString(Html)) - Time Zone: @(Html.UserTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Store Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToStoreDateTimeString(Html)) - Time Zone: @(Html.StoreFrontTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Client Local Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToClientDateTimeString(Html)) - Time Zone: @(Html.ClientTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				GStore System Default Time:
+			</td>
+			<td class="data">
+				@(DateTime.UtcNow.ToGStoreSystemDefaultDateTimeString(Html)) - Time Zone: @(Html.GStoreSystemDefaultTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Server Time:
+			</td>
+			<td class="data">
+				@DateTime.UtcNow.ToLocalTime().ToString() - Time Zone: @(Html.ServerTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				UTC Time:
+			</td>
+			<td class="data">
+				@DateTime.UtcNow.ToString()  - Time Zone: @(Html.UtcTimeZone().DisplayName)
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Processor Count:
+			</td>
+			<td class="data">
+				@Environment.ProcessorCount.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Working Set:
+			</td>
+			<td class="data">
+				@Environment.WorkingSet.ToByteString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Is Fully Trusted:
+			</td>
+			<td class="data">
+				@assembly.IsFullyTrusted
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Image Runtime Version:
+			</td>
+			<td class="data">
+				@assembly.ImageRuntimeVersion
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Is 64 Bit Operating System:
+			</td>
+			<td class="data">
+				@Environment.Is64BitOperatingSystem.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Is 64 Bit Process:
+			</td>
+			<td class="data">
+				@Environment.Is64BitProcess.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				OS Version:
+			</td>
+			<td class="data">
+				@Environment.OSVersion.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Runtime Version:
+			</td>
+			<td class="data">
+				@Environment.Version.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Web Server Directory:
+			</td>
+			<td class="data">
+				@Environment.CurrentDirectory.ToString()
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Current Store Front:
+			</td>
+			<td class="data">
+				@if (currentStoreFront == null)
+				{
+					@:<strong class="text-danger">(None - Current Store Front is null)</strong>
+				}
+				else
+				{
+					@:[@(currentStoreFront.StoreFrontId)] - '@(currentStoreFront.CurrentConfigOrAny().Name)'
+				}
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Current Client:
+			</td>
+			<td class="data">
+				@if (currentClient == null)
+				{
+					@:<strong class="text-danger">(None - Current Client is null)</strong>
+				}
+				else
+				{
+					@:[@(currentClient.ClientId)] - '@(currentClient.Name)'
+				}
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Current User Profile:
+			</td>
+			<td class="data">
+				@if (currentUserProfile == null)
+				{
+					@:<strong class="text-danger">(None - Current User Profile is null)</strong>
+				}
+				else
+				{
+					@:[@(currentUserProfile.UserProfileId)] - '@(currentUserProfile.FullName)' &lt;@(currentUserProfile.Email)&gt;
+				}
+			</td>
+
+		</tr>
+		<tr>
+			<td class="header">
+				Current Store Binding:
+			</td>
+			<td class="data">
+				@if (currentStoreBinding == null)
+				{
+					@:<strong class="text-danger">(None - Current Store Binding is null)</strong>
+						}
+				else
+				{
+					@:[@(currentStoreBinding.StoreBindingId)]
+					@: - HostName: '@(currentStoreBinding.HostName)'
+					@: - RootPath: '@(currentStoreBinding.RootPath)'
+					@: - Port: @(currentStoreBinding.Port.ToString())
+						}
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Binding Host:
+			</td>
+			<td class="data">
+				'@(Request.BindingHostName())'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Binding Path:
+			</td>
+			<td class="data">
+				'@(Request.BindingRootPath())'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Binding Port:
+			</td>
+			<td class="data">
+				@(Request.BindingPort())
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Binding Url Store Name:
+			</td>
+			<td class="data">
+				@if (string.IsNullOrEmpty(Request.BindingUrlStoreName()))
+				{
+					@:<strong class="text-info">(None - Binding Url Store Name is null)</strong>
+				}
+				else
+				{
+					@:Request.BindingUrlStoreName()
+				}
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Request AppPath:
+			</td>
+			<td class="data">
+				'@(Request.ApplicationPath)'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Request Url:
+			</td>
+			<td class="data">
+				'@(Request.Url.ToString())'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Request RawUrl:
+			</td>
+			<td class="data">
+				'@(Request.RawUrl)'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Request Encrypted:
+			</td>
+			<td class="data">
+				@(Request.IsSecureConnection.ToString())
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Session Timeout:
+			</td>
+			<td class="data">
+				@(Session.Timeout) minutes
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Session Id:
+			</td>
+			<td class="data">
+				'@(Session.SessionID)'
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Remote IP Address:
+			</td>
+			<td class="data">
+				@Request.UserHostAddress
+			</td>
+		</tr>
+		<tr>
+			<td class="header">
+				Remote User Agent:
+			</td>
+			<td class="data">
+				'@(Request.UserAgent)'
+			</td>
+		</tr>
+	</table>
+</div>

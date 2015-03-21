@@ -1,0 +1,159 @@
+﻿@model PageTemplate
+
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 SysAdminDetailsPageTitle text-success">
+		Page Template Details:
+		<br />
+		@Html.DisplayForModel("PageTemplateNoLinks")
+	</h2>
+</div>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.PageTemplateId }, new { @class = "btn btn-danger" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Refresh this Page", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
+	</div>
+</div>
+
+<hr />
+
+<div class="row">
+	<dl class="dl-horizontal">
+		<dt>
+			Page Template Sections
+		</dt>
+		<dd>
+			<a href="@(Url.Action("SectionIndex", "PageTemplateSysAdmin", new { id = Model.PageTemplateId }))" class="btn btn-lg btn-info">
+				View Sections
+				<hr/>
+				Active: @Model.Sections.AsQueryable().WhereIsActive().Count() / Total @Model.Sections.Count()
+			</a>
+			<br/>Sync Sections to Update
+		</dd>
+		<dt>
+			@Html.DisplayNameFor(model => model.PageTemplateId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.PageTemplateId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Description)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Description)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ViewName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ViewName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.IsPending)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.IsPending)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.StartDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.EndDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CreatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.CreatedBy)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdateDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UpdatedBy)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UpdatedBy)
+		</dd>
+
+	</dl>
+</div>
+
+<hr/>
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-5 col-md-6">
+		@Html.ActionLink("OK", "Index", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Edit", "Edit", new { id = Model.PageTemplateId }, new { @class = "btn btn-warning" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Delete", "Delete", new { id = Model.PageTemplateId }, new { @class = "btn btn-danger" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Sync Sections (new window)", "SectionSync", new { id = Model.PageTemplateId }, new { @class = "btn btn-info", target = "_blank" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		@Html.ActionLink("Refresh this Page", "Details", new { id = Model.PageTemplateId }, new { @class = "btn btn-info" })
+	</div>
+</div>
+
+<hr/>
+
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

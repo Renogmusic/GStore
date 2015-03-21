@@ -1,0 +1,28 @@
+﻿@model UserProfile
+@if (Model == null)
+{
+	@:(no user profile)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "User Profile";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) @(Model.UserName) '@(Model.FullName)'@(inactiveText)
+	</span>
+	@:&nbsp; @(Html.ActionLink(linkText, "Details", "UserProfileSysAdmin", new { id = Model.UserProfileId }, new { @class = viewLinkClass }))
+	<br />
+	if (Model.StoreFrontId.HasValue)
+	{
+		@Html.DisplayFor(up => up.StoreFront)
+	}
+	else
+	{
+		@Html.DisplayFor(up => up.Client)
+	}
+}

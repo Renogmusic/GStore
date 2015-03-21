@@ -1,0 +1,34 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	var data = Html.GStoreDb().OrderItems
+		.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc)
+		.GroupBy(p => p.Product.UrlName)
+		.OrderByDescending(p => p.Count())
+		.Take(7);
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<p>
+		@{ int counter = 0;}
+		@foreach (var cat in data)
+		{
+			counter++;
+			Product product = cat.First().Product;
+			@(counter + ". ") @(product.Name) @: - @(cat.Sum(o => o.Quantity).ToString("N0")) - $@(cat.Sum(o => o.LineTotal).ToString("N2"))<br />
+			}
+		@{
+			if (counter < 7)
+			{
+				@Html.Repeat("-<br/>", 7 - counter);
+			}
+		}
+	</p>
+</div>

@@ -1,0 +1,235 @@
+﻿@model ProfileViewModel
+@{
+	ViewBag.Title = "Manage Your Account";
+	int messageCount = Model.UserProfile.Notifications.Count();
+	int unreadCount = Model.UserProfile.Notifications.Count(msg => !msg.Read);
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+}
+
+<h2>@User.Identity.Name <small> - @ViewBag.Title.</small></h2>
+<style>
+	#profileHome .header {
+		text-align: right;
+		padding: 15px;
+	}
+
+	#profileHome .data {
+		text-align: left;
+		padding: 15px;
+	}
+	#notificationButtonLink{
+		width: 50%;
+	}
+	#ordersButtonLink{
+		width: 50%;
+	}
+</style>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div id="profileHome" class="row">
+
+	<div class="header col-sm-offset-2 col-sm-2">
+		Your Messages:
+	</div>
+	<div class="data col-sm-5">
+		<a id="notificationButtonLink" href="@Url.Action("Index", "Notifications")" class="btn btn-info btn-block">
+			My Messages <hr />@unreadCount New Message@(unreadCount == 1 ? "" : "s")<br /> @messageCount Total
+		</a>
+	</div>
+
+	@if (Model.UserProfile.Orders.Count != 0)
+	{
+		int orderCount = Model.UserProfile.Orders.Count;
+		int orderCountCompleted = Model.UserProfile.Orders.Count(o => o.StatusOrderDelivered || o.StatusOrderDownloaded);
+		<div class="header col-sm-offset-2 col-sm-2">
+			Your Orders:
+		</div>
+		<div class="data col-sm-5">
+			<a id="ordersButtonLink" href="@Url.Action("Index", "OrderStatus")" class="btn btn-success btn-block">
+				My Orders <hr />@orderCount Order@(orderCount == 1 ? "" : "s")<br /> @orderCountCompleted Completed
+			</a>
+		</div>
+	}
+
+	<div class="header col-sm-offset-2 col-sm-2">
+		Notifications:
+	</div>
+	<div class="data col-sm-5">
+		[@Html.ActionLink("Manage My Notifications", "Notifications", null, new { @class = "" })]
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Password:
+	</div>
+	<div class="data col-sm-5">
+		[
+		@if (Model.HasPassword)
+		{
+			@Html.ActionLink("Change your password", "ChangePassword")
+		}
+		else
+		{
+			@Html.ActionLink("Create", "SetPassword")
+		}
+		]
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Email:
+	</div>
+	<div class="data col-sm-5">
+		@Model.UserProfile.Email
+		&nbsp;-&nbsp;
+		@if (Model.EmailConfirmed)
+		{
+			<span class="text-info">[Verified]</span>
+			@:&nbsp;-&nbsp;@Html.ActionLink("Send a test Email", "SendTestEmail")
+		}
+		else
+		{
+			<span class="text-danger">[Not Verified]</span>
+			if (!Settings.AppEnableEmail)
+			{
+				@: - (Email is not enabled for this server)
+			}
+			else if (storeFrontConfig == null)
+			{
+				@: - (Email is not enabled for this store front)
+			}
+			else if (storeFrontConfig.Client.UseSendGridEmail)
+			{
+				@: - (Email is not enabled for this site)
+			}
+			else
+			{
+				@:&nbsp;-&nbsp; [@Html.ActionLink("Click here to Verify Your Email Address", "ConfirmEmail", null, new { @class = "" })]	
+			}
+		}
+	</div>
+	<div class="header col-sm-offset-2 col-sm-2">
+		Phone Number:
+	</div>
+	<div class="data col-sm-5">
+		@(Model.PhoneNumber.OrDefault("(none)"))
+
+		@if (!string.IsNullOrEmpty(Model.PhoneNumber))
+		{
+			if (Model.PhoneNumberConfirmed)
+			{
+				<span class="text-info">[Verified]</span>
+			}
+			else
+			{
+				<span class="text-danger">[Not Verified]</span>
+			}
+		}
+		
+		&nbsp; -&nbsp;
+		@if (Model.PhoneNumber != null)
+		{
+			@:[ @Html.ActionLink("Change", "AddPhoneNumber")
+			@: &nbsp;|&nbsp;
+			@Html.ActionLink("Remove", "RemovePhoneNumber") @:]
+			if (Model.PhoneNumberConfirmed && Settings.AppEnableSMS && storeFrontConfig != null && storeFrontConfig.Client.UseTwilioSms)
+			{
+				@:&nbsp;-&nbsp;@Html.ActionLink("Send a test Text Message", "SendTestSms")
+			}
+		}
+		else
+		{
+			@:[@(Html.ActionLink("Add", "AddPhoneNumber"))]
+		}
+		@if (!Settings.AppEnableSMS)
+		{
+			@:<br />(Phone Verification and SMS Text is not enabled for this server)
+		}
+		else if (storeFrontConfig == null)
+		{
+			@:<br />(Phone Verification and SMS Text is not enabled for this store front)
+		}
+		else if (!storeFrontConfig.Client.UseTwilioSms)
+		{
+			@:<br/>(Phone Verification and SMS Text is NOT enabled for this site)
+		}
+
+	</div>
+
+	<div class="header col-sm-offset-2 col-sm-2">
+		Address:
+	</div>
+	<div class="data col-sm-5">
+		@{
+			bool hasAddress = false;
+		}
+		@Model.UserProfile.AddressLine1
+		@if (!string.IsNullOrEmpty(Model.UserProfile.AddressLine1))
+		{
+			hasAddress = true;
+			@:<br/>
+		}
+		@if (!string.IsNullOrEmpty(Model.UserProfile.AddressLine2))
+		{
+			hasAddress = true;
+			@Model.UserProfile.AddressLine2
+			<br/>
+		}
+		@Model.UserProfile.City
+		@if (!string.IsNullOrEmpty(Model.UserProfile.State))
+		{
+			hasAddress = true;
+			@:,&nbsp;
+		}
+		@Model.UserProfile.State
+		@if (!string.IsNullOrEmpty(Model.UserProfile.PostalCode))
+		{
+			hasAddress = true;
+			@:&nbsp;
+		}
+		@Model.UserProfile.PostalCode
+		@if (!string.IsNullOrEmpty(Model.UserProfile.PostalCode))
+		{
+			hasAddress = true;
+		}
+		@if (Model.UserProfile.CountryCode.HasValue)
+		{
+			hasAddress = true;
+			<br/>@(Model.UserProfile.CountryCode.Value.ToString())
+			@:- @(Model.UserProfile.CountryCode.Value.ToDisplayName())
+		}
+		@if (hasAddress)
+		{
+			<br/>
+		}
+
+		@Html.ActionLink("[Edit Address]", "EditAddress")
+	</div>
+
+@using (Html.BeginForm("UpdateTimeZone", null, FormMethod.Post))
+	{
+		@Html.AntiForgeryToken()
+		<div class="header col-sm-offset-2 col-sm-2">
+			Time Zone:
+		</div>
+		<div class="data col-sm-5">
+			@{
+				string timeZoneId = Model.UserProfile == null ? null: Model.UserProfile.TimeZoneId;
+				if (string.IsNullOrEmpty(timeZoneId))
+				{
+					timeZoneId = storeFrontConfig == null ? null : storeFrontConfig.TimeZoneId;
+					if (string.IsNullOrEmpty(timeZoneId))
+					{
+						Client client = Html.CurrentClient(false);
+						timeZoneId = client == null ? null : client.TimeZoneId;
+						if (string.IsNullOrEmpty(timeZoneId))
+						{
+							timeZoneId = Html.GStoreSystemDefaultTimeZone().Id;
+						}
+					}
+				}
+			}
+			@Html.EditorFor(model => timeZoneId, "FieldTimeZoneFieldOnly")
+			<br/>
+			<input type="submit" value="Save" class="btn btn-warning" />
+		</div>
+	}
+
+</div>
+

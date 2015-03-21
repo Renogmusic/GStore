@@ -1,0 +1,26 @@
+﻿@model CheckoutWebFormInfo
+@{
+	WebForm webForm = Model.WebForm;
+	WebFormResponse oldFormResponse = Model.WebFormResponse;
+
+	ViewData.SetColDisplay(1, 3, 7);
+
+	if (webForm != null && webForm.IsActiveBubble())
+	{
+		//@Html.DisplayFor(model => model.WebForm, new { WebFormResponse = oldResponses });
+		List<WebFormField> fields = webForm.WebFormFields.AsQueryable().WhereIsActive().ToList();
+			
+		@:<div class="form-horizontal">
+		foreach (WebFormField item in fields)
+		{
+			WebFormFieldResponse oldFieldResponse = null;
+			if (oldFormResponse != null)
+			{
+				oldFieldResponse = oldFormResponse.WebFormFieldResponses.SingleOrDefault(wffr => wffr.WebFormFieldId == item.WebFormFieldId);
+			}
+			@Html.DisplayFor(model => item, "WebFormField", new { WebFormFieldResponse = oldFieldResponse })
+		}
+		@:</div>
+	}
+}
+

@@ -1,0 +1,58 @@
+﻿@model PageEditViewModel
+@{
+	AjaxOptions options = new AjaxOptions();
+	options.AllowCache = false;
+	options.HttpMethod = "Post";
+	options.UpdateTargetId = "PageEdit_Target";
+	options.InsertionMode = InsertionMode.Replace;
+	options.LoadingElementId = "PageEdit_LoadingElement";
+	options.OnBegin = "PageEdit_OnBegin";
+	options.OnComplete = "PageEdit_OnComplete";
+	options.OnFailure = "PageEdit_OnFailure";
+	options.OnSuccess = "PageEdit_OnSuccess";
+	options.LoadingElementDuration = 700;
+}
+<script>
+	function PageEdit_OnBegin() {
+		@*alert('OnBegin_@(Model.Index)');*@
+	}
+
+	function PageEdit_OnComplete() {
+		@*alert('OnComplete_@(Model.Index)');*@
+	}
+	function PageEdit_OnFailure() {
+		AddUserMessageDanger("Save Failed.", "Page Edit failed with a server error. Please try again or re-load the page and try again. Page: '@(Model.Name)' [@(Model.PageId)]");
+	}
+	function PageEdit_OnSuccess() {
+		@*alert('OnSuccess_@(Model.Index)');*@
+	}
+</script>
+<div id="PageEdit_LoadingElement" class="bg-success" style="display:none">
+	<strong>Saving....</strong>
+</div>
+@{
+	string actionName = "UpdatePageAjax";
+	string controllerName = "Page";
+	string area = "";
+	
+	if (Model.IsStoreAdminEdit)
+	{
+		controllerName = "PageAdmin";
+		area = "StoreAdmin";
+		if (Model.PageId == default(int))
+		{
+			actionName = "CreatePageAjax";
+		}
+		else
+		{
+			actionName = "UpdatePageAjax";
+		}
+	}
+	
+}
+@using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { PageId = Model.PageId, area = area }))
+{
+	<div id="PageEdit_Target">
+		@{ Html.RenderPartial("_PageEditPartial", Model); }
+	</div>
+}

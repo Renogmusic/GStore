@@ -1,0 +1,10 @@
+﻿@model WebFormResponse
+@if (Model == null)
+{
+	@:(no Web Form Response)
+}
+else
+{
+	@(Html.DisplayNameForModel()) 
+	@:'@(Html.DisplayFor(model => model.CreateDateTimeUtc))' [@(Html.DisplayFor(model => model.WebFormResponseId))]
+}

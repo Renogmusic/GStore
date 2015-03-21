@@ -1,9 +1,0 @@
-﻿@model GStore.Models.WebForm
-@if (Model == null)
-{
-	@:(no Web Form selected)
-}
-else
-{
-	@:@(Model.Name) [@(Model.WebFormId)] (@(Model.WebFormFields.Count) fields)
-}

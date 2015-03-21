@@ -1,0 +1,58 @@
+﻿@model CatalogViewModel
+<!-- Category Details Start -->
+@{
+	bool hasChildCategories = false;
+	hasChildCategories = Model.CurrentCategoryNodeOrNull.ChildNodes.Count() != 0;
+	ViewBag.Title = Model.CurrentCategoryOrNull.Name;
+
+	UserProfile profile = Html.CurrentUserProfile(false);
+	List<ProductBundle> bundles = Model.CurrentProductBundlesListOrNull(profile);
+	List<Product> products = Model.CurrentProductsListOrNull(profile);
+}
+	
+@{ Html.RenderCatalogCategoryListPartial(); }
+	
+		
+@if (hasChildCategories && Model.CurrentCategoryOrNull != null && !string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ChildCategoryFooterHtml))
+{
+	@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ChildCategoryFooterHtml))
+}
+
+@if (bundles != null && bundles.Count != 0)
+{
+	if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ProductBundleHeaderHtml))
+	{
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ProductBundleHeaderHtml))
+	}
+	Html.RenderCatalogBundleListPartial();
+	if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ProductBundleFooterHtml))
+	{
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ProductBundleFooterHtml))
+	}
+}
+
+		
+@if (bundles != null && bundles.Count != 0 && products != null && products.Count != 0)
+{
+	<br/><br/>
+}
+@if (products == null || products.Count == 0)
+{
+	if (!hasChildCategories && (bundles == null || bundles.Count == 0))
+	{
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.NoProductsMessageHtml.OrDefault("<h2>There are no current products in Category: " + Model.CurrentCategoryOrNull.Name + "</h2>")))
+	}
+}
+else
+{
+	if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ProductHeaderHtml))
+	{
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ProductHeaderHtml))
+	}
+	Html.RenderCatalogProductListPartial();
+	if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ProductFooterHtml))
+	{
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ProductFooterHtml))
+	}
+}
+<!-- Category Details End -->

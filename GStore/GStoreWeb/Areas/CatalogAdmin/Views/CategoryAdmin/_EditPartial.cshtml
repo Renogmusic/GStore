@@ -1,0 +1,221 @@
+﻿@model CategoryEditAdminViewModel
+@{
+	string tabBasicActive = string.Empty;
+	string tabDisplayActive = string.Empty;
+	string tabMenusActive = string.Empty;
+	string tabMetaTagsActive = string.Empty;
+	string tabProductTemplateActive = string.Empty;
+	string tabActivationActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "display":
+			tabDisplayActive = "active";
+			break;
+		case "menus":
+			tabMenusActive = "active";
+			break;
+		case "metatags":
+			tabMetaTagsActive = "active";
+			break;
+		case "producttemplate":
+			tabProductTemplateActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+}
+<script>
+	function GetActiveTab()
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			document.getElementById('ActiveTab').value = tabName;
+
+			var detailsUrl = @((Url.Action("Details", new { id = Model.ProductCategoryId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var editUrl = @((Url.Action("Edit", new { id = Model.ProductCategoryId, Tab="XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var deleteUrl = @((Url.Action("Delete", new { id = Model.ProductCategoryId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+
+			if (document.getElementById('DetailsTop'))
+			{
+				document.getElementById('DetailsTop').href = detailsUrl;
+			}
+			if (document.getElementById('DetailsBottom'))
+			{
+				document.getElementById('DetailsBottom').href = detailsUrl;
+			}
+			if (document.getElementById('EditTop'))
+			{
+				document.getElementById('EditTop').href = editUrl;
+			}
+			if (document.getElementById('EditBottom'))
+			{
+				document.getElementById('EditBottom').href = editUrl;
+			}
+			if (document.getElementById('DeleteTop'))
+			{
+				document.getElementById('DeleteTop').href = deleteUrl;
+			}
+			if (document.getElementById('DeleteBottom'))
+			{
+				document.getElementById('DeleteBottom').href = deleteUrl;
+			}
+		}
+	}
+	function MakeItActive()
+	{
+		if (document.getElementById('IsPending'))
+		{
+			document.getElementById('IsPending').checked = false;
+		}
+		if (document.getElementById('StartDateTimeUtc'))
+		{
+			document.getElementById('StartDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString()))';
+		}
+		if (document.getElementById('EndDateTimeUtc'))
+		{
+			document.getElementById('EndDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString()))';
+		}
+	}
+</script>
+@Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
+	Theme catalogTheme = storeFrontConfig.CatalogTheme;
+	string catalogThemeName = "Store Catalog Theme: '" + catalogTheme.Name + "' [" + catalogTheme.ThemeId + "]";
+}
+
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+@Html.HiddenFor(model => model.ProductCategoryId)
+<div class="form-horizontal">
+	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
+		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+		<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display</a></li>
+		<li class="@(tabMenusActive)"><a data-toggle="tab" href="#sectionMenus" onclick="SetActiveTab('Menus');">Menus</a></li>
+		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+		<li class="@(tabProductTemplateActive)"><a data-toggle="tab" href="#sectionProductTemplate" onclick="SetActiveTab('ProductTemplate');">Product Template</a></li>
+		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
+			</div>
+			@Html.EditorFor(model => model.Name, "FieldText")
+			@Html.EditorFor(model => model.UrlName, "FieldText")
+			@Html.EditorFor(model => model.Order, "FieldInt")
+			@Html.EditorFor(model => model.ParentCategoryId, "FieldProductCategoryIdNullable")
+			@Html.EditorFor(model => model.ImageName, "FieldProductCategoryFile", new { filterForImages = true })
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right" for="ImageName">Image Preview</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.ImageName, "ProductCategoryFileInfo")
+				</div>
+			</div>
+		</div>
+
+		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Display</h3>
+			</div>
+
+			@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+			@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+
+			@Html.EditorFor(model => model.DisplayForDirectLinks, "FieldCheckbox")
+			@Html.EditorFor(model => model.ThemeId, "FieldThemeIdNullable", new { optionLabel = "(Default - " + catalogThemeName + ")" })
+
+		</div>
+
+		<div id="sectionMenus" class="tab-pane fade in @(tabMenusActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Menus</h3>
+			</div>
+			@Html.EditorFor(model => model.ShowInMenu, "FieldCheckbox")
+			@Html.EditorFor(model => model.HideInMenuIfEmpty, "FieldCheckbox")
+			@Html.EditorFor(model => model.ShowInCatalogIfEmpty, "FieldCheckbox")
+			@Html.EditorFor(model => model.AllowChildCategoriesInMenu, "FieldCheckbox")
+			@Html.EditorFor(model => model.UseDividerAfterOnMenu, "FieldCheckbox")
+			@Html.EditorFor(model => model.UseDividerBeforeOnMenu, "FieldCheckbox")
+		</div>
+
+		<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Meta Tags</h3>
+			</div>
+			@Html.EditorFor(model => model.MetaDescription, "FieldTextArea")
+			@Html.EditorFor(model => model.MetaKeywords, "FieldTextArea")
+		</div>
+
+		<div id="sectionProductTemplate" class="tab-pane fade in @(tabProductTemplateActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Product Template</h3>
+			</div>
+			@Html.EditorFor(model => model.CategoryDetailTemplate, "FieldEnum")
+			@Html.EditorFor(model => model.ProductListTemplate, "FieldEnum")
+			@Html.EditorFor(model => model.BundleListTemplate, "FieldEnum")
+			@Html.EditorFor(model => model.ProductDetailTemplate, "FieldEnum")
+
+			@Html.EditorFor(model => model.NoProductsMessageHtml, "FieldHtml")
+
+			@Html.EditorFor(model => model.DefaultSummaryCaption, "FieldText")
+			@Html.EditorFor(model => model.DefaultTopDescriptionCaption, "FieldText")
+			@Html.EditorFor(model => model.DefaultBottomDescriptionCaption, "FieldText")
+			@Html.EditorFor(model => model.DefaultSampleImageCaption, "FieldText")
+			@Html.EditorFor(model => model.DefaultSampleAudioCaption, "FieldText")
+			@Html.EditorFor(model => model.DefaultSampleDownloadCaption, "FieldText")
+
+			@Html.EditorFor(model => model.ChildCategoryHeaderHtml, "FieldHtml")
+			@Html.EditorFor(model => model.ChildCategoryFooterHtml, "FieldHtml")
+			@Html.EditorFor(model => model.ProductHeaderHtml, "FieldHtml")
+			@Html.EditorFor(model => model.ProductFooterHtml, "FieldHtml")
+
+		</div>
+		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Activation</h3>
+			</div>
+			<h4 class="col-md-offset-3 col-md-6 text-warning">
+				Warning: editing these values incorrectly will de-activate your site.<br />
+				If you are unsure what to do, click the "Make It Active Now" button to turn the configuration on with default values.<br />
+				You can always log in and edit these values even if you de-activate your site.
+			</h4>
+			<div class="row">
+				<p class="col-md-offset-3 col-md-6">Store Local Time: @(DateTime.UtcNow.ToStoreDateTimeString(Html))</p>
+				<p class="col-md-offset-3 col-md-6">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-md-3">Status</label>
+				<div class="col-md-9 title-align">
+					<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
+					<a class="btn btn-xs btn-success" href="#" onclick="MakeItActive(); return false;">Make It Active Now</a>
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+			@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+			@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		</div>
+	</div>
+</div>

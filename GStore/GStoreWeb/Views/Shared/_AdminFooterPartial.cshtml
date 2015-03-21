@@ -1,0 +1,39 @@
+﻿<footer>
+	<div class="row">
+		<div class="col-sm-4 text-center">
+			<a id="PoweredByGStoreLink" href="@Url.Action("About", "GStore")" onclick="@Html.GaEventScript("EmailMe", "FooterClick", "link")">
+				<u>Powered by GStore</u>
+				<img id="PoweredByGStoreLogo" src="~/Content/Server/Images/Logo/NavBarTinyLogo.png" />
+			</a>
+
+		</div>
+		<div class="col-sm-4 text-center">
+			<a href="http://www.GStoreWeb.renog.info">GStore Home Page</a><br />
+			@ViewContext.RouteData.Area()<br />
+			@{
+				Client client = Html.CurrentClient(false);
+				StoreFront storeFront = Html.CurrentStoreFront(false);
+				StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+				UserProfile userProfile = Html.CurrentUserProfile(false);
+				string storeName = (storeFrontConfig == null ? "(unknown)" : storeFrontConfig.Name);
+				string storeId = (storeFront == null ? "(unknown)" : storeFront.StoreFrontId.ToString());
+				string storeConfig = (storeFrontConfig == null ? "(unknown)" : storeFrontConfig.ConfigurationName);
+				string storeConfigId = (storeFrontConfig == null ? "(unknown)" : storeFrontConfig.StoreFrontConfigurationId.ToString());
+				string clientName = (client == null ? "(unknown)" : client.Name);
+				string clientId = (client == null ? "(unknown)" : client.ClientId.ToString());
+				string userName = (userProfile == null ? "(unknown)" : userProfile.FullName + " (" + userProfile.Email + ")");
+				string userProfileId = (userProfile == null ? "(unknown)" : userProfile.UserProfileId.ToString());
+				string info = "User: '" + userName.ToHtml() + "' [" + userProfileId.ToHtml() + "]<br/>"
+					+ "Store: '" + storeName.ToHtml() + "' [" + storeId.ToHtml() + "]<br/>"
+					+ "Client: '" + clientName.ToHtml() + "' [" + clientId.ToHtml() + "]<br/>"
+					+ "Config: '" + storeConfig.ToHtml() + "' [" + storeConfigId.ToHtml() + "]";
+
+					@(Html.Raw(info))
+			}
+
+		</div>
+		<div class="col-sm-4 text-center">
+			<span id="ActiveUsers"> - </span>
+		</div>
+	</div>
+</footer>

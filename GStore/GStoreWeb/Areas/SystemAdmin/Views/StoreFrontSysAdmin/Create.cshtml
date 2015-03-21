@@ -1,0 +1,50 @@
+﻿@model StoreFront
+
+@{ ViewData.SetColDisplay(0, 2, 8); }
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info title-align">New Store Front</h2>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenAuditFields()
+		</div>
+	</div>
+
+	<div class="form-horizontal">
+		@Html.EditorFor(model => model.ClientId, "FieldClientId")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+
+		<div class="form-group">
+			<label for="createDefaultConfig" class="control-label col-md-2">Create Default Configuration</label>
+			<div class="col-md-10 text-left">
+				@Html.CheckBox("createDefaultConfig", true, new { @class = "form-control" })
+			</div>
+		</div>
+
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+}

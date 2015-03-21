@@ -1,0 +1,47 @@
+﻿@model CatalogViewModel
+<!-- View Product Start -->
+@{
+	if (Model.CurrentProductOrNull == null)
+	{
+		throw new ApplicationException("Model.CurrentProductOrNull is null, set in controller for this page");
+	}
+
+	Product product = Model.CurrentProductOrNull;
+	ViewBag.Title = product.Name + " - " + product.Category.Name;
+	UserProfile profile = Html.CurrentUserProfile(false);
+	bool userCanEditProduct = false;
+	if (profile != null && Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit))
+	{
+		userCanEditProduct = true;
+	}
+
+}
+
+<div class="row CatalogTitleRow">
+	<div class="col-xs-12 text-center CatalogTitleCol">
+		<h1 class="CatalogTitleText">@(Model.StoreFrontConfig.CatalogTitle)</h1>
+	</div>
+</div>
+
+<div class="row CategoryPathRow">
+	<div class="CategoryPath col-xs-12 text-center">
+		@Html.ProductCategoryWithParentLinks(product.Category, "Top", true) &gt; @product.Name
+	</div>
+</div>
+
+<div class="CatalogHeader">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogHeaderHtml))
+</div>
+
+@{ Html.RenderCatalogProductDetailsPartial();}
+
+<div class="CatalogFooter">
+	@Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogFooterHtml))
+</div>
+
+@if (userCanEditProduct)
+{
+	<hr />
+	@Html.ActionLink("Edit Product", "Edit", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
+}
+<!-- View Product End -->

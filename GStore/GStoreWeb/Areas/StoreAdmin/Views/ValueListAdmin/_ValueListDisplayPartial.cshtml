@@ -1,0 +1,387 @@
+﻿@model ValueListEditAdminViewModel
+
+@{
+	List<ValueListItemEditAdminViewModel> listItems = Model.ValueListItemEditAdminViewModels();
+
+	bool showRefresh = true;
+	bool showCancelTab = false;
+	bool showSaveCancelButtons = true;
+	bool showCancelButton = false;
+	bool displayUserMessages = true;
+	bool showListItemsTab = !Model.IsCreatePage;
+
+	string sectionValueListActive = " active";
+	string sectionListItemsActive = string.Empty;
+	string sectionActivationActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())
+	{
+		case "valuelist":
+			break;
+
+		case "listitems":
+			sectionListItemsActive = " active";
+			sectionValueListActive = string.Empty;
+			break;
+
+		case "activation":
+			sectionActivationActive = " active";
+			sectionValueListActive = string.Empty;
+			break;
+
+		default:
+			break;
+	}
+
+	MvcHtmlString cancelUrl = null;
+	MvcHtmlString refreshUrl = null;
+	if (!Model.IsStoreAdminEdit)
+	{
+		cancelUrl = new MvcHtmlString("XXX");    // Url.Action("Display", new { DynamicPageUrl = Model.OriginalPageUrl }).Replace("//", "/"));
+		refreshUrl = new MvcHtmlString(Request.Url.ToString()); // new MvcHtmlString("XXX");   //Url.Action("Edit", new { DynamicPageUrl = Model.OriginalPageUrl }));
+	}
+	else
+	{
+		showRefresh = false;
+		cancelUrl = new MvcHtmlString(Url.Action("Manager"));
+		if (Model.IsCreatePage)
+		{
+			showRefresh = false;
+			displayUserMessages = false;
+		}
+		else
+		{
+			refreshUrl = new MvcHtmlString(Url.Action("Edit", new { id = Model.ValueListId }));
+		}
+	}
+}
+
+<style>
+	.form-group .form-control {
+		padding-top: 0;
+		margin-top: 0;
+		padding-bottom: 0;
+		margin-bottom: 10px;
+	}
+
+	.form-group label {
+		padding-top: 0;
+		margin-top: 5px;
+		padding-bottom: 0;
+		margin-bottom: 0;
+	}
+</style>
+<script>
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('WebFormEditAdminViewModel_ActiveTab'))
+		{
+			document.getElementById('WebFormEditAdminViewModel_ActiveTab').value = tabName;
+		}
+		if (document.getElementById('ActiveTab'))
+		{
+			document.getElementById('ActiveTab').value = tabName;
+		}
+	}
+
+</script>
+<div class="row">
+	<div class="col-md-offset-3 col-md-9 title-align">
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		@Html.HiddenFor(model => model.ValueListId)
+		@Html.HiddenFor(model => model.ActiveTab)
+		@Html.HiddenFor(model => model.SortBy)
+		@Html.HiddenFor(model => model.SortAscending)
+	</div>
+</div>
+<ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
+	<li class="@(sectionValueListActive)"><a data-toggle="tab" href="#sectionWebForm" onclick="SetActiveTab('ValueList');">Value List</a></li>
+	@{
+		if (showListItemsTab)
+		{
+			<li class="@(sectionListItemsActive)"><a data-toggle="tab" href="#sectionListItems" onclick="SetActiveTab('ListItems');">List Items</a></li>
+		}
+	}
+	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+	@{
+		if (showCancelTab)
+		{
+			<li class=""><a href="@(cancelUrl)">Cancel</a></li>
+		}
+	}
+	@{
+		if (showRefresh)
+		{
+			<li class=""><a href="@(refreshUrl)">Refresh</a></li>
+		}
+	}
+</ul>
+
+
+
+<div class="tab-content">
+
+	<div id="sectionWebForm" class="tab-pane fade in @(sectionValueListActive)">
+		<div class="row form-group title-align">
+
+			<div class="row bg-success">
+				<div class="col-md-offset-3 col-md-7">
+					<h3 class="">Value List</h3>
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.Name)
+					@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Name, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.Description)
+					@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Description, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.Order, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.Order)
+					@Html.ValidationMessageFor(model => model.Order, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.Order, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+		</div>
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						@{
+				if (showCancelButton)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+				}
+						}
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+
+	<div id="sectionListItems" class="tab-pane fade in@(sectionListItemsActive)">
+
+		<div class="row form-group title-align">
+			<div class="row bg-success">
+				<div class="col-md-offset-3 col-md-7 title-align">
+					<h3 class="">List Items (@listItems.Count.ToString("N0"))</h3>
+				</div>
+			</div>
+		</div>
+
+		@{
+			if (listItems.Count == 0)
+			{
+				<h3 class="col-md-offset-3 col-md-9 title-align">There are no List Items for this List. Click EDIT to add list items.</h3>
+			}
+			else
+			{
+				ValueListItemEditAdminViewModel nullModel = null;
+				<div class="table-responsive">
+					<table class="table table-hover table-striped">
+						<tr>
+							<th class="text-center">@Html.ActionSortLink("Default Sort", "Details", "", "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.Name, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.Order, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.ValueListItemId, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.IsActiveDirect, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.IsPending, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.StartDateTimeUtc, "Details", true, true, "ListItems", Model.ValueListId)</th>
+							<th class="text-center">@Html.ActionSortLinkForItem(model => nullModel.EndDateTimeUtc, "Details", true, true, "ListItems", Model.ValueListId)</th>
+						</tr>
+
+						@{
+				foreach (var listItemModel in listItems.OrderBy(f => f.Index))
+				{
+					string htmlFieldName = "ListItems[" + listItemModel.Index + "]";
+
+					MvcHtmlString popuplistItemOnClick = new MvcHtmlString(" onclick=\"$('#ViewListItemButton_" + listItemModel.Index + "').click();\"");
+					@:
+							<tr>
+								<td>
+									<span id="ViewListItemLink_@(listItemModel.ValueListItemId)">
+										<button id="ViewListItemButton_@(listItemModel.Index)" type="button" class="btn btn-xs btn-success" data-toggle="modal" data-target="#ListItemViewModal_@(listItemModel.Index)">
+											View List Item
+										</button>
+										@(listItemModel.Index + 1)
+									</span>
+								</td>
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.Name, templateName: null, htmlFieldName: htmlFieldName)</td>
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.Order, templateName: null, htmlFieldName: htmlFieldName)</td>
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.ValueListItemId, templateName: null, htmlFieldName: htmlFieldName)</td>
+								<td>
+									@{
+					if (listItemModel.IsActiveDirect)
+					{
+						<span class="text-success">ACTIVE</span>
+					}
+					else
+					{
+						<span class="text-warning">INACTIVE</span>
+										<br />
+										<a href="#" class="btn btn-xs btn-warning" onclick="ActivateListItem(@(listItemModel.Index)); return false">Activate List Item</a>
+					}
+									}
+								</td>
+
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.IsPending, templateName: null, htmlFieldName: htmlFieldName)</td>
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.StartDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
+								<td @(popuplistItemOnClick)>@Html.DisplayFor(model => listItemModel.EndDateTimeUtc, templateName: null, htmlFieldName: htmlFieldName)</td>
+							</tr>
+
+							@Html.DisplayFor(model => listItemModel, "ListItemEditAdminViewModel_HiddenPopup", "ListItems[" + listItemModel.Index + "].")
+				}
+						}
+					</table>
+				</div>
+			}
+		}
+		<br /><br />
+
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						@{
+				if (showCancelButton)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+				}
+						}
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+
+	</div>
+
+	<div id="sectionActivation" class="tab-pane fade in@(sectionActivationActive)">
+		<div class="row form-group title-align">
+
+			<div class="row bg-success">
+				<div class="col-md-offset-3 col-md-7">
+					<h3 class="">Activation</h3>
+				</div>
+			</div>
+
+			<p class="col-md-offset-3 col-md-9">Store Local Time: @(DateTime.UtcNow.ToStoreDateTimeString(Html))</p>
+			<p class="col-md-offset-3 col-md-9">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+
+			<div class="form-group">
+				<label class="text-right control-label col-md-3">Status</label>
+				<div class="col-md-9 title-align">
+					<p style="padding-top: 5px;">
+						<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "Active" : "Inactive")</strong>
+					</p>
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.IsPending, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.IsPending)
+					@Html.ValidationMessageFor(model => model.IsPending, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsPending, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.StartDateTimeUtc)
+					@Html.ValidationMessageFor(model => model.StartDateTimeUtc, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.StartDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			<div class="form-group">
+				@Html.LabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "text-right control-label col-md-3" })
+				<div class="col-md-9 title-align">
+					@Html.DisplayFor(model => model.EndDateTimeUtc)
+					@Html.ValidationMessageFor(model => model.EndDateTimeUtc, "", new { @class = "text-danger" })
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.EndDateTimeUtc, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+		</div>
+		@{
+			if (showSaveCancelButtons)
+			{
+				<div class="row">
+					<div class="form-actions col-md-offset-3 col-md-9">
+						@{
+				if (showCancelButton)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+				}
+						}
+						@{
+				if (showRefresh)
+				{
+					@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+							<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+				}
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+</div>
+@{
+	if (displayUserMessages)
+	{
+		@Html.RenderUserMessages()
+	}
+}

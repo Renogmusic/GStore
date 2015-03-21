@@ -1,0 +1,31 @@
+﻿@model String
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	string searchPattern = ViewData["SearchPattern"] as string ?? "*.*";
+	bool filterForImages = (ViewData["filterForImages"] as bool?) ?? false;
+	bool filterForAudio = (ViewData["filterForAudio"] as bool?) ?? false;
+}
+
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	<div class="col-md-7 title-align">
+		Existing File: 
+		@Html.DropDownListForModel(Html.ProductBundleFileListForModel(searchPattern: searchPattern, filterForAudio: filterForAudio, filterForImages: filterForImages), "(none)", true)
+		<br/>
+		New File: <input class="form-control" type="file" name="@(Html.FieldNameForModel() + "_File")" style="display: inline" />
+		<br/>
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@Html.ValidationMessageForModel()
+		@if (useHelpLabelText)
+		{
+			<br />@Html.HelpLabelForModel()
+		}
+	</div>
+</div>

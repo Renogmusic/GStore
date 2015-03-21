@@ -1,0 +1,1014 @@
+﻿@model Cart
+@{
+	CartConfigViewModel config = ViewData["CartConfig"] as CartConfigViewModel;
+	if (config == null)
+	{
+		throw new ArgumentNullException("CartConfig");
+	}
+	bool isEditConfig = ((ViewData["IsEditConfig"] ?? false) as bool?).Value;
+	bool isViewConfig = ((ViewData["IsViewConfig"] ?? false) as bool?).Value;
+	bool isPreview = ((ViewData["IsPreview"] ?? false) as bool?).Value;
+
+	if (isEditConfig)
+	{
+		isViewConfig = false;
+		isPreview = false;
+	}
+	else if (isViewConfig)
+	{
+		isPreview = false;
+	}
+
+	UserProfile userProfile = Html.CurrentUserProfile(false);
+	ViewBag.Title = config.CartPageTitle.OrDefault("Cart");
+	List<CartItem> cartItems = null;
+	if (Model == null || Model.CartItems == null || Model.CartItems.Count == 0)
+	{
+		cartItems = new List<CartItem>();
+	}
+	else
+	{
+		cartItems = Model.CartItems.AsQueryable().Where(ci => !ci.CartBundleId.HasValue && !ci.ProductBundleItemId.HasValue).ApplyDefaultSort().ToList();
+	}
+
+	List<CartBundle> cartBundles = null;
+	if (Model == null || Model.CartBundles == null || Model.CartBundles.Count == 0)
+	{
+		cartBundles = new List<CartBundle>();
+	}
+	else
+	{
+		cartBundles = Model.CartBundles.AsQueryable().ApplyDefaultSort().ToList();
+	}
+
+
+
+	if (isPreview || isViewConfig || isEditConfig)
+	{
+		string title = string.Empty;
+		string titlebg = string.Empty;
+		if (isPreview)
+		{
+			title = "Shopping Cart Preview: This is a Preview of your shopping cart page.";
+			titlebg = "bg-info";
+		}
+		else if (isViewConfig)
+		{
+			title = "Shopping Cart Configuration Viewer";
+			titlebg = "bg-success";
+		}
+		else if (isEditConfig)
+		{
+			title = "Shopping Cart Configuration Editor";
+			titlebg = "bg-warning";
+		}
+
+		MvcHtmlString configLine = new MvcHtmlString((config.StoreFrontId == Html.CurrentStoreFront(true).StoreFrontId ? "<span class='text-success'><strong>Current Store Front</strong></span>" : "<span class='text-warning'><strong>FYI - This is NOT the current store front for this site<br/>This cart may look different in its own web site.</strong><br/><a href=\"" + config.StoreFront.CurrentConfig().PublicUrl + "\">Home Page (new window) " + config.StoreFront.CurrentConfig().PublicUrl.ToHtml() + "</a></span><br/>")
+			+ "<br/>Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId + "] - Store Front '" + config.StoreFrontName.ToHtml() + "' [" + config.StoreFront.StoreFrontId + "]");
+		
+		<div class="row @(titlebg)">
+			<h4 class="col-xs-12">@(Html.Raw(title))</h4>
+			<h5>@configLine</h5>
+			<a href="Javascript:ShowEmptyCart();">Show Empty Cart</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a href="Javascript:ShowCartWithItems();">Show Cart with Items</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a href="Javascript:ExpandAll();">Expand All</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a href="Javascript:CollapseAll();">Collapse All</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a id="ShowSectionInfoLink" href="Javascript:ShowSectionInfo();">Show Section Info</a>
+			<a id="HideSectionInfoLink" href="Javascript:HideSectionInfo();">Hide Section Info</a>
+			@{
+		bool showPreviewLink = config.StoreFront.Authorization_IsAuthorized(userProfile, GStoreAction.ClientConfig_StoreFrontConfig_Cart_Preview);
+		bool showViewConfigLink = config.StoreFront.Authorization_IsAuthorized(userProfile, GStoreAction.ClientConfig_StoreFrontConfig_Cart_View);
+		bool showEditConfigLink = config.StoreFront.Authorization_IsAuthorized(userProfile, GStoreAction.ClientConfig_StoreFrontConfig_Cart_Edit);
+			}
+			<br />
+			@if (isPreview)
+			{
+				showPreviewLink = false;
+			}
+			@if (isViewConfig)
+			{
+				showViewConfigLink = false;
+			}
+			@if (isEditConfig)
+			{
+				showEditConfigLink = false;
+			}
+			@if (showPreviewLink)
+			{
+				@Html.ActionLink("Preview Cart", "Preview", new { id = config.StoreFrontConfigurationId }, new { @class = "btn btn-link" })
+			}
+			@if (showViewConfigLink)
+			{
+				if (showPreviewLink)
+				{
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+				}
+				@Html.ActionLink("View Configuration", "ViewConfig", new { id = config.StoreFrontConfigurationId }, new { @class = "btn btn-link" })
+			}
+			@if (showEditConfigLink)
+			{
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;
+				@Html.ActionLink("Edit Configuration", "EditConfig", new { id = config.StoreFrontConfigurationId }, new { @class = "btn btn-link" })
+			}
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("View Live Cart (new window)", "Index", null, new { @class = "btn btn-link", target = "_blank" })
+
+			@if (isEditConfig)
+			{
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;
+				<a id="ResetStep1" class="btn btn-xs btn-danger" href="#" onclick="Javascript: if (window.confirm('WARNING: This will erase all your cart configuration on this page and start you from the default.\nOK if you understand and want to continue with reset \nOr click CANCEL to cancel.')) { $('#ResetStep1').hide(); $('#ResetStep2').show(); } return false;">Reset to Default Cart Configuration</a>
+				<span id="ResetStep2">
+					<a id="CancelReset" class="btn btn-xs btn-default" href="#" onclick="$('#ResetStep1').show(); $('#ResetStep2').hide(); return false;">No, Do NOT Reset to Cart Defaults!</a>
+					&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink("Yes! Reset to Defaults!", "EditConfigApplyDefault", new { id = config.StoreFrontConfigurationId }, new { id = "ResetNow", @class = "btn btn-xs btn-danger", hidden = "hidden" })
+				</span>
+				@:
+				<script>$(document).ready(function () { $('#ResetStep2').hide(); });</script>
+			}
+
+		</div>
+
+	}
+}
+<style>
+	.quantitydropdown
+	{
+		margin-left: auto;
+		margin-right: auto;
+		width: 6em;
+	}
+</style>
+<script>
+	@if (isViewConfig || isEditConfig)
+	{
+		<text>
+	function UpdateQty(cartItemId) {
+		alert('FYI - You are in Configuration mode.\nThe Quantity dropdown does not do anything.\nIt is only here to give you an idea how your cart looks.');
+	}
+	</text>
+	}
+	else
+	{
+		<text>
+	function UpdateQty(cartItemId) {
+		var qtyForm = document.getElementById("UpdateQty_" + cartItemId);
+		if (qtyForm) { qtyForm.submit(); }
+	}
+	</text>
+	}
+	@if (isPreview || isViewConfig || isEditConfig)
+	{
+		<text>
+	function UpdateBundleQty(cartItemId) {
+		alert('FYI - You are in Configuration or Preview mode.\nThe Bundle Quantity dropdown does not do anything.\nIt is only here to give you an idea how your cart looks.');
+	}
+	</text>
+	}
+	else
+	{
+		<text>
+	function UpdateBundleQty(cartBundleId) {
+		var qtyForm = document.getElementById("UpdateBundleQty_" + cartBundleId);
+		if (qtyForm) { qtyForm.submit(); }
+	}
+	</text>
+	}
+	@if (isPreview || isViewConfig || isEditConfig)
+	{
+		<text>
+	function ExpandAll() {
+		$('#ShowPageTitleLink').click();
+		$('#ShowCartPageHeaderLink').click();
+		$('#ShowEmptyLink').click();
+		$('#ShowCartItemsLink').click();
+		$('#ShowOrderDiscountCodeLink').click();
+		$('#ShowOrderTotalsLink').click();
+		ShowSectionInfo();
+	}
+	function CollapseAll() {
+		$('#HidePageTitleLink').click();
+		$('#HideCartPageHeaderLink').click();
+		$('#HideEmptyLink').click();
+		$('#HideCartItemsLink').click();
+		$('#HideOrderDiscountCodeLink').click();
+		$('#HideOrderTotalsLink').click();
+		ShowSectionInfo();
+	}
+	function ShowEmptyCart() {
+		$('#ShowPageTitleLink').click();
+		$('#ShowCartPageHeaderLink').click();
+		$('#ShowEmptyLink').click();
+		$('#HideCartItemsLink').click();
+		$('#HideOrderDiscountCodeLink').click();
+		$('#HideOrderTotalsLink').click();
+		HideSectionInfo();
+	}
+	function ShowCartWithItems() {
+		$('#ShowPageTitleLink').click();
+		$('#ShowCartPageHeaderLink').click();
+		$('#HideEmptyLink').click();
+		$('#ShowCartItemsLink').click();
+		$('#ShowOrderDiscountCodeLink').click();
+		$('#ShowOrderTotalsLink').click();
+		HideSectionInfo();
+	}
+	function ShowSectionInfo() {
+		$('#PageTitleSectionInfo').show();
+		$('#CartPageHeaderSectionInfo').show();
+		$('#EmptyCartSectionInfo').show();
+		$('#CartItemsSectionInfo').show();
+		$('#OrderDiscountCodeSectionInfo').show();
+		$('#OrderTotalsSectionInfo').show();
+		$('#ShowSectionInfoLink').hide();
+		$('#HideSectionInfoLink').show();
+	}
+	function HideSectionInfo() {
+		$('#PageTitleSectionInfo').hide();
+		$('#CartPageHeaderSectionInfo').hide();
+		$('#EmptyCartSectionInfo').hide();
+		$('#CartItemsSectionInfo').hide();
+		$('#OrderDiscountCodeSectionInfo').hide();
+		$('#OrderTotalsSectionInfo').hide();
+		$('#ShowSectionInfoLink').show();
+		$('#HideSectionInfoLink').hide();
+	}
+	@if (isPreview)
+	{
+		@:	$(document).ready(function () { ShowCartWithItems(); });
+																	}
+	else
+	{
+		@:	$(document).ready(function () { ShowEmptyCart(); });
+																		}
+	</text>
+	}
+</script>
+@if (isEditConfig)
+{
+	Html.BeginForm("EditConfig", "Cart", new { id = config.StoreFrontConfigurationId }, FormMethod.Post, new { id = "EditConfigForm" });
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => config.StoreFrontConfigurationId)
+	<input type="submit" value="Save" class="btn btn-warning" title="Saves this configuration" />
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("OK / Cancel", "ViewConfig", new { id = config.StoreFrontConfigurationId }, new { @class = "btn btn-default", title = "No save, back to View Configuration" })
+	@Html.HiddenFor(model => config.UseShoppingCart)
+	@Html.HiddenFor(model => config.CartRequireLogin)
+	@Html.HiddenFor(model => config.CartNavShowCartToAnonymous)
+	@Html.HiddenFor(model => config.CartNavShowCartToRegistered)
+	@Html.HiddenFor(model => config.CartNavShowCartWhenEmpty)
+	@Html.HiddenFor(model => config.CartThemeId)
+	<hr />
+}
+@if (isViewConfig || isEditConfig)
+{
+	<div id="PageTitleSectionInfo" class="row bg-info">
+		<h5 class="col-xs-12">
+			Page Title: this text displays in the web browser title bar and when page is added to favorites/bookmarks
+			<a id="HidePageTitleLink" href="#" onclick="PageTitle.hidden = true; HidePageTitleLink.hidden = true; ShowPageTitleLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+			<a id="ShowPageTitleLink" hidden="hidden" href="#" onclick="PageTitle.hidden = false; ShowPageTitleLink.hidden = true; HidePageTitleLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+		</h5>
+	</div>
+	<div id="PageTitle">
+		@Html.CartFieldEditorFor(isViewConfig, label => config.CartPageTitle)
+	</div>
+}
+@if (isPreview || isViewConfig || isEditConfig)
+{
+	<div id="CartPageHeaderSectionInfo" class="row bg-info">
+		<h5 class="col-xs-12">
+			Cart Page Header: This section is shown on the top of the cart page even if cart is empty
+			<a id="HideCartPageHeaderLink" href="#" onclick="CartPageHeader.hidden = true; HideCartPageHeaderLink.hidden = true; ShowCartPageHeaderLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+			<a id="ShowCartPageHeaderLink" hidden="hidden" href="#" onclick="CartPageHeader.hidden = false; ShowCartPageHeaderLink.hidden = true; HideCartPageHeaderLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+		</h5>
+	</div>
+}
+<div id="CartPageHeader">
+	<h2>
+		@(config.CartPageHeading.OrDefault("Your Shopping Cart"))
+		@if (isViewConfig || isEditConfig)
+		{
+			@Html.CartFieldEditorFor(isViewConfig, label => config.CartPageHeading);
+		}
+	</h2>
+</div>
+@{
+	if (isPreview || isViewConfig || isEditConfig)
+	{
+		<div id="EmptyCartSectionInfo" class="row bg-info">
+			<h5 class="col-xs-12">
+				Cart Empty Message: This message is shown when the cart is empty
+				<a id="HideEmptyLink" href="#" onclick="EmptyCart.hidden = true; HideEmptyLink.hidden = true; ShowEmptyLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+				<a id="ShowEmptyLink" hidden="hidden" href="#" onclick="EmptyCart.hidden = false; ShowEmptyLink.hidden = true; HideEmptyLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+			</h5>
+		</div>
+	}
+	if (isPreview || isViewConfig || isEditConfig || Model == null || Model.ItemCount == 0)
+	{
+		<h3 id="EmptyCart">
+			@if (isViewConfig || isEditConfig)
+			{
+				@Html.CartFieldEditorFor(isViewConfig, label => config.CartEmptyMessage)
+			}
+			@(config.CartEmptyMessage.OrDefault("Your cart is empty."))
+		</h3>
+	}
+	if (Model != null && Model.ItemCount > 0)
+	{
+		if (isPreview || isViewConfig || isEditConfig)
+		{
+			<div class="row bg-info">
+				<div id="CartItemsSectionInfo" class="col-xs-12">
+					<h5>
+						Cart Item Display: when the cart has items this section will be shown
+						<a id="HideCartItemsLink" href="#" onclick="CartItemContainer.hidden = true; HideCartItemsLink.hidden = true; ShowCartItemsLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+						<a id="ShowCartItemsLink" hidden="hidden" href="#" onclick="CartItemContainer.hidden = false; ShowCartItemsLink.hidden = true; HideCartItemsLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+					</h5>
+					@if (isPreview)
+					{
+						@:You can adjust the quantity and test discount codes below.
+					}
+				</div>
+			</div>
+		}
+
+		<div id="CartItemContainer" class="row table-responsive">
+			<table class="CartItems col-xs-12 table table-bordered table-striped">
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr class="CartItemConfigRow bg-info">
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, label => config.CartItemColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemVariantColumnShow, label => config.CartItemVariantColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemQuantityColumnShow, label => config.CartItemQuantityColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemListPriceColumnShow, label => config.CartItemListPriceColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemUnitPriceColumnShow, label => config.CartItemUnitPriceColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemListPriceExtColumnShow, label => config.CartItemListPriceExtColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemUnitPriceExtColumnShow, label => config.CartItemUnitPriceExtColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemDiscountColumnShow, label => config.CartItemDiscountColumnLabel)
+						</th>
+						<th class="text-center CartItemConfigColumn">
+							@Html.CartFieldEditorFor(isViewConfig, show => config.CartItemTotalColumnShow, label => config.CartItemTotalColumnLabel)
+						</th>
+					</tr>
+				}
+				<tr class="CartHeaders">
+					<th class="text-center">
+						@(config.CartItemColumnLabel.OrDefault("Item"))
+					</th>
+					@if (config.CartItemVariantColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemVariantColumnLabel.OrDefault("Type"))
+						</th>
+					}
+					@if (config.CartItemListPriceColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemListPriceColumnLabel.OrDefault("List Price Each"))
+						</th>
+					}
+					@if (config.CartItemUnitPriceColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemUnitPriceColumnLabel.OrDefault("Your Price Each"))
+						</th>
+					}
+					@if (config.CartItemQuantityColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemQuantityColumnLabel.OrDefault("Quantity"))
+						</th>
+					}
+					@if (config.CartItemListPriceExtColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemListPriceExtColumnLabel.OrDefault("List Price Ext"))
+						</th>
+					}
+					@if (config.CartItemUnitPriceExtColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemUnitPriceExtColumnLabel.OrDefault("Your Price Ext"))
+						</th>
+					}
+					@if (config.CartItemDiscountColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemDiscountColumnLabel.OrDefault("Your Savings"))
+						</th>
+					}
+					@if (config.CartItemTotalColumnShow || isViewConfig || isEditConfig)
+					{
+						<th class="text-center">
+							@(config.CartItemTotalColumnLabel.OrDefault("Line Total"))
+						</th>
+					}
+				</tr>
+
+				@foreach (CartBundle bundle in cartBundles)
+				{
+					<tr class="CartBundleRow">
+						<td class="CartBundleMain">
+							@(Html.DisplayFor(model => bundle, "CartBundle"))
+							<div class="row">
+								@{
+					if (isPreview || isViewConfig || isEditConfig)
+					{
+						string mode = isPreview ? "Preview" : "Configuration";
+						<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThe Remove button does not do anything.\nIt is only here to give you an idea how your cart looks.');">Remove</a>
+					}
+					else
+					{
+						@(Html.ActionLink("Remove", "RemoveBundle", new { id = bundle.ProductBundle.UrlName }))
+					}
+								}
+							</div>
+						</td>
+						@if (config.CartItemVariantColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleVariant">
+								&nbsp;
+							</td>
+						}
+						@if (config.CartItemListPriceColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleListPrice">
+								$@((bundle.ListPrice() ?? 0M).ToString("N2"))
+							</td>
+						}
+						@if (config.CartItemUnitPriceColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleUnitPrice">
+								$@((bundle.UnitPrice() ?? 0M).ToString("N2"))
+							</td>
+						}
+						@if (config.CartItemQuantityColumnShow || isViewConfig || isEditConfig)
+						{
+							if (isViewConfig || isEditConfig)
+							{
+								<td class="CartBundleQty">
+									@Html.DropDownList("Quantity", bundle.QuantityList(), new { @class="form-control quantitydropdown", onchange = "UpdateBundleQty(" + bundle.CartBundleId + ");" })
+								</td>
+							}
+							else
+							{
+								<td class="CartBundleQty">
+									@if (isPreview)
+									{
+										Html.BeginForm("PreviewUpdateBundleQty", "Cart", new { id = config.StoreFrontConfigurationId }, FormMethod.Post, new { id = "UpdateBundleQty_" + bundle.CartBundleId });
+										@Html.HiddenFor(model => model.DiscountCode, new { id = "QtyDiscountCode" })
+									}
+									else
+									{
+										Html.BeginForm("UpdateBundleQty", "Cart", new { id = bundle.ProductBundle.UrlName }, FormMethod.Post, new { id = "UpdateBundleQty_" + bundle.CartBundleId });
+									}
+									@Html.AntiForgeryToken()
+									@Html.DropDownList("Quantity", bundle.QuantityList(), new { @class="form-control quantitydropdown", onchange = "UpdateBundleQty(" + bundle.CartBundleId + ");" })
+									@{ Html.EndForm(); }
+								</td>
+							}
+						}
+						@if (config.CartItemListPriceExtColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleListPriceExt">
+								$@((bundle.ListPriceExt() ?? 0M).ToString("N2"))
+							</td>
+						}
+						@if (config.CartItemUnitPriceExtColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleUnitPriceExt">
+								$@((bundle.UnitPriceExt() ?? 0M).ToString("N2"))
+							</td>
+						}
+						@if (config.CartItemDiscountColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleLineDiscount">
+								@((bundle.LineDiscount().HasValue && bundle.LineDiscount().Value != 0) ? "$" + bundle.LineDiscount().Value.ToString("N2") : "N/A")
+							</td>
+						}
+						@if (config.CartItemTotalColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartBundleLineTotal">
+								$@((bundle.LineTotal() ?? 0M).ToString("N2"))
+							</td>
+						}
+					</tr>
+					if (config.CartBundleShowIncludedItems)
+					{
+						foreach (CartItem bundleItem in bundle.CartItems.AsQueryable().ApplyDefaultSort())
+						{
+							<tr class="CartBundleItemRow">
+								<td class="CartBundleItemMain">
+									@(Html.DisplayFor(model => bundleItem, "CartBundleItem"))
+								</td>
+								@if (config.CartItemVariantColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemVariant">
+										@Html.DisplayFor(model => bundleItem.ProductVariantInfo)
+									</td>
+								}
+								@if (config.CartItemListPriceColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemListPrice">
+										@Html.DisplayFor(model => bundleItem.ListPrice)
+									</td>
+								}
+								@if (config.CartItemUnitPriceColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemUnitPrice">
+										@Html.DisplayFor(model => bundleItem.UnitPrice)
+									</td>
+								}
+								@if (config.CartItemQuantityColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemQty">
+										@Html.DisplayFor(model => bundleItem.Quantity)
+									</td>
+								}
+								@if (config.CartItemListPriceExtColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemListPriceExt">
+										@Html.DisplayFor(model => bundleItem.ListPriceExt)
+									</td>
+								}
+								@if (config.CartItemUnitPriceExtColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemUnitPriceExt">
+										@Html.DisplayFor(model => bundleItem.UnitPriceExt)
+									</td>
+								}
+								@if (config.CartItemDiscountColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemLineDiscount">
+										@Html.DisplayFor(model => bundleItem.LineDiscount, "CurrencyOrNA")
+									</td>
+								}
+								@if (config.CartItemTotalColumnShow || isViewConfig || isEditConfig)
+								{
+									<td class="CartBundleItemLineTotal">
+										@if (config.CartBundleShowPriceOfIncludedItems)
+										{
+											@Html.DisplayFor(model => bundleItem.LineTotal)
+										}
+										else
+										{
+											@:(included)
+										}
+									</td>
+								}
+							</tr>
+						}
+						@:<tr><td>&nbsp;</td></tr>
+					}
+				}
+
+				@if (isViewConfig || isEditConfig)
+				{
+					@:<tr><td colspan="9">
+					@Html.CartFieldEditorFor(isViewConfig, show => config.CartBundleShowIncludedItems)
+					@Html.CartFieldEditorFor(isViewConfig, show => config.CartBundleShowPriceOfIncludedItems)
+					@:</td></tr>
+				}
+
+				@foreach (CartItem item in cartItems)
+				{
+					<tr class="CartItemRow">
+						<td class="CartItemMain">
+							@(Html.DisplayFor(model => item.Product, "CartProduct"))
+							<div class="row">
+								@{
+					if (isPreview || isViewConfig || isEditConfig)
+					{
+						string mode = isPreview ? "Preview" : "Configuration";
+						<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThe Remove button does not do anything.\nIt is only here to give you an idea how your cart looks.');">Remove</a>
+					}
+					else
+					{
+						@(Html.ActionLink("Remove", "Remove", new { id = item.Product.UrlName }))
+					}
+								}
+							</div>
+						</td>
+						@if (config.CartItemVariantColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemVariant">
+								@(Html.DisplayFor(model => item.ProductVariantInfo))
+							</td>
+						}
+						@if (config.CartItemListPriceColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemListPrice">
+								@(Html.DisplayFor(model => item.ListPrice))
+							</td>
+						}
+						@if (config.CartItemUnitPriceColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemUnitPrice">
+								@(Html.DisplayFor(model => item.UnitPrice))
+							</td>
+						}
+						@if (config.CartItemQuantityColumnShow || isViewConfig || isEditConfig)
+						{
+							if (isViewConfig || isEditConfig)
+							{
+								<td class="CartItemQty">
+									@Html.DropDownList("Quantity", item.QuantityList(), new { @class = "form-control quantitydropdown", onchange = "UpdateQty(" + item.CartItemId + ");" })
+								</td>
+							}
+							else
+							{
+								<td class="CartItemQty">
+									@if (isPreview)
+									{
+										Html.BeginForm("PreviewUpdateQty", "Cart", new { id = config.StoreFrontConfigurationId }, FormMethod.Post, new { id = "UpdateQty_" + item.CartItemId });
+										@Html.HiddenFor(model => model.DiscountCode, new { id = "QtyDiscountCode" })
+									}
+									else
+									{
+										Html.BeginForm("UpdateQty", "Cart", new { id = item.Product.UrlName }, FormMethod.Post, new { id = "UpdateQty_" + item.CartItemId });
+									}
+									@Html.AntiForgeryToken()
+									@Html.DropDownList("Quantity", item.QuantityList(), new { @class = "form-control quantitydropdown", onchange = "UpdateQty(" + item.CartItemId + ");" })
+									@{ Html.EndForm(); }
+								</td>
+							}
+						}
+						@if (config.CartItemListPriceExtColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemListPriceExt">
+								@(Html.DisplayFor(model => item.ListPriceExt))
+							</td>
+						}
+						@if (config.CartItemUnitPriceExtColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemUnitPriceExt">
+								@(Html.DisplayFor(model => item.UnitPriceExt))
+							</td>
+						}
+						@if (config.CartItemDiscountColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemDiscount">
+								@(Html.DisplayFor(model => item.LineDiscount, "CurrencyOrNA"))
+							</td>
+						}
+						@if (config.CartItemTotalColumnShow || isViewConfig || isEditConfig)
+						{
+							<td class="CartItemTotal">
+								@(Html.DisplayFor(model => item.LineTotal))
+							</td>
+						}
+					</tr>
+				}
+			</table>
+		</div>
+		if (isPreview || isViewConfig || isEditConfig)
+		{
+			<div id="OrderDiscountCodeSectionInfo" class="row bg-info">
+				<h5 class="col-xs-12">
+					Discount Code: Discount/Coupon Code entry
+					<a id="HideOrderDiscountCodeLink" href="#" onclick="OrderDiscountCode.hidden = true; HideOrderDiscountCodeLink.hidden = true; ShowOrderDiscountCodeLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+					<a id="ShowOrderDiscountCodeLink" hidden="hidden" href="#" onclick="OrderDiscountCode.hidden = false; ShowOrderDiscountCodeLink.hidden = true; HideOrderDiscountCodeLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+				</h5>
+			</div>
+		}
+		<div id="OrderDiscountCode" class="row">
+			@{
+		if (isViewConfig || isEditConfig)
+		{
+			@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderDiscountCodeSectionShow, label => config.CartOrderDiscountCodeLabel);
+			@Html.CartFieldEditorFor(isViewConfig, label1 => config.CartOrderDiscountCodeApplyButtonText, label2 => config.CartOrderDiscountCodeRemoveButtonText);
+		}
+
+		if (config.CartOrderDiscountCodeSectionShow || isViewConfig || isEditConfig)
+		{
+			@:<div class="col-xs-12 text-right">
+				string submitButtonText = config.CartOrderDiscountCodeApplyButtonText;
+				string submitButtonClass = "btn-info";
+				string discountCodeFieldName = "DiscountCode";
+				MvcHtmlString labelTitle = new MvcHtmlString(("Enter a " + config.CartOrderDiscountCodeLabel).ToHtmlAttribute());
+				MvcHtmlString submitTitle = new MvcHtmlString(Html.AttributeEncode("Click here to " + config.CartOrderDiscountCodeApplyButtonText));
+				bool hasDiscountCode = !string.IsNullOrEmpty(Model.DiscountCode);
+				if (hasDiscountCode)
+				{
+					submitButtonText = config.CartOrderDiscountCodeRemoveButtonText;
+					submitButtonClass = "btn-warning";
+					discountCodeFieldName = "OriginalDiscountCode";
+					labelTitle = null;
+					submitTitle = new MvcHtmlString(Html.AttributeEncode("Click here to " + config.CartOrderDiscountCodeRemoveButtonText));
+				}
+
+				if (!isViewConfig && !isEditConfig)
+				{
+					if (isPreview)
+					{
+						Html.BeginForm("PreviewUpdateDiscountCode", "Cart", new { id = config.StoreFrontConfigurationId });
+						@Html.Hidden("Quantity", Model.ItemCount)
+					}
+					else
+					{
+						Html.BeginForm("UpdateDiscountCode", "Cart");
+					}
+					@Html.AntiForgeryToken()
+				}
+				@:<label title="@labelTitle" for="@(discountCodeFieldName)">@config.CartOrderDiscountCodeLabel</label>
+				@:<input id="@(discountCodeFieldName)" type="text" @(Html.Raw(!hasDiscountCode ? string.Empty : "disabled='disabled' readonly='readonly'")) name="@(discountCodeFieldName)" value="@(Model.DiscountCode)" @((isViewConfig || isEditConfig) ? "" : "required='required'") size="20" maxlength="18" title="@labelTitle" placeholder="@(labelTitle)" />
+
+			if (!isViewConfig && !isEditConfig)
+			{
+				@:<input type="submit" value="@(submitButtonText)" class="btn btn-xs @(submitButtonClass)" title="@submitTitle" />
+								Html.EndForm();
+			}
+			else
+			{
+				<input type="button" value="@(Html.AttributeEncode(config.CartOrderDiscountCodeApplyButtonText))" class="btn btn-xs btn-info" title="@(Html.AttributeEncode("Click here to " + config.CartOrderDiscountCodeApplyButtonText))" onclick="alert('FYI - You are in Configuration mode.\nThis button does not do anything.\nIt is only here to give you an idea how your cart looks.');" />
+				<input type="button" value="@(Html.AttributeEncode(config.CartOrderDiscountCodeRemoveButtonText))" class="btn btn-xs btn-warning" title="@(Html.AttributeEncode("Click here to " + config.CartOrderDiscountCodeRemoveButtonText))" onclick="alert('FYI - You are in Configuration mode.\nThis button does not do anything.\nIt is only here to give you an idea how your cart looks.');" />
+			}
+			@:</div>
+		}
+			}
+		</div>
+
+		if (isPreview || isViewConfig || isEditConfig)
+		{
+			<div id="OrderTotalsSectionInfo" class="row bg-info">
+				<h5 class="col-xs-12">
+					Order Totals: Totals for Order Fields with shipping and handling
+					<a id="HideOrderTotalsLink" href="#" onclick="OrderTotals.hidden = true; HideOrderTotalsLink.hidden = true; ShowOrderTotalsLink.hidden = false;"><small class="text-warning">Click here to Hide</small></a>
+					<a id="ShowOrderTotalsLink" hidden="hidden" href="#" onclick="OrderTotals.hidden = false; ShowOrderTotalsLink.hidden = true; HideOrderTotalsLink.hidden = false;"><small class="text-success">Click here to Show</small></a>
+				</h5>
+			</div>
+		}
+		<div id="OrderTotals" class="table-responsive col-lg-offset-8">
+			<table id="OrderTotalsTable" class="table table-striped">
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderItemCountShow, label => config.CartOrderItemCountLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Sub-Total)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderItemCountShow)
+				{
+					<tr class="CartOrderItemCountRow">
+						<td class="title-align-right CartOrderItemCountLabel">
+							<strong>
+								@(config.CartOrderItemCountLabel.OrDefault("Total Count of Items in order"))
+							</strong>
+						</td>
+						<td class="CartOrderItemCount">
+							<strong>
+								@(Html.DisplayFor(model => model.ItemCount))
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderSubtotalShow, label => config.CartOrderSubtotalLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Sub-Total)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderSubtotalShow)
+				{
+					<tr class="CartOrderSubtotalRow">
+						<td class="title-align-right CartOrderSubtotalLabel">
+							<strong>
+								@(config.CartOrderSubtotalLabel.OrDefault("Sub-total"))
+							</strong>
+						</td>
+						<td class="CartOrderSubtotal">
+							<strong>
+								@(Html.DisplayFor(model => model.Subtotal))
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderTaxShow, label => config.CartOrderTaxLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Tax)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderTaxShow)
+				{
+					<tr class="CartOrderTaxRow">
+						<td class="title-align-right CartOrderTaxLabel">
+							<strong>
+								@(config.CartOrderTaxLabel.OrDefault("Tax"))
+							</strong>
+						</td>
+						<td class="CartOrderTax">
+							<strong>
+								@(Html.DisplayFor(model => model.Tax))
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderShippingShow, label => config.CartOrderShippingLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Shipping)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderShippingShow)
+				{
+					<tr class="CartOrderShippingRow">
+						<td class="title-align-right CartOrderShippingLabel">
+							<strong>
+								@(config.CartOrderShippingLabel.OrDefault("Shipping"))
+							</strong>
+						</td>
+						<td class="CartOrderShipping">
+							<strong>
+								@if (Model.Shipping == 0 && Model.AllItemsAreDigitalDownload)
+								{
+									@Html.DisplayFor(model => model.Shipping, "CurrencyOrNA")
+								}
+								else
+								{
+									@Html.DisplayFor(model => model.Shipping)
+								}
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderHandlingShow, label => config.CartOrderHandlingLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Handling)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderHandlingShow)
+				{
+					<tr class="CartOrderHandlingRow">
+						<td class="title-align-right CartOrderHandlingLabel">
+							<strong>
+								@(config.CartOrderHandlingLabel.OrDefault("Handling"))
+							</strong>
+						</td>
+						<td class="CartOrderHandling">
+							<strong>
+								@(Html.DisplayFor(model => model.Handling))
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, show => config.CartOrderDiscountShow, label => config.CartOrderDiscountLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Discount)
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (config.CartOrderDiscountShow)
+				{
+					<tr class="CartOrderDiscountRow">
+						<td class="title-align-right CartOrderDiscountLabel">
+							<strong>
+								@(config.CartOrderDiscountLabel.OrDefault("Order Discount"))
+							</strong>
+						</td>
+						<td class="CartOrderDiscount">
+							<strong>
+								@(Html.DisplayFor(model => model.OrderDiscount, "CurrencyOrNA"))
+							</strong>
+						</td>
+					</tr>
+				}
+				@if (isViewConfig || isEditConfig)
+				{
+					<tr>
+						<td class="title-align-right">
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, label => config.CartOrderTotalLabel)
+							</strong>
+						</td>
+						<td>
+							<strong>
+								$(Order Total)
+							</strong>
+						</td>
+					</tr>
+				}
+				<tr class="CartOrderTotalRow">
+					<td class="title-align-right CartOrderTotalLabel">
+						<strong>
+							@(Html.DisplayNameFor(model => model.Total))
+						</strong>
+					</td>
+					<td class="CartOrderTotal">
+						<strong>
+							@(Html.DisplayFor(model => model.Total))
+						</strong>
+					</td>
+				</tr>
+				<tr>
+					<td class="title-align-right">
+						@if (isViewConfig || isEditConfig)
+						{
+							<strong>
+								@Html.CartFieldEditorFor(isViewConfig, label => config.CartCheckoutButtonLabel)
+							</strong>
+						}
+						else
+						{
+							@:&nbsp;
+						}
+					</td>
+					<td class="CartCheckoutBottonCol">
+						<strong>
+						@if (isPreview || isViewConfig || isEditConfig)
+						{
+							string mode = isPreview ? "Preview" : "Configuration";
+							<a class="btn btn-lg btn-success" href="JavaScript:alert('FYI - You are in @(mode) mode.\nThe Check Out button does not do anything.\nIt is only here to give you an idea how your cart looks.');">@(config.CartCheckoutButtonLabel.OrDefault("Check Out"))</a>
+						}
+						else
+						{
+							@Html.ActionLink(config.CartCheckoutButtonLabel.OrDefault("Check Out"), "Index", "CheckOut", null, new { @class = "btn btn-lg btn-success" })
+						}
+						</strong>
+					</td>
+				</tr>
+			</table>
+		</div>
+	}
+}
+
+@if (isEditConfig)
+{
+	<hr />
+	<input type="submit" value="Save" class="btn btn-warning" title="Saves this configuration" />
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("OK / Cancel", "ViewConfig", new { id = config.StoreFrontConfigurationId }, new { @class = "btn btn-default", title = "No save, back to View Configuration" })
+	Html.EndForm();
+}

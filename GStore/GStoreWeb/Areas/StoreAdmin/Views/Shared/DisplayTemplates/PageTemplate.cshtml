@@ -1,0 +1,9 @@
+﻿@model PageTemplate
+@if (Model == null)
+{
+	@:(no Page Template selected)
+}
+else
+{
+	@:@(Model.Name) [@(Model.PageTemplateId)]
+}

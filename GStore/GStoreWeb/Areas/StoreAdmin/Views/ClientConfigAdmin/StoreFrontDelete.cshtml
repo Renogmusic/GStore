@@ -1,0 +1,65 @@
+﻿@model StoreFrontConfigAdminViewModel
+
+<div class="row">
+	<h2 class="col-md-offset-3 col-md-6 jumbotron StoreAdminDetailsPageTitle text-center text-warning">
+		Delete Store Front Configuration<br/>
+		<small>
+			@(Html.DisplayNameFor(model => model.ConfigurationName)): '@(Html.DisplayFor(model => model.ConfigurationName))' [@(Model.StoreFrontConfigurationId)]<br/>
+			@(Html.DisplayNameFor(model => model.StoreFront)): '@(Model.Name)' [@(Model.StoreFrontId)]
+		</small>
+	</h2>
+</div>
+
+<div class="row">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
+		Are you sure you want to delete store Front Configuration:
+		<br />
+		@(Html.DisplayNameFor(model => model.ConfigurationName)): '@(Html.DisplayFor(model => model.ConfigurationName))' [@(Model.StoreFrontConfigurationId)]<br />
+		@(Html.DisplayNameFor(model => model.StoreFront)): '@(Model.Name)' [@(Model.StoreFrontId)]
+		?
+	</h3>
+</div>
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId}, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("View", "StoreFrontView", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId}, new { @class = "btn btn-success" })
+		}
+	</div>
+</div>
+
+<hr />
+@{ Html.RenderPartial("_StoreFrontViewNoTabsPartial", Model); }
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "StoreFrontEdit", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("View", "StoreFrontView", new { id = Model.StoreFrontId, storeFrontConfigId = Model.StoreFrontConfigurationId }, new { @class = "btn btn-success" })
+		}
+	</div>
+</div>
+
+<hr />
+<div>
+	@if (Html.UserHasPermission(GStoreAction.ClientConfig_Manager))
+	{
+		@Html.ActionLink("Back to Configuration Manager", "Manager") @:&nbsp;|&nbsp;
+	}
+	@Html.ActionLink("Back to Store Admin", "Index", "StoreAdmin")
+</div>

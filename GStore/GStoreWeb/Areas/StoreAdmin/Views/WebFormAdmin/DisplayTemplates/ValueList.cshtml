@@ -1,0 +1,11 @@
+﻿@model ValueList
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@:'@(Html.DisplayFor(model => model.Name))' [@(Model.ValueListId)]
+	}
+}

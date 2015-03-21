@@ -1,0 +1,34 @@
+﻿@model GStoreData.Models.DeliveryInfoShipping
+
+<div class="row">
+	<div class="col-md-4 text-right-md text-right-lg">
+		Delivery to
+	</div>
+	<div class="col-md-4 text-left-md text-left-lg">
+		@Html.DisplayFor(model => model.FullName)
+		<br/>
+		@Html.DisplayFor(model => model.AdddressL1)
+		@if (!string.IsNullOrEmpty(Model.AdddressL2))
+		{
+			@Html.DisplayFor(model => model.AdddressL2)
+			<br/>
+		}
+		@if (!string.IsNullOrEmpty(Model.City))
+		{
+			@Html.DisplayFor(model => model.City)
+			@:,&nbsp;
+		}
+		
+		@if (!string.IsNullOrEmpty(Model.State))
+		{
+			@Html.DisplayFor(model => model.State)
+			@:&nbsp;
+		}
+		@Html.DisplayFor(model => model.PostalCode)
+		<br/>
+		@Model.CountryCode.ToDisplayName()
+		<br/>
+		@Model.EmailAddress
+	</div>
+</div>
+

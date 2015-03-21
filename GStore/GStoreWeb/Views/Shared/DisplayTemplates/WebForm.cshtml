@@ -1,0 +1,97 @@
+﻿@model WebForm
+@{
+	WebFormResponse oldResponse = ViewData["WebFormResponse"] as WebFormResponse;
+	
+	int labelMdColspan = Model.LabelMdColSpan;
+	int fieldMdColspan = Model.FieldMdColSpan;
+
+	if (labelMdColspan < 1 || labelMdColspan > 11)
+	{
+		labelMdColspan = 3;
+	}
+	if (fieldMdColspan < 1 || fieldMdColspan > 11)
+	{
+		fieldMdColspan = 7;
+	}
+	string align = "title-align";
+
+	IOrderedQueryable<WebFormField> fields = Model.WebFormFields.AsQueryable().WhereIsActive().ApplySortDefault();
+
+}
+
+@if (fields.Count() > 0)
+{
+	<script type="text/javascript">
+		$(document).ready(function () {
+			if ($('input:text:first'))
+			{
+				$('input:text:first').focus();
+			}
+		})
+	</script>
+}
+@using (Html.BeginForm("SubmitForm", "Page"))
+{
+	@Html.AntiForgeryToken()
+	if (!string.IsNullOrEmpty(Model.Title))
+	{
+		<div class="row FormTitle">
+			<div class="col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) @(align)">
+				<h1 class="@(align)">@(Model.Title)</h1>
+			</div>
+		</div>
+	}
+
+	if (!string.IsNullOrEmpty(Model.FormHeaderHtml))
+	{
+		<div class="row FormHeader">
+			<div class="col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) @(align)">
+				@(Html.Raw(Model.FormHeaderHtml))
+			</div>
+		</div>
+	}
+
+	<div class="row">
+		<div class="form-validation col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan)">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-horizontal @(align)">
+		@{
+	foreach (WebFormField item in fields)
+	{
+		WebFormFieldResponse oldFieldResponse = null;
+		if (oldResponse != null)
+		{
+			oldFieldResponse = oldResponse.WebFormFieldResponses.SingleOrDefault(f => f.WebFormFieldId == item.WebFormFieldId);
+		}
+		@Html.DisplayFor(model => item, "WebFormField", new { WebFormFieldResponse = oldFieldResponse })
+	}
+
+	if (!string.IsNullOrEmpty(Model.FormFooterBeforeSubmitHtml))
+	{
+		<div class="row FormFooterBeforeSubmit">
+			<div class="col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) @(align)">
+				@(Html.Raw(Model.FormFooterBeforeSubmitHtml))
+			</div>
+		</div>
+	}
+		}
+		<div class="form-actions row @(align)">
+			<div class="col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) @(align)">
+				<input class="@(Html.Raw(Model.SubmitButtonClass.ToHtmlAttribute()))" id="submitwebform" type="submit" name="submitwebform" title="@(Html.Raw(Model.SubmitButtonText.ToHtmlAttribute()))" value="@(Html.Raw(Model.SubmitButtonText.ToHtmlAttribute()))" />
+			</div>
+		</div>
+	</div>
+
+
+	if (!string.IsNullOrEmpty(Model.FormFooterAfterSubmitHtml))
+	{
+		<div class="row FormFooterAfterSubmit">
+			<div class="col-md-offset-@(labelMdColspan) col-md-@(fieldMdColspan) @(align)">
+				@(Html.Raw(Model.FormFooterAfterSubmitHtml))
+			</div>
+		</div>
+	}
+}

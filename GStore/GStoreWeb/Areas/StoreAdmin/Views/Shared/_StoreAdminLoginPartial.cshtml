@@ -1,0 +1,27 @@
+﻿@model StoreAdminViewModel
+@{
+	using (Html.BeginForm("LogOff", "Account", new {Area = ""}, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+	{
+		@Html.AntiForgeryToken()
+
+	<ul class="nav navbar-nav navbar-right">
+		<li>
+		@{
+		if (Model.StoreFrontConfig.IsActiveDirect())
+		{
+			<a href="~/" accesskey="b" title="Back to Site">Back to Site</a>
+		}
+		else
+		{
+			<a href="~/" class="text-danger" accesskey="b" title="Back to Inactive Site"><span class="text-danger"><strong>Back to INACTIVE Site</strong></span></a>
+		}
+}
+		</li>
+	
+	@{ Html.RenderPartial("_LoginAdminPartial", Model.AdminMenuViewModel);}
+	
+		<li><a href="javascript:document.getElementById('logoutForm').submit()" accesskey="l" title="Log off the system">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+	</ul>
+	}
+}
+

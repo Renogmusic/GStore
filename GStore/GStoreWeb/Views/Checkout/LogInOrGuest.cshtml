@@ -1,0 +1,44 @@
+﻿@model CheckoutLogInOrGuestViewModel
+@{
+	ViewBag.Title = "Log in or Continue as Guest";
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+}
+<h1 style="display: inline">Log in or Continue as a Guest</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+<hr/>
+@using(Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	
+	<h3>Please log in, sign-up or continue checkout as a guest.</h3>
+	<h4>If you sign up, we will keep your order history and Email you special offers and sales.</h4>
+	@Html.ActionLink("Log in", "Login", "Account", new { checkingOut = true }, new { @class = "btn btn-danger" })
+	if (config.AccountLoginShowRegisterLink || config.NavBarShowRegisterLink)
+	{
+		@:&nbsp;&nbsp;|&nbsp;&nbsp;
+		@Html.ActionLink(config.AccountLoginRegisterLinkText.OrDefault("Sign-Up"), "Register", "Account", new { checkingOut = true }, new { @class = "btn btn-info" })
+	}
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	<input type="submit" class="btn btn-success" value="Continue as a Guest &raquo;" />
+
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutLogInOrGuestWebForm, Model.Cart.LoginOrGuestWebFormResponse));
+
+	if (Model.Config.CheckoutLogInOrGuestWebForm != null)
+	{
+		@Html.ActionLink("Log in", "Login", "Account", new { checkingOut = true }, new { @class = "btn btn-danger" })
+		if (config.AccountLoginShowRegisterLink || config.NavBarShowRegisterLink)
+		{
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink(config.AccountLoginRegisterLinkText.OrDefault("Sign-Up"), "Register", "Account", new { checkingOut = true }, new { @class = "btn btn-info" })
+		}
+		@:&nbsp;&nbsp;|&nbsp;&nbsp;
+		<input type="submit" class="btn btn-success" value="Continue as a Guest &raquo;" />
+	}
+
+}

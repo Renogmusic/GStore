@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontRecordUserProfileOptional">
+    <Position X="23.5" Y="8.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontRecordUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.ClientRecordUserProfileOptional">
+    <Position X="23.75" Y="6" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecordUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.AuditFieldsUserProfileOptional">
+    <Position X="23.25" Y="2.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.GStoreEntity">
+    <Position X="23.5" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontDataValueRecord" Collapsed="true">
+    <Position X="50.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CgAAAEAEAAYAAAAAAEAAAAFAAAAAAAwAAAAUAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontDataValueRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.WebFormResponse">
+    <Position X="9.5" Y="10.5" Width="5.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAIAAAAQAAABAIAAAAAAAAAQAIIAAAAAAQAAAAA=</HashCode>
+      <FileName>Models\WebFormResponse.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Cart">
+    <Position X="15.5" Y="10.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>EAFAAMOAgGV0QIgwlABAIAUIBAwAaFAAAiBAjAAKCkA=</HashCode>
+      <FileName>Models\Cart.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.CartItem">
+    <Position X="21" Y="10.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>MKECAEgAAAAAACAAAAAAAAAAEAAAAAAABAAAgAAACAA=</HashCode>
+      <FileName>Models\CartItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.DeliveryInfoDigital">
+    <Position X="24.75" Y="10.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAIAAAAAAAAAAAAAAAAIAAAAABgAACAQ=</HashCode>
+      <FileName>Models\DeliveryInfoDigital.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.DeliveryInfoShipping">
+    <Position X="29.25" Y="10.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAEAIAAAAAIAIIAAAAAAAAMAAgAIAAQAABgAICAQ=</HashCode>
+      <FileName>Models\DeliveryInfoShipping.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Order">
+    <Position X="34.75" Y="10.5" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>kABACIeAKGV0QIgBlABAKQRKBAwASFEAArBAjAAKAAA=</HashCode>
+      <FileName>Models\Order.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.OrderItem">
+    <Position X="40.25" Y="10.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>MKUKAAgA4BAAACAgAAAAAAAgEAQIAUAABAAIgAAAAAI=</HashCode>
+      <FileName>Models\OrderItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Payment">
+    <Position X="44.75" Y="10.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>EQEEEEQIAFMgAKFQqqWAAUABFJEgiRDEBAFABQBASpA=</HashCode>
+      <FileName>Models\Payment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontDataValueRecordUserProfileOptional">
+    <Position X="5.25" Y="10.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>CgAAAEAEAAYAAAAAAEAAAAFAAAAAAAwAAAAUAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontDataValueRecordUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.CartPaymentInfo">
+    <Position X="0.5" Y="10.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAEBAAAAIAAGAABQAACgQ=</HashCode>
+      <FileName>Models\CartPaymentInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

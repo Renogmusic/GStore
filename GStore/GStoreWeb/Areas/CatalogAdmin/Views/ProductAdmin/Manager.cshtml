@@ -1,0 +1,172 @@
+﻿@model CatalogAdminViewModel
+@{
+	UserProfile profile = Html.CurrentUserProfile(true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Delete);
+	bool userCanSyncFiles = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_SyncFiles);
+	object filterData = new { ProductCategoryId = Model.FilterProductCategoryId };
+}
+<script>
+	function GoToDetails(index)
+	{
+		urlStart = '@(Url.Action("Details", new { id = 9999 } ).ToMvcJavaScriptString())';
+		var url = urlStart.replace("9999", index);
+		GoToUrl(url);
+	}
+
+	function UpdateFilter(field)
+	{
+		var url = '@(Html.Raw(Url.Action("Manager", new { ProductCategoryId = "XXX", SortBy = Model.SortBy, SortAscending = Model.SortAscending} )))'.replace("XXX", field.value);
+		window.location.href = url;
+	}
+</script>
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 CatalogAdminIndexPageTitle">
+		Product Manager
+		<br /><small>@(Html.DisplayNameFor(model => model.StoreFront)) @Html.DisplayFor(model => model.StoreFront)</small>
+	</h2>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		Category Filter: 
+		@Html.DropDownListFor(model => model.FilterProductCategoryId, Html.ProductCategoryListWithAllZero(), new { id = "FilterProductCategoryId", @class = "form-control", onchange = "UpdateFilter(this);" })
+	</div>
+</div>
+@{
+	if (userCanCreate || userCanSyncFiles)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@if (userCanCreate)
+				{
+					@Html.ActionLink("Create a New Product", "Create", new { id = Model.FilterProductCategoryId }, new { @class = "btn btn-sm btn-info" })
+				}
+				@if (userCanCreate && userCanSyncFiles)
+				{
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+				}
+				@if (userCanSyncFiles)
+				{
+					@Html.ActionLink("Sync Files (preview)", "SyncFiles", new { productCategoryId = Model.FilterProductCategoryId, eraseFileNameIfNotFound = true, searchForFileIfBlank = true, preview = true, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+					@:&nbsp;&nbsp;|&nbsp;&nbsp;
+					@Html.ActionLink("Sync Files Now!", "SyncFiles", new { productCategoryId = Model.FilterProductCategoryId, eraseFileNameIfNotFound = true, searchForFileIfBlank = true, preview = false, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+				}
+			</div>
+		</div>
+	}
+}
+@{
+	if (Model.Products.Count() == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@if (Model.FilterProductCategoryId.HasValue)
+				{
+					<h2 class="text-warning">No Products found for this Category</h2>
+					@Html.ActionLink("Click here to View All Categories", "Manager", new { ProductCategoryId = 0 })
+				}
+				else
+				{
+					<h2 class="text-warning">No Products found for this store front.</h2>
+				}
+			</div>
+		</div>
+	}
+	else
+	{
+		ProductEditAdminViewModel firstRecord = null;
+
+		<div class="table table-responsive">
+			<table class="table table-condensed table-bordered table-hover">
+
+				<tr>
+					<th class="text-center"><small>@(Html.ActionSortLink("Default", "Manager", string.Empty, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Order, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.ProductId, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.ProductCategoryId, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Category, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status", additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.Name, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.UrlName, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.UpdateDateTimeUtc, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => firstRecord.UpdatedBy, "Manager", true, additionalRouteData: filterData))</small></th>
+					<th class="text-center">&nbsp;</th>
+				</tr>
+
+				@{
+		foreach (var item in Model.Products)
+		{
+			bool isActive = item.IsActiveBubble();
+			string rowClass = (isActive ? string.Empty : "text-warning");
+
+			<tr class="@(rowClass)">
+				<td onclick="GoToDetails(@(item.ProductId));">
+					@Html.ActionLink("Details", "Details", new { id = item.ProductId }, new { @class = "btn btn-sm btn-success" })
+					@{
+			if (userCanEdit)
+			{
+				@:<div class="row" style="padding-bottom: 0.75em;"></div>
+						@Html.ActionLink("Edit", "Edit", new { id = item.ProductId }, new { @class = "btn btn-sm btn-warning" })
+			}
+
+			if (userCanDelete)
+			{
+				@:<div class="row" style="padding-bottom: 0.75em;"></div>
+						@Html.ActionLink("Delete", "Delete", new { id = item.ProductId }, new { @class = "btn btn-sm btn-danger" })
+			}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.ProductId))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.ProductCategoryId))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.Category))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));">
+					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
+						@(item.IsActiveDirect() ? "Active" : "Inactive")
+					</span>
+					<br />
+					@{
+			if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit))
+			{
+				@Html.ActionLink("Activation", "Edit", new { id = item.ProductId, Tab = "Activation" }, new { @class = "" })
+			}
+			else if (item.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_View))
+			{
+				@Html.ActionLink("Activation", "Details", new { id = item.ProductId, Tab = "Activation" }, new { @class = "" })
+			}
+					}
+				</td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.UrlName))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.ProductId }, new { @class = "btn btn-sm btn-success" })
+					@{
+			if (userCanEdit)
+			{
+				@:<div class="row" style="padding-bottom: 0.75em;"></div>
+						@Html.ActionLink("Edit", "Edit", new { id = item.ProductId }, new { @class = "btn btn-sm btn-warning" })
+			}
+
+			if (userCanDelete)
+			{
+				@:<div class="row" style="padding-bottom: 0.75em;"></div>
+						@Html.ActionLink("Delete", "Delete", new { id = item.ProductId }, new { @class = "btn btn-sm btn-danger" })
+			}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+			</tr>
+		}
+
+				}
+
+			</table>
+		</div>
+	}
+
+}

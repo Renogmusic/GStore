@@ -1,0 +1,358 @@
+﻿@model ProductEditAdminViewModel
+@{
+	string tabBasicActive = string.Empty;
+	string tabDescriptionActive = string.Empty;
+	string tabPricingActive = string.Empty;
+	string tabDisplayActive = string.Empty;
+	string tabResourcesActive = string.Empty;
+	string tabMetaTagsActive = string.Empty;
+	string tabActivationActive = string.Empty;
+	string tabBundlesActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "description":
+			tabDescriptionActive = "active";
+			break;
+		case "pricing":
+			tabPricingActive = "active";
+			break;
+		case "display":
+			tabDisplayActive = "active";
+			break;
+		case "resources":
+			tabResourcesActive = "active";
+			break;
+		case "metatags":
+			tabMetaTagsActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
+			break;
+		case "bundles":
+			tabBundlesActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+
+	bool userCanViewBundles = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Bundles_View);
+}
+<script>
+	function GetActiveTab()
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			document.getElementById('ActiveTab').value = tabName;
+
+			var detailsUrl = @((Url.Action("Details", new { id = Model.ProductId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var editUrl = @((Url.Action("Edit", new { id = Model.ProductId, Tab="XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var deleteUrl = @((Url.Action("Delete", new { id = Model.ProductId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+
+			if (document.getElementById('DetailsTop'))
+			{
+				document.getElementById('DetailsTop').href = detailsUrl;
+			}
+			if (document.getElementById('DetailsBottom'))
+			{
+				document.getElementById('DetailsBottom').href = detailsUrl;
+			}
+			if (document.getElementById('EditTop'))
+			{
+				document.getElementById('EditTop').href = editUrl;
+			}
+			if (document.getElementById('EditBottom'))
+			{
+				document.getElementById('EditBottom').href = editUrl;
+			}
+			if (document.getElementById('DeleteTop'))
+			{
+				document.getElementById('DeleteTop').href = deleteUrl;
+			}
+			if (document.getElementById('DeleteBottom'))
+			{
+				document.getElementById('DeleteBottom').href = deleteUrl;
+			}
+		}
+	}
+	function MakeItActive()
+	{
+		if (document.getElementById('IsPending'))
+		{
+			document.getElementById('IsPending').checked = false;
+		}
+		if (document.getElementById('StartDateTimeUtc'))
+		{
+			document.getElementById('StartDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString()))';
+		}
+		if (document.getElementById('EndDateTimeUtc'))
+		{
+			document.getElementById('EndDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString()))';
+		}
+	}
+</script>
+@Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
+@Html.HiddenFor(model => model.ProductId)
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
+	DigitalDownloadFileInfo digitalDownloadInfo = new DigitalDownloadFileInfo(Model.DigitalDownloadFileName, Model.ProductId);
+	string defaultTheme = "";
+	if (Model.Category == null || Model.Category.Theme == null)
+	{
+		Theme catalogTheme = storeFrontConfig.CatalogTheme;
+		defaultTheme = "Store Catalog Theme: '" + catalogTheme.Name + "[" + catalogTheme.ThemeId + "]";
+	}
+	else
+	{
+		defaultTheme = "Category Theme: '" + Model.Category.Theme.Name + "' [" + Model.Category.ThemeId + "]";
+	}
+}
+
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+<div class="form-horizontal">
+	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
+		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+		<li class="@(tabDescriptionActive)"><a data-toggle="tab" href="#sectionDescription" onclick="SetActiveTab('Description');">Description</a></li>
+		<li class="@(tabPricingActive)"><a data-toggle="tab" href="#sectionPricing" onclick="SetActiveTab('Pricing');">Pricing and Availability</a></li>
+		<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display and Template</a></li>
+		<li class="@(tabResourcesActive)"><a data-toggle="tab" href="#sectionResources" onclick="SetActiveTab('Resources');">Resources</a></li>
+		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+		@if (!Model.IsCreatePage && userCanViewBundles)
+		{
+			<li class="@(tabBundlesActive)"><a data-toggle="tab" href="#sectionBundles" onclick="SetActiveTab('Bundles');">Bundles</a></li>
+		}
+	</ul>
+
+
+
+	<div class="tab-content">
+		<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
+			</div>
+			@Html.EditorFor(model => model.Name, "FieldText")
+			@Html.EditorFor(model => model.UrlName, "FieldText")
+			@Html.EditorFor(model => model.Order, "FieldInt")
+			@Html.EditorFor(model => model.ProductCategoryId, "FieldProductCategoryId")
+		</div>
+
+		<div id="sectionDescription" class="tab-pane fade in @(tabDescriptionActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Description</h3>
+			</div>
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Summary Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultSummaryCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.SummaryCaption, "FieldText")
+			@Html.EditorFor(model => model.SummaryHtml, "FieldHtml")
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Top Description Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+
+			@Html.EditorFor(model => model.TopDescriptionCaption, "FieldText")
+			@Html.EditorFor(model => model.TopDescriptionHtml, "FieldHtml")
+
+			@Html.EditorFor(model => model.TopLinkLabel, "FieldText")
+			@Html.EditorFor(model => model.TopLinkHref, "FieldUrl")
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Bottom Description Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.BottomDescriptionCaption, "FieldText")
+			@Html.EditorFor(model => model.BottomDescriptionHtml, "FieldHtml")
+
+			@Html.EditorFor(model => model.BottomLinkLabel, "FieldText")
+			@Html.EditorFor(model => model.BottomLinkHref, "FieldUrl")
+
+			@Html.EditorFor(model => model.FooterHtml, "FieldHtml")
+		</div>
+
+		<div id="sectionPricing" class="tab-pane fade in @(tabPricingActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Pricing and Availability</h3>
+			</div>
+			@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+			@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+			@Html.EditorFor(model => model.AvailableForPurchase, "FieldCheckbox")
+			@Html.EditorFor(model => model.MaxQuantityPerOrder, "FieldInt")
+			@Html.EditorFor(model => model.BaseListPrice, "FieldCurrency")
+			@Html.EditorFor(model => model.BaseUnitPrice, "FieldCurrency")
+			@Html.EditorFor(model => model.DigitalDownload, "FieldCheckbox")
+			@Html.EditorFor(model => model.RequestAQuote_Show, "FieldCheckbox")
+			@Html.EditorFor(model => model.RequestAQuote_Label, "FieldText")
+			@Html.EditorFor(model => model.RequestAQuote_PageId, "FieldPageIdNullable")
+		</div>
+
+		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Display and Template</h3>
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Theme</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.Category.Theme)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.ThemeId, "FieldThemeIdNullable", new { optionLabel = "(Default - " + defaultTheme + ")" })
+		</div>
+
+		<div id="sectionResources" class="tab-pane fade in @(tabResourcesActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Resources</h3>
+			</div>
+
+			@Html.EditorFor(model => model.ImageName, "FieldProductCatalogFile", new { filterForImages = true })
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.ImageName)) Preview</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.ImageName, "ProductCatalogFileInfo")
+				</div>
+			</div>
+
+			@Html.EditorFor(model => model.DigitalDownloadFileName, "FieldProductDigitalDownloadFile")
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.DigitalDownloadFileName)) Preview</label>
+				<div class="col-md-7 title-align">
+					@{
+					}
+					@Html.DisplayFor(model => digitalDownloadInfo, "ProductDigitalDownloadFileInfo")
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Audio Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultSampleAudioCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.SampleAudioCaption, "FieldText")
+			@Html.EditorFor(model => model.SampleAudioFileName, "FieldProductCatalogFile", new { filterForAudio = true })
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleAudioFileName)) Preview</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.SampleAudioFileName, "ProductCatalogFileInfo")
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Download Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultSampleDownloadCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.SampleDownloadCaption, "FieldText")
+			@Html.EditorFor(model => model.SampleDownloadFileName, "FieldProductCatalogFile")
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleDownloadFileName)) Preview</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.SampleDownloadFileName, "ProductCatalogFileInfo")
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Image Caption</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.DefaultSampleImageCaptionOrSystemDefault(Model.Name)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.SampleImageCaption, "FieldText")
+			@Html.EditorFor(model => model.SampleImageFileName, "FieldProductCatalogFile", new { filterForImages = true })
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.SampleImageFileName)) Preview</label>
+				<div class="col-md-7 title-align">
+					@Html.DisplayFor(model => model.SampleImageFileName, "ProductCatalogFileInfo")
+				</div>
+			</div>
+		</div>
+
+		<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Meta Tags</h3>
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Meta Description</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.MetaDescriptionOrSystemDefault(storeFrontConfig)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.MetaDescription, "FieldText")
+
+			<div class="form-group">
+				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Meta Keywords</label>
+				<div class="col-md-7 title-align">
+					@Model.Category.MetaKeywordsOrSystemDefault(storeFrontConfig)
+				</div>
+			</div>
+			@Html.EditorFor(model => model.MetaKeywords, "FieldText")
+		</div>
+
+		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Activation</h3>
+			</div>
+			<h4 class="col-md-offset-3 col-md-6 text-warning">
+				Warning: editing these values incorrectly will de-activate your site.<br />
+				If you are unsure what to do, click the "Make It Active Now" button to turn the configuration on with default values.<br />
+				You can always log in and edit these values even if you de-activate your site.
+			</h4>
+			<div class="row">
+				<p class="col-md-offset-3 col-md-6">Store Local Time: @(DateTime.UtcNow.ToStoreDateTimeString(Html))</p>
+				<p class="col-md-offset-3 col-md-6">Current UTC Time: @(DateTime.UtcNow.ToString())</p>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-md-3">Status</label>
+				<div class="col-md-9 title-align">
+					<strong class="@(Model.IsActiveDirect ? "text-success" : "text-warning")">@(Model.IsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
+					<a class="btn btn-xs btn-success" href="#" onclick="MakeItActive(); return false;">Make It Active Now</a>
+				</div>
+				<div class="row">
+					@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-offset-3 col-md-9 help-label" })
+				</div>
+			</div>
+
+			@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+			@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+			@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		</div>
+
+		@if (!Model.IsCreatePage && userCanViewBundles)
+		{
+			List<ProductBundleItem> bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
+			<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Bundles (@(bundleItems.Count.ToString("N0")))</h3>
+				</div>
+
+				@Html.DisplayFor(model => bundleItems, "Bundles", new { target="_blank"})
+			</div>
+		}
+
+	</div>
+</div>
+<hr/>

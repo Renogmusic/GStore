@@ -1,0 +1,24 @@
+﻿@model GStoreData.TreeNode<NavBarItem>
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.Entity.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			@:'@(Model.Entity.Name)' [@(Model.Entity.NavBarItemId)]
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+		@:</span>
+	}
+}

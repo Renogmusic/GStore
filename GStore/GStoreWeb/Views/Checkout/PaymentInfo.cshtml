@@ -1,0 +1,49 @@
+﻿@model CheckoutPaymentInfoViewModel
+@{
+	ViewBag.Title = "Payment Info";
+
+	WebFormResponse oldWebFormResponse = null;
+	if (Model.Cart.CartPaymentInfo != null)
+	{
+		oldWebFormResponse = Model.Cart.CartPaymentInfo.WebFormResponse;
+	}
+
+}
+<h1 style="display: inline">Payment Information</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+	if (Model.Cart.Total == 0)
+	{
+		<h1 class="text-success">Good news, this order is free!</h1>
+	}
+	else
+	{
+		<h2>Order Total: @(Html.DisplayFor(model => model.Cart.Total))</h2>
+	}
+
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutPaymentInfoWebForm, oldWebFormResponse));
+
+	if (Model.Config.PaymentMethod_PayPal_Enabled)
+	{
+		<input type="image" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Check out with PayPal"/>
+		<br/>
+		<input type="image" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/cc-badges-ppppcmcvdam.png" alt="Pay with PayPal, PayPal Credit or any major credit card" />
+		<br/><br/>
+	}
+	else
+	{
+		<h2 class="text-primary">We will contact you for payment info after your order is placed.</h2>
+	}
+		
+	<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+}

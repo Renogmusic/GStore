@@ -1,0 +1,33 @@
+﻿@model PageViewModel
+@* this file is used as a dynamic database-driven HTML page where the user can dump in HTML in a single section *@
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeTopPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeTopPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkTopPartial", Model);
+}
+<div id="PageContent">
+	@Html.DisplayPageSection("Body", 1, "Body", "<h1>:::page.title:::</h1>", "<h1>", "</h1>", "", false, false)
+</div>
+<div id="PageForm" class="PageForm">
+	@Html.DisplayPageForm()
+</div>
+
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeBottomPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeBottomPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
+}

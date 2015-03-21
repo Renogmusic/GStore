@@ -1,0 +1,12 @@
+﻿@model StoreFront
+
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@:'@(Model.CurrentConfigOrAny().Name)' [@(Model.StoreFrontId)] - @(Html.DisplayNameFor(model => model.Client)) @(Html.DisplayFor(model => model.Client))
+	}
+}

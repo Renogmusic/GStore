@@ -1,0 +1,9 @@
+﻿@model Theme
+@if (Model == null)
+{
+	@:(no theme)
+}
+else
+{
+	@:@(Model.Name) [@(Model.ThemeId)]
+}

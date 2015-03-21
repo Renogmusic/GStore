@@ -1,0 +1,531 @@
+﻿@model CategoryEditAdminViewModel
+@{
+	string tabBasicActive = string.Empty;
+	string tabDisplayActive = string.Empty;
+	string tabMenusActive = string.Empty;
+	string tabMetaTagsActive = string.Empty;
+	string tabProductTemplateActive = string.Empty;
+	string tabActivationActive = string.Empty;
+
+	switch ((Model.ActiveTab ?? string.Empty).ToLower())
+	{
+		case "":
+		case "basic":
+			tabBasicActive = "active";
+			break;
+		case "display":
+			tabDisplayActive = "active";
+			break;
+		case "menus":
+			tabMenusActive = "active";
+			break;
+		case "metatags":
+			tabMetaTagsActive = "active";
+			break;
+		case "producttemplate":
+			tabProductTemplateActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
+			break;
+		default:
+			goto case "";
+	}
+}
+<script>
+	function GetActiveTab()
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			return document.getElementById('ActiveTab').value
+		}
+		return "";
+	}
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('ActiveTab'))
+		{
+			document.getElementById('ActiveTab').value = tabName;
+
+			var detailsUrl = @((Url.Action("Details", new { id = Model.ProductCategoryId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var editUrl = @((Url.Action("Edit", new { id = Model.ProductCategoryId, Tab="XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+			var deleteUrl = @((Url.Action("Delete", new { id = Model.ProductCategoryId, Tab = "XXXX"}).ToJavaScriptMvcString(true))).replace('XXXX', tabName);
+
+			if (document.getElementById('DetailsTop'))
+			{
+				document.getElementById('DetailsTop').href = detailsUrl;
+			}
+			if (document.getElementById('DetailsBottom'))
+			{
+				document.getElementById('DetailsBottom').href = detailsUrl;
+			}
+			if (document.getElementById('EditTop'))
+			{
+				document.getElementById('EditTop').href = editUrl;
+			}
+			if (document.getElementById('EditBottom'))
+			{
+				document.getElementById('EditBottom').href = editUrl;
+			}
+			if (document.getElementById('DeleteTop'))
+			{
+				document.getElementById('DeleteTop').href = deleteUrl;
+			}
+			if (document.getElementById('DeleteBottom'))
+			{
+				document.getElementById('DeleteBottom').href = deleteUrl;
+			}
+		}
+	}
+	function MakeItActive()
+	{
+		if (document.getElementById('IsPending'))
+		{
+			document.getElementById('IsPending').checked = false;
+		}
+		if (document.getElementById('StartDateTimeUtc'))
+		{
+			document.getElementById('StartDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddMinutes(-1).ToString().ToJavaScriptString()))';
+		}
+		if (document.getElementById('EndDateTimeUtc'))
+		{
+			document.getElementById('EndDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString()))';
+		}
+	}
+</script>
+@Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
+
+<hr />
+<div class="form-horizontal">
+	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
+		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
+		<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display</a></li>
+		<li class="@(tabMenusActive)"><a data-toggle="tab" href="#sectionMenus" onclick="SetActiveTab('Menus');">Menus</a></li>
+		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+		<li class="@(tabProductTemplateActive)"><a data-toggle="tab" href="#sectionProductTemplate" onclick="SetActiveTab('ProductTemplate');">Product Template</a></li>
+		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div id="sectionBasic" class="tab-pane fade in @(tabBasicActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.Name)
+					@Html.HelpLabelPopoverFor(model => model.Name, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.Name)
+					<br />@Html.HelpLabelFor(model => model.Name)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.UrlName)
+					@Html.HelpLabelPopoverFor(model => model.UrlName, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.UrlName)
+					<br />@Html.HelpLabelFor(model => model.UrlName)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.Order)
+					@Html.HelpLabelPopoverFor(model => model.Order, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.Order)
+					<br />@Html.HelpLabelFor(model => model.Order)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ParentCategory)
+					@Html.HelpLabelPopoverFor(model => model.ParentCategory, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ParentCategory)
+					<br />@Html.HelpLabelFor(model => model.ParentCategory)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ImageName)
+					@Html.HelpLabelPopoverFor(model => model.ImageName, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ImageName)
+					<br />@Html.HelpLabelFor(model => model.ImageName)
+				</dd>
+
+				<dt>
+					Image
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ImageName, "ProductCategoryFileInfo")
+				</dd>
+			</dl>
+		</div>
+		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Display</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.ForRegisteredOnly)
+					@Html.HelpLabelPopoverFor(model => model.ForRegisteredOnly, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ForRegisteredOnly)
+					<br />@Html.HelpLabelFor(model => model.ForRegisteredOnly)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ForAnonymousOnly)
+					@Html.HelpLabelPopoverFor(model => model.ForAnonymousOnly, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ForAnonymousOnly)
+					<br />@Html.HelpLabelFor(model => model.ForAnonymousOnly)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DisplayForDirectLinks)
+					@Html.HelpLabelPopoverFor(model => model.DisplayForDirectLinks, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DisplayForDirectLinks)
+					<br />@Html.HelpLabelFor(model => model.DisplayForDirectLinks)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.Theme)
+					@Html.HelpLabelPopoverFor(model => model.Theme, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.Theme)
+					<br />@Html.HelpLabelFor(model => model.Theme)
+				</dd>
+
+			</dl>
+		</div>
+
+		<div id="sectionMenus" class="tab-pane fade in @(tabMenusActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Menus</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.ShowInMenu)
+					@Html.HelpLabelPopoverFor(model => model.ShowInMenu, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ShowInMenu)
+					<br />@Html.HelpLabelFor(model => model.ShowInMenu)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.HideInMenuIfEmpty)
+					@Html.HelpLabelPopoverFor(model => model.HideInMenuIfEmpty, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.HideInMenuIfEmpty)
+					<br />@Html.HelpLabelFor(model => model.HideInMenuIfEmpty)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ShowInCatalogIfEmpty)
+					@Html.HelpLabelPopoverFor(model => model.ShowInCatalogIfEmpty, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ShowInCatalogIfEmpty)
+					<br />@Html.HelpLabelFor(model => model.ShowInCatalogIfEmpty)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.AllowChildCategoriesInMenu)
+					@Html.HelpLabelPopoverFor(model => model.AllowChildCategoriesInMenu, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.AllowChildCategoriesInMenu)
+					<br />@Html.HelpLabelFor(model => model.AllowChildCategoriesInMenu)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.UseDividerBeforeOnMenu)
+					@Html.HelpLabelPopoverFor(model => model.UseDividerBeforeOnMenu, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.UseDividerBeforeOnMenu)
+					<br />@Html.HelpLabelFor(model => model.UseDividerBeforeOnMenu)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.UseDividerAfterOnMenu)
+					@Html.HelpLabelPopoverFor(model => model.UseDividerAfterOnMenu, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.UseDividerAfterOnMenu)
+					<br />@Html.HelpLabelFor(model => model.UseDividerAfterOnMenu)
+				</dd>
+			</dl>
+		</div>
+
+		<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Meta Tags</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.MetaDescription)
+					@Html.HelpLabelPopoverFor(model => model.MetaDescription, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.MetaDescription)
+					<br />@Html.HelpLabelFor(model => model.MetaDescription)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.MetaKeywords)
+					@Html.HelpLabelPopoverFor(model => model.MetaKeywords, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.MetaKeywords)
+					<br />@Html.HelpLabelFor(model => model.MetaKeywords)
+				</dd>
+			</dl>
+		</div>
+
+		<div id="sectionProductTemplate" class="tab-pane fade in @(tabProductTemplateActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Product Template</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.CategoryDetailTemplate)
+					@Html.HelpLabelPopoverFor(model => model.CategoryDetailTemplate, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.CategoryDetailTemplate)
+					<br />@Html.HelpLabelFor(model => model.CategoryDetailTemplate)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductListTemplate)
+					@Html.HelpLabelPopoverFor(model => model.ProductListTemplate, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductListTemplate)
+					<br />@Html.HelpLabelFor(model => model.ProductListTemplate)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.BundleListTemplate)
+					@Html.HelpLabelPopoverFor(model => model.BundleListTemplate, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.BundleListTemplate)
+					<br />@Html.HelpLabelFor(model => model.BundleListTemplate)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductDetailTemplate)
+					@Html.HelpLabelPopoverFor(model => model.ProductDetailTemplate, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductDetailTemplate)
+					<br />@Html.HelpLabelFor(model => model.ProductDetailTemplate)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.NoProductsMessageHtml)
+					@Html.HelpLabelPopoverFor(model => model.NoProductsMessageHtml, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.NoProductsMessageHtml)
+					<br />@Html.HelpLabelFor(model => model.NoProductsMessageHtml)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultSummaryCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultSummaryCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultSummaryCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultSummaryCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultTopDescriptionCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultTopDescriptionCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultTopDescriptionCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultTopDescriptionCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultBottomDescriptionCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultBottomDescriptionCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultBottomDescriptionCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultBottomDescriptionCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultSampleImageCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultSampleImageCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultSampleImageCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultSampleImageCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultSampleAudioCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultSampleAudioCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultSampleAudioCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultSampleAudioCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.DefaultSampleDownloadCaption)
+					@Html.HelpLabelPopoverFor(model => model.DefaultSampleDownloadCaption, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.DefaultSampleDownloadCaption)
+					<br />@Html.HelpLabelFor(model => model.DefaultSampleDownloadCaption)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ChildCategoryHeaderHtml)
+					@Html.HelpLabelPopoverFor(model => model.ChildCategoryHeaderHtml, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ChildCategoryHeaderHtml)
+					<br />@Html.HelpLabelFor(model => model.ChildCategoryHeaderHtml)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ChildCategoryFooterHtml)
+					@Html.HelpLabelPopoverFor(model => model.ChildCategoryFooterHtml, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ChildCategoryFooterHtml)
+					<br />@Html.HelpLabelFor(model => model.ChildCategoryFooterHtml)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductHeaderHtml)
+					@Html.HelpLabelPopoverFor(model => model.ProductHeaderHtml, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductHeaderHtml)
+					<br />@Html.HelpLabelFor(model => model.ProductHeaderHtml)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductFooterHtml)
+					@Html.HelpLabelPopoverFor(model => model.ProductFooterHtml, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductFooterHtml)
+					<br />@Html.HelpLabelFor(model => model.ProductFooterHtml)
+				</dd>
+			</dl>
+		</div>
+
+		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Activation</h3>
+			</div>
+			<dl class="dl-horizontal">
+				<dt>
+					@Html.DisplayNameFor(model => model.IsPending)
+					@Html.HelpLabelPopoverFor(model => model.IsPending, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.IsPending)
+					<br />@Html.HelpLabelFor(model => model.IsPending)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.StartDateTimeUtc)
+					@Html.HelpLabelPopoverFor(model => model.StartDateTimeUtc, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.StartDateTimeUtc)
+					<br />@Html.HelpLabelFor(model => model.StartDateTimeUtc)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.EndDateTimeUtc)
+					@Html.HelpLabelPopoverFor(model => model.EndDateTimeUtc, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.EndDateTimeUtc)
+					<br />@Html.HelpLabelFor(model => model.EndDateTimeUtc)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.IsActiveDirect)
+					@Html.HelpLabelPopoverFor(model => model.IsActiveDirect, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.IsActiveDirect)
+					<br />@Html.HelpLabelFor(model => model.IsActiveDirect)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.IsActiveBubble)
+					@Html.HelpLabelPopoverFor(model => model.IsActiveBubble, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.IsActiveBubble)
+					<br />@Html.HelpLabelFor(model => model.IsActiveBubble)
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>
+<hr />

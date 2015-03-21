@@ -1,0 +1,20 @@
+﻿@model string
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	List<SelectListItem> timeZoneList = Html.TimeZoneList().ToList();
+}
+
+@Html.DropDownListForModel(Html.TimeZoneList(), addIdToPropertyName: false, removeHtmlFieldPrefix: true)
+@if (useHelpLabelPopover)
+{
+	@Html.HelpLabelPopoverForModel()
+}
+@Html.ValidationMessageForModel()
+@if (useHelpLabelText)
+{
+	<br />@Html.HelpLabelForModel()
+}

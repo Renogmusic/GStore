@@ -1,0 +1,26 @@
+﻿@model GStoreData.TreeNode<ProductCategory>
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.Entity.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			@:'@(Model.Entity.Name)' [@(Model.Entity.ProductCategoryId)]
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+			
+			@:Active Products: @(Model.Entity.Products.AsQueryable().WhereIsActive().Count()) / Total: @(Model.Entity.Products.Count)
+		@:</span>
+	}
+}

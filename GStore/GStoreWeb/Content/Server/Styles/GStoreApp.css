@@ -1,0 +1,677 @@
+﻿.Border3Red{
+	border: 3px solid red;
+}
+.Border3Green{
+	border: 3px solid green;
+}
+.Border3Black{
+	border: 3px solid black;
+}
+.Border3White{
+	border: 3px solid white;
+}
+#navbarbrandlink{
+	padding-top: 0;
+}
+#NavBarTinyLogo {
+	height: 50px;
+	width: 50px;
+	display: inline-block;
+	vertical-align: central;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+.CategoryListItemBox, .CategoryListChildItemBox
+,.ProductDetailItemBox, .ProductBundleListItemBox, .ProductListItemBox
+{
+	padding: 1em 1em 1em 1em;
+}
+
+.ProductListUnitPriceLine, .ProductListUnitPriceLabel, .ProductListUnitPrice
+,.BundleListUnitPriceLine, .BundleListUnitPriceLabel, .BundleListUnitPrice
+,.ProductDetailUnitPriceLine, .ProductDetailUnitPriceLabel, .ProductDetailUnitPrice
+,.BundleDetailUnitPriceLine, .BundleDetailUnitPriceLabel, .BundleDetailUnitPrice
+,.BundleItemUnitPriceLine, .BundleItemUnitPriceLabel, .BundleItemUnitPrice
+{
+	font-size: x-large;
+	color: darkgreen;
+	font-weight: bolder;
+}
+
+.CartItemListPrice, .CartItemListPriceExt
+, .CartBundleListPrice, .CartBundleListPriceExt, .CartBundleItemListPrice, .CartBundleItemListPriceExt
+, .ProductListListPrice, .ProductDetailListPrice
+, .BundleListListPrice, .BundleDetailListPrice
+, .BundleItemListPrice
+{
+	font-size: medium;
+	color: darkgray;
+	font-weight: normal;
+	text-decoration: line-through;
+}
+
+#navbar{
+	min-height: 50px;
+}
+/*#NavBarTinyLogo {
+	height: 42px;
+	width: 42px;
+	display: inline-block;
+	vertical-align: text-top;
+	padding: -10px 0 0 0;
+	margin: -10px 0 0 0;
+}*/
+
+.col-centered
+{
+    float: none;
+    margin: 0 auto;
+}
+
+.NoTopMarginOrPad{
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.NoBottomMarginOrPad{
+	margin-bottom: 0;
+	padding-bottom: 0;
+
+}
+
+.table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  border: 0;
+  overflow: scroll;
+}
+.bg-selected{
+	background-color: rgba(255, 255, 0, 0.20);
+}
+
+.modal-lg
+{
+	width:100%;
+}
+/*Original Bootstrap .table-responsive */
+/*
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  border: 1px solid #ddd;
+}
+*/
+
+#PoweredByGStoreLink {
+}
+
+#PoweredByGStoreLogo {
+	padding-bottom: 0.5em;
+}
+
+#SystemInfo {
+}
+
+	#SystemInfo .header {
+		text-align: right;
+		min-width: 20%;
+		padding: 10px;
+	}
+
+	#SystemInfo .data {
+		text-align: left;
+		padding: 10px;
+	}
+
+/* direct xs size - phone */
+@media (max-width: 767px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions, .title-align-right
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		overflow-x: scroll;
+		padding-bottom: 1.75em;
+		-ms-overflow-style: scrollbar;
+		overflow: auto;
+	}
+	.form-control{
+		width: 90%;
+	}
+
+	.control-label
+	{
+		text-align: center;
+	}
+	.help-label
+	{
+		text-align: center;
+	}
+	.modal-dialog{
+		width: 95%;
+	}
+
+}
+
+/* direct sm small size - tablet */
+@media (min-width: 768px) and (max-width: 991px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions, .title-align-right
+	{
+		text-align: center;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: center;
+	}
+	.help-label
+	{
+		text-align: center;
+	}
+	.modal-dialog{
+		width: 95%;
+	}
+}
+
+/* direct md size - landscape tablet */
+@media (min-width: 992px) and (max-width: 1199px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.title-align-right
+	{
+		text-align: right;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: right;
+	}
+	.help-label
+	{
+		text-align: left;
+	}
+	.modal-dialog{
+		width: 90%;
+	}
+}
+
+/* direct lg size and up - desktop */
+@media (min-width: 1200px) {
+	.title-align, .jumbotron.title-align, .form-validation, .form-actions
+	{
+		text-align: left;
+	}
+	.title-align-right
+	{
+		text-align: right;
+	}
+	.table-responsive
+	{
+		padding-bottom: 0;
+	}
+	.control-label
+	{
+		text-align: right;
+	}
+	.help-label
+	{
+		text-align: left;
+	}
+	.modal-dialog{
+		width: 80%;
+	}
+}
+
+/* direct additions for HDTV wide desktops */
+@media (min-width: 1900px) {
+}
+
+
+@media (min-width: 768px) {
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		width: auto;
+	}
+
+}
+
+@media (max-width: 767px) {
+	.checkbox input[type="checkbox"] {
+		margin-left: 5px;
+		height: auto;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
+
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-xs {
+		display: block;
+	}
+
+	.text-left-xs {
+		text-align: left;
+	}
+
+	.text-right-xs {
+		text-align: right;
+	}
+
+	.text-center-xs {
+		text-align: center;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-sm {
+		display: block;
+	}
+
+	.text-left-sm {
+		text-align: left;
+	}
+
+	.text-right-sm {
+		text-align: right;
+	}
+
+	.text-center-sm {
+		text-align: center;
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+	.CategoryTopNavItem {
+		display: block;
+		text-align: center;
+	}
+
+	.block-md {
+		display: block;
+	}
+
+	.text-left-md {
+		text-align: left;
+	}
+
+	.text-right-md {
+		text-align: right;
+	}
+
+	.text-center-md {
+		text-align: center;
+	}
+}
+
+@media (min-width: 1200px) {
+	.block-lg {
+		display: block;
+	}
+
+	.text-left-lg {
+		text-align: left;
+	}
+
+	.text-right-lg {
+		text-align: right;
+	}
+
+	.text-center-lg {
+		text-align: center;
+	}
+}
+
+@media print
+{
+	h1
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	}
+	.container
+	{
+		width:100%;
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+	}
+}
+
+@media (min-width: 1900px) {
+	.body-content {
+		width: 1900px;
+	}
+
+	.container {
+		width: 1900px;
+	}
+}
+
+.block {
+	display: block;
+}
+
+body {
+	text-align: center;
+	padding-top: 60px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea, help-label {
+	max-width: 700px;
+}
+
+dd label.help-label, label.help-label {
+	font-weight: lighter;
+	font-style: oblique;
+}
+
+dd label.help-label-top, label.help-label-top {
+	padding-top: 0 !important;
+}
+
+
+/* small and xs display */
+@media (max-width: 767px)
+{
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		white-space: normal;
+	}
+
+	.dl-horizontal dd
+	{
+		white-space: normal;
+		font-weight: bold;
+	}
+
+	dd label.help-label, label.help-label
+	{
+		padding-bottom: 2em;
+	}
+
+
+}
+
+/* Medium and up displays */
+@media (min-width: 768px)
+{
+	.dl-horizontal
+	{
+		padding-left: 10px;
+	}
+
+	.dl-horizontal dt
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		text-align: right;
+		width: 40%;
+		display: inline-block;
+	}
+	.dl-horizontal dd
+	{
+		margin: 0 0 0 0;
+		padding: 0 0 0 0;
+		white-space: normal;
+		font-weight: bold;
+		text-align: left;
+		width: 56%;
+		display: inline-block;
+	}
+
+	label.help-label, label.help-label
+	{
+		padding-top: 0;
+		padding-bottom: 1em !important;
+	}
+
+}
+
+.SysAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminEditPageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDetailsPageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminDeletePageTitle
+{
+	max-width: 800px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.SysAdminCreatePageTitle
+{
+	max-width: 750px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+.CatalogAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminEditPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+	padding-left: 10% !important;
+}
+.CatalogAdminDetailsPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminDeletePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.CatalogAdminCreatePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+.StoreAdminIndexPageTitle
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminEditPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+	padding-left: 10% !important;
+}
+.StoreAdminDetailsPageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminDeletePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+.StoreAdminCreatePageTitle
+{
+	max-width: 1200px;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+.form-group div
+{
+	text-align: left;
+}
+
+.bold
+{
+	font-weight: bolder;
+}
+
+.AccountTitle.jumbotron
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
+
+:-webkit-input-placeholder { /* WebKit browsers */
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #999;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #999;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    #999;
+}
+.modelinvalid
+{
+	background-color: rgba(255, 0, 0, .15)
+}
+.form-control{
+	display:inline-block;
+}
+
+.StackHighlight{
+	background-color: lightblue;
+	font-weight: bold;
+}
+.NoClick{
+ pointer-events: none;
+}
+
+.CategoryListCategoryAndChildren
+{
+	padding-bottom: 3em;
+}
+.CategoryPath{
+	padding-bottom: 1em;
+}
+
+/*start of themable defaults */
+.ViewProductImage
+{
+	width: auto;
+	height: auto;
+	max-height: 300px;
+}
+.ViewProductSampleImage
+{
+	width: auto;
+	height: auto;
+	max-height: 300px;
+}
+
+
+.CategoryListImage
+{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 300px;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+.CategoryListChildImage
+{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.CategoryListImageLink {
+}
+
+.CategoryListTextLink {
+}
+
+.CategoryListContainer {
+	text-align: center;
+}
+
+.CartItemImage{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 6em;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.CheckoutItemImage{
+	width: auto;
+	height: auto;
+	max-width: 95%;
+	max-height: 3em;
+	/*display: block;*/
+	margin-left: auto;
+	margin-right: auto;
+}
+/* end of themable defaults*/

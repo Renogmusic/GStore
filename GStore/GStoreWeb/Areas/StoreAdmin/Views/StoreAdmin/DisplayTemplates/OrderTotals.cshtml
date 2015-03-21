@@ -1,0 +1,44 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	IQueryable<Order> ordersQuery = Html.GStoreDb().Orders.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc);
+	IQueryable<OrderItem> orderItemsQuery = Html.GStoreDb().OrderItems
+		.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc);
+
+	int countOrders = ordersQuery.Count();
+
+	int countOrdersCompleted = ordersQuery.Where(o => o.StatusOrderDownloaded || o.StatusOrderDelivered).Count();
+	
+	int countOrderItems = orderItemsQuery.Count();
+
+	int countOrderItemsDelivered = orderItemsQuery.Where(oi => oi.StatusItemDelivered).Count();
+	
+	int countOrderItemsDownloaded = orderItemsQuery.Where(oi => oi.StatusItemDownloaded).Count();
+
+	decimal orderTotalPlaced = ordersQuery.Sum(o => (decimal?)o.Total) ?? 0M;
+
+	decimal orderTotalCompleted = ordersQuery.Where(o => o.StatusOrderDownloaded || o.StatusOrderDelivered).Sum(o => (decimal?)o.Total) ?? 0M;
+
+	Order latestOrder = ordersQuery.OrderByDescending(o => o.CreateDateTimeUtc).FirstOrDefault();
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<h4>
+		@(countOrders.ToString("N0")) Order@(countOrders == 1 ? "" : "s") Placed 
+		/ @(countOrdersCompleted) Completed
+		<br />
+		@(countOrderItems.ToString("N0")) Item@(countOrderItems == 1 ? "" : "s") Ordered
+		/ @(countOrderItemsDelivered) Delivered / @(countOrderItemsDownloaded) Downloaded
+		<br />
+		$@(orderTotalPlaced.ToString("N2")) Orders Placed / $@(orderTotalCompleted.ToString("N2")) Completed
+		<br/>
+		Latest Order: @(latestOrder == null ? "none" : latestOrder.CreateDateTimeUtc.ToStoreDateTimeString(Html))
+	</h4>
+</div>

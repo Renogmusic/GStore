@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontDataValueRecord">
+    <Position X="1" Y="10.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>CgAAAEAEAAYAAAAAAEAAAAFAAAAAAAwAAAAUAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontDataValueRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontRecord">
+    <Position X="1.5" Y="8.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.ClientRecord">
+    <Position X="1.75" Y="6" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.AuditFieldsAllRequired">
+    <Position X="1.25" Y="2.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.GStoreEntity">
+    <Position X="1.25" Y="0.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.ProductAttribute">
+    <Position X="0.5" Y="15.75" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAAAAAAAAAAAAAIAAAABCAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ProductAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

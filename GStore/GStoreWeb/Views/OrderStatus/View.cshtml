@@ -1,0 +1,75 @@
+﻿@model Order
+@{
+	if (Model == null)
+	{
+		throw new ArgumentNullException("Model");
+	}
+	UserProfile profile = Html.CurrentUserProfile(false);
+	ViewBag.Title = "Order Status - Order " + Model.OrderNumber;
+}
+@if (profile != null)
+{
+	<div class="row hidden-print">
+		<h3>
+			@Html.ActionLink("View My Orders", "Index")
+			<hr />
+		</h3>
+	</div>
+}
+<h1 class="NoBottomMarginOrPad">Order Status</h1>
+
+@{
+	if (!Model.StatusOrderAccepted)
+	{
+		<span class="btn btn-default disabled">Order Awaiting Processing</span>
+	}
+	if (Model.StatusOrderAccepted)
+	{
+		<span class="btn btn-default disabled">Order Processed</span>
+	}
+	if (Model.StatusOrderPaymentProcessed)
+	{
+		<span class="btn btn-default disabled">Payment Processed</span>
+	}
+	if (Model.StatusOrderShipped)
+	{
+		<span class="btn btn-default disabled">Shipped</span>
+	}
+	if (Model.StatusOrderDelivered)
+	{
+		<span class="btn btn-default disabled">Delivered</span>
+	}
+	if (Model.StatusOrderDownloaded)
+	{
+		<span class="btn btn-default disabled">Downloaded</span>
+	}
+	if (Model.StatusOrderItemsReturned)
+	{
+		<span class="btn btn-default disabled">Items Returned</span>
+	}
+	if (Model.StatusOrderCancelledByMerchant)
+	{
+		<span class="btn btn-default disabled">Canceled by Seller</span>
+	}
+	if (Model.StatusOrderCancelledByUser)
+	{
+		<span class="btn btn-default disabled">Canceled by Buyer</span>
+	}
+	if (Model.StatusOrderFeedbackReceived)
+	{
+		<span class="btn btn-default disabled">Feedback Received</span>
+	}
+	string orderAdminEmail = Html.CurrentStoreFrontConfig(true).OrderAdmin.Email;
+
+	@:&nbsp;&nbsp;-&nbsp;&nbsp;
+	<a class="btn btn-sm btn-info" href="javascript:window.print();">Print this Page</a>
+
+	if (Html.CurrentUserProfile(false) != null)
+	{
+		@:&nbsp;&nbsp;-&nbsp;&nbsp;
+		@Html.ActionLink("Send us a message", "Create", "Notifications", new { orderNumber = Model.OrderNumber, orderEmail = Model.Email }, new { @class = "btn btn-sm btn-info" })
+	}
+	@:&nbsp;&nbsp;-&nbsp;&nbsp;
+	@:<a href="mailto:@(orderAdminEmail)" class="btn btn-sm btn-info">Email Us</a>
+}
+@{ Html.RenderPartial("_OrderFullInfoPartial", Model); }

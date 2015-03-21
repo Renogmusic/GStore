@@ -1,0 +1,65 @@
+﻿@model List<ProductBundleItem>
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		string target = ViewData["Target"] as string;
+		if (Model.Count != 0)
+		{
+			ProductBundleItem nullModel = null;
+			@:<div class="table-responsive">
+			@:<table border="1" style="width: 100%">
+			<tr>
+				<th class="text-center">Bundle Name [Id] (item count)</th>
+				<th class="text-center">Quantity</th>
+				<th class="text-center">Item Unit Price</th>
+				<th class="text-center">Item List Price</th>
+				<th class="text-center">Bundle Unit Price</th>
+				<th class="text-center">Bundle List Price</th>
+				<th class="text-center">@(Html.DisplayNameFor(model => nullModel.ProductBundle.Category))</th>
+				<th class="text-center">&nbsp;</th>
+			</tr>
+		}
+
+		foreach (ProductBundleItem bundleItem in Model)
+		{
+			bool returnToFrontEnd = (ViewData["ReturnToFrontEnd"] as bool?) ?? false;
+			bool isActive = bundleItem.IsActiveDirect();
+			string itemClass = "";
+			decimal? unitPrice = bundleItem.ProductBundle.UnitPrice(1);
+			decimal? listPrice = bundleItem.ProductBundle.ListPrice(1);
+			
+			if (!isActive)
+			{
+				itemClass = "text-warning";
+			}
+			<tr class="@itemClass">
+				<td>
+					@Html.ActionLink(bundleItem.ProductBundle.Name + " [" + bundleItem.ProductBundleId + "] (" + bundleItem.ProductBundle.ProductBundleItems.Count.ToString("N0") + ")", "Details", "BundleAdmin", new { id = bundleItem.ProductBundleId, Tab = "Items" }, new { target = target })
+				</td>
+				<td>@(Html.DisplayFor(model => bundleItem.Quantity))</td>
+				<td>@(Html.DisplayFor(model => bundleItem.BaseUnitPrice, "CurrencyOrCall"))</td>
+				<td>@(Html.DisplayFor(model => bundleItem.BaseListPrice, "CurrencyOrNA"))</td>
+				<td>@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall")) </td>
+				<td>@(Html.DisplayFor(model => listPrice, "CurrencyOrNA")) </td>
+				<td>
+					@Html.DisplayFor(model => bundleItem.ProductBundle.Category)
+				</td>
+				<td>
+					@Html.ActionLink("View Bundle in Site", "ViewBundleByName", "Catalog", new { area = "", urlName = bundleItem.ProductBundle.UrlName, returnToFrontEnd = returnToFrontEnd }, new { @class = "btn btn-xs btn-default", target = target })
+				</td>
+			</tr>
+		}
+	
+
+		if (Model.Count != 0)
+		{
+			@:</div></table>
+		}
+		
+	}
+}

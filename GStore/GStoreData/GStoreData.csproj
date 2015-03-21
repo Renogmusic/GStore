@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{25DAB67A-DDE6-4F63-A5CF-CA7C88E2282A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GStoreData</RootNamespace>
+    <AssemblyName>GStoreData</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AppHtmlHelpers\AppHtmlHelpers.cs" />
+    <Compile Include="AppHtmlHelpers\CatalogHtmlHelper.cs" />
+    <Compile Include="AppHtmlHelpers\EnumHelper.cs" />
+    <Compile Include="AppHtmlHelpers\GaEvent.cs" />
+    <Compile Include="AppHtmlHelpers\StoreAdminHtmlHelper.cs" />
+    <Compile Include="AppHtmlHelpers\UserMessage.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductBundleItemEditAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductBundleEditAdminViewModel.cs" />
+    <Compile Include="Identity\IdentityConfig.cs" />
+    <Compile Include="Areas\CatalogAdmin\ControllerBase\CatalogAdminBaseController.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\CatalogAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\CategoryEditAdminViewModel.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\DigitalDownloadFileError.cs" />
+    <Compile Include="Areas\CatalogAdmin\ViewModels\ProductEditAdminViewModel.cs" />
+    <Compile Include="Areas\OrderAdmin\ControllerBase\OrderAdminBaseController.cs" />
+    <Compile Include="Areas\OrderAdmin\ViewModels\OrderAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ControllerBase\StoreAdminBaseController.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ClientConfigManagerAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\NavBarItemEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\NavBarItemManagerAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\PageManagerAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\StoreAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\StoreFrontConfigAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListItemEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\ValueListManagerAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormFieldEditAdminViewModel.cs" />
+    <Compile Include="Areas\StoreAdmin\ViewModels\WebFormManagerAdminViewModel.cs" />
+    <Compile Include="Areas\SystemAdmin\ControllerBase\SystemAdminBaseController.cs" />
+    <Compile Include="Areas\SystemAdmin\Extensions\SystemAdminActivationExtensions.cs" />
+    <Compile Include="Areas\SystemAdmin\Extensions\SystemAdminHtmlHelper.cs" />
+    <Compile Include="ControllerBase\BaseApiController.cs" />
+    <Compile Include="ControllerBase\BaseController.cs" />
+    <Compile Include="ControllerBase\PageBaseController.cs" />
+    <Compile Include="EntityFrameworkCodeFirstProvider\GenericGStoreEFEntity.cs" />
+    <Compile Include="EntityFrameworkCodeFirstProvider\GStoreEFDbContext.cs" />
+    <Compile Include="EntityFrameworkCodeFirstProvider\GStoreEFDbContextInitializers.cs" />
+    <Compile Include="EntityFrameworkCodeFirstProvider\GStoreEFDbContextModelBuilder.cs" />
+    <Compile Include="Exceptions\AppDefinedExceptions.cs" />
+    <Compile Include="Exceptions\ExceptionHandler.cs" />
+    <Compile Include="Extensions\BaseClassExtensions.cs" />
+    <Compile Include="Extensions\CartExtensions.cs" />
+    <Compile Include="Extensions\ClientExtensions.cs" />
+    <Compile Include="Extensions\EventLogExtensions.cs" />
+    <Compile Include="Extensions\FormProcessorExtensions.cs" />
+    <Compile Include="Extensions\GStoreDBExtensions.cs" />
+    <Compile Include="Extensions\NewStoreFrontExtensions.cs" />
+    <Compile Include="Extensions\NotificationExtensions.cs" />
+    <Compile Include="Extensions\OrderExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
+    <Compile Include="Extensions\SeedDataExtensions.cs" />
+    <Compile Include="Extensions\SortExtensions.cs" />
+    <Compile Include="Extensions\StoreFrontExtensions.cs" />
+    <Compile Include="Extensions\TreeExtensions.cs" />
+    <Compile Include="Extensions\UserProfileExtensions.cs" />
+    <Compile Include="Extensions\WhereIsActiveExtensions.cs" />
+    <Compile Include="Migrations\201503160423110_Initial.cs" />
+    <Compile Include="Migrations\201503160423110_Initial.Designer.cs">
+      <DependentUpon>201503160423110_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503171941194_release2.cs" />
+    <Compile Include="Migrations\201503171941194_release2.Designer.cs">
+      <DependentUpon>201503171941194_release2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.cs" />
+    <Compile Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.Designer.cs">
+      <DependentUpon>201503210630021_AddStoreFrontColForBundleItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OrderBundle.cs" />
+    <Compile Include="Models\CartBundle.cs" />
+    <Compile Include="Models\BaseClasses\GStorePaymentSourceEnum.cs" />
+    <Compile Include="Models\BaseClasses\GStoreValueDataType.cs" />
+    <Compile Include="Identity\AspNetEFIdentityExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Identity\AuthorizeGStoreAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Identity\AuthorizeSystemAdmin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Identity\GStoreAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Identity\GStoreAuthorizationExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Identity\IdentityModels.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="ListProvider\GenericGStoreListSource.cs" />
+    <Compile Include="ListProvider\ListContext.cs" />
+    <Compile Include="Models\CartPaymentInfo.cs" />
+    <Compile Include="Models\ProductBundleItem.cs" />
+    <Compile Include="Models\ProductBundle.cs" />
+    <Compile Include="PayPal\Models\Models.cs" />
+    <Compile Include="PayPal\PayPalPaymentClient.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="RepositoryFactory.cs" />
+    <Compile Include="Models\BaseClasses\AuditFieldsAllRequired.cs" />
+    <Compile Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cs" />
+    <Compile Include="Models\BaseClasses\ClientRecord.cs" />
+    <Compile Include="Models\BaseClasses\ClientRecordUserProfileOptional.cs" />
+    <Compile Include="Models\BaseClasses\EventLogBase.cs" />
+    <Compile Include="Models\BaseClasses\GStoreEntity.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecord.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontDataValueRecordUserProfileOptional.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontRecord.cs" />
+    <Compile Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cs" />
+    <Compile Include="Models\Cart.cs" />
+    <Compile Include="Models\CartItem.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\ClientRole.cs" />
+    <Compile Include="Models\ClientRoleAction.cs" />
+    <Compile Include="Models\ClientUserRole.cs" />
+    <Compile Include="Models\DeliveryInfoDigital.cs" />
+    <Compile Include="Models\DeliveryInfoShipping.cs" />
+    <Compile Include="Models\Discount.cs" />
+    <Compile Include="Models\EventLogs.cs" />
+    <Compile Include="Models\GiftCard.cs" />
+    <Compile Include="Models\NavBarItem.cs" />
+    <Compile Include="Models\Notification.cs" />
+    <Compile Include="Models\NotificationLink.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\Page.cs" />
+    <Compile Include="Models\PageSection.cs" />
+    <Compile Include="Models\PageTemplate.cs" />
+    <Compile Include="Models\PageTemplateSection.cs" />
+    <Compile Include="Models\Payment.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductAttribute.cs" />
+    <Compile Include="Models\ProductCategory.cs" />
+    <Compile Include="Models\ProductCategoryAttribute.cs" />
+    <Compile Include="Models\ProductReview.cs" />
+    <Compile Include="Models\StoreBinding.cs" />
+    <Compile Include="Models\StoreFront.cs" />
+    <Compile Include="Models\StoreFrontConfiguration.cs" />
+    <Compile Include="Models\Theme.cs" />
+    <Compile Include="Models\UserProfile.cs" />
+    <Compile Include="Models\ValueList.cs" />
+    <Compile Include="Models\ValueListItem.cs" />
+    <Compile Include="Settings\Settings.cs" />
+    <Compile Include="ViewModels\AccountViewModels.cs" />
+    <Compile Include="ViewModels\AdminMenuViewModel.cs" />
+    <Compile Include="ViewModels\CartConfigViewModel.cs" />
+    <Compile Include="ViewModels\CatalogViewModel.cs" />
+    <Compile Include="ViewModels\CheckoutViewModels.cs" />
+    <Compile Include="ViewModels\CheckoutWebFormInfo.cs" />
+    <Compile Include="ViewModels\DigitalDownloadFileInfo.cs" />
+    <Compile Include="ViewModels\ManageViewModels.cs" />
+    <Compile Include="ViewModels\MenuViewModel.cs" />
+    <Compile Include="ViewModels\NotificationCreateViewModel.cs" />
+    <Compile Include="ViewModels\NotificationSettingsViewModel.cs" />
+    <Compile Include="ViewModels\OrderStatusViewModel.cs" />
+    <Compile Include="ViewModels\PageEditViewModel.cs" />
+    <Compile Include="ViewModels\PageSectionEditViewModel.cs" />
+    <Compile Include="ViewModels\PageViewModel.cs" />
+    <Compile Include="ViewModels\PayPalInfoViewModel.cs" />
+    <Compile Include="Models\WebForm.cs" />
+    <Compile Include="Models\WebFormField.cs" />
+    <Compile Include="Models\WebFormFieldResponse.cs" />
+    <Compile Include="Models\WebFormResponse.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Content Include="Models\BaseClasses\AuditFieldsAllRequired.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\ClientRecord.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\ClientRecordUserProfileOptional.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\EventLogBase.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\GStoreEntity.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\StoreFrontRecord.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\BaseClasses\StoreFrontRecordUserProfileOptional.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\Client.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\StoreFront.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Models\BaseClasses\GStorePaymentSourceEnum.cd" />
+    <None Include="Models\BaseClasses\GStoreValueDataType.cd" />
+    <None Include="Models\BaseClasses\StoreFrontDataValueRecord.cd" />
+    <None Include="Models\BaseClasses\StoreFrontDataValueRecordUserProfileOptional.cd" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="SendGrid.SmtpApi">
+      <HintPath>..\packages\SendGrid.SmtpApi.1.2.1\lib\net40\SendGrid.SmtpApi.dll</HintPath>
+    </Reference>
+    <Reference Include="SendGridMail">
+      <HintPath>..\packages\Sendgrid.5.1.0\lib\SendGridMail.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Twilio.3.6.27\lib\3.5\Twilio.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Twilio.Mvc, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Twilio.Mvc.3.1.14\lib\3.5\Twilio.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Twilio.Twiml">
+      <HintPath>..\packages\Twilio.TwiML.3.3.5\lib\3.5\Twilio.Twiml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201503160423110_Initial.resx">
+      <DependentUpon>201503160423110_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503171941194_release2.resx">
+      <DependentUpon>201503171941194_release2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.resx">
+      <DependentUpon>201503210630021_AddStoreFrontColForBundleItem.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

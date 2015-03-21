@@ -1,0 +1,58 @@
+﻿@model ValueListEditAdminViewModel
+@{
+	AjaxOptions options = new AjaxOptions();
+	options.AllowCache = false;
+	options.HttpMethod = "Post";
+	options.UpdateTargetId = "ValueListEdit_Target";
+	options.InsertionMode = InsertionMode.Replace;
+	options.LoadingElementId = "ValueListEdit_LoadingElement";
+	options.OnBegin = "ValueListEdit_OnBegin";
+	options.OnComplete = "ValueListEdit_OnComplete";
+	options.OnFailure = "ValueListEdit_OnFailure";
+	options.OnSuccess = "ValueListEdit_OnSuccess";
+	options.LoadingElementDuration = 700;
+}
+<script>
+	function ValueListEdit_OnBegin() {
+		@*alert('OnBegin_@(Model.Index)');*@
+	}
+
+	function ValueListEdit_OnComplete() {
+		@*alert('OnComplete_@(Model.Index)');*@
+	}
+	function ValueListEdit_OnFailure() {
+		AddUserMessageDanger("Save Failed.", "Web Form Edit failed with a server error. Please try again or re-load the page and try again. Web Form: '@(Model.Name)' [@(Model.ValueListId)]");
+	}
+	function ValueListEdit_OnSuccess() {
+		@*alert('OnSuccess_@(Model.Index)');*@
+	}
+</script>
+<div id="ValueListEdit_LoadingElement" class="bg-success" style="display:none">
+	<strong>Saving....</strong>
+</div>
+@{
+	string actionName = "UpdateValueListAjax";
+	string controllerName = "Page";
+	string area = "";
+	
+	if (Model.IsStoreAdminEdit)
+	{
+		controllerName = "ValueListAdmin";
+		area = "StoreAdmin";
+		if (Model.IsCreatePage)
+		{
+			actionName = "CreateValueListAjax";
+		}
+		else
+		{
+			actionName = "UpdateValueListAjax";
+		}
+	}
+	
+}
+@using (Ajax.BeginForm(actionName: actionName, controllerName: controllerName, ajaxOptions: options, routeValues: new { id = Model.ValueListId, area = area, }, htmlAttributes: new { id = "ValueListEditForm" }))
+{
+	<div id="ValueListEdit_Target">
+		@{ Html.RenderPartial("_ValueListEditPartial", Model); }
+	</div>
+}

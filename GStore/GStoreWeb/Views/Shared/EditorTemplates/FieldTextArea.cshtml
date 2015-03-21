@@ -1,0 +1,25 @@
+﻿@model String
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	int textCols = (ViewData["TextCols"] as int?) ?? 40;
+	int textRows = (ViewData["TextRows"] as int?) ?? 10;
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+}
+<div class="form-group">
+	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	<div class="col-md-@(colData) title-align">
+		@Html.TextAreaWithWatermarkForModel(textCols, textRows)
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@Html.ValidationMessageForModel()
+		@if (useHelpLabelText)
+		{
+			<br />@Html.HelpLabelForModel()
+		}
+	</div>
+</div>

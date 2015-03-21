@@ -1,0 +1,169 @@
+﻿@model Order
+@{
+	if (Model == null)
+	{
+		throw new ArgumentNullException("model (order)");
+	}
+
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+
+	bool showDigitalDownloadColumn = false;
+	if (Model.DigitalDownloadItemCount > 0)
+	{
+		showDigitalDownloadColumn = true;
+	}
+
+
+	List<OrderBundle> bundles = Model.OrderBundles.AsQueryable().ApplyDefaultSort().ToList();
+	List<OrderItem> orderItems = Model.OrderItems.AsQueryable().Where(oi => !oi.OrderBundleId.HasValue && !oi.ProductBundleItemId.HasValue).ApplyDefaultSort().ToList();
+	
+}Your Order at @(config.Name) - @(config.PublicUrl)
+
+Order Number: @Html.DisplayFor(model => model.OrderNumber)
+
+Placed On: @Html.DisplayFor(model => model.CreateDateTimeUtc)
+Updated On: @Html.DisplayFor(model => model.UpdateDateTimeUtc)
+
+Order Status Link
+
+@Html.Raw(Url.Action("View", "OrderStatus", new { id = Model.OrderNumber, email = Model.Email}, "http"))
+
+
+@if (Model.DigitalDownloadItemCount > 0)
+{
+@:-Digital Download-
+@:@(Model.DigitalDownloadItemCount) item@(Model.DigitalDownloadItemCount == 1 ? "" : "s")
+@:@(Model.OrderItems.Count(oi => oi.StatusItemDownloaded)) downloaded
+@:@(Model.OrderItems.Count(oi => !oi.StatusItemDownloaded)) awaiting download
+}
+
+@if (Model.ShippingItemCount > 0)
+{
+@:-Shipping-
+@:@(Model.ShippingItemCount) item@(Model.ShippingItemCount == 1 ? "" : "s")
+@:@(Model.OrderItems.Count(oi => oi.StatusItemShipped)) shipped
+@:@(Model.OrderItems.Count(oi => !oi.StatusItemDownloaded)) awaiting shipment
+}
+@if (Model.DeliveryInfoDigital != null)
+{
+@Html.DisplayFor(model => model.DeliveryInfoDigital, "DeliveryInfoDigitalForEmailText")
+}
+@if (Model.DeliveryInfoShipping != null)
+{
+@:@Html.DisplayFor(model => model.DeliveryInfoShipping, "DeliveryInfoShippingForEmailText")
+}
+
+@if (bundles.Count > 0)
+{
+	foreach (OrderBundle bundle in bundles)
+	{
+@(bundle.ProductBundle.Name) @:Qty: @(bundle.Quantity) $@((bundle.LineTotal() ?? 0).ToString("N2"))
+if (config.CartBundleShowIncludedItems)
+{
+@:Includes:
+	foreach (OrderItem bundleItem in bundle.OrderItems.AsQueryable().ApplyDefaultSort())
+	{
+	@:@bundleItem.Product.Name
+	@:Status: @bundleItem.StatusTextString()
+	@:Qty: @bundleItem.Quantity
+if (config.CartItemTotalColumnShow)
+{
+	if (config.CartBundleShowPriceOfIncludedItems)
+	{
+	@:$@bundleItem.LineTotal.ToString("N2")
+	}
+	else
+	{
+	@:(included)
+	}
+}
+if (showDigitalDownloadColumn)
+{
+	if (!bundleItem.Product.DigitalDownload)
+	{
+	@:-
+}
+else if (bundleItem.Product.DigitalDownload)
+{
+if (bundleItem.StatusItemPaymentReceived)
+{
+	@Html.ActionLink("Click HERE to Download", "Download", new { id = Model.OrderNumber, email = Model.Email, orderItemId = bundleItem.OrderItemId }, null)
+}
+else
+{
+	@:Your download will be available after your payment is processed
+	}
+	}
+}
+@:
+}
+
+}
+
+}
+}
+
+@if (orderItems.Count > 0)
+{
+	foreach (OrderItem item in orderItems)
+	{
+@:@item.Product.Name
+@:Status: @item.StatusTextString()
+@:Qty: @item.Quantity
+if (config.CartItemTotalColumnShow)
+{
+@:$@item.LineTotal.ToString("N2")
+}
+if (showDigitalDownloadColumn)
+{
+if (!item.Product.DigitalDownload)
+{
+@:-
+}
+else if (item.Product.DigitalDownload)
+{
+if (item.StatusItemPaymentReceived)
+{
+@Html.ActionLink("Click HERE to Download", "Download", new { id = Model.OrderNumber, email = Model.Email, orderItemId = item.OrderItemId }, null)
+}
+else
+{
+@:Your download will be available after your payment is processed
+}
+}
+}
+}
+}
+
+
+
+@if (config.CartOrderItemCountShow)
+{
+@:@config.CartOrderItemCountLabel.OrDefault("Order Item Count"): @Model.ItemCount
+}
+@if (config.CartOrderDiscountCodeSectionShow)
+{
+@:@config.CartOrderDiscountCodeLabel.OrDefault("Discount Code"): @(Model.DiscountCode.OrDefault("(none)"))
+}
+@if (config.CartOrderSubtotalShow)
+{
+@:@config.CartOrderSubtotalLabel.OrDefault("Sub-Total"): $@Model.Subtotal.ToString("N2")
+}
+@if (config.CartOrderTaxShow)
+{
+@:@config.CartOrderTaxLabel.OrDefault("Tax"): $@Model.Tax.ToString("N2")
+}
+@if (config.CartOrderShippingShow)
+{
+@:@config.CartOrderShippingLabel.OrDefault("Shipping"): $@Model.Shipping.ToString("N2")
+}
+@if (config.CartOrderHandlingShow)
+{
+@:@config.CartOrderHandlingLabel.OrDefault("Handling"): $@Model.Handling.ToString("N2")
+}
+@if (config.CartOrderDiscountShow)
+{
+@:@config.CartOrderDiscountLabel.OrDefault("Order Discount"): $@Model.OrderDiscount.ToString("N2")
+}
+
+@config.CartOrderTotalLabel.OrDefault("Order Total"): $@Model.Total.ToString("N2")

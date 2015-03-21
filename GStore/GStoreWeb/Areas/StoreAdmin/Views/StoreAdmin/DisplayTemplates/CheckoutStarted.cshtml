@@ -1,0 +1,33 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	IQueryable<Cart> query = Html.GStoreDb().Carts.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc);
+	
+	int countStarted = query.Where(p => p.StatusStartedCheckout).Count();
+	
+	int countSelectedLogInOrGuest = query.Where(p => p.StatusSelectedLogInOrGuest).Count();
+	
+	int countEnteredDeliveryInfo = query.Where(p => p.StatusCompletedDeliveryInfo).Count();
+
+	int countConfirmedPaymentInfo = query.Where(p => p.StatusPaymentInfoConfirmed).Count();
+
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<h4>
+		@(countStarted.ToString("N0")) Started Checkout
+		<br/>
+		@(countSelectedLogInOrGuest.ToString("N0")) Selected Log in or Guest
+		<br />
+		@(countEnteredDeliveryInfo.ToString("N0")) Entered Delivery Info
+		<br/>
+		@(countConfirmedPaymentInfo.ToString("N0")) Confirmed Payment Info
+	</h4>
+</div>

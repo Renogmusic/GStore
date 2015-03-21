@@ -1,0 +1,37 @@
+﻿@model UserProfile
+@{
+	ViewBag.Title = "Registered";
+	bool checkingOut = (ViewBag.CheckingOut as bool?) ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
+}
+
+<h2>Thank you, @Model.FullName for registering!</h2>
+<div>
+	<p>
+	@if (!Settings.AppEnableEmail)
+	{
+		@:Sorry, this server does not have Email enabled. You will not be able to receive email from this server.<br />
+	}
+	else if (Html.CurrentClient(false) == null || !Html.CurrentClient(true).UseSendGridEmail)
+	{
+		@:Sorry, this Store Front does not have Email enabled. You will not be able to receive email from this store front.<br />
+	}
+	else
+	{
+		@:Please check your email for @Model.Email and click the link to confirm your email address.<br />
+	}
+	</p>
+	@Html.ActionLink("Click here to view your account info.", "Index", "Profile")
+</div>
+@if (checkingOut)
+{
+	<div class="row">
+		<div class="form-group col-xs-12">
+			@Html.ActionLink("Return to Checkout", "LoginOrGuest", "Checkout", new { ContinueAsLogin = true }, new { @class = "btn btn-info" })
+		</div>
+	</div>
+}

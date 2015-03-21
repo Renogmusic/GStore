@@ -1,0 +1,38 @@
+﻿@model UserProfileAddressViewModel
+@{
+	ViewBag.Title = "Edit Address";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	<h4>Edit Address</h4>
+	<hr />
+	@Html.ValidationSummary("", new { @class = "text-danger" })
+	
+	<div class="form-horizontal">
+		@Html.EditorFor(model => model.AddressLine1, "FieldText")
+		@Html.EditorFor(model => model.AddressLine2, "FieldText")
+
+		@Html.EditorFor(model => model.City, "FieldText")
+		@Html.EditorFor(model => model.State, "FieldText")
+		@Html.EditorFor(model => model.PostalCode, "FieldText")
+
+		@Html.EditorFor(model => model.CountryCode, "FieldEnum")
+
+		<div class="form-group">
+			<div class="col-md-offset-4 col-md-6">
+				<input type="submit" class="btn btn-primary" value="Submit" />
+				&nbsp;&nbsp;|&nbsp;&nbsp;
+				@Html.ActionLink("Cancel", "Index", null, new { @class="btn btn-default"})
+			</div>
+		</div>
+
+	</div>
+}
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+}

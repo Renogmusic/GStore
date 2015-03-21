@@ -1,0 +1,26 @@
+﻿@model CheckoutConfirmOrderViewModel
+@{
+	ViewBag.Title = "Confirm Order";
+}
+
+<h1 style="display: inline">Confirm Your Order</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartFullInfoPartial", Model); }
+
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutConfirmOrderWebForm, Model.Cart.ConfirmOrderWebFormResponse));
+	
+	<h3>Click Place Order to submit your order for processing.</h3>
+	<h4>You can edit your order information by clicking the links at the top.</h4>
+	<h5>If you wish to add items to your cart, you may add items to your cart at any time.</h5>
+	<input type="submit" class="btn btn-success" value="Place Order &raquo;" />
+}

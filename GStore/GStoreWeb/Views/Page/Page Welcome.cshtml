@@ -1,0 +1,36 @@
+﻿@model PageViewModel
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeTopPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeTopPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkTopPartial", Model);
+}
+<div id="PageContent">
+	@Html.DisplayPageSection("Headline1", 1, "Headline 1", "<h1>:::page.title:::</h1>", "<h1>", "</h1>", "", false, false)
+	@Html.DisplayPageSection("Headline2", 2, "Headline 2", "<h2 class=\"text-danger\">Welcome to :::storefront.name:::!</h2>", "<h2 class=\"text-danger\">", "</h2>", "", false, false)
+	@Html.DisplayPageSection("Headline3", 3, "Headline 3", "<h3>Log in and customize your site with our GStore builder tools.</h3>", "<h3>", "</h3>", "", false, false)
+	@Html.DisplayPageSection("BodyText", 4, "Body Text", string.Empty, "<h4>", "</h4>", "", false, false)
+	@Html.DisplayPageSection("BodyLink", 5, "Body Link", "<a href=\"http://www.GStoreWeb.renog.info/Contact\">Click here to contact us about GStore</a>", "<p>", "</p>", "", false, false)
+</div>
+<div id="PageForm" class="PageForm">
+	@Html.DisplayPageForm()
+</div>
+
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeBottomPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeBottomPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
+}

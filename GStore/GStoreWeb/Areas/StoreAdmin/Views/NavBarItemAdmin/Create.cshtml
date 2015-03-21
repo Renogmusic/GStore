@@ -1,0 +1,60 @@
+﻿@model NavBarItemEditAdminViewModel
+@{
+	ViewData.SetColDisplay(0, 2, 9);
+}
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminCreatePageTitle col-md-offset-1 col-md-8">
+		<span class="text-info">Create a New Menu Item</span>
+	</h1>
+</div>
+
+@using (Html.BeginForm())
+{
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Menu Item" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<p>
+				This page creates a menu item that links to a page.<br />
+				If you want to link the menu item to a URL or set advanced settings,<br />
+				click the "Edit" button after you create the menu item.
+			</p>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-9">
+			@Html.AntiForgeryToken()
+			@Html.ValidationSummary(false, "", new { @class = "text-danger bold" })
+			@Html.HiddenFor(model => model.IsPage)
+			@Html.HiddenFor(model => model.IsSimpleCreatePage)
+		</div>
+	</div>
+
+	@Html.EditorFor(model => model.ParentNavBarItem, "FieldParentNavBarItemOrBlank")
+	@Html.EditorFor(model => model.Name, "FieldText")
+	@Html.EditorFor(model => model.PageId, "FieldPageId")
+	@Html.EditorFor(model => model.Order, "FieldInt")
+	@Html.EditorFor(model => model.ForRegisteredOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.ForAnonymousOnly, "FieldCheckbox")
+	@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+	@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+	@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-3 col-md-6">
+			<input type="submit" value="Create Menu Item" class="btn btn-info" />
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+
+}
+

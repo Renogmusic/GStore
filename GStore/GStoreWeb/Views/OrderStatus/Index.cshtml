@@ -1,0 +1,59 @@
+﻿@model UserProfile
+@{
+	if (Model == null)
+	{
+		throw new ArgumentNullException("model");
+	}
+	ViewBag.Title = "Order Status List";
+}
+<script>
+	function ViewOrderDetails(orderNumber)
+	{
+		var url = @(Url.Action("View", new { id = "XXXX"}).ToJavaScriptMvcString(true));
+		url = url.replace("XXXX", orderNumber);
+		window.location.href = url;
+	}
+</script>
+<h1>My Orders</h1>
+
+@if (Model.Orders.Count == 0)
+{
+	<h2>You do not have any orders on file.</h2>
+}
+else
+{
+	<div class="row">
+		<div class="table-responsive">
+			<table class="table-striped table-bordered table-hover" cellpadding="50" cellspacing="50" width="100%">
+				<tr>
+					@{
+						Order orderModel = new Order();
+					}
+					<th class="text-center">&nbsp;</th>
+					<th class="text-center">Status</th>
+					<th class="text-center">@Html.DisplayNameFor(model => orderModel.OrderNumber)</th>
+					<th class="text-center">@Html.DisplayNameFor(model => orderModel.CreateDateTimeUtc)</th>
+					<th class="text-center">@Html.DisplayNameFor(model => orderModel.UpdateDateTimeUtc)</th>
+					<th class="text-center">@Html.DisplayNameFor(model => orderModel.Total)</th>
+					<th class="text-center">@Html.DisplayNameFor(model => orderModel.ItemCount)</th>
+				</tr>
+				@foreach (Order order in Model.Orders.OrderByDescending(o => o.UpdateDateTimeUtc))
+				{
+					<tr onclick="ViewOrderDetails('@(order.OrderNumber)');">
+						<td>@Html.ActionLink("View", "View", new { id = order.OrderNumber }, new { @class="btn btn-success" })</td>
+						<td>@Html.Raw(order.StatusTextString("\n").ToHtmlLines())</td>
+						<td>@Html.DisplayFor(model => order.OrderNumber)</td>
+						<td>@Html.DisplayFor(model => order.CreateDateTimeUtc)</td>
+						<td>@Html.DisplayFor(model => order.UpdateDateTimeUtc)</td>
+						<td>@Html.DisplayFor(model => order.Total)</td>
+						<td>@Html.DisplayFor(model => order.ItemCount)</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+}
+
+
+
+

@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontRecord">
+    <Position X="25.75" Y="11" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.ClientRecord">
+    <Position X="26" Y="8.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>Models\BaseClasses\ClientRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.AuditFieldsAllRequired">
+    <Position X="25.5" Y="5.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsAllRequired.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.GStoreEntity">
+    <Position X="25.75" Y="3.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.NavBarItem">
+    <Position X="0.75" Y="13.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>IAECIAQQAwAQAAAAAUAAEAQACAAAIgAEAABwAQAAEAQ=</HashCode>
+      <FileName>Models\NavBarItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Notification" Collapsed="true">
+    <Position X="54.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FgEAAACAAAAACAAAAIAAAAAoAAAIAACgABAAIAAAAAI=</HashCode>
+      <FileName>Models\Notification.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.NotificationLink" Collapsed="true">
+    <Position X="56.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAASAAAAAAAAAAAAEAAAAQACACAAAAAAAAAA=</HashCode>
+      <FileName>Models\NotificationLink.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Page">
+    <Position X="4.75" Y="13.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>QAMCAAEAAAAjABAQAAAAIIQADQARIIAACUAJAABQEEA=</HashCode>
+      <FileName>Models\Page.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.PageSection">
+    <Position X="10.25" Y="13.25" Width="4" />
+    <TypeIdentifier>
+      <HashCode>CAECAAAAAAAQAAACAAQAAAAASQAAEAAAAAAAAIAAQAA=</HashCode>
+      <FileName>Models\PageSection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Product">
+    <Position X="15" Y="13.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>8IUAAOiIAAMhCAAQAIAACAQCGAR6JAACAAUSAABBCAI=</HashCode>
+      <FileName>Models\Product.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.ProductCategory">
+    <Position X="20.5" Y="13.25" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>QgEIAABAAAAhAQAUAQAEUAQSCAJQJIICAAASBIBgCCQ=</HashCode>
+      <FileName>Models\ProductCategory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.ProductCategoryAttribute">
+    <Position X="25.75" Y="13.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAQAAEAIAAgAAAABAAgQhAAAAACAAAAASAAAAEAA=</HashCode>
+      <FileName>Models\ProductCategoryAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.StoreBinding">
+    <Position X="30" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>gAEAAIAAAAAAAAAAAAAAAAAACCAIAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Models\StoreBinding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.Discount">
+    <Position X="33.5" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAECgAAAAAAIAAABAAAgQAAAAAgABAAAAAAAAAAAAQA=</HashCode>
+      <FileName>Models\Discount.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.GiftCard">
+    <Position X="37" Y="13.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAggQAAAAAAAAgAAAAAAAAAAABA=</HashCode>
+      <FileName>Models\GiftCard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.ProductReview">
+    <Position X="41.25" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>EAACAAAAAAAAAEAABAABAAAAAAQAAAAAAACAAAAAEAA=</HashCode>
+      <FileName>Models\ProductReview.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.StoreFrontConfiguration">
+    <Position X="44.75" Y="13.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>QlkrQeYoaytTwCEEZGz9EhayKMmrjnVaCC0neSBZtMw=</HashCode>
+      <FileName>Models\StoreFrontConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.StoreFrontDataValueRecord">
+    <Position X="50.25" Y="13.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>CgAAAEAEAAYAAAAAAEAAAAFAAAAAAAwAAAAUAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\StoreFrontDataValueRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

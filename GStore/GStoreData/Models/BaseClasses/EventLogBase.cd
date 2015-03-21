@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="GStoreData.Models.BaseClasses.EventLogBase">
+    <Position X="19" Y="6.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>gAAAEAAAAwgQAICAhIAAAApJAAAAAAABCQAFIRAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\EventLogBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.AuditFieldsUserProfileOptional">
+    <Position X="18.75" Y="3" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAQAAAAAAAAAAAACAAAAAAAAgAAAAAAAAEAE=</HashCode>
+      <FileName>Models\BaseClasses\AuditFieldsUserProfileOptional.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BaseClasses.GStoreEntity">
+    <Position X="19" Y="0.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\BaseClasses\GStoreEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.SystemEvent">
+    <Position X="6.5" Y="13.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAEAgAAAAAAAAIAAAAAAABAAAAAAAAAQA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.SecurityEvent">
+    <Position X="10.5" Y="13.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAgAAAAABAAAAAQAAAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.PageViewEvent">
+    <Position X="13.75" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.UserActionEvent">
+    <Position X="17.25" Y="13.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAICEEAAAAEAAAAAAAACAgQAAACAAAAAAgAACAQ=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.FileNotFoundLog">
+    <Position X="21.5" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.BadRequest">
+    <Position X="25" Y="13.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.SmsSent">
+    <Position X="28.25" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABJAAAAAAAIAAAAAAAAAgAAAAAAAEAAAAAIAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GStoreData.Models.EmailSent">
+    <Position X="31.75" Y="13.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAABAAAAAAAIAJAAAAAAAgAAABAAAEIAgAAIAAA=</HashCode>
+      <FileName>Models\EventLogs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9.75" />
+</ClassDiagram>

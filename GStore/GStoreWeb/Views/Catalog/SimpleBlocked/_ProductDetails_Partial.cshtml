@@ -1,0 +1,288 @@
+﻿@model CatalogViewModel
+<!-- Product Details Start -->
+@{
+	Product product = Model.CurrentProductOrNull;
+	if (product == null)
+	{
+		throw new ArgumentNullException("Model.CurrentProductOrNull");
+	}
+	
+	bool isBundlePage = (ViewData["isBundlePage"] as bool?) ?? false;
+
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+
+	bool showAddToCart = false;
+	bool showBuyNow = false;
+	if (storeFrontConfig != null)
+	{
+		showAddToCart = storeFrontConfig.UseShoppingCart;
+		showBuyNow = true;
+	}
+	if (!product.AvailableForPurchase || !product.BaseUnitPrice.HasValue)
+	{
+		showAddToCart = false;
+		showBuyNow = false;
+	}
+	decimal? unitPrice = product.UnitPrice(1);
+	decimal? listPrice = product.ListPrice(1);
+	bool showListPrice = storeFrontConfig.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+	bool showUnitPrice = true;
+	bool showBottomInfo = true;
+	bool crossSellBundles = true;
+	bool showRequestAQuote = !isBundlePage && product.RequestAQuote_Show && product.RequestAQuote_PageId.HasValue;
+	if (isBundlePage)
+	{
+		showUnitPrice = storeFrontConfig.CartBundleShowPriceOfIncludedItems;
+		showAddToCart = false;
+		showBuyNow = false;
+		showBottomInfo = false;
+	}
+	
+	ViewBag.Title = product.Name + " - " + product.Category.Name;
+
+	string imageUrl = product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+
+	bool showSampleAudioDownloadLink = true;
+
+	if (!isBundlePage)
+	{
+		<div class="row">
+			<div class="col-md-offset-3 col-md-6 ProductDetailItemBox">
+				<center>
+					@if (imageUrl != null)
+					{
+						<img class="ViewProductImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" />
+						<br />
+					}
+					<h2>@Html.DisplayFor(model => product.Name)</h2>
+				</center>
+			</div>
+			<div class="col-md-2">
+				@if (showRequestAQuote)
+				{
+					string requestAQuoteUrl = product.RequestAQuote_Page.UrlResolved(Url);
+					<a href="@(requestAQuoteUrl)" class="btn btn-success">@(product.RequestAQuote_Label.OrDefault("Request A Quote!"))</a>
+				}
+				@if (showListPrice)
+				{
+					<h3 class="NoBottomMarginOrPad ProductDetailListPriceLine">
+						<small class="ProductDetailListPriceLabel">@(listPrice.HasValue ? storeFrontConfig.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</small>
+						<small class="ProductDetailListPrice">@Html.DisplayFor(model => listPrice, "Currency")</small>
+					</h3>
+				}
+				@if (showUnitPrice)
+				{
+					<h1 class="NoTopMarginOrPad ProductDetailUnitPriceLine">
+						<small class="ProductDetailUnitPriceLabel">@(unitPrice.HasValue ? storeFrontConfig.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")</small>
+						<span class="ProductDetailUnitPrice">@Html.DisplayFor(model => unitPrice, "CurrencyOrCall")</span>
+					</h1>
+				}
+				@if (showBuyNow)
+				{
+					@Html.ActionLink("Buy Now!", "Add", "Cart", new { id = product.UrlName, buyNow = true }, new { @class = "btn btn-default" })
+				}
+				@if (showAddToCart && showBuyNow)
+				{
+					@:<br /><br />
+			}
+				@if (showAddToCart)
+				{
+					@Html.ActionLink("Add to Cart", "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-default" })
+				}
+			</div>
+		</div>
+	}
+}
+
+<hr/>
+@if (!string.IsNullOrWhiteSpace(product.SummaryHtml))
+{
+	string summaryCaption = product.SummaryCaptionOrDefault();
+	<div class="btn btn-info NoClick">
+		@summaryCaption
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.SummaryHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.TopDescriptionHtml))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@product.TopDescriptionCaptionOrDefault()
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.TopDescriptionHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.TopLinkHref))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			Link (opens in a new window)
+		</div>
+	</div>
+	<div class="row">
+		<a href="@(product.TopLinkHref)" title="@(product.TopLinkHref) - @(product.TopLinkLabel)" target="_blank">@(product.TopLinkLabel)</a>
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+{
+	string audioType = "audio/mpeg";
+	if (product.SampleAudioFileName.FileExtensionIs("wav"))
+	{
+		audioType = "audio/wav";
+	}
+	else if (product.SampleAudioFileName.FileExtensionIs("ogg"))
+	{
+		audioType = "audio/ogg";
+	}
+	string sampleAudioCaption = product.SampleAudioCaptionOrDefault();
+	string sampleAudioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+	<div class="btn btn-info NoClick">
+		@sampleAudioCaption
+	</div>
+	<div class="row">
+		<audio controls="controls" title="@(sampleAudioCaption)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Play", product.Name, "Product Details Page")">
+			<source title="Sample" src="@Html.Raw(sampleAudioUrl)" type="@(audioType)" />
+		</audio>
+		@if (showSampleAudioDownloadLink)
+		{
+			<br/>
+			<a href="@(Html.Raw(sampleAudioUrl))">Download Audio File</a>
+		}
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleDownloadFileName))
+{
+	string sampleDownloadCaption = product.SampleDownloadCaptionOrDefault();
+	string sampleDownloadUrl = product.SampleDownloadFileUrl(Request.ApplicationPath, ViewContext.RouteData);
+	<div class="btn btn-info NoClick">
+		@sampleDownloadCaption
+	</div>
+	<div class="row">
+		<a href="@(Html.Raw(sampleDownloadUrl))">Download @(sampleDownloadCaption)</a>
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.SampleImageFileName))
+{
+	string sampleImageCaption = product.SampleImageCaptionOrDefault();
+	string sampleImageUrl = product.SampleImageFileUrl(Request.ApplicationPath, ViewContext.RouteData);
+	<div class="btn btn-info NoClick">
+		@sampleImageCaption
+	</div>
+	<div class="row">
+		<a href="@(Html.Raw(sampleImageUrl))">
+			<img class="ViewProductSampleImage" src="@(Html.Raw(sampleImageUrl))" alt="@(sampleImageCaption)" title="@(sampleImageCaption)" />
+			<br/>Click here to view full size
+		</a>
+		<hr />
+	</div>
+
+}
+
+@if (product.DigitalDownload)
+{
+	<div class="btn btn-info NoClick">
+		Digital Download
+	</div>
+	<div class="row">
+		You will receive an email link to download this file after checkout.
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.BottomDescriptionHtml))
+{
+	string bottomDescriptionCaption = product.BottomDescriptionCaptionOrDefault();
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@bottomDescriptionCaption
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.BottomDescriptionHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.BottomLinkHref))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			Link (opens in a new window)
+		</div>
+	</div>
+	<div class="row">
+		<a href="@(product.BottomLinkHref)" title="@(product.BottomLinkHref) - @(product.BottomLinkLabel)" target="_blank">@(product.BottomLinkLabel)</a>
+		<hr />
+	</div>
+}
+@if (showBottomInfo)
+{
+	<h3>@Html.DisplayFor(model => product.Name)</h3>
+	if (product.RequestAQuote_Show && product.RequestAQuote_PageId.HasValue)
+	{
+		string requestAQuoteUrl = product.RequestAQuote_Page.UrlResolved(Url);
+		<a href="@(requestAQuoteUrl)" class="btn btn-success">@(product.RequestAQuote_Label.OrDefault("Request A Quote!"))</a>
+	}
+	if (showListPrice)
+	{
+		<h3 class="NoBottomMarginOrPad ProductDetailListPriceLine">
+			<small class="ProductDetailListPriceLabel">@(listPrice.HasValue ? storeFrontConfig.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</small>
+			<small class="ProductDetailListPrice">@Html.DisplayFor(model => listPrice, "Currency")</small>
+		</h3>
+	}
+	if (showUnitPrice)
+	{
+		<h1 class="NoTopMarginOrPad ProductDetailUnitPriceLine">
+			<small class="ProductDetailUnitPriceLabel">@(unitPrice.HasValue ? storeFrontConfig.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")</small>
+			<span class="ProductDetailUnitPrice">@Html.DisplayFor(model => unitPrice, "CurrencyOrCall")</span>
+		</h1>
+	}
+	if (showBuyNow)
+	{
+		@Html.ActionLink("Buy Now!", "Add", "Cart", new { id = product.UrlName, buyNow = true }, new { @class = "btn btn-default" })
+	}
+	if (showAddToCart && showBuyNow)
+	{
+		@:<br /><br />
+	}
+	if (showAddToCart)
+	{
+		@Html.ActionLink("Add to Cart", "Add", "Cart", new { id = product.UrlName }, new { @class = "btn btn-default" })
+	}
+}
+@if (crossSellBundles)
+{
+	List<ProductBundle> bundles = Html.CatalogCrossSellBundles();
+
+	if (bundles.Count == 0)
+	{
+		<!-- No Other Bundles -->
+	}
+	if (bundles.Count != 0)
+	{
+		@:<hr/>Also available in the following @(bundles.Count != 1 ? bundles.Count.ToString("N0") : "") bundle@(bundles.Count == 1 ? "" : "s"):
+	}
+	foreach (ProductBundle bundle in bundles)
+	{
+		Html.RenderCatalogBundleForListPartial(bundle);
+	}
+}
+@if (!string.IsNullOrWhiteSpace(product.FooterHtml))
+{
+	@Html.Raw(Html.ReplaceVariables(product.FooterHtml))
+}
+<!-- Product Details End -->

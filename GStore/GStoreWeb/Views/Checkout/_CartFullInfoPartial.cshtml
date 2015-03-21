@@ -1,0 +1,287 @@
+﻿@model CheckoutViewModelBase
+@{
+	Cart cart = Model.Cart;
+	bool showDigitalDownload = false;
+	if (cart.DigitalDownloadItemCount > 0)
+	{
+		showDigitalDownload = true;
+	}
+
+	List<CartItem> cartItems = cart.CartItems.AsQueryable().Where(ci => !ci.CartBundleId.HasValue && !ci.ProductBundleItemId.HasValue).ApplyDefaultSort().ToList();
+	List<CartBundle> cartBundles = cart.CartBundles.AsQueryable().ApplyDefaultSort().ToList();
+
+	if (cartBundles.Count != 0 || cartItems.Count != 0)
+	{
+		@:<div class="table-responsive">
+			@:<table class="table table-striped table-condensed">
+				<tr>
+					<th class="text-center">
+						@Model.Config.CartItemColumnLabel.OrDefault("Item")
+					</th>
+					@if (Model.Config.CartItemQuantityColumnShow)
+					{
+						<th class="text-center">
+							@Model.Config.CartItemQuantityColumnLabel.OrDefault("Quantity")
+						</th>
+					}
+					@if (showDigitalDownload)
+					{
+						<th class="text-center">
+							Digital Download
+						</th>
+					}
+					@if (Model.Config.CartItemTotalColumnShow)
+					{
+						<th class="text-center">
+							@Model.Config.CartItemTotalColumnLabel.OrDefault("Total")
+						</th>
+					}
+				</tr>
+	}
+
+	if (cartBundles.Count > 0)
+	{
+		foreach (CartBundle bundle in cartBundles)
+		{
+			<tr>
+				<td class="text-center">
+					@Html.DisplayFor(model => bundle.ProductBundle, "CheckoutBundle")
+				</td>
+				@if (Model.Config.CartItemQuantityColumnShow)
+				{
+					<td class="text-center">@bundle.Quantity</td>
+				}
+				@if (showDigitalDownload)
+				{
+					<td class="text-center">
+						&nbsp;
+					</td>
+				}
+				@if (Model.Config.CartItemTotalColumnShow)
+				{
+					<td class="text-center">$@((bundle.LineTotal() ?? 0M).ToString("N2"))</td>
+				}
+			</tr>
+			foreach (CartItem item in bundle.CartItems.AsQueryable().ApplyDefaultSort())
+			{
+				<tr>
+					<td class="text-center">
+						<span style="white-space: nowrap">
+							@Html.DisplayFor(model => item.Product, "CheckoutBundleProduct")
+						</span>
+					</td>
+					@if (Model.Config.CartItemQuantityColumnShow)
+					{
+						<td class="text-center">@item.Quantity</td>
+					}
+					@if (showDigitalDownload)
+					{
+						<td class="text-center">
+							@if (item.Product.DigitalDownload)
+							{
+								@:Download link will be provided at checkout
+					}
+							else
+							{
+								@:-
+					}
+						</td>
+					}
+					@if (Model.Config.CartItemTotalColumnShow)
+					{
+						if (Model.Config.CartBundleShowPriceOfIncludedItems)
+						{
+							<td class="text-center">@Html.DisplayFor(model => item.LineTotal)</td>
+						}
+						else
+						{
+							<td class="text-center">(included)</td>
+						}
+					}
+				</tr>
+			}
+			<tr>
+				<td>&nbsp;</td>
+				@if (Model.Config.CartItemQuantityColumnShow)
+				{
+					<td>&nbsp;</td>
+				}
+				@if (showDigitalDownload)
+				{
+					<td>&nbsp;</td>
+				}
+				@if (Model.Config.CartItemTotalColumnShow)
+				{
+					<td>&nbsp;</td>
+				}
+			</tr>
+		}
+	}
+
+
+	foreach (CartItem item in cartItems)
+	{
+		<tr>
+			<td class="text-center">
+				@Html.DisplayFor(model => item.Product, "CheckoutProduct")
+			</td>
+			@if (Model.Config.CartItemQuantityColumnShow)
+			{
+				<td class="text-center">@item.Quantity</td>
+			}
+			@if (showDigitalDownload)
+			{
+				<td class="text-center">
+					@if (item.Product.DigitalDownload)
+					{
+						@:Download link will be provided at checkout
+					}
+					else
+					{
+						@:-
+					}
+				</td>
+			}
+			@if (Model.Config.CartItemTotalColumnShow)
+			{
+				<td class="text-center">@item.LineTotal</td>
+			}
+		</tr>
+	}
+}
+@if (cartBundles.Count != 0 || cartItems.Count != 0)
+{
+	@:</table>
+	@:</div>
+}
+
+<div class="col-lg-offset-8 table-responsive">
+	<table class="table table-striped table-condensed">
+		@if (Model.Config.CartOrderItemCountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderItemCountLabel.OrDefault("Order Item Count")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Cart.ItemCount)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderDiscountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderDiscountLabel.OrDefault("Order Discount")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@(Model.Cart.DiscountCode.OrDefault("(none)"))
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderSubtotalShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderSubtotalLabel.OrDefault("Sub-Total")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Cart.Subtotal)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderTaxShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderTaxLabel.OrDefault("Tax")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Cart.Tax)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderShippingShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderShippingLabel.OrDefault("Shipping")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@if (Model.Cart.Shipping == 0 && Model.Cart.AllItemsAreDigitalDownload)
+						{
+							@:N/A
+						}
+						else
+						{
+							@Html.DisplayFor(model => model.Cart.Shipping)
+						}
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderHandlingShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderHandlingLabel.OrDefault("Handling")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Cart.Handling)
+					</strong>
+				</td>
+			</tr>
+		}
+		@if (Model.Config.CartOrderDiscountShow)
+		{
+			<tr>
+				<td class="text-right-md text-right-lg">
+					<strong>
+						@Model.Config.CartOrderDiscountLabel.OrDefault("Order Discount")
+					</strong>
+				</td>
+				<td class="title-align">
+					<strong>
+						@Html.DisplayFor(model => model.Cart.OrderDiscount)
+					</strong>
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="text-right-md text-right-lg">
+				<strong>
+					@Model.Config.CartOrderTotalLabel.OrDefault("Order Total")
+				</strong>
+			</td>
+			<td class="title-align">
+				<strong>
+					@Html.DisplayFor(model => model.Cart.Total)
+				</strong>
+			</td>
+		</tr>
+	</table>
+
+</div>
+

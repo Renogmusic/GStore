@@ -1,0 +1,46 @@
+﻿@model CheckoutDeliveryInfoShippingViewModel
+@{
+	ViewBag.Title = "Delivery Info";
+
+	WebFormResponse oldWebFormResponse = null;
+	if (Model.Cart.DeliveryInfoShipping != null)
+	{
+		oldWebFormResponse = Model.Cart.DeliveryInfoShipping.WebFormResponse;
+	}
+
+}
+
+<h1 style="display: inline">Delivery Information</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+
+<h3>Please enter your shipping information below.</h3>
+<h4>Enter your Email address for order confirmation.</h4>
+@if (Model.Cart.DigitalDownloadItemCount > 0)
+{
+	<h3>Your will receive a link to download your Digital Delivery items after checkout.</h3>
+}
+@using (Html.BeginForm("DeliveryInfoShipping", "Checkout"))
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+	<div class="form-horizontal">
+		@Html.EditorFor(model => model.FullName, "FieldText")
+		@Html.EditorFor(model => model.EmailAddress, "FieldEmail")
+		@Html.EditorFor(model => model.AdddressL1, "FieldText")
+		@Html.EditorFor(model => model.AdddressL2, "FieldText")
+		@Html.EditorFor(model => model.City, "FieldText")
+		@Html.EditorFor(model => model.State, "FieldText")
+		@Html.EditorFor(model => model.PostalCode, "FieldText")
+		@Html.EditorFor(model => model.CountryCode, "FieldEnum")
+	</div>
+
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutDeliveryInfoShippingWebForm, oldWebFormResponse));
+
+	<input type="submit" class="btn btn-success" Value="Continue &raquo;" />
+}

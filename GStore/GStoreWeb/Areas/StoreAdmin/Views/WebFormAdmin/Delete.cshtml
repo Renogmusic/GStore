@@ -1,0 +1,54 @@
+﻿@model WebFormEditAdminViewModel
+
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8 text-danger">
+		Delete Web Form<br /><small>'@(Model.Name)' [@(Model.WebFormId)]</small>
+	</h1>
+</div>
+
+<div class="row">
+	<h3 class="col-md-offset-4 col-md-8 text-danger title-align">
+		Are you sure you want to delete Web Form:
+		<br />
+		@Html.DisplayNameFor(model => model.Name) '@(Html.DisplayFor(model => model.Name))' @(Html.DisplayNameFor(model => model.WebFormId)) [@(Model.WebFormId)]
+		?
+	</h3>
+</div>
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.WebFormId }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "Details", new { id = Model.WebFormId }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+
+<hr />
+
+
+@Html.DisplayForModel()
+
+<div class="row">
+	<div class="form-actions col-md-offset-4 col-md-8 no-color">
+		@using (Html.BeginForm())
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" value="Delete" class="btn btn-danger" />
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Edit", "Edit", new { id = Model.WebFormId }, new { @class = "btn btn-warning" })
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Details", "Details", new { id = Model.WebFormId }, new { @class = "btn btn-success" });
+		}
+	</div>
+</div>
+

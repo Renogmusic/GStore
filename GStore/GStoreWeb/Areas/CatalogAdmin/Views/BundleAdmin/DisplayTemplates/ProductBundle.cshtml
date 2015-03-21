@@ -1,0 +1,29 @@
+﻿@model ProductBundle
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool returnToFrontEnd = (ViewData["ReturnToFrontEnd"] as bool?) ?? false;
+		bool isActive = Model.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			@:'@(Model.Name)' [@(Model.ProductBundleId)]
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+		@:</span>
+		@Html.ActionLink("View Product Bundle in Site", "ViewBundleByName", "Catalog", new { area = "", urlName = Model.UrlName, returnToFrontEnd = returnToFrontEnd }, new { @class = "btn btn-xs btn-default" })
+		<br/>
+		@:Category: @Html.DisplayFor(model => model.Category)
+
+	}
+}

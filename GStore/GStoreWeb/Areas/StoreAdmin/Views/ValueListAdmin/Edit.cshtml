@@ -1,0 +1,63 @@
+﻿@model ValueListEditAdminViewModel
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-warning">Edit Value List</span>
+		<br /><small>'@(Model.Name)' [@(Model.ValueListId)]</small>
+	</h1>
+</div>
+<script>
+	function JumpToDetailsTab() {
+		var url = '@(Url.Action("Details", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+	function JumpToEditTab() {
+		var url = '@(Url.Action("Edit", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+	function JumpToDeleteTab() {
+		var url = '@(Url.Action("Delete", new { id = Model.ValueListId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+
+</script>
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+		@if (Html.UserHasPermission(GStoreAction.ValueLists_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDeleteTab();" class="btn btn-danger">Delete</a>
+		}
+	</div>
+</div>
+<hr />
+@Html.EditorForModel()
+<hr />
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.ValueLists_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+		}
+		@if (Html.UserHasPermission(GStoreAction.ValueLists_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDeleteTab();" class="btn btn-danger">Delete</a>
+		}
+	</div>
+</div>
+

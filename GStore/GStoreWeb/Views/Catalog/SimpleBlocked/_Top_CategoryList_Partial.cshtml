@@ -1,0 +1,128 @@
+﻿@model CatalogViewModel
+<!-- Top Catalog Category List Start -->
+@{
+	List<TreeNode<ProductCategory>> categoryNodes = null;
+	string catalogTopLinkText = string.Empty;
+	TreeNode<ProductCategory> singleCategoryNode = Model.CurrentCategoryNodeOrNull;
+	if (singleCategoryNode != null)
+	{
+		categoryNodes = new List<TreeNode<ProductCategory>>();
+		categoryNodes.Add(singleCategoryNode);
+	}
+	else
+	{
+		categoryNodes = Model.CategoryTree;
+	}
+
+	foreach (TreeNode<ProductCategory> categoryNode in categoryNodes)
+	{
+		@:<div class="CategoryListCategoryAndChildren">
+		bool isRoot = (Model.CurrentCategoryOrNull == null);
+		string rootClass = "";
+		if (isRoot)
+		{
+			rootClass = "CategoryRoot ";
+		}
+		<div class="row CategoryListCategoryOnly">
+			<div class="@(rootClass)CategoryPath col-xs-12 text-center">
+				<div class="CategoryListItemBox boxshadowjs">
+					@{
+						string url = Url.Action("ViewCategoryByName", "Catalog", new { urlName = categoryNode.Entity.UrlName });
+						string imageUrl = categoryNode.Entity.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+						string displayName = categoryNode.Entity.Name + " (" + categoryNode.Entity.ChildActiveCount.ToString("N0") + ")";
+					}
+					@if (isRoot)
+					{
+						//this is for each category on the top of catalog
+						if (imageUrl != null)
+						{
+							<a class="CategoryListImageLink" href="@(url)"><img class="CategoryListImage" src="@(imageUrl)" alt="@(displayName)" title="@(displayName)" /></a>
+							<br />
+							<a class="CategoryListTextLink" href="@(url)" title="@(displayName)">@(displayName)</a>
+						}
+						else
+						{
+							<a class="CategoryListTextLinkNoImage" href="@(url)" title="@(displayName)"><h3 style="margin-top: 0">@(displayName) </h3></a>
+						}
+					}
+					else
+					{
+						if (imageUrl != null)
+						{
+							<img class="CategoryListImage" src="@(imageUrl)" alt="@(displayName)" title="@(displayName)" />
+							<br />
+							<span class="CategoryListTextNoLink">@(displayName)</span>
+						}
+						else
+						{
+							<h3 class="CategoryListTextNoLinkNoImage" style="margin-top: 0">@(displayName)</h3>
+						}
+					}
+				</div>
+			</div>
+		</div>
+
+		string offsets = "";
+		if (categoryNode.HasChildNodes())
+		{
+			
+			if (!isRoot)
+			{
+				if (!string.IsNullOrEmpty(Model.CurrentCategoryOrNull.ChildCategoryHeaderHtml))
+				{
+					@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.ChildCategoryHeaderHtml))
+				}
+
+			}
+			@:<div class="row CategoryListContainerRow">
+			int childNodeCount = categoryNode.ChildNodes.Count();
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColSm) < 12)
+			{
+				int colsSm = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColSm;
+				int smOffset = (12 - colsSm) / 2;
+				offsets = " col-sm-offset-" + smOffset;
+			}
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColMd) < 12)
+			{
+				int colsMd = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColMd;
+				int mdOffset = (12 - colsMd) / 2;
+				offsets = " col-md-offset-" + mdOffset;
+			}
+			if ((childNodeCount * Model.StoreFrontConfig.CatalogCategoryColLg) < 12)
+			{
+				int colsLg = childNodeCount * Model.StoreFrontConfig.CatalogCategoryColLg;
+				int lgOffset = (12 - colsLg) / 2;
+				offsets = " col-lg-offset-" + lgOffset;
+			}
+				}
+				foreach (TreeNode<ProductCategory> childCategory in categoryNode.ChildNodes)
+				{
+					string childDisplayName = childCategory.Entity.Name + " (" + childCategory.Entity.ChildActiveCount.ToString("N0") + ")";
+					string childUrl = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
+					string childImageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+						
+					@:<div class="CategoryListChildItem col-sm-@(Model.StoreFrontConfig.CatalogCategoryColSm) col-md-@(Model.StoreFrontConfig.CatalogCategoryColMd) col-lg-@(Model.StoreFrontConfig.CatalogCategoryColLg)@(offsets)">
+						@:<div class="CategoryListChildItemBox boxshadowjs">
+							if (childImageUrl != null)
+							{
+								@:<a class="CategoryListChildImageLink" href="@(childUrl)" title="@(childDisplayName)"><img class="CategoryListChildImage" src="@(childImageUrl)" alt="@(childDisplayName)" title="@(childDisplayName)" /></a>
+								@:<br />
+								@:<a class="CategoryListChildTextLink" href="@(childUrl)" title="@(childDisplayName)">@(Html.Encode(childDisplayName))</a>
+							}
+							else
+							{
+								<a class="CategoryListChildTextLinkNoImage" href="@(childUrl)" title="@(childDisplayName)"><h3 style="margin-top: 0">@(Html.Encode(childDisplayName))</h3></a>
+							}
+						@:</div>
+					@:</div>
+					offsets = "";
+				}
+
+				if (categoryNode.HasChildNodes())
+				{
+					@:</div>
+				}
+		@:</div>
+	}
+}
+<!-- Top Catalog Category List End -->

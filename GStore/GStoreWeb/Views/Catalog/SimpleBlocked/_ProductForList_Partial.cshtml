@@ -1,0 +1,37 @@
+﻿@model CatalogViewModel
+@{
+	if (Model.CurrentProductOrNull == null)
+	{
+		throw new ArgumentNullException("Model.CurrentProductOrNull");
+	}
+	Product product = Model.CurrentProductOrNull;
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	string url = Url.Action("ViewProductByName", "Catalog", new { urlName = product.UrlName });
+	string imageUrl = product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+	decimal? unitPrice = product.UnitPrice(1);
+	decimal? listPrice = product.ListPrice(1);
+	bool showListPrice = config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+
+	<div class="ProductListItemBox boxshadowjs">
+		@if (imageUrl != null)
+		{
+			<a class="ProductListImageLink" href="@(url)"><img class="ProductListImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" /></a>
+			<br />
+			if (showListPrice)
+			{
+				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>
+			}
+			<div class="ProductListUnitPriceRow"><span class="ProductListUnitPriceLabel">@(config.CartItemUnitPriceColumnLabel.OrDefault("Your Price"))</span> <span class="ProductListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span></div>
+			<a class="ProductListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))">@(product.Name)</a>
+		}
+		else
+		{
+			<a class="ProductListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))"><h3 style="margin-top: 0">@(product.Name)</h3></a>
+			if (showListPrice)
+			{
+				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>
+			}
+			<div class="ProductListUnitPriceRow"><span class="ProductListUnitPriceLabel">@(config.CartItemUnitPriceColumnLabel.OrDefault("Your Price"))</span> <span class="ProductListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span></div>
+		}
+	</div>
+}

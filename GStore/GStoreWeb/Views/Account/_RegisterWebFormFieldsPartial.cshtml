@@ -1,0 +1,13 @@
+﻿@model RegisterViewModel
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+	if ((storeFrontConfig.RegisterWebForm != null) && storeFrontConfig.RegisterWebForm.IsActiveBubble())
+	{
+		List<WebFormField> fields = storeFrontConfig.RegisterWebForm.WebFormFields.AsQueryable().WhereIsActive().ToList();
+		foreach (WebFormField item in fields)
+		{
+			@Html.DisplayFor(model => item);
+		}
+	}
+}
+

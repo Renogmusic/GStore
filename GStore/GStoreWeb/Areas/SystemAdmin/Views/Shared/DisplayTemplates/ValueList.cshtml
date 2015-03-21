@@ -1,0 +1,23 @@
+﻿@model ValueList
+@if (Model == null)
+{
+	@:(no Value List)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Value List";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.ValueListId))]
+		@(inactiveText)
+	</span>
+	@:&nbsp;
+	@(Html.ActionLink(linkText, "Details", "ValueListSysAdmin", new { id = Model.ValueListId }, new { @class = viewLinkClass }))
+	<br/>
+	@(Html.DisplayFor(m => m.Client))
+}

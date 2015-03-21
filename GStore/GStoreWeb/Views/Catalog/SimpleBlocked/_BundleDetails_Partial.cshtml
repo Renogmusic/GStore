@@ -1,0 +1,179 @@
+﻿@model CatalogViewModel
+<!-- Bundle Details Start -->
+@{
+	ProductBundle productBundle = Model.CurrentProductBundleOrNull;
+	if (productBundle == null)
+	{
+		throw new ArgumentNullException("Model.CurrentProductBundleOrNull");
+	}
+	bool showAddToCart = false;
+	bool showBuyNow = false;
+	if (Model.StoreFrontConfig != null)
+	{
+		showAddToCart = Model.StoreFrontConfig.UseShoppingCart;
+		showBuyNow = true;
+	}
+	if (!productBundle.AvailableForPurchase || !productBundle.UnitPrice(1).HasValue)
+	{
+		showAddToCart = false;
+		showBuyNow = false;
+	}
+
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+	
+	decimal? unitPrice = productBundle.UnitPrice(1);
+	decimal? listPrice = productBundle.ListPrice(1);
+	bool showListPrice = Model.StoreFrontConfig.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+
+	ViewBag.Title = productBundle.Name + " - " + productBundle.Category.Name;
+
+	string imageUrl = productBundle.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+
+	<div class="row">
+		<div class="col-md-offset-3 col-md-6 ProductBundleListItemBox">
+			<center>
+				@if (imageUrl != null)
+				{
+					<img class="ViewProductBundleImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(productBundle.Name)))" title="@(Html.Raw(Html.AttributeEncode(productBundle.Name)))" />
+					<br />
+				}
+				<h2>@Html.DisplayFor(model => productBundle.Name)</h2>
+			</center>
+		</div>
+		<div class="col-md-2">
+			@if (productBundle.RequestAQuote_Show && productBundle.RequestAQuote_PageId.HasValue)
+			{
+				string requestAQuoteUrl = productBundle.RequestAQuote_Page.UrlResolved(Url);
+				<a href="@(requestAQuoteUrl)" class="btn btn-success">@(productBundle.RequestAQuote_Label.OrDefault("Request A Quote!"))</a>
+			}
+			@if (showListPrice)
+			{
+				<h3 class="NoBottomMarginOrPad BundleDetailListPriceLine">
+					<small class="BundleDetailListPriceLabel">@(listPrice.HasValue ? storeFrontConfig.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</small>
+					<small class="BundleDetailListPrice">@Html.DisplayFor(model => listPrice, "Currency")</small>
+				</h3>
+			}
+			<h1 class="NoTopMarginOrPad BundleDetailUnitPriceLine">
+				<small class="BundleDetailUnitPriceLabel">@(unitPrice.HasValue ? storeFrontConfig.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")</small>
+				<span class="BundleDetailUnitPrice">@Html.DisplayFor(model => unitPrice, "CurrencyOrCall")</span>
+			</h1>
+			@if (showBuyNow)
+			{
+				@Html.ActionLink("Buy Now!", "AddBundle", "Cart", new { id = productBundle.UrlName, buyNow = true }, new { @class = "btn btn-default" })
+			}
+			@if (showAddToCart && showBuyNow)
+			{
+				@:<br /><br />
+			}
+			@if (showAddToCart)
+			{
+				@Html.ActionLink("Add to Cart", "AddBundle", "Cart", new { id = productBundle.UrlName }, new { @class = "btn btn-default" })
+			}
+		</div>
+	</div>
+}
+
+<hr/>
+@if (!string.IsNullOrWhiteSpace(productBundle.SummaryHtml))
+{
+	string summaryCaption = productBundle.SummaryCaptionOrDefault();
+	<div class="btn btn-info NoClick">
+		@summaryCaption
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(productBundle.SummaryHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(productBundle.TopDescriptionHtml))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@productBundle.TopDescriptionCaptionOrDefault()
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(productBundle.TopDescriptionHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(productBundle.TopLinkHref))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			Link (opens in a new window)
+		</div>
+	</div>
+	<div class="row">
+		<a href="@(productBundle.TopLinkHref)" title="@(productBundle.TopLinkHref) - @(productBundle.TopLinkLabel)" target="_blank">@(productBundle.TopLinkLabel)</a>
+		<hr />
+	</div>
+}
+
+@{ Html.RenderCatalogBundleItemListPartial(); }
+
+<br /><br />
+@if (!string.IsNullOrWhiteSpace(productBundle.BottomDescriptionHtml))
+{
+	string bottomDescriptionCaption = productBundle.BottomDescriptionCaptionOrDefault();
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@bottomDescriptionCaption
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(productBundle.BottomDescriptionHtml))
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(productBundle.BottomLinkHref))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			Link (opens in a new window)
+		</div>
+	</div>
+	<div class="row">
+		<a href="@(productBundle.BottomLinkHref)" title="@(productBundle.BottomLinkHref) - @(productBundle.BottomLinkLabel)" target="_blank">@(productBundle.BottomLinkLabel)</a>
+		<hr />
+	</div>
+}
+
+<h3>@Html.DisplayFor(model => productBundle.Name)</h3>
+@if (productBundle.RequestAQuote_Show && productBundle.RequestAQuote_PageId.HasValue)
+{
+	string requestAQuoteUrl = productBundle.RequestAQuote_Page.UrlResolved(Url);
+	<a href="@(requestAQuoteUrl)" class="btn btn-success">@(productBundle.RequestAQuote_Label.OrDefault("Request A Quote!"))</a>
+}
+@if (showListPrice)
+{
+	<h3 class="NoBottomMarginOrPad BundleDetailListPriceLine">
+		<small class="BundleDetailListPriceLabel">@(listPrice.HasValue ? storeFrontConfig.CartItemListPriceColumnLabel.OrDefault("List Price") + ": " : "")</small>
+		<small class="BundleDetailListPrice">@Html.DisplayFor(model => listPrice, "Currency")</small>
+	</h3>
+}
+<h1 class="NoTopMarginOrPad BundleDetailUnitPriceLine">
+	<small class="BundleDetailUnitPriceLabel">@(unitPrice.HasValue ? storeFrontConfig.CartItemUnitPriceColumnLabel.OrDefault("Your Price") + ": " : "")</small>
+	<span class="BundleDetailUnitPrice">@Html.DisplayFor(model => unitPrice, "CurrencyOrCall")</span>
+</h1>
+@if (showBuyNow)
+{
+	@Html.ActionLink("Buy Now!", "AddBundle", "Cart", new { id = productBundle.UrlName, buyNow = true }, new { @class = "btn btn-default" })
+}
+@if (showAddToCart && showBuyNow)
+{
+	@:<br/><br/>
+}
+@if (showAddToCart)
+{
+	@Html.ActionLink("Add to Cart", "AddBundle", "Cart", new { id = productBundle.UrlName }, new { @class = "btn btn-default" })
+}
+
+@if (!string.IsNullOrWhiteSpace(productBundle.FooterHtml))
+{
+	@Html.Raw(Html.ReplaceVariables(productBundle.FooterHtml))
+}
+<!-- Bundle Details End -->

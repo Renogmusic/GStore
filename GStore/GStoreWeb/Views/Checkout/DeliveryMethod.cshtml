@@ -1,0 +1,33 @@
+﻿@model CheckoutDeliveryMethodShippingViewModel
+@{
+	ViewBag.Title = "Delivery Method";
+
+	WebFormResponse oldWebFormResponse = null;
+	if (Model.Cart.DeliveryInfoShipping != null)
+	{
+		oldWebFormResponse = Model.Cart.DeliveryInfoShipping.DeliveryMethodWebFormResponse;
+	}
+
+}
+<h1 style="display: inline">Shipping Method</h1>
+@if (Model.Config.PaymentMethod_PayPal_Enabled)
+{
+	<img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png" alt="Check out with PayPal" style="vertical-align: top; padding-left: 3em" />
+}
+@{ Html.RenderPartial("_TopStatusPartial", Model); }
+@{ Html.RenderPartial("_CartSimplePartial", Model); }
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+	@Html.EditorFor(model => model.ShippingDeliveryMethod, "FieldEnumRadio")
+
+	Html.RenderPartial("_CheckoutWebFormPartial", new CheckoutWebFormInfo(Model, Model.Config.CheckoutDeliveryMethodWebForm, oldWebFormResponse));
+
+	<div class="row">
+		<div class="col-xs-12">
+			<input type="submit" class="btn btn-success" value="Continue &raquo;" />
+		</div>
+	</div>
+}

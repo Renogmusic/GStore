@@ -1,0 +1,119 @@
+﻿@model CategoryEditAdminViewModel
+@{
+	string action = ViewContext.RouteData.Action();
+	string controller = ViewContext.RouteData.Controller();
+}
+@using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.ReturnToFrontEnd)
+
+	<div class="row">
+		@if (Model.IsCreatePage)
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-info">Create a New Product Category</span>
+			</h1>
+		}
+		else
+		{
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+				<span class="text-warning">Edit Product Category</span>
+				<br /><small>@Html.DisplayFor(model => model.ProductCategory, "ProductCategoryWithProductsLink")</small>
+			</h1>
+		}
+	</div>
+
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						<input type="submit" name="CreateAndView" value="Create and View" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						<input type="submit" name="SaveAndView" value="Save and View" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DetailsTop", @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DeleteTop", @class = "btn btn-danger" })
+					}
+				</center>
+			</div>
+		</div>
+	</div>
+
+	Html.RenderPartial("_EditPartial");
+	
+	<div class="row">
+		<div class="form-actions">
+			<div class="col-md-offset-1 col-md-8">
+				<center>
+					@if (Model.IsCreatePage)
+					{
+						<input type="submit" value="Create" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						<input type="submit" name="CreateAndView" value="Create and View" class="btn btn-info" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+					}
+					else
+					{
+						<input type="submit" value="Save" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						<input type="submit" name="SaveAndView" value="Save and View" class="btn btn-warning" />
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						if (Model.ReturnToFrontEnd)
+						{
+							@Html.ActionLink("OK / Cancel", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
+						}
+						else
+						{
+							@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+						}
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DetailsBottom", @class = "btn btn-warning" })
+						@:&nbsp;&nbsp;|&nbsp;&nbsp;
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DeleteBottom", @class = "btn btn-danger" })
+					}
+				</center>
+			</div>
+		</div>
+	</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+

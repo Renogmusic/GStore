@@ -1,0 +1,46 @@
+﻿@model CartItem
+@{
+	bool isPreview = ((ViewData["IsPreview"] ?? false) as bool?).Value;
+	bool isViewConfig = ((ViewData["IsViewConfig"] ?? false) as bool?).Value;
+	bool isEditConfig = ((ViewData["IsEditConfig"] ?? false) as bool?).Value;
+
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else if (!Model.ProductBundleItemId.HasValue)
+	{
+		throw new ArgumentNullException("Model.ProductBundleItemId");
+	}
+	else if (!Model.CartBundleId.HasValue)
+	{
+		throw new ArgumentNullException("Model.CartBundleId");
+	}
+	else if (isPreview || isViewConfig || isEditConfig)
+	{
+		string mode = (isPreview ? "Preview" : "Configuration");
+
+		//preview mode
+		<div class="row CartItemNameRow">
+			<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThis link to view a product does not do anything.\nIt is only here to give you an idea how your cart looks.');">@Model.ProductBundleItem.Product.Name</a>
+		</div>
+		if (!string.IsNullOrEmpty(Model.ProductBundleItem.Product.ImageName))
+		{
+			<div class="row CartItemImageRow">
+				<img class="CartItemImage" src="@(Html.Raw(Model.ProductBundleItem.Product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData, true)))" />
+			</div>
+		}
+	}
+	else
+	{
+		<div class="row CartItemNameRow">
+			@(Html.ActionLink(Model.ProductBundleItem.Product.Name, "ViewProductByName", "Catalog", new { urlName = Model.ProductBundleItem.Product.UrlName }, null))
+		</div>
+		if (!string.IsNullOrEmpty(Model.ProductBundleItem.Product.ImageName))
+		{
+			<div class="row CartItemImageRow">
+				<img class="CartItemImage" src="@(Html.Raw(Model.ProductBundleItem.Product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData, true)))" />
+			</div>
+		}
+	}
+}

@@ -1,0 +1,23 @@
+﻿@model UserProfile
+@{
+	ViewBag.Title = "Confirm Your Email address";
+}
+
+<div>
+	<h3>
+		@if (!Settings.AppEnableEmail)
+		{
+			@:Sorry, this server does not have Email enabled. You will not be able to receive email from this server.<br />
+		}
+		else if (Html.CurrentClient(false) == null || !Html.CurrentClient(true).UseSendGridEmail)
+		{
+			@:Sorry, this Store Front does not have Email enabled. You will not be able to receive email from this store front.<br />
+		}
+		else
+		{
+			@:Please check your email for @Model.Email and click the link to confirm your email address.<br />
+		}
+	</h3>
+		
+	@Html.ActionLink("Click here to view your account info.", "Index", "Profile")
+</div>

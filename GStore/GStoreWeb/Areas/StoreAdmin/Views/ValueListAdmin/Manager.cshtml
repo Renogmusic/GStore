@@ -1,0 +1,140 @@
+﻿@model ValueListManagerAdminViewModel
+
+@{
+
+	UserProfile profile = Html.CurrentUserProfile(true);
+	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.ValueLists_Create);
+	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.ValueLists_Edit);
+	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.ValueLists_Delete);
+
+}
+<script>
+	function GoToDetails(index)
+	{
+		urlStart = '@(Url.Action("Details", new { id = 9999 } ).ToMvcJavaScriptString())';
+		var url = urlStart.replace("9999", index);
+		GoToUrl(url);
+	}
+</script>
+<div class="row">
+	<h2 class="jumbotron col-md-offset-3 col-md-6 StoreAdminIndexPageTitle">
+		Value List Manager
+		<br /><small>@(Html.DisplayNameFor(model => model.Client)) @Html.DisplayFor(model => model.Client)</small>
+	</h2>
+</div>
+
+@{
+	if (userCanCreate)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				@Html.ActionLink("Create a New Value List", "Create", null, new { @class = "btn btn-info" })
+			</div>
+		</div>
+	}
+}
+
+@{
+	if (Model.ValueLists.Count() == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<h2 class="text-warning">No Value Lists found for this client.</h2>
+			</div>
+		</div>
+	}
+
+	else
+	{
+		<div class="table-responsive">
+			<table class="table table-condensed table-bordered table-hover">
+				@{
+					ValueListEditAdminViewModel viewModel = null;
+				}
+				<tr>
+					<th class="text-center"><small>@(Html.ActionSortLink("Default", "Manager", string.Empty))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.Name, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.Description, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.Order, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.ValueListId, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("List Items", "Manager", "ListItems"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLink("Status", "Manager", "Status"))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.UpdatedBy, "Manager", true))</small></th>
+					<th class="text-center"><small>@(Html.ActionSortLinkForItem(model => viewModel.UpdateDateTimeUtc, "Manager", true))</small></th>
+					<th class="text-center">&nbsp;</th>
+				</tr>
+
+				@{
+		foreach (ValueList item in Model.ValueLists)
+		{
+			bool isActive = item.IsActiveBubble();
+			string rowClass = (isActive ? string.Empty : "text-warning");
+
+			<tr class="@(rowClass)">
+				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
+					@{
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						}
+
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
+						}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Name))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Description))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.ValueListId))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.ValueListItems.Count))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));">
+					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
+						@(item.IsActiveDirect() ? "Active" : "Inactive")
+					</span>
+					<br />
+					@{
+			if (Html.CurrentStoreFront(true).Authorization_IsAuthorized(profile, GStoreAction.ValueLists_Edit))
+			{
+				@Html.ActionLink("Activation", "Edit", new { id = item.ValueListId, Tab = "Activation" }, new { @class = "" })
+			}
+			else if (Html.CurrentStoreFront(true).Authorization_IsAuthorized(profile, GStoreAction.ValueLists_View))
+			{
+				@Html.ActionLink("Activation", "Details", new { id = item.ValueListId, Tab = "Activation" }, new { @class = "" })
+			}
+					}
+				</td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.UpdateDateTimeUtc))</small></td>
+				<td onclick="GoToDetails(@(item.ValueListId));"><small>@(Html.DisplayFor(model => item.UpdatedBy))</small></td>
+				<td>
+					@Html.ActionLink("Details", "Details", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-success" })
+					@{
+						if (userCanEdit)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Edit", "Edit", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-warning" })
+						}
+
+						if (userCanDelete)
+						{
+							@:<div class="row" style="padding-bottom: 0.75em;"></div>
+							@Html.ActionLink("Delete", "Delete", new { id = item.ValueListId }, new { @class = "btn btn-sm btn-danger" })
+						}
+					}
+					<div class="row" style="padding-bottom: 0.75em;"></div>
+				</td>
+			</tr>
+		}
+
+				}
+
+			</table>
+		</div>
+	}
+
+}

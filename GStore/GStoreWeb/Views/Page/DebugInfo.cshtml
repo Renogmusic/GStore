@@ -1,0 +1,59 @@
+﻿@model PageViewModel
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeTopPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeTopPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkTopPartial", Model);
+}
+
+
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+}
+	<h1 class="text-danger">Welcome to your new store front at GStore!</h1>
+	<h2>@storeFrontConfig.Name</h2>
+	Page [@Model.Page.PageId]: @Model.Page.Name
+	<br />
+	Store Front '@(storeFrontConfig.Name )' [@(storeFrontConfig.StoreFrontId)]
+	<br />
+	Client '@(storeFrontConfig.Client.Name)' [@storeFrontConfig.Client.ClientId]
+	<br />
+	Account Admin [@storeFrontConfig.AccountAdmin.UserProfileId]: @storeFrontConfig.AccountAdmin.FullName &lt; @storeFrontConfig.AccountAdmin.Email &gt;
+	<br />
+	Registered Notify [@storeFrontConfig.RegisteredNotify.UserProfileId]: @storeFrontConfig.RegisteredNotify.FullName &lt; @storeFrontConfig.RegisteredNotify.Email &gt;
+	<br />
+	Welcome Messages From [@storeFrontConfig.WelcomePerson.UserProfileId]: @storeFrontConfig.WelcomePerson.FullName &lt; @storeFrontConfig.WelcomePerson.Email &gt;
+	<br />
+	Order Admin [@storeFrontConfig.OrderAdmin.UserProfileId]: @storeFrontConfig.OrderAdmin.FullName &lt; @storeFrontConfig.OrderAdmin.Email &gt;
+	<br/>
+<br />
+	GStoreWeb.Properties.Settings.AppEnableEmail
+@GStoreData.Settings.AppEnableEmail
+<br />
+	GStoreWeb.Properties.Settings.AppEnableSMS
+@GStoreData.Settings.AppEnableSMS
+<br />
+	GStoreWeb.Properties.Settings.AppDefaultLayoutName
+	@GStoreData.Settings.AppDefaultLayoutName
+<br/>
+
+@Html.DisplayPageForm()
+
+@if (Model.ViewMode)
+{
+	Html.RenderPartial("_ViewModeBottomPartial", Model);
+}
+else if (Model.EditMode)
+{
+	Html.RenderPartial("_EditModeBottomPartial", Model);
+}
+@if (Model.ShowEditPageLink)
+{
+	Html.RenderPartial("_EditLinkBottomPartial", Model);
+}

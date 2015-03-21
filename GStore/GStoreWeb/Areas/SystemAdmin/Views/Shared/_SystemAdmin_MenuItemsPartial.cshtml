@@ -1,0 +1,189 @@
+﻿<!-- System Admin Dropdown Menus -->
+<ul class="nav navbar-nav">
+
+	<!-- Clients Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="c" title="Clients">Clients<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Client Manager", "Index", "ClientSysAdmin", null, new { accesskey = "c" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+				@Html.ActionLink("Create a New Client", "Create", "ClientSysAdmin", null, new { accesskey = "c" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+				@Html.ActionLink("Send a Test Email Message", "SendTestEmail", "SystemAdmin", null, new { accesskey = "s" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+				@Html.ActionLink("Send a Test SMS Message", "SendTestSms", "SystemAdmin", null, new { accesskey = "s" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- storeFronts Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="s" title="StoreFronts">StoreFronts<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Store Front Manager", "Index", "StoreFrontSysAdmin", null, new { accesskey = "s" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+				@Html.ActionLink("Create a New Store Front", "Create", "StoreFrontSysAdmin", null, new { accesskey = "c" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Bindings Manager", "Index", "BindingsSysAdmin", null, new { accesskey = "b" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create new Binding", "Create", "BindingsSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+
+	<!-- Users Commands Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="u" title="Users">Users<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("User Manager", "Index", "UserProfileSysAdmin", null, new { accesskey = "u" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new User", "Create", "UserProfileSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- Value Lists Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="v" title="Value Lists">Value Lists<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Value List Manager", "Index", "ValueListSysAdmin", null, new { accesskey = "v" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Value List", "Create", "ValueListSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- Page Templates Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="p" title="Page Templates">Page Templates<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Page Template Manager", "Index", "PageTemplateSysAdmin", null, new { accesskey = "p" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Page Template", "Create", "PageTemplateSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- Themes Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="t" title="Themes">Themes<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Theme Manager", "Index", "ThemeSysAdmin", null, new { accesskey = "t" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Theme", "Create", "ThemeSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- Web Forms Menu Item -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="w" title="Web Forms">Web Forms<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Web Forms Manager", "Index", "WebFormSysAdmin", null, new { accesskey = "w" })
+			</li>
+			<li class="nav-divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Create a new Web Form", "Create", "WebFormSysAdmin", null, new { accesskey = "c" })
+			</li>
+		</ul>
+	</li>
+
+	<!-- Help Menu -->
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Help">Help<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				<a href="mailto:renogmusic@yahoo.com">Support: Email renogmusic@yahoo.com</a>
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore", null, new { accesskey = "g" })
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("Application Settings", "Settings", "GStore", null, new { accesskey = "a" })
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("About GStore", "About", "GStore", null, new { accesskey = "a" })
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				User Local Time
+				<br />
+				@DateTime.UtcNow.ToUserDateTimeString(Html)
+				<br />
+				@Html.UserTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Store Local Time
+				<br />
+				@DateTime.UtcNow.ToStoreDateTimeString(Html)
+				<br />
+				@Html.StoreFrontTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Client Local Time
+				<br />
+				@DateTime.UtcNow.ToClientDateTimeString(Html)
+				<br />
+				@Html.ClientTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				GStore System Default Time
+				<br />
+				@DateTime.UtcNow.ToGStoreSystemDefaultDateTimeString(Html)
+				<br />
+				@Html.GStoreSystemDefaultTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time
+				<br />
+				@DateTime.UtcNow.ToLocalTime().ToString() @(Html.ServerTimeZone().ToShortName())
+				<br />
+				@Html.ServerTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time
+				<br />
+				@DateTime.UtcNow.ToString() @(Html.UtcTimeZone().ToShortName())
+				<br />
+				@Html.UtcTimeZone().DisplayName
+			</li>
+		</ul>
+	</li>
+
+</ul>

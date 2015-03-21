@@ -1,0 +1,60 @@
+﻿@model AddPhoneNumberViewModel
+@{
+	ViewBag.Title = "Phone Number";
+}
+
+<h2>@ViewBag.Title.</h2>
+<link rel="stylesheet" href="~/content/server/Styles/intlTelInput.css">
+@using (Html.BeginForm("AddPhoneNumber", "Profile", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	<h4>Edit/Add a phone number</h4>
+	<hr />
+	@Html.ValidationSummary("", new { @class = "text-danger" })
+	<div class="form-group">
+		@Html.LabelFor(m => m.Number, new { @class = "col-md-2 control-label" })
+		<div class="col-md-10">
+			@Html.TextBoxFor(m => m.Number, new { id = "Number", @class = "form-control" })
+			@Html.HelpLabelFor(model => model.Number)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-md-offset-2 col-md-10">
+			<input type="submit" class="btn btn-primary" value="Submit" />
+		</div>
+	</div>
+}
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/content/server/Scripts/intlTelInput.min.js"></script>
+<script>
+	$("#Number").intlTelInput({
+		utilsScript: "/@((Request.ApplicationPath + "/content/server/scripts/intlTelInputUtils.min.js").TrimStart('/'))",
+		allowExtensions: true,
+		autoHideDialCode: false,
+		nationalMode: false
+	});
+</script>
+<style>
+	.intl-tel-input
+	{
+		width: 100%;
+	}
+
+		.intl-tel-input input.iti-invalid-key
+		{
+			background-color: #FFC7C7;
+		}
+
+	#Number
+	{
+		color: #000;
+	}
+
+		#Number.li
+		{
+			color: black;
+		}
+</style>

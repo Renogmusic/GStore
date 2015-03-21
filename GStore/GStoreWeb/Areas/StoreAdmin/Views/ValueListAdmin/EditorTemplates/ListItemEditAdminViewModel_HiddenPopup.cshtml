@@ -1,0 +1,86 @@
+﻿@model ValueListItemEditAdminViewModel
+
+@{
+	string statusTextClass = " text-success";
+	if (!Model.IsActiveDirect)
+	{
+		statusTextClass = " text-warning";
+	}
+}
+<script>
+	$(document).ready(function () { $('#ListItemEditModal_@(Model.Index)').on('hidden.bs.modal', function (e) {})});
+</script>
+<style>
+	.modal .modal-content label.control-label {
+		padding-bottom: 0 !important;
+		margin-top: 0 !important;
+	}
+
+	.modal .modal-content label.help-label {
+		text-align: center;
+		padding-bottom: 0 !important;
+		margin-top: 0 !important;
+	}
+</style>
+<div id="ListItemEditModal_@(Model.Index)" class="modal modal-lg fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-warning">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title text-center">
+					List Item '@(Model.Name)' [@(Model.ValueListItemId)]
+					<br />
+					Value List '@(Model.ValueList.Name)' [@(Model.ValueListId)] - Index: @(Model.Index)
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row center-block text-center">
+					<div class="col-xs-12">
+						<input type="submit" class="btn btn-warning" value="Save changes" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(model => model.ValueListItemId, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align">
+						@Html.DisplayFor(model => model.ValueListItemId)
+						@Html.HiddenFor(model => model.ValueListItemId)
+						@Html.HiddenFor(model => model.ValueListId)
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.ValueListItemId, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				@Html.EditorFor(model => model.Name, "FieldText")
+				@Html.EditorFor(model => model.Description, "FieldText")
+				@Html.EditorFor(model => model.Order, "FieldInt")
+
+				<div class="form-group">
+					@Html.LabelFor(model => model.IsActiveDirect, new { @class = "title-align-right control-label col-md-4 small" })
+					<div class="col-md-8 title-align@(statusTextClass)">
+						<strong>@(Model.IsActiveDirect ? "ACTIVE" : "INACTIVE")</strong>
+
+						<a class="btn btn-xs btn-success" href="#" onclick="ActivateListItem(@(Model.Index)); return false;">Make It Active Now</a>
+					</div>
+					<div class="row">
+						@Html.HelpLabelFor(model => model.IsActiveDirect, htmlAttributes: new { @class = "col-md-12 help-label" })
+					</div>
+				</div>
+
+				@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+				@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+				@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+
+			</div>
+			<div class="modal-footer">
+				<div class="row center-block text-center">
+					<div class="col-xs-12">
+						<input type="submit" class="btn btn-warning" value="Save changes" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

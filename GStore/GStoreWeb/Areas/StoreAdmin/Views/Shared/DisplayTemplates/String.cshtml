@@ -1,0 +1,22 @@
+﻿@model System.Object
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else if (Model is string)
+	{
+		if (string.IsNullOrEmpty(Model.ToString()))
+		{
+			@:(blank)
+		}
+		else
+		{
+			@Model.ToString()
+		}
+	}
+	else
+	{
+		@Model
+	}
+}

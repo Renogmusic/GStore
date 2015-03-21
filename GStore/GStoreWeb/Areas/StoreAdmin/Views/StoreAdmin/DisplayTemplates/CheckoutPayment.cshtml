@@ -1,0 +1,50 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+	string location = (ViewData["DashboardLocation"] as string) ?? string.Empty;
+	DashboardDateTimeRange dateTimeRange = (ViewData["DashboardDateTimeRange"] as DashboardDateTimeRange?) ?? DashboardDateTimeRange.Past15Minutes;
+	DateTime startDateTimeUtc = dateTimeRange.ToStartDateTimeUtc();
+	DateTime endDateTimeUtc = dateTimeRange.ToEndDateTimeUtc();
+	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
+
+	IQueryable<Cart> query = Html.GStoreDb().Carts.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc && p.StatusPaymentInfoConfirmed);
+	
+	IQueryable<Cart> paidQuery = query.Where(p => p.Payments.Any(pmt => pmt.IsProcessed));
+	int countPaid = paidQuery.Count();
+
+	decimal? amountPaid = paidQuery.Sum(p => (decimal?)p.Payments.Sum(pmt => pmt.AmountPaid));
+
+	int? paymentFailures = query.Sum(p => (int?)p.Payments.Count(pmt => pmt.PaymentFailed));
+
+	string payPalMessage;
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(false);
+	if (config == null)
+	{
+		payPalMessage = "No store configuration for payments";
+	}
+	else if (config.PaymentMethod_PayPal_Enabled && config.PaymentMethod_PayPal_UseLiveServer)
+	{
+		payPalMessage = "PayPal is using the Live Server";
+	}
+	else if (config.PaymentMethod_PayPal_Enabled && !config.PaymentMethod_PayPal_UseLiveServer)
+	{
+		payPalMessage = "PayPal is using the Test Sandbox";
+	}
+	else
+	{
+		payPalMessage = "PayPal not enabled";
+	}
+}
+<div class="well text-warning">
+	<span class="btn btn-info NoClick">@(title)</span><br />
+	<h4>
+		@(countPaid.ToString("N0")) Carts Paid Successfully
+		<br />
+		$@((amountPaid ?? 0M).ToString("N2")) Total Paid
+		<br />
+		@((paymentFailures ?? 0).ToString("N0")) Payment Failure@(paymentFailures == 1 ? "" : "s")
+		<br/>
+		@(payPalMessage)
+	</h4>
+</div>

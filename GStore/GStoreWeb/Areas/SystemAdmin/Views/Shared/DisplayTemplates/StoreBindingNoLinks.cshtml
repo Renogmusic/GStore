@@ -1,0 +1,23 @@
+﻿@model StoreBinding
+@if (Model == null)
+{
+	@:(no store binding)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) [@(Model.StoreBindingId)]
+		@(isActiveDirect ? string.Empty : " [INACTIVE]")
+		@(Html.DisplayNameFor(model => model.HostName)) '@(Html.DisplayFor(model => model.HostName))'
+		@(Html.DisplayNameFor(model => model.Port)) '@(Html.DisplayFor(model => model.Port))'
+		@(Html.DisplayNameFor(model => model.RootPath)) '@(Html.DisplayFor(model => model.RootPath))'
+		@(Html.DisplayNameFor(model => model.UseUrlStoreName)) '@(Html.DisplayFor(model => model.UseUrlStoreName))'
+		@(Html.DisplayNameFor(model => model.UrlStoreName)) '@(Html.DisplayFor(model => model.UrlStoreName))'
+	</span>
+	<br />
+	@(Html.DisplayNameFor(model => model.StoreFront)) @(Html.DisplayFor(m => m.StoreFront, "StoreFrontNoLinks"))
+}

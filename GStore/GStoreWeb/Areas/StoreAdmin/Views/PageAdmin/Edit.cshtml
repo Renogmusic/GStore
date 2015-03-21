@@ -1,0 +1,52 @@
+﻿@model PageEditViewModel
+
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-warning">Edit Page</span>
+		<br /><small>'@(Model.Name)' [@(Model.PageId)]</small>
+	</h1>
+</div>
+<script>
+	function GotoDetailsTab()
+	{
+		var url = '@(Html.Raw(Url.Action("Details", new { id = Model.PageId, Tab = "XXXX" }).ToJavaScriptString()))';
+		if (document.getElementById("ActiveTab"))
+		{
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		document.location.href = url;
+	}
+</script>
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="#" class="btn btn-success" onclick="GotoDetailsTab();">Details</a>
+		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.PageId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+<hr/>
+@Html.EditorForModel()
+<hr />
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.Pages_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" class="btn btn-success" onclick="GotoDetailsTab();">Details</a>
+		}
+		@if (Html.UserHasPermission(GStoreAction.Pages_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.PageId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+

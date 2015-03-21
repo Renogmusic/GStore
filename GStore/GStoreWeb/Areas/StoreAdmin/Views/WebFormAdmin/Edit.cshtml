@@ -1,0 +1,49 @@
+﻿@model WebFormEditAdminViewModel
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-warning">Edit Web Form</span>
+		<br /><small>'@(Model.Name)' [@(Model.WebFormId)]</small>
+	</h1>
+</div>
+<script>
+	function JumpToDetailsTab() {
+		var url = '@(Url.Action("Details", new { id = Model.WebFormId, Tab = "XXXX"}).ToJavaScriptString())';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		window.location.href = url;
+	}
+</script>
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+		@if (Html.UserHasPermission(GStoreAction.WebForms_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.WebFormId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+<hr/>
+@Html.EditorForModel()
+<hr />
+
+<div class="row">
+	<div class="form-actions no-color col-md-offset-4 col-md-6">
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+		@if (Html.UserHasPermission(GStoreAction.WebForms_Edit))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" onclick="JumpToDetailsTab();" class="btn btn-success">Details</a>
+		}
+		@if (Html.UserHasPermission(GStoreAction.WebForms_Delete))
+		{
+			@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Delete", "Delete", new { id = Model.WebFormId }, new { @class = "btn btn-danger" })
+		}
+	</div>
+</div>
+

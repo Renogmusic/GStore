@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@{
+
+		StoreFront storeFront = Html.CurrentStoreFront(true);
+		StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+		Client client = Html.CurrentClient(true);
+		UserProfile userProfile = Html.CurrentUserProfile(true);
+
+		string title = storeFrontConfig.Name + " Admin"
+			+ " - " + this.ViewContext.RouteData.Values["controller"]
+			+ " - " + this.ViewContext.RouteData.Values["action"];
+
+		if (ViewBag.Title != null && (!string.IsNullOrWhiteSpace(ViewBag.Title)))
+		{
+			title = ViewBag.Title + " - " + title;
+		}
+
+		string metaApplicationName = "GStore Admin - " + storeFrontConfig.Name;
+		string metaApplicationTileColor = "880088";
+		string metaDescription = "GStore Store Front";
+		string metaKeywords = "GStore Store Front";
+		string bodyTopScriptTag = string.Empty;
+		string bodyBottomScriptTag = string.Empty;
+
+		string themeFolderName = Html.ThemeFolderName();
+
+		string containerClasses = string.Empty;
+		RouteData routeData = ViewContext.RouteData;
+		if (routeData != null)
+		{
+			if (routeData.DataTokens.ContainsKey("area"))
+			{
+				containerClasses += " area-" + routeData.DataTokens["area"].ToString().ToLower();
+			}
+			containerClasses += " controller-" + routeData.Values["controller"].ToString().ToLower();
+			containerClasses += " action-" + routeData.Values["action"].ToString().ToLower();
+		}
+		if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
+		{
+			containerClasses += " modelinvalid";
+		}
+
+	}
+	<title>@title</title>
+	<meta name="application-name" content="@(metaApplicationName)" />
+	<meta name="msapplication-TileColor" content="@(metaApplicationTileColor)" />
+	<meta name="msapplication-square70x70logo" content="~/Images/Logo/tiny.png" />
+	<meta name="msapplication-square150x150logo" content="~/Images/Logo/square.png" />
+	<meta name="msapplication-wide310x150logo" content="~/Images/Logo/wide.png" />
+	<meta name="msapplication-square310x310logo" content="~/Images/Logo/large.png" />
+
+	<link rel="shortcut icon" href="~/Images/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="~/Images/favicon.ico" type="image/x-icon">
+	<meta name="description" content="@(metaDescription)" />
+	<meta name="keywords" content="@(metaKeywords)" />
+	<link rel="apple-touch-icon" href="~/Images/Logo/Logo.png" />
+	<link rel="apple-touch-startup-image" href="~/Images/Logo/Logo.png" />
+
+	<script>
+		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFrontConfig));
+	</script>
+
+	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.min.css")
+	@Styles.Render("~/Styles/GStoreApp.css")
+	@Styles.Render("~/Styles/Styles.css")
+
+	@Scripts.Render("~/bundles/modernizr")
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/jqueryval")
+	@Scripts.Render("~/bundles/jqueryui")
+	@Scripts.Render("~/bundles/bootstrap")
+	<script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+	<script src="~/signalr/hubs"></script>
+	@Scripts.Render("~/Js/GStoreApp.js")
+	@Scripts.Render("~/Js/Scripts.js")
+</head>
+<body>
+@{
+	StoreAdminViewModel viewModel = new StoreAdminViewModel(Html.CurrentStoreFrontConfig(true), Html.CurrentUserProfile(true));
+
+	Html.RenderPartial("_StoreAdminMenuPartial", viewModel);
+}
+	<div class="container body-content storeadmin storeadmin-body-content@(containerClasses)">
+	<!-- top alert container for dynamic alerts-->
+	<div id="usermessagecontainer"></div>
+	@RenderBody()
+	<hr />
+	<a name="UserMessagesBottom"></a>
+	<div id="usermessagebottomcontainer"></div>
+	@{ Html.RenderPartial("_AdminFooterPartial"); }
+	</div>
+
+	@RenderSection("scripts", required: false)
+
+	@Html.RenderUserMessages()
+	@Html.RenderUserMessagesBottom()
+	@Html.RenderAnnouncements()
+	@Html.RenderGaEvents()
+</body>
+</html>

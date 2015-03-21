@@ -1,0 +1,24 @@
+﻿@model WebFormField
+@if (Model == null)
+{
+	@:(no Web Form Field)
+}
+else
+{
+	bool isActiveDirect = Model.IsActiveDirect();
+	bool isActiveBubble = Model.IsActiveBubble();
+
+	string className = isActiveBubble ? string.Empty : "text-warning";
+	string viewLinkClass = isActiveBubble ? "text-success" : "text-warning";
+	string inactiveText = isActiveBubble ? string.Empty : " [INACTIVE]";
+	string linkText = "View " + (isActiveBubble ? string.Empty : "Inactive ") + "Web Form Field";
+
+	<span class="@className" style="white-space:nowrap">
+		@(Html.DisplayNameForModel()) '@(Html.DisplayFor(model => model.Name))' [@(Html.DisplayFor(model => model.WebFormFieldId))]
+		@(inactiveText)
+	</span>
+	@:&nbsp;
+	@(Html.ActionLink(linkText, "FieldDetails", "WebFormSysAdmin", new { id = Model.WebFormFieldId }, new { @class = viewLinkClass }))
+	<br />
+	@(Html.DisplayFor(m => m.WebForm))
+}

@@ -1,0 +1,21 @@
+﻿@model GStoreData.Exceptions.GStoreErrorInfo
+@{
+	string title = "Error " + Model.ErrorCode + " - Bad Request";
+	ViewBag.Title = title;
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+}
+<h1 class="text-danger">@title</h1>
+@{
+	if (storeFrontConfig != null)
+	{
+		<h2 class="text-danger">@storeFrontConfig.Name</h2>
+	}
+}
+<p>@title</p>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+<h3>@Html.GStoreLocalLink("Click here for the " + (storeFrontConfig == null ? string.Empty : storeFrontConfig.Name + " ") + "home page", "/")</h3>
+<p><small>@DateTime.UtcNow.ToLocalTime()</small></p>
+@if (Request.IsLocal || User.IsInRole("SystemAdmin"))
+{
+	Html.RenderPartial("_ErrorDetailsPartial", Model);
+}

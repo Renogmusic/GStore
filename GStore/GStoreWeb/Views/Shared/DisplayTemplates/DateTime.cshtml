@@ -1,0 +1,10 @@
+﻿@model DateTime?
+@if (Model == null)
+{
+	@(string.Empty)
+}
+else
+{
+	@Model.Value.ToUserDateTimeString(Html)
+}
+

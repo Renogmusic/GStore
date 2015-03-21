@@ -1,0 +1,15 @@
+﻿@model StoreAdminViewModel
+@{
+	string dashboard = (ViewData["Dashboard"] as string) ?? string.Empty;
+	string title = (ViewData["DashboardTitle"] as string) ?? string.Empty;
+
+	if (System.IO.File.Exists(Server.MapPath("~/Areas/StoreAdmin/Views/StoreAdmin/DisplayTemplates/" + dashboard.ToFileName() + ".cshtml")))
+	{
+		@Html.DisplayForModel(dashboard)
+	}
+	else
+	{
+		<span class="btn btn-primary NoClick">@(title)</span><br />
+		<span class="text-danger">Coming Soon: @(dashboard)</span>
+	}
+}

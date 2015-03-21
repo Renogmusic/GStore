@@ -1,0 +1,80 @@
+﻿@model NavBarItemEditAdminViewModel
+
+<script src="~/Scripts/CKEditor/ckeditor.js"></script>
+<div class="row">
+	<h1 class="jumbotron StoreAdminEditPageTitle col-md-offset-1 col-md-8">
+		<span class="text-warning">Edit Menu Item</span>
+		<br /><small>'@(Model.Name)' [@(Model.NavBarItemId)]</small>
+	</h1>
+</div>
+<script>
+	function GotoDetailsTab() {
+		var url = '@(Html.Raw(Url.Action("AdvancedDetails", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager, Tab = "XXXX" }).ToJavaScriptString()))';
+		if (document.getElementById("ActiveTab")) {
+			url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+		}
+		document.location.href = url;
+	}
+
+</script>
+@using (Html.BeginForm())
+{
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-4 col-md-6">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@{
+	if (Model.ReturnToManager)
+	{
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+	}
+	else
+	{
+		@Html.ActionLink("OK / Cancel", "AdvancedManager", null, new { @class = "btn btn-default" })
+	}
+			}
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" class="btn btn-success" onclick="GotoDetailsTab();">Details</a>
+			@if (Html.UserHasPermission(GStoreAction.NavBarItems_Delete))
+			{
+				@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Delete", "AdvancedDelete", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager }, new { @class = "btn btn-danger" })
+			}
+		</div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-9 title-align">
+			@Html.AntiForgeryToken()
+			@Html.ValidationSummary(false, "", new { @class = "text-danger bold title-align" })
+			@Html.HiddenFor(model => model.StoreFrontId)
+			@Html.HiddenFor(model => model.ReturnToManager)
+		</div>
+	</div>
+	@Html.EditorForModel("AdvancedNavBarItemEditAdminViewModel")
+	<hr />
+
+	<div class="row">
+		<div class="form-actions no-color col-md-offset-4 col-md-6">
+			<input type="submit" value="Save" class="btn btn-warning" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			@{
+	if (Model.ReturnToManager)
+	{
+		@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
+	}
+	else
+	{
+		@Html.ActionLink("OK / Cancel", "AdvancedManager", null, new { @class = "btn btn-default" })
+	}
+			}
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+			<a href="#" class="btn btn-success" onclick="GotoDetailsTab();">Details</a>
+			@if (Html.UserHasPermission(GStoreAction.NavBarItems_Delete))
+			{
+				@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+				@Html.ActionLink("Delete", "AdvancedDelete", new { id = Model.NavBarItemId, ReturnToManager = Model.ReturnToManager }, new { @class = "btn btn-danger" })
+			}
+		</div>
+	</div>
+}

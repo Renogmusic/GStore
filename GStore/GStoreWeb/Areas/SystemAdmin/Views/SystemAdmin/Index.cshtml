@@ -1,0 +1,83 @@
+﻿@{
+	StoreFront currentStoreFront = Html.CurrentStoreFront(false);
+	Client currentClient = Html.CurrentClient(false);
+	UserProfile currentUserProfile = Html.CurrentUserProfile(false);
+	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
+	StoreFrontConfiguration currentStoreConfig = Html.CurrentStoreFrontConfig(false);
+}
+<div class="jumbotron SysAdminIndexPageTitle col-md-12">
+	<h2>GStore System Admin Dashboard</h2>
+</div>
+<script>
+	function handleError(ajaxContext)
+	{
+		alert("Sorry, could not load summary.\nError: " + ajaxContext.statusText + "\nError code: " + ajaxContext.status);
+		document.getElementById("RecordSummary").innerHTML += ajaxContext.responseText;
+
+		
+	}
+</script>
+<hr />
+<div class="row">
+	<div id="DatabaseRecordSummary">
+		<div class="col-sm-3 text-left">
+			<div id="RecordSummary">
+				@Ajax.ActionLink("Load Database Summary", "RecordSummary", routeValues: new { clientId = Html.FilterClientId() }, htmlAttributes: new { @class = "btn btn-sm btn-primary" }, ajaxOptions: new AjaxOptions() { AllowCache = false, InsertionMode = InsertionMode.Replace, UpdateTargetId = "RecordSummary", OnFailure = "handleError" })
+			</div>
+		</div>
+	</div>
+
+	<div class="col-sm-offset-1 col-sm-8 text-left">
+		@{
+			if (currentStoreFront == null)
+			{
+				@:Current Store Front is null.<br />
+			}
+			else
+			{
+				@:Current Store Front: '@(currentStoreFront.CurrentConfigOrAny().Name)' [@(currentStoreFront.StoreFrontId)]<br />
+			}
+
+			if (currentStoreConfig == null)
+			{
+				@:Current Store Front Configuration is null.<br />
+			}
+			else
+			{
+				@:Current Store Front Configuration: '@(currentStoreConfig.ConfigurationName)' [@(currentStoreConfig.StoreFrontConfigurationId)]<br/>
+			}
+			if (currentClient == null)
+			{
+				@:Current Client is null.<br />
+			}
+			else
+			{
+				@:Current Client: '@(currentClient.Name)' [@(currentClient.ClientId)]<br />
+			}
+			if (currentUserProfile == null)
+			{
+				@:Current User Profile is null.<br />
+			}
+			else
+			{
+				@:Current UserProfile: '@(currentUserProfile.FullName)' &lt;@(currentUserProfile.Email)&gt; [@(currentUserProfile.UserProfileId)]<br />
+			}
+			if (currentStoreBinding == null)
+			{
+				@:Current Store Binding is null.<br />
+			}
+			else
+			{
+				@:Current StoreBinding: [@(currentStoreBinding.StoreBindingId)]
+				@: - HostName: '@(currentStoreBinding.HostName)'
+				@: - RootPath: '@(currentStoreBinding.RootPath)'
+				@: - Port: '@(currentStoreBinding.Port)'<br />
+			}
+			@:Current BindingHostName: '@(Request.BindingHostName())'<br />
+			@:Current BindingRootPath: '@(Request.BindingRootPath())'<br />
+			@:Current BindingPort: '@(Request.BindingPort())'<br />
+			@:Remote IP Address: @Request.UserHostAddress<br />
+		}
+	</div>
+</div>
+

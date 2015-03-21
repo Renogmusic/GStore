@@ -1,0 +1,101 @@
+﻿@model MenuViewModel
+@if (Request.IsAuthenticated)
+{
+	using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+	{
+		@Html.AntiForgeryToken()
+
+	<ul class="nav navbar-nav navbar-right">
+		@{
+		if (Model.ShowCart)
+		{
+			<li>
+				@{
+			if (Model.Cart.IsEmpty())
+			{
+				<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)" accesskey="c">
+					Cart (empty)
+				</a>
+			}
+			else
+			{
+				<a href="@Url.Action("Index", "Cart")" accesskey="c" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")">
+					<small>
+						Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
+						<br />
+						$@(Model.Cart.Subtotal.ToString("N2"))
+					</small>
+				</a>
+			}
+				}
+			</li>
+		}
+		if (Model.StoreFrontConfig == null || !Model.StoreFrontConfig.IsActiveDirect())
+		{
+			<li><a href="javascript: return false;"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+		}
+		}
+
+		<li>
+			<a href="@Url.Action("Index", "Profile")" title="My Account" accesskey="p">
+				<small>(@(Html.CurrentUserProfile(false) == null ? User.Identity.Name.ToLower() : Html.CurrentUserProfile(true).Email.ToLower()))</small>
+			</a>
+		</li>
+
+		@{ Html.RenderPartial("_LoginAdminPartial", Model.AdminMenuViewModel) ; }
+
+		<li><a href="javascript:document.getElementById('logoutForm').submit()" title="Log off the site" accesskey="l">Log off&nbsp;&nbsp;&nbsp;&nbsp;</a></li>
+	</ul>
+	}
+}
+else
+{
+	<ul class="nav navbar-nav navbar-right">
+		@{
+		if (Model.ShowCart)
+		{
+			<li>
+				@{
+					if (Model.Cart.IsEmpty())
+					{
+						<a href="@Url.Action("Index", "Cart")" title="Shopping Cart (empty)" accesskey="c">
+							Cart (empty)
+						</a>
+					}
+					else
+					{
+						<a href="@Url.Action("Index", "Cart")" accesskey="c" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")"><small>
+							Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
+							<br/>
+							$@(Model.Cart.Subtotal.ToString("N2"))
+							</small>
+						</a>
+					}
+				}
+			</li>
+		}
+		}
+		@{
+			if (Model.StoreFront != null)
+			{
+				if (Model.StoreFrontConfig.NavBarShowRegisterLink)
+				{
+					string signupLinkText = Model.StoreFrontConfig.NavBarRegisterLinkText;
+					if (string.IsNullOrEmpty(signupLinkText))
+					{
+						signupLinkText = "Sign-Up";
+					}
+					<li>@Html.ActionLink(signupLinkText, "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", title= signupLinkText, accesskey="r" })</li>	
+				}
+				
+			}
+			else
+			{
+				<li><a href="javascript: return false;"><strong class="text-danger">INACTIVE STORE</strong></a></li>
+			}
+		}
+
+		<li>@Html.ActionLink("Log in", "Login", "Account", routeValues: new { returnUrl = Request.RawUrl }, htmlAttributes: new { id = "loginLink", title = "Log in to the site", AccessKey = "l" })</li>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+	</ul>
+}

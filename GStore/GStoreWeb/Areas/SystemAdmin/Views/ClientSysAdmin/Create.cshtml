@@ -1,0 +1,56 @@
+﻿@model Client
+
+@{ ViewData.SetColDisplay(0, 2, 8); }
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+
+	<div class="row">
+		<h2 class="jumbotron SysAdminCreatePageTitle col-md-offset-2 col-md-10 text-info title-align">New Client</h2>
+	</div>
+	
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-10">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+			@Html.HiddenAuditFields()
+		</div>
+	</div>
+
+	<div class="form-horizontal">
+		@Html.EditorFor(model => model.Name, "FieldText")
+		@Html.EditorFor(model => model.Folder, "FieldText")
+		@Html.EditorFor(model => model.Order, "FieldInt")
+		@Html.EditorFor(model => model.TimeZoneId, "FieldTimeZone")
+		@Html.EditorFor(model => model.EnablePageViewLog, "FieldCheckbox")
+		@Html.EditorFor(model => model.EnableNewUserRegisteredBroadcast, "FieldCheckbox")
+		@Html.EditorFor(model => model.UseSendGridEmail, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendGridMailAccount, "FieldText")
+		@Html.EditorFor(model => model.SendGridMailPassword, "FieldText")
+		@Html.EditorFor(model => model.SendGridMailFromEmail, "FieldEmail")
+		@Html.EditorFor(model => model.SendGridMailFromName, "FieldText")
+		@Html.EditorFor(model => model.UseTwilioSms, "FieldCheckbox")
+		@Html.EditorFor(model => model.TwilioSid, "FieldText")
+		@Html.EditorFor(model => model.TwilioToken, "FieldText")
+		@Html.EditorFor(model => model.TwilioFromPhone, "FieldText")
+		@Html.EditorFor(model => model.TwilioSmsFromName, "FieldText")
+		@Html.EditorFor(model => model.TwilioSmsFromEmail, "FieldEmail")
+		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
+		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+	</div>
+	<div class="row">
+		<div class="form-actions col-md-offset-2 col-md-10">
+			<input type="submit" value="Create" class="btn btn-info" />
+			&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+			@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+		</div>
+	</div>
+}

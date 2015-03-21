@@ -1,0 +1,37 @@
+﻿@model ProductCategory
+
+@{
+	if (Model == null)
+	{
+		@:(none)
+	}
+	else
+	{
+		bool isActive = Model.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			@:'@(Model.Name)' [@(Model.ProductCategoryId)]
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+			@Html.ActionLink("View Category in Site", "ViewCategoryByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-sm btn-default" })
+
+			@:<br/>
+
+			if (Html.UserHasPermission(GStoreAction.Products_Manager))
+			{
+				@Html.ActionLink("Products:", "Manager", "ProductAdmin", new { ProductCategoryId = Model.ProductCategoryId }, null)
+				@:@(Model.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Products.Count) Total
+			}
+			else
+			{
+				@:Products: @(Model.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Products.Count) Total
+			}
+		@:</span>
+	}
+}

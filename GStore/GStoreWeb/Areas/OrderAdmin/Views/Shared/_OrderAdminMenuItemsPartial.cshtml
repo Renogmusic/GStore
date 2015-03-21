@@ -1,0 +1,204 @@
+﻿@{
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+}
+<ul class="nav navbar-nav">
+	<!-- Dynamic Order Admin Menu -->
+	@if (Html.UserHasPermission(GStoreAction.Orders_OrderAdminMenuItem))
+	{
+	<!-- Orders Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="o" title="Orders (coming soon)"><small class="text-warning">Orders</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Orders_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Order Manager", "Manager", "OrdersAdmin", null, new { accesskey = "o" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+			</ul>
+		</li>
+	}
+	@if (!config.PaymentMethod_PayPal_Enabled)
+	{
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			PayPal is not enabled
+		</li>
+	}
+	else
+	{
+		<li class="AdminMenuItem AdminMenuItemLevel1">
+			&nbsp;PayPal&nbsp;
+			<br/>@(config.PaymentMethod_PayPal_UseLiveServer ? " LIVE" : " Test Sandbox")
+		</li>
+		<li>
+			@Html.ActionLink("Test PayPal Configuration", "TestPayPal", "OrderAdmin", null, new { accesskey = "t" })
+		</li>
+	}
+	@if (Html.UserHasPermission(GStoreAction.Carts_OrderAdminMenuItem))
+	{
+		<!-- Carts Menu Item -->
+<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="c" title="Carts (coming soon)"><small class="text-warning">Carts</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewCurrent))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Cart Manager", "Manager", "CartAdmin", null, new { accesskey = "o" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewAbandoned))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Abandoned Carts", "ViewAbandoned", "CartAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_ViewCurrent))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Current Carts", "ViewCurrent", "CartAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_TransferAbandonedCart))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Transfer An Abandoned Cart", "TransferAbandonedCart", "CartAdmin", null, new { accesskey = "t" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Carts_SendCheckOutLink))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Check Out an Abandoned Cart", "SendCheckOutLink", "CartAdmin", null, new { accesskey = "c" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
+	@if (Html.UserHasPermission(GStoreAction.Discounts_OrderAdminMenuItem))
+	{
+		<!-- Discounts Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="d" title="Discounts (coming soon)"><small class="text-warning">Discounts</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.Discounts_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Discount Manager", "Manager", "DiscountAdmin", null, new { accesskey = "d" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.Discounts_Create))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("New Discount Code", "Create", "DiscountAdmin", null, new { accesskey = "n" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
+	@if (Html.UserHasPermission(GStoreAction.GiftCards_OrderAdminMenuItem))
+	{
+		<!-- Discounts Menu Item -->
+		<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="g" title="Gift Cards (coming soon)"><small class="text-warning">Gift Cards</small><span class="caret"></span></a>
+			<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Manager))
+				{
+					<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+						@Html.ActionLink("Gift Card Manager", "Manager", "GiftCardAdmin", null, new { accesskey = "g" })
+					</li>
+					<li class="nav-divider"></li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Create))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("New Gift Card", "Create", "GiftCardAdmin", null, new { accesskey = "n" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_View))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("View Gift Card", "View", "GiftCardAdmin", null, new { accesskey = "v" })
+					</li>
+				}
+				@if (Html.UserHasPermission(GStoreAction.GiftCards_Reload))
+				{
+					<li class="AdminMenuItemLevel3 AdminMenuItemLevel3">
+						@Html.ActionLink("Reload a Gift Card", "Reload", "GiftCardAdmin", null, new { accesskey = "r" })
+					</li>
+				}
+			</ul>
+		</li>
+	}
+
+
+	<li class="dropdown AdminMenuItem AdminMenuItemLevel1">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" accesskey="h" title="Get Help!">Help<span class="caret"></span></a>
+		<ul class="dropdown-menu AdminMenuChildContainer AdminMenuChildContainerLevel1" role="menu">
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				<a href="mailto:renogmusic@yahoo.com">Support: Email renogmusic@yahoo.com</a>
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("GStore System Information", "SystemInfo", "GStore", null, new { accesskey = "g" })
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
+				@Html.ActionLink("About GStore", "About", "GStore", null, new { accesskey = "a" })
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				User Local Time
+				<br />
+				@DateTime.UtcNow.ToUserDateTimeString(Html)
+				<br />
+				@Html.UserTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Store Local Time
+				<br />
+				@DateTime.UtcNow.ToStoreDateTimeString(Html)
+				<br />
+				@Html.StoreFrontTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Client Local Time
+				<br />
+				@DateTime.UtcNow.ToClientDateTimeString(Html)
+				<br />
+				@Html.ClientTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				GStore System Default Time
+				<br />
+				@DateTime.UtcNow.ToGStoreSystemDefaultDateTimeString(Html)
+				<br />
+				@Html.GStoreSystemDefaultTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				Server Local Time
+				<br />
+				@DateTime.UtcNow.ToLocalTime().ToString() @(Html.ServerTimeZone().ToShortName())
+				<br />
+				@Html.ServerTimeZone().DisplayName
+			</li>
+			<li class="divider"></li>
+			<li class="AdminMenuItemLevel2 AdminMenuItemLevel2" style="padding-left: 20px">
+				UTC Time
+				<br />
+				@DateTime.UtcNow.ToString() @(Html.UtcTimeZone().ToShortName())
+				<br />
+				@Html.UtcTimeZone().DisplayName
+			</li>
+		</ul>
+	</li>
+
+</ul>

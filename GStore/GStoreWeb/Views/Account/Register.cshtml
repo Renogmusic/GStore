@@ -1,0 +1,83 @@
+﻿@model RegisterViewModel
+@{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
+	if (storeFrontConfig == null)
+	{
+		ViewBag.Title = "Register for GStore";
+	}
+	else
+	{
+		ViewBag.Title = storeFrontConfig.NavBarRegisterLinkText + " for " + storeFrontConfig.Name;
+	}
+	bool checkingOut = Model.CheckingOut ?? false;
+	object routeValues = null;
+	if (checkingOut)
+	{
+		routeValues = new { CheckingOut = checkingOut };
+	}
+
+	ViewData.SetColDisplay(0, 2, 9);
+}
+
+<div class="row">
+	<h2 class="AccountTitle jumbotron col-md-offset-2 col-md-7 title-align">@ViewBag.Title</h2>
+</div>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.CheckingOut)
+	<div class="row">
+		<h4 class="title-align col-md-offset-2 col-md-7">Please register to get site updates and full access to the site.</h4>
+	</div>
+	
+	if (checkingOut)
+	{
+		@Html.ActionLink("Return to Checkout as a Guest", "Index", "Checkout", routeValues, new { @class = "btn btn-info" })
+	}
+
+	<hr />
+	
+	<div class="row">
+		<div class="form-validation col-md-offset-2 col-md-7">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="form-horizontal">
+		@Html.EditorFor(model => model.Email, "FieldEmail")
+		@Html.EditorFor(model => model.FullName, "FieldText")
+		@Html.EditorFor(model => model.Password, "FieldPassword")
+		@Html.EditorFor(model => model.ConfirmPassword, "FieldPassword")
+		@Html.EditorFor(model => model.NotifyOfSiteUpdates, "FieldCheckbox")
+		@Html.EditorFor(model => model.SendMeMoreInfo, "FieldCheckbox")
+		@Html.EditorFor(model => model.SignupNotes, "FieldTextArea")
+	</div>
+
+	if ((storeFrontConfig != null) && (storeFrontConfig.RegisterWebForm != null) && storeFrontConfig.RegisterWebForm.IsActiveBubble())
+	{
+		Html.RenderPartial("_RegisterWebFormFieldsPartial", Model);
+	}
+
+	<div class="row">
+		<div class="form-actions row col-md-offset-2 col-md-7">
+			@{
+				string linkText = "Register";
+				if (storeFrontConfig != null)
+				{
+					linkText = storeFrontConfig.NavBarRegisterLinkText;
+				}
+			}
+			<input type="submit" class="btn btn-primary" value="@linkText" />
+		</div>
+	</div>
+}
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('input:text:first').focus();
+		})
+	</script>
+}
