@@ -158,7 +158,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Bundles_Edit)]
-		public ActionResult Edit(int? id, ProductBundleEditAdminViewModel viewModel, List<ProductBundleItemEditAdminViewModel> bundleItems, string saveAndView, string addProductId)
+		public ActionResult Edit(int? id, ProductBundleEditAdminViewModel viewModel, List<ProductBundleItemEditAdminViewModel> bundleItems, string saveAndView, string addProductId, int?removeItemId)
 		{
 			if (viewModel == null || viewModel.ProductBundleId == 0)
 			{
@@ -192,7 +192,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			{
 				if (!bundleItems.All(bi => productBundle.ProductBundleItems.Any(pb => pb.ProductBundleItemId == bi.ProductBundleItemId)))
 				{
-					return HttpBadRequest("public items do not all have the same ProductBundleId");
+					return HttpBadRequest("bundle items do not all have the same ProductBundleId");
 				}
 			}
 
@@ -221,10 +221,16 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				productBundle = GStoreDb.UpdateProductBundle(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Product Bundle updated successfully!", "Product Bundle updated successfully. Product Bundle '" + productBundle.Name.ToHtml() + "' [" + productBundle.ProductBundleId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
 
+
 				if (bundleItems != null && bundleItems.Count != 0)
 				{
 					GStoreDb.UpdateProductBundleItems(productBundle, bundleItems, storeFront, CurrentUserProfileOrThrow);
 				}
+				if (removeItemId.HasValue && removeItemId.Value != 0)
+				{
+					RemoveItem(productBundle, removeItemId.Value);
+				}
+
 				if (!string.IsNullOrEmpty(addProductId))
 				{
 					return RedirectToAction("Edit", new { id = productBundle.ProductBundleId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
@@ -279,38 +285,18 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			return View("Details", viewModel);
 		}
 
-		[AuthorizeGStoreAction(true, GStoreAction.Bundles_Edit)]
-		public ActionResult RemoveItem(int? id, int? productId, bool returnToFrontEnd = false)
+		protected void RemoveItem(ProductBundle bundle, int productId)
 		{
-			if (!id.HasValue)
+			if (bundle == null)
 			{
-				return HttpBadRequest("id (ProductBundleId) = null");
-			}
-			if (!productId.HasValue)
-			{
-				return HttpBadRequest("productId = null");
+				throw new ArgumentNullException("bundle");
 			}
 
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
-			ProductBundle productBundle = storeFront.ProductBundles.Where(p => p.ProductBundleId == id.Value).SingleOrDefault();
-			if (productBundle == null)
-			{
-				AddUserMessage("Product Bundle not found", "Sorry, the Product Bundle you are trying to remove an item from cannot be found. Product Bundle Id: [" + id.Value + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Danger);
-				if (returnToFrontEnd)
-				{
-					return RedirectToAction("Index", "Catalog", new { area = "" });
-				}
-				if (storeFront.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.Bundles_Manager))
-				{
-					return RedirectToAction("Manager", new { ProductCategoryId = productBundle.ProductCategoryId });
-				}
-				return RedirectToAction("Index", "CatalogAdmin");
-			}
-
-			ProductBundleItem bundleItem = productBundle.ProductBundleItems.SingleOrDefault(pbi => pbi.ProductId == productId.Value);
+			ProductBundleItem bundleItem = bundle.ProductBundleItems.SingleOrDefault(pbi => pbi.ProductId == productId);
 			if (bundleItem == null)
 			{
-				AddUserMessage("Bundle Item not found", "The item you are trying to remove (Product Id: " + productId.Value + ") is no longer in bundle '" + productBundle.Name.ToHtml() + "' [" + productBundle.ProductBundleId  + "]", UserMessageType.Info);
+				AddUserMessage("Bundle Item not found", "The item you are trying to remove (Product Id: " + productId + ") is no longer in bundle '" + bundle.Name.ToHtml() + "' [" + bundle.ProductBundleId + "]", UserMessageType.Info);
+				return;
 			}
 			else
 			{
@@ -320,15 +306,14 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				if (result)
 				{
 					GStoreDb.SaveChanges();
-					AddUserMessage("Bundle Item Removed", "Bundle item '" + itemToRemoveName.ToHtml() + "' [" + productBundleItemId + "] was removed from bundle '" + productBundle.Name.ToHtml() + "' [" + productBundle.ProductBundleId + "]", UserMessageType.Success);
+					AddUserMessage("Bundle Item Removed", "Bundle item '" + itemToRemoveName.ToHtml() + "' [" + productBundleItemId + "] was removed from bundle '" + bundle.Name.ToHtml() + "' [" + bundle.ProductBundleId + "]", UserMessageType.Success);
 				}
 				else
 				{
-					AddUserMessage("Bundle Item Delete Error", "The item you are trying to remove '" + itemToRemoveName.ToHtml() + "' [" + productBundleItemId + "] could not be deleted from bundle '" + productBundle.Name.ToHtml() + "' [" + productBundle.ProductBundleId + "]", UserMessageType.Info);
+					AddUserMessage("Bundle Item Delete Error", "The item you are trying to remove '" + itemToRemoveName.ToHtml() + "' [" + productBundleItemId + "] could not be deleted from bundle '" + bundle.Name.ToHtml() + "' [" + bundle.ProductBundleId + "]", UserMessageType.Info);
 				}
 			}
 
-			return RedirectToAction("Edit", new { id = id.Value, Tab="Items" });
 		}
 
 

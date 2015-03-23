@@ -12,7 +12,7 @@ namespace GStoreData.Areas.SystemAdmin
 	public static class SystemAdminHtmlHelper
 	{
 
-		public static IEnumerable<SelectListItem> ClientFilterList(this HtmlHelper htmlHelper)
+		public static IEnumerable<SelectListItem> ClientFilterList(this HtmlHelper htmlHelper, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
 		{
 			SystemAdminBaseController controller = htmlHelper.ViewContext.Controller as SystemAdminBaseController;
 			if (controller == null)
@@ -20,9 +20,31 @@ namespace GStoreData.Areas.SystemAdmin
 				throw new NullReferenceException("Controller does not inherit from SystemAdminBaseController");
 			}
 
-			return controller.ClientFilterList();
+			return controller.ClientFilterList(labelForAll, labelForNull);
 		}
-		
+
+		public static IEnumerable<SelectListItem> ClientFilterListForRecordSummary(this HtmlHelper htmlHelper, int? clientId, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			SystemAdminBaseController controller = htmlHelper.ViewContext.Controller as SystemAdminBaseController;
+			if (controller == null)
+			{
+				throw new NullReferenceException("Controller does not inherit from SystemAdminBaseController");
+			}
+
+			return controller.ClientFilterListDirect(clientId, labelForAll, labelForNull);
+		}
+
+		public static IEnumerable<SelectListItem> StoreFrontFilterListForRecordSummary(this HtmlHelper htmlHelper, int? clientId, int? storeFrontId, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			SystemAdminBaseController controller = htmlHelper.ViewContext.Controller as SystemAdminBaseController;
+			if (controller == null)
+			{
+				throw new NullReferenceException("Controller does not inherit from SystemAdminBaseController");
+			}
+
+			return controller.StoreFrontFilterList(clientId, storeFrontId, labelForAll, labelForNull);
+		}
+
 		public static bool ShowAllClients(this HtmlHelper htmlHelper)
 		{
 			SystemAdminBaseController controller = htmlHelper.ViewContext.Controller as SystemAdminBaseController;

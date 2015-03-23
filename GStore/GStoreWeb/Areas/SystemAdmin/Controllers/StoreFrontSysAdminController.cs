@@ -61,6 +61,23 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			return View(storeFront);
 		}
 
+		public ActionResult RecordSummary(int? id)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("store front id is null");
+			}
+			IGstoreDb db = GStoreDb;
+			StoreFront storeFront = db.StoreFronts.FindById(id.Value);
+			if (storeFront == null)
+			{
+				return HttpNotFound();
+			}
+			ViewData.Add("RecordSummary", ChildRecordSummary(storeFront, GStoreDb));
+			this.BreadCrumbsFunc = htmlHelper => this.StoreFrontBreadcrumb(htmlHelper, storeFront.ClientId, storeFront, false);
+			return View(storeFront);
+		}
+
 		// GET: SystemAdmin/StoreFrontSysAdmin/Create
 		public ActionResult Create(int? clientId)
 		{
@@ -86,19 +103,42 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(StoreFront storeFront, bool? createDefaultConfig)
+		public ActionResult Create(StoreFront storeFront, bool? createDefaultConfig, bool? populateProducts, bool? populateDiscounts, bool? populatePages)
 		{
 			if (ModelState.IsValid)
 			{
-				storeFront = GStoreDb.StoreFronts.Create(storeFront);
+				IGstoreDb db = GStoreDb;
+				storeFront = db.StoreFronts.Create(storeFront);
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
-				storeFront = GStoreDb.StoreFronts.Add(storeFront);
-				GStoreDb.SaveChanges();
+				storeFront = db.StoreFronts.Add(storeFront);
+				db.SaveChanges();
 				AddUserMessage("Store Front Added", "Store Front [" + storeFront.StoreFrontId + "] for Client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was created successfully!", UserMessageType.Success);
 
+				ActionResult configResult = null;
 				if (createDefaultConfig.HasValue && createDefaultConfig.Value)
 				{
-					return CreateConfig(storeFront.StoreFrontId);
+					configResult = CreateConfig(storeFront.StoreFrontId);
+				}
+
+				if (populateProducts ?? false)
+				{
+					db.CreateSeedProducts(storeFront);
+					AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
+				}
+				if (populateDiscounts ?? false)
+				{
+					db.CreateSeedDiscounts(storeFront);
+					AddUserMessage("Populated Discounts", "Sample Discounts are Loaded", UserMessageType.Success);
+				}
+				if (populatePages ?? false)
+				{
+					db.CreateSeedPages(storeFront);
+					AddUserMessage("Populated Pages", "Sample Pages with Menu Links are Loaded", UserMessageType.Success);
+				}
+
+				if (configResult != null)
+				{
+					return configResult;
 				}
 				return RedirectToAction("Index");
 			}
@@ -226,15 +266,33 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(StoreFront storeFront)
+		public ActionResult Edit(StoreFront storeFront, bool? createDefaultConfig, bool? populateProducts, bool? populateDiscounts, bool? populatePages)
 		{
 			if (ModelState.IsValid)
 			{
+				IGstoreDb db = GStoreDb;
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
-				storeFront = GStoreDb.StoreFronts.Update(storeFront);
-				GStoreDb.SaveChanges();
+				storeFront = db.StoreFronts.Update(storeFront);
+				db.SaveChanges();
 				storeFront.CurrentConfigOrAny().CreateStoreFrontFolders(Request.ApplicationPath, Server);
 				AddUserMessage("Store Front Updated", "Store Front [" + storeFront.StoreFrontId + "] for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was updated successfully!", UserMessageType.Success);
+
+				if (populateProducts ?? false)
+				{
+					db.CreateSeedProducts(storeFront);
+					AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
+				}
+				if (populateDiscounts ?? false)
+				{
+					db.CreateSeedDiscounts(storeFront);
+					AddUserMessage("Populated Discounts", "Sample Discounts are Loaded", UserMessageType.Success);
+				}
+				if (populatePages ?? false)
+				{
+					db.CreateSeedPages(storeFront);
+					AddUserMessage("Populated Pages", "Sample Pages with Menu Links are Loaded", UserMessageType.Success);
+				}
+
 				return RedirectToAction("Index");
 			}
 
@@ -322,7 +380,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		{
 			if (!id.HasValue)
 			{
-				return HttpBadRequest("client id is null");
+				return HttpBadRequest("store front id is null");
 			}
 			IGstoreDb db = GStoreDb;
 			StoreFront storeFront = db.StoreFronts.FindById(id.Value);
@@ -389,32 +447,34 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			output.AppendLine("--File and Child Record Summary for Store Front '" + name.ToHtml() + " [" + storeFrontId + "]--");
 
 			output.AppendLine("--Store Front Linked Records--");
-			output.AppendLine("StoreFronts: " + db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("ClientUserRoles: " + db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId).Count());
+			output.AppendLine("Store Fronts: " + db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Client User Roles: " + db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId).Count());
 			output.AppendLine("Carts: " + db.Carts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("CartItems: " + db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Cart Items: " + db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Cart Bundles: " + db.CartBundles.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 			output.AppendLine("Discounts: " + db.Discounts.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("NavBarItems: " + db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Nav Bar Items: " + db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 			output.AppendLine("Notifications: " + db.Notifications.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("NotificationLink: " + db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Notification Links: " + db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 			output.AppendLine("Pages: " + db.Pages.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("PageSections: " + db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("ProductCategories: " + db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Page Sections: " + db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Product Categories: " + db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 			output.AppendLine("Products: " + db.Products.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("ProductReviews: " + db.ProductReviews.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("StoreBindings: " + db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("StoreFrontConfigurations: " + db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("UserProfiles: " + db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("WebFormResponses: " + db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("WebFormFieldResponses: " + db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Product Bundles: " + db.ProductBundles.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Product Bundle Items: " + db.ProductBundleItems.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Store Bindings: " + db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Store Front Configurations: " + db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("User Profiles: " + db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Web Form Responses: " + db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Web Form Field Responses: " + db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 
 			output.AppendLine("--event logs--");
-			output.AppendLine("BadRequests: " + db.BadRequests.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("FileNotFoundLogs: " + db.FileNotFoundLogs.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("PageViewEvent: " + db.PageViewEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("SecurityEvents: " + db.SecurityEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("SystemEvents: " + db.SystemEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
-			output.AppendLine("UserActionEvents: " + db.UserActionEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Bad Requests: " + db.BadRequests.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("File Not Found Logs: " + db.FileNotFoundLogs.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Page View Events: " + db.PageViewEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("Security Events: " + db.SecurityEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("System Events: " + db.SystemEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
+			output.AppendLine("User Action Events: " + db.UserActionEvents.Where(sf => sf.StoreFrontId == storeFrontId).Count());
 
 			output.AppendLine("--File System--");
 			string folderPath = Server.MapPath(storeFront.StoreFrontVirtualDirectoryToMap(Request.ApplicationPath));
@@ -447,26 +507,32 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				virtualPath = storeFront.StoreFrontVirtualDirectoryToMapAnyConfig(Request.ApplicationPath);
 			}
 
+			int deletedRecordCount = 0;
+
+			int deletedStoreFrontRecords = 0;
 			output.AppendLine("Deleting storefront records...");
-			db.StoreFronts.DeleteRange(db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.ClientUserRoles.DeleteRange(db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId));
-			db.Carts.DeleteRange(db.Carts.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.CartItems.DeleteRange(db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.Discounts.DeleteRange(db.Discounts.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.NavBarItems.DeleteRange(db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.Notifications.DeleteRange(db.Notifications.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.NotificationLinks.DeleteRange(db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.Pages.DeleteRange(db.Pages.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.PageSections.DeleteRange(db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.ProductCategories.DeleteRange(db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.Products.DeleteRange(db.Products.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.ProductReviews.DeleteRange(db.ProductReviews.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.StoreBindings.DeleteRange(db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.StoreFrontConfigurations.DeleteRange(db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.UserProfiles.DeleteRange(db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.WebFormResponses.DeleteRange(db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId));
-			db.WebFormFieldResponses.DeleteRange(db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId));
-			output.AppendLine("Deleted storefront records!");
+			deletedStoreFrontRecords += db.StoreFronts.DeleteRange(db.StoreFronts.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.ClientUserRoles.DeleteRange(db.ClientUserRoles.Where(sf => sf.ScopeStoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.Carts.DeleteRange(db.Carts.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.CartItems.DeleteRange(db.CartItems.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.CartBundles.DeleteRange(db.CartBundles.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.Discounts.DeleteRange(db.Discounts.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.NavBarItems.DeleteRange(db.NavBarItems.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.Notifications.DeleteRange(db.Notifications.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.NotificationLinks.DeleteRange(db.NotificationLinks.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.Pages.DeleteRange(db.Pages.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.PageSections.DeleteRange(db.PageSections.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.ProductCategories.DeleteRange(db.ProductCategories.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.Products.DeleteRange(db.Products.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.ProductBundles.DeleteRange(db.ProductBundles.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.ProductBundleItems.DeleteRange(db.ProductBundleItems.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.StoreBindings.DeleteRange(db.StoreBindings.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.StoreFrontConfigurations.DeleteRange(db.StoreFrontConfigurations.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.UserProfiles.DeleteRange(db.UserProfiles.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.WebFormResponses.DeleteRange(db.WebFormResponses.Where(sf => sf.StoreFrontId == storeFrontId));
+			deletedStoreFrontRecords += db.WebFormFieldResponses.DeleteRange(db.WebFormFieldResponses.Where(sf => sf.StoreFrontId == storeFrontId));
+			output.AppendLine("Deleted " + deletedStoreFrontRecords.ToString("N0") + " storefront records!");
+			deletedRecordCount += deletedStoreFrontRecords;
 
 			if (deleteEventLogs)
 			{
@@ -514,6 +580,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				}
 			}
 
+			output.AppendLine("Total Records deleted: " + deletedRecordCount.ToString("N0"));
 			return output.ToString();
 		}
 

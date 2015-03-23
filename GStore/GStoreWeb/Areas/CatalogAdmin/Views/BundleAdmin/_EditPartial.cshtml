@@ -138,9 +138,16 @@
 			document.getElementById('bundleItems_' + index + '__EndDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString()))';
 		}
 	}
+
+	function RemoveItem(productId, form)
+	{
+		$('#RemoveItemId').val(productId);
+		$('#EditForm').submit();
+	}
 </script>
 @Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
 @Html.HiddenFor(model => model.ProductBundleId)
+@Html.Hidden("RemoveItemId", "", new  { id = "RemoveItemId" })
 @{
 	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
 	string defaultTheme = "";
@@ -259,7 +266,7 @@
 
 					<tr class="@rowClass">
 						<td>
-							@Html.ActionLink("Remove", "RemoveItem", new { id = Model.ProductBundleId, ProductId = bundleItems[i].ProductId, Tab = "Items", returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-danger" })
+							<a class="btn btn-sm btn-danger" href="javascript: RemoveItem('@(item.ProductId.ToString().ToJavaScriptMvcString())');" title="Remove this item from bundle">Remove</a>
 						</td>
 						<td class="@(statusClass)">
 							@(Html.DisplayFor(model => bundleItems[i].ProductBundleItemId))

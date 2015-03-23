@@ -22,7 +22,7 @@
 	<div id="DatabaseRecordSummary">
 		<div class="col-sm-3 text-left">
 			<div id="RecordSummary">
-				@Ajax.ActionLink("Load Database Summary", "RecordSummary", routeValues: new { clientId = Html.FilterClientId() }, htmlAttributes: new { @class = "btn btn-sm btn-primary" }, ajaxOptions: new AjaxOptions() { AllowCache = false, InsertionMode = InsertionMode.Replace, UpdateTargetId = "RecordSummary", OnFailure = "handleError" })
+				@Ajax.ActionLink("Load Database Summary", "RecordSummary", routeValues: new { clientId = Html.FilterClientId() }, htmlAttributes: new { @class = "btn btn-sm btn-primary", accesskey="L" }, ajaxOptions: new AjaxOptions() { AllowCache = false, InsertionMode = InsertionMode.Replace, UpdateTargetId = "RecordSummary", OnFailure = "handleError" })
 			</div>
 		</div>
 	</div>

@@ -21,6 +21,14 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			return View("Manager", model);
 		}
 
+		[AuthorizeGStoreAction(GStoreAction.Categories_Manager)]
+		public ActionResult UpdateCounts(bool returnToFrontEnd = false)
+		{
+			GStoreDb.RecalculateProductCategoryActiveCount(CurrentStoreFrontOrThrow);
+			AddUserMessage("Category Counts Recalculated", "Category counts have been recalculated.", UserMessageType.Success);
+			return RedirectToAction("Manager", new { returnToFrontEnd = returnToFrontEnd });
+		}
+
 		[AuthorizeGStoreAction(GStoreAction.Categories_Create)]
 		public ActionResult Create(int? id, bool returnToFrontEnd = false, string Tab = "")
 		{

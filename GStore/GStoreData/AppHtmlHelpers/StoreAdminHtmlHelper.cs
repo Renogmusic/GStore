@@ -537,7 +537,7 @@ namespace GStoreData.AppHtmlHelpers
 				});
 		}
 
-		public static IEnumerable<SelectListItem> ProductCategoryListWithAllZero(this HtmlHelper htmlHelper, bool showProductCount = true, string allLabel = "(all categories)")
+		public static IEnumerable<SelectListItem> ProductCategoryListWithAllZero(this HtmlHelper htmlHelper, bool showProductCount = true, bool showBundleCount = true, string allLabel = "(All Categories)")
 		{
 			int selectedProductCategoryId = (htmlHelper.ViewData.Model as int?) ?? 0;
 
@@ -551,7 +551,9 @@ namespace GStoreData.AppHtmlHelpers
 				new SelectListItem()
 				{
 					Value = c.ProductCategoryId.ToString(),
-					Text = c.Name + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName + (showProductCount ? " Products: " + c.Products.Count.ToString("N0") + " Bundles: " + c.ProductBundles.Count.ToString("N0") : ""),
+					Text = c.CategoryPath() + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName
+						+ (showProductCount ? " Products: " + c.Products.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.Products.Count.ToString("N0") : "")
+						+ (showBundleCount ? " Bundles: " + c.ProductBundles.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.ProductBundles.Count.ToString("N0") : ""),
 					Selected = c.ProductCategoryId == selectedProductCategoryId
 				}));
 
@@ -567,7 +569,7 @@ namespace GStoreData.AppHtmlHelpers
 				new SelectListItem()
 				{
 					Value = c.ProductCategoryId.ToString(),
-					Text = c.Name + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName + (showProductCount ? " Products: " + c.Products.Count.ToString("N0") + " Bundles: " + c.ProductBundles.Count.ToString("N0") : ""),
+					Text = c.CategoryPath() + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName + (showProductCount ? " Products: " + c.Products.Count.ToString("N0") + " Bundles: " + c.ProductBundles.Count.ToString("N0") : ""),
 					Selected = c.ProductCategoryId == selectedProductCategoryId
 				});
 		}

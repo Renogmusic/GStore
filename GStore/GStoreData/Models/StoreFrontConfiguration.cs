@@ -602,10 +602,10 @@ namespace GStoreData.Models
 		SimpleBlocked = 0,
 
 		[Display(Name = "eCommerce", Description = "Typical eCommerce layout with categories on the left side and 4 products per row")]
-		ECommerce = 100,
+		eCommerce = 100,
 
 		[Display(Name = "eCommerce with image rotator", Description = "eCommerce layout with ratating images and multiple images per product. Categories on the left side and 4 products per row")]
-		ECommerceWithRotator = 100,
+		eCommerceWithRotator = 100,
 
 	}
 

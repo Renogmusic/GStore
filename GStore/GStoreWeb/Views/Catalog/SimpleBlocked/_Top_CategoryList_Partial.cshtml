@@ -29,7 +29,7 @@
 					@{
 						string url = Url.Action("ViewCategoryByName", "Catalog", new { urlName = categoryNode.Entity.UrlName });
 						string imageUrl = categoryNode.Entity.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
-						string displayName = categoryNode.Entity.Name + " (" + categoryNode.Entity.ChildActiveCount.ToString("N0") + ")";
+						string displayName = categoryNode.Entity.DisplayNameWithCount(User.IsRegistered());
 					}
 					@if (isRoot)
 					{
@@ -97,7 +97,7 @@
 				}
 				foreach (TreeNode<ProductCategory> childCategory in categoryNode.ChildNodes)
 				{
-					string childDisplayName = childCategory.Entity.Name + " (" + childCategory.Entity.ChildActiveCount.ToString("N0") + ")";
+					string childDisplayName = childCategory.Entity.DisplayNameWithCount(User.IsRegistered());
 					string childUrl = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
 					string childImageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
 						

@@ -46,7 +46,7 @@ namespace GStoreData.Identity
 			{
 				throw new ApplicationException("AuthorizeGStoreAction was called with no action specified. You must specify at least one or more actions to the constructor.");
 			}
-			if (!httpContext.User.Identity.IsAuthenticated)
+			if (!httpContext.User.IsRegistered())
 			{
 				return false;
 			}
@@ -69,7 +69,7 @@ namespace GStoreData.Identity
 		protected override void HandleUnauthorizedRequest(System.Web.Mvc.AuthorizationContext filterContext)
 		{
 			//returns 401 result
-			if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+			if (!filterContext.HttpContext.User.IsRegistered())
 			{
 				filterContext.Controller.TempData.AddUserMessage("Log in required", "Please log in to access this page", UserMessageType.Warning);
 			}
@@ -80,7 +80,7 @@ namespace GStoreData.Identity
 					+ "<br/> Url: " + filterContext.HttpContext.Request.Url.ToString().ToHtml(), UserMessageType.Danger);
 			}
 
-			if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+			if (!filterContext.HttpContext.User.IsRegistered())
 			{
 				base.HandleUnauthorizedRequest(filterContext);
 			}

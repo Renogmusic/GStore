@@ -1,6 +1,10 @@
 ﻿@model StoreFront
-
-@{ ViewData.SetColDisplay(0, 2, 8); }
+@{ 
+	ViewData.SetColDisplay(0, 2, 8);
+	bool populateProducts = false;
+	bool populateDiscounts = false;
+	bool populatePages = false;
+}
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -34,6 +38,9 @@
 		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
 		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
+		@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
+		@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Sample Pages" })
 	</div>
 
 	<div class="row">

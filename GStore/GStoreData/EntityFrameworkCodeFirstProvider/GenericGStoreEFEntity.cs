@@ -109,15 +109,16 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 
-		public virtual bool DeleteRange(IEnumerable<TEntity> entities)
+		public virtual int DeleteRange(IEnumerable<TEntity> entities)
 		{
 			if (entities == null)
 			{
 				throw new ArgumentNullException("entity");
 			}
 
+			int records = entities.Count();
 			_dbSet.RemoveRange(entities);
-			return true;
+			return records;
 		}
 
 		public virtual TEntity Update(TEntity entity)

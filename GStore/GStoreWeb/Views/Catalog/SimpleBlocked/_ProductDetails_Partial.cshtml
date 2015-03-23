@@ -274,7 +274,7 @@
 	}
 	if (bundles.Count != 0)
 	{
-		@:<hr/>Also available in the following @(bundles.Count != 1 ? bundles.Count.ToString("N0") : "") bundle@(bundles.Count == 1 ? "" : "s"):
+		@:<hr/>Also available in the following @(bundles.Count != 1 ? bundles.Count.ToString("N0") : "") @(bundles.Count == 1 ? product.Category.BundleTypeSingle : product.Category.BundleTypePlural):
 	}
 	foreach (ProductBundle bundle in bundles)
 	{

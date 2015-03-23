@@ -5,12 +5,17 @@
 	int colOffset = ViewData.ColOffset();
 	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
 	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	string labelText = ViewData.LabelText();
+	if (string.IsNullOrEmpty(labelText))
+	{
+		labelText = Html.DisplayNameForModel().ToString();
+	}
 }
 <input name="@(Html.ViewData.TemplateInfo.HtmlFieldPrefix)" type="hidden" value="@(Model)" />
 @if ((Model ?? 0) != 0)
 {
 	<div class="form-group">
-		@Html.LabelForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+		@Html.LabelForModel(labelText, new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
 		<div class="col-md-@(colData) title-align">
 			@Html.TextBoxWithWatermarkForModel(new { disabled = "disabled", @readonly = "readonly" })
 			@if (useHelpLabelPopover)

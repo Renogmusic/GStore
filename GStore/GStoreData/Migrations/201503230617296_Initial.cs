@@ -1,6 +1,7 @@
 namespace GStoreData.Migrations
 {
-	using System.Data.Entity.Migrations;
+    using System;
+    using System.Data.Entity.Migrations;
     
     public partial class Initial : DbMigration
     {
@@ -221,6 +222,9 @@ namespace GStoreData.Migrations
                         CatalogProductBundleColLg = c.Int(nullable: false),
                         CatalogProductBundleColMd = c.Int(nullable: false),
                         CatalogProductBundleColSm = c.Int(nullable: false),
+                        CatalogProductBundleItemColLg = c.Int(nullable: false),
+                        CatalogProductBundleItemColMd = c.Int(nullable: false),
+                        CatalogProductBundleItemColSm = c.Int(nullable: false),
                         NotFoundError_PageId = c.Int(),
                         StoreError_PageId = c.Int(),
                         NavBarShowRegisterLink = c.Boolean(nullable: false),
@@ -689,6 +693,10 @@ namespace GStoreData.Migrations
                         ImageName = c.String(),
                         Order = c.Int(nullable: false),
                         ParentCategoryId = c.Int(),
+                        ProductTypeSingle = c.String(nullable: false, maxLength: 100),
+                        ProductTypePlural = c.String(nullable: false, maxLength: 100),
+                        BundleTypeSingle = c.String(nullable: false, maxLength: 100),
+                        BundleTypePlural = c.String(nullable: false, maxLength: 100),
                         AllowChildCategoriesInMenu = c.Boolean(nullable: false),
                         ShowInMenu = c.Boolean(nullable: false),
                         HideInMenuIfEmpty = c.Boolean(nullable: false),
@@ -698,11 +706,14 @@ namespace GStoreData.Migrations
                         ForAnonymousOnly = c.Boolean(nullable: false),
                         UseDividerBeforeOnMenu = c.Boolean(nullable: false),
                         UseDividerAfterOnMenu = c.Boolean(nullable: false),
-                        DirectActiveCount = c.Int(nullable: false),
-                        ChildActiveCount = c.Int(nullable: false),
+                        DirectActiveCountForAnonymous = c.Int(nullable: false),
+                        DirectActiveCountForRegistered = c.Int(nullable: false),
+                        ChildActiveCountForAnonymous = c.Int(nullable: false),
+                        ChildActiveCountForRegistered = c.Int(nullable: false),
                         ThemeId = c.Int(),
                         CategoryDetailTemplate = c.Int(nullable: false),
                         ProductListTemplate = c.Int(nullable: false),
+                        BundleListTemplate = c.Int(nullable: false),
                         ProductDetailTemplate = c.Int(nullable: false),
                         ProductBundleDetailTemplate = c.Int(nullable: false),
                         ChildCategoryHeaderHtml = c.String(),
@@ -809,8 +820,8 @@ namespace GStoreData.Migrations
                         Order = c.Int(nullable: false),
                         Quantity = c.Int(nullable: false),
                         ProductId = c.Int(nullable: false),
-                        BaseUnitPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        BaseListPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        BaseUnitPrice = c.Decimal(precision: 18, scale: 2),
+                        BaseListPrice = c.Decimal(precision: 18, scale: 2),
                         ProductVariantInfo = c.String(),
                         StoreFrontId = c.Int(nullable: false),
                         ClientId = c.Int(nullable: false),
@@ -1245,40 +1256,6 @@ namespace GStoreData.Migrations
                 .Index(t => t.PageId)
                 .Index(t => t.CreatedBy_UserProfileId)
                 .Index(t => t.UpdatedBy_UserProfileId);
-            
-            CreateTable(
-                "dbo.ProductReview",
-                c => new
-                    {
-                        ProductReviewId = c.Int(nullable: false, identity: true),
-                        ProductId = c.Int(nullable: false),
-                        UserProfileId = c.Int(nullable: false),
-                        StarRating = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Title = c.String(nullable: false, maxLength: 200),
-                        Body = c.String(nullable: false),
-                        StoreFrontId = c.Int(nullable: false),
-                        ClientId = c.Int(nullable: false),
-                        CreateDateTimeUtc = c.DateTime(nullable: false),
-                        CreatedBy_UserProfileId = c.Int(nullable: false),
-                        UpdateDateTimeUtc = c.DateTime(nullable: false),
-                        UpdatedBy_UserProfileId = c.Int(nullable: false),
-                        IsPending = c.Boolean(nullable: false),
-                        StartDateTimeUtc = c.DateTime(nullable: false),
-                        EndDateTimeUtc = c.DateTime(nullable: false),
-                        UserProfile_UserProfileId = c.Int(),
-                    })
-                .PrimaryKey(t => t.ProductReviewId)
-                .ForeignKey("dbo.Client", t => t.ClientId)
-                .ForeignKey("dbo.UserProfile", t => t.CreatedBy_UserProfileId)
-                .ForeignKey("dbo.Product", t => t.ProductId)
-                .ForeignKey("dbo.StoreFront", t => t.StoreFrontId)
-                .ForeignKey("dbo.UserProfile", t => t.UpdatedBy_UserProfileId)
-                .ForeignKey("dbo.UserProfile", t => t.UserProfileId)
-                .ForeignKey("dbo.UserProfile", t => t.UserProfile_UserProfileId)
-                .Index(t => new { t.ClientId, t.StoreFrontId, t.ProductId, t.UserProfileId }, unique: true, name: "UniqueRecord")
-                .Index(t => t.CreatedBy_UserProfileId)
-                .Index(t => t.UpdatedBy_UserProfileId)
-                .Index(t => t.UserProfile_UserProfileId);
             
             CreateTable(
                 "dbo.CartPaymentInfo",
@@ -2189,7 +2166,6 @@ namespace GStoreData.Migrations
             DropForeignKey("dbo.BadRequest", "CreatedBy_UserProfileId", "dbo.UserProfile");
             DropForeignKey("dbo.UserProfile", "UpdatedBy_UserProfileId", "dbo.UserProfile");
             DropForeignKey("dbo.UserProfile", "RegisterWebFormResponseId", "dbo.WebFormResponse");
-            DropForeignKey("dbo.ProductReview", "UserProfile_UserProfileId", "dbo.UserProfile");
             DropForeignKey("dbo.UserProfile", "CreatedBy_UserProfileId", "dbo.UserProfile");
             DropForeignKey("dbo.UserProfile", "ClientId", "dbo.Client");
             DropForeignKey("dbo.StoreFrontConfiguration", "WelcomePerson_UserProfileId", "dbo.UserProfile");
@@ -2328,12 +2304,6 @@ namespace GStoreData.Migrations
             DropForeignKey("dbo.Product", "ThemeId", "dbo.Theme");
             DropForeignKey("dbo.Product", "StoreFrontId", "dbo.StoreFront");
             DropForeignKey("dbo.Product", "RequestAQuote_PageId", "dbo.Page");
-            DropForeignKey("dbo.ProductReview", "UserProfileId", "dbo.UserProfile");
-            DropForeignKey("dbo.ProductReview", "UpdatedBy_UserProfileId", "dbo.UserProfile");
-            DropForeignKey("dbo.ProductReview", "StoreFrontId", "dbo.StoreFront");
-            DropForeignKey("dbo.ProductReview", "ProductId", "dbo.Product");
-            DropForeignKey("dbo.ProductReview", "CreatedBy_UserProfileId", "dbo.UserProfile");
-            DropForeignKey("dbo.ProductReview", "ClientId", "dbo.Client");
             DropForeignKey("dbo.Product", "CreatedBy_UserProfileId", "dbo.UserProfile");
             DropForeignKey("dbo.Product", "ClientId", "dbo.Client");
             DropForeignKey("dbo.ProductCategory", "UpdatedBy_UserProfileId", "dbo.UserProfile");
@@ -2502,10 +2472,6 @@ namespace GStoreData.Migrations
             DropIndex("dbo.CartPaymentInfo", new[] { "WebFormResponseId" });
             DropIndex("dbo.CartPaymentInfo", "UniqueRecord");
             DropIndex("dbo.CartPaymentInfo", new[] { "CartPaymentInfoId" });
-            DropIndex("dbo.ProductReview", new[] { "UserProfile_UserProfileId" });
-            DropIndex("dbo.ProductReview", new[] { "UpdatedBy_UserProfileId" });
-            DropIndex("dbo.ProductReview", new[] { "CreatedBy_UserProfileId" });
-            DropIndex("dbo.ProductReview", "UniqueRecord");
             DropIndex("dbo.WebFormResponse", new[] { "UpdatedBy_UserProfileId" });
             DropIndex("dbo.WebFormResponse", new[] { "CreatedBy_UserProfileId" });
             DropIndex("dbo.WebFormResponse", new[] { "PageId" });
@@ -2660,7 +2626,6 @@ namespace GStoreData.Migrations
             DropTable("dbo.DeliveryInfoShipping");
             DropTable("dbo.DeliveryInfoDigital");
             DropTable("dbo.CartPaymentInfo");
-            DropTable("dbo.ProductReview");
             DropTable("dbo.WebFormResponse");
             DropTable("dbo.WebFormFieldResponse");
             DropTable("dbo.ValueListItem");

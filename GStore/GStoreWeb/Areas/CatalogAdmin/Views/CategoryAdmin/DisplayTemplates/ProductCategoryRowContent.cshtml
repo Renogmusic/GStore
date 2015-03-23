@@ -35,6 +35,6 @@
 			@:Products:
 		}
 		@: @(Model.Entity.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Entity.Products.Count) Total
-		@:&nbsp;&nbsp;&nbsp;&nbsp;Active Child Products: @(Model.Entity.ChildActiveCount)
+		@:&nbsp;&nbsp;&nbsp;&nbsp;Sub-Products Public/Registered: @(Model.Entity.ChildActiveCountForAnonymous.ToString("N0")) / @(Model.Entity.ChildActiveCountForRegistered.ToString("N0"))
 	}
 }

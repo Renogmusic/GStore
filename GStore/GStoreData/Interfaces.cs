@@ -179,9 +179,6 @@ namespace GStoreData
 		[Display(Name = "Product Categories", Description = "Category groups for menus and listing of Products for a store front.")]
 		IGStoreRepository<Models.ProductCategory> ProductCategories { get; }
 
-		[Display(Name = "Product Reviews", Description = "Product reviews by users for a store front.")]
-		IGStoreRepository<Models.ProductReview> ProductReviews { get; }
-
 		[Display(Name = "Security Events", Description = "Security events like login/logoff/lockout/new user system-wide.")]
 		IGStoreRepository<Models.SecurityEvent> SecurityEvents { get; }
 
@@ -282,10 +279,10 @@ namespace GStoreData
 		bool Delete(TEntity entity, bool throwErrorIfNotFound = false);
 
 		/// <summary>
-		/// Deletes a range of entities calling DBSet.RemoveRange
+		/// Deletes a range of entities calling DBSet.RemoveRange. Returns the number of records deleted
 		/// </summary>
 		/// <param name="entity"></param>
-		bool DeleteRange(IEnumerable<TEntity> entities);
+		int DeleteRange(IEnumerable<TEntity> entities);
 
 		/// <summary>
 		/// Marks an entity as modified, similar to marking db context entry as modified, returns object updated (will convert a POCO to a dynamic proxy)

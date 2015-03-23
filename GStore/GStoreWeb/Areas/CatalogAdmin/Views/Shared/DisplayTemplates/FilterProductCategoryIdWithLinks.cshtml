@@ -1,0 +1,86 @@
+﻿@model int?
+@{
+	bool showCategoryLink = (ViewData["ShowCategoryLink"] as bool?) ?? true;
+	bool showProductsLink = (ViewData["ShowProductsLink"] as bool?) ?? true;
+	bool showBundlesLink = (ViewData["ShowBundlesLink"] as bool?) ?? true;
+	
+	if (Model == null)
+	{
+		@:Category: (null)
+	}
+	else if (Model.Value == 0)
+	{
+		StoreFront storeFront = Html.CurrentStoreFront(true);
+		string productsText =  storeFront.Products.AsQueryable().WhereIsActive().Count() + " Active / " + storeFront.Products.Count + " Total";
+		string bundlesText = storeFront.ProductBundles.AsQueryable().WhereIsActive().Count() + " Active / " + storeFront.ProductBundles.Count + " Total"; ;
+		@: (All Categories)
+		if (showProductsLink && Html.UserHasPermission(GStoreAction.Products_Manager))
+		{
+			@: Products: @Html.ActionLink(productsText, "Manager", "ProductAdmin", new { ProductCategoryId = 0 }, null)
+		}
+		else
+		{
+			@: Products: <strong>@(productsText)</strong>
+		}
+		if (showBundlesLink && Html.UserHasPermission(GStoreAction.Bundles_Manager))
+		{
+			@: Bundles: @Html.ActionLink(bundlesText, "Manager", "BundleAdmin", new { ProductCategoryId = 0 }, null)
+		}
+		else
+		{
+			@: Bundles: <strong>@(bundlesText)</strong>
+		}
+	}
+	else
+	{
+		ProductCategory category = Html.CurrentStoreFront(true).ProductCategories.SingleOrDefault(pc => pc.ProductCategoryId == Model.Value);
+		if (category == null)
+		{
+			throw new ArgumentNullException("Category not found. Id: " + Model.Value);
+		}
+
+		bool isActive = category.IsActiveDirect();
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			string categoryName = "'" + category.Name + "' [" + category.ProductCategoryId + "]";
+			string productsText = category.Products.AsQueryable().WhereIsActive().Count() + " Active / " + category.Products.Count + " Total";
+			string bundlesText = category.ProductBundles.AsQueryable().WhereIsActive().Count() + " Active / " + category.ProductBundles.Count + " Total"; ;
+
+			if (showCategoryLink && Html.UserHasPermission(GStoreAction.Categories_View))
+			{
+				@:Category: @Html.ActionLink(categoryName, "Details", "CategoryAdmin", new { Id = category.ProductCategoryId }, null)
+			}
+			else
+			{
+				@:Category: @(categoryName)
+			}
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+			if (showProductsLink && Html.UserHasPermission(GStoreAction.Products_Manager))
+			{
+				@: Products: @Html.ActionLink(productsText, "Manager", "ProductAdmin", new { ProductCategoryId = category.ProductCategoryId }, null)
+			}
+			else
+			{
+				@: Products: <strong>@(productsText)</strong>
+			}
+			if (showBundlesLink && Html.UserHasPermission(GStoreAction.Bundles_Manager))
+			{
+				@: Bundles: @Html.ActionLink(bundlesText, "Manager", "BundleAdmin", new { ProductCategoryId = category.ProductCategoryId }, null)
+			}
+			else
+			{
+				@: Bundles: <strong>@(bundlesText)</strong>
+			}
+			@: @Html.ActionLink("View Category in Site", "ViewCategoryByName", "Catalog", new { area = "", urlName = category.UrlName }, new { @class = "btn btn-xs btn-default", style = "display: inline" })
+
+
+		@:</span>
+	}
+}

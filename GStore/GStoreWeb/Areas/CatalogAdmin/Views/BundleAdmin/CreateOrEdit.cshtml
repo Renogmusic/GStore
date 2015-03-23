@@ -4,7 +4,7 @@
 	string action = ViewContext.RouteData.Action();
 	string controller = ViewContext.RouteData.Controller();
 }
-@using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { id="EditForm", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.ReturnToFrontEnd)

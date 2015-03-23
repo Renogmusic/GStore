@@ -24,7 +24,7 @@ namespace GStoreData.Identity
 		protected override void HandleUnauthorizedRequest(System.Web.Mvc.AuthorizationContext filterContext)
 		{
 			//returns 401 result
-			if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+			if (!filterContext.HttpContext.User.IsRegistered())
 			{
 				filterContext.Controller.TempData.AddUserMessage("Log in required", "Please log in to access this page", UserMessageType.Warning);
 			}
@@ -35,7 +35,7 @@ namespace GStoreData.Identity
 					+ "<br/> Url: " + filterContext.HttpContext.Request.Url.ToString().ToHtml(), UserMessageType.Danger);
 			}
 
-			if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+			if (!filterContext.HttpContext.User.IsRegistered())
 			{
 				base.HandleUnauthorizedRequest(filterContext);
 			}

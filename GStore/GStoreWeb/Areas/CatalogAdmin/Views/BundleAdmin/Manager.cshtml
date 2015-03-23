@@ -34,6 +34,12 @@
 		@Html.DropDownListFor(model => model.FilterProductCategoryId, Html.ProductCategoryListWithAllZero(), new { id = "FilterProductCategoryId", @class = "form-control", onchange = "UpdateFilter(this);" })
 	</div>
 </div>
+<div class="row">
+	<div class="col-xs-12">
+		@Html.DisplayFor(model => model.FilterProductCategoryId, "FilterProductCategoryIdWithLinks", new { showBundlesLink = false })
+	</div>
+</div>
+<hr />
 @{
 	if (userCanCreate || userCanSyncFiles)
 	{

@@ -314,7 +314,7 @@ namespace GStoreWeb.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult LogOff()
 		{
-			if (User.Identity.IsAuthenticated)
+			if (User.IsRegistered())
 			{
 
 				UserProfile profile = GStoreDb.GetCurrentUserProfile(false, true);
@@ -698,7 +698,7 @@ namespace GStoreWeb.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
 		{
-			if (User.Identity.IsAuthenticated)
+			if (User.IsRegistered())
 			{
 				return RedirectToAction("Index", "Profile");
 			}

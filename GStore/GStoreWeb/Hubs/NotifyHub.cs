@@ -24,6 +24,10 @@ namespace GStoreWeb.Hubs
 		{
 			lock (_lockObject)
 			{
+				if (_activeUsers < 0)
+				{
+					_activeUsers = 0;
+				}
 				_activeUsers--;
 			}
 		}

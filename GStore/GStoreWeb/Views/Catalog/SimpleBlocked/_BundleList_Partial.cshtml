@@ -4,7 +4,7 @@
 	List<ProductBundle> bundles = Model.CurrentProductBundlesListOrNull(Html.CurrentUserProfile(false));
 	if (bundles == null || bundles.Count == 0)
 	{
-		@:There are no product bundles for this category
+		@:There are no @(Model.CurrentCategoryOrNull == null ? "bundles" : Model.CurrentCategoryOrNull.BundleTypePlural) for this category
 	}
 	else
 	{

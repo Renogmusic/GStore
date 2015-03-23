@@ -118,23 +118,26 @@ namespace GStoreData.Areas.SystemAdmin
 			{
 				throw new NullReferenceException("controller");
 			}
+			if (binding == null)
+			{
+				throw new ArgumentNullException("binding");
+			}
 
 			if (binding.StoreFront.CurrentConfigOrAny() == null)
 			{
 				controller.AddUserMessage("Store Front Config Not Found", "No Configuration was found for Store Front Id: " + binding.StoreFrontId, AppHtmlHelpers.UserMessageType.Warning);
+				return false;
 			}
-			else
+
+			StoreFrontConfiguration config = binding.StoreFront.CurrentConfigOrAny();
+			if (!config.IsActiveDirect())
 			{
-				StoreFrontConfiguration config = binding.StoreFront.CurrentConfigOrAny();
-				if (!config.IsActiveDirect())
-				{
-					config.IsPending = false;
-					config.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
-					config.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
-					config = controller.GStoreDb.StoreFrontConfigurations.Update(config);
-					controller.GStoreDb.SaveChanges();
-					controller.AddUserMessage("Activated Store Config", "Activated Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId +"]", AppHtmlHelpers.UserMessageType.Info);
-				}
+				config.IsPending = false;
+				config.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+				config.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+				config = controller.GStoreDb.StoreFrontConfigurations.Update(config);
+				controller.GStoreDb.SaveChanges();
+				controller.AddUserMessage("Activated Store Config", "Activated Store Front Configuration '" + config.ConfigurationName.ToHtml() + "' [" + config.StoreFrontConfigurationId +"]", AppHtmlHelpers.UserMessageType.Info);
 			}
 
 			if (!binding.IsActiveDirect())
@@ -389,7 +392,8 @@ namespace GStoreData.Areas.SystemAdmin
 			{
 				message = " to current Url";
 			}
-			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message.ToHtml() + " store binding to best guess store front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
+			string storeFrontName = storeFront.CurrentConfig() == null ? "No config found for Store Front Id: " + storeFront.StoreFrontId  : storeFront.CurrentConfig().Name;
+			controller.AddUserMessage("AutoMapBindingSeedBestGuessStoreFront Success!", "Auto-mapped" + message.ToHtml() + " store binding to best guess store front '" + storeFrontName.ToHtml() + "' [" + storeFront.StoreFrontId + "]", AppHtmlHelpers.UserMessageType.Success);
 
 			return binding;
 		}

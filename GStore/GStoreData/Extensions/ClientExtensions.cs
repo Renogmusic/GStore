@@ -432,11 +432,17 @@ namespace GStoreData
 			productCategory.UrlName = productCategory.Name.Replace(' ', '_');
 			productCategory.ImageName = null;
 			productCategory.ForRegisteredOnly = false;
-			productCategory.UseDividerAfterOnMenu = true;
+			productCategory.UseDividerBeforeOnMenu = true;
+			productCategory.UseDividerAfterOnMenu = false;
 			productCategory.ShowInMenu = true;
 			productCategory.AllowChildCategoriesInMenu = true;
 			productCategory.HideInMenuIfEmpty = true;
 			productCategory.ShowInCatalogIfEmpty = false;
+			productCategory.DisplayForDirectLinks = true;
+			productCategory.ProductTypeSingle = "Item";
+			productCategory.ProductTypePlural = "Items";
+			productCategory.BundleTypeSingle = "Bundle";
+			productCategory.BundleTypePlural = "Bundles";
 
 			productCategory.IsPending = false;
 			productCategory.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);

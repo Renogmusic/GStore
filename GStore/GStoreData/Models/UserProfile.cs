@@ -263,9 +263,6 @@ namespace GStoreData.Models
 		[Display(Name = "Registered Notify Store Front Configurations")]
 		public virtual ICollection<StoreFrontConfiguration> RegisteredNotifyStoreFrontConfigurations { get; set; }
 
-		[Display(Name = "Product Reviews")]
-		public virtual ICollection<ProductReview> ProductReviews { get; set; }
-
 		public virtual ICollection<Order> Orders { get; set; }
 
 	}

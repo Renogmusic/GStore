@@ -32,6 +32,17 @@
 			{
 				@:Products: @(Model.Products.AsQueryable().WhereIsActive().Count()) Active / @(Model.Products.Count) Total
 			}
+			if (Html.UserHasPermission(GStoreAction.Bundles_Manager))
+			{
+				@Html.ActionLink("Bundles:", "Manager", "BundleAdmin", new { ProductCategoryId = Model.ProductCategoryId }, null)
+				@:@(Model.ProductBundles.AsQueryable().WhereIsActive().Count()) Active / @(Model.ProductBundles.Count) Total
+			}
+			else
+			{
+				@:Bundles: @(Model.ProductBundles.AsQueryable().WhereIsActive().Count()) Active / @(Model.ProductBundles.Count) Total
+			}
+
+
 		@:</span>
 	}
 }

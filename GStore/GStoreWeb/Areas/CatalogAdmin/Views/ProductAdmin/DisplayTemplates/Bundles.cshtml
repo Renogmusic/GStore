@@ -32,14 +32,28 @@
 			string itemClass = "";
 			decimal? unitPrice = bundleItem.ProductBundle.UnitPrice(1);
 			decimal? listPrice = bundleItem.ProductBundle.ListPrice(1);
-			
+			StoreFront storeFront = Html.CurrentStoreFront(true);
+			UserProfile profile = Html.CurrentUserProfile(true);
+			string bundleName = bundleItem.ProductBundle.Name + " [" + bundleItem.ProductBundleId + "] (" + bundleItem.ProductBundle.ProductBundleItems.Count.ToString("N0") + ")";
 			if (!isActive)
 			{
 				itemClass = "text-warning";
 			}
 			<tr class="@itemClass">
 				<td>
-					@Html.ActionLink(bundleItem.ProductBundle.Name + " [" + bundleItem.ProductBundleId + "] (" + bundleItem.ProductBundle.ProductBundleItems.Count.ToString("N0") + ")", "Details", "BundleAdmin", new { id = bundleItem.ProductBundleId, Tab = "Items" }, new { target = target })
+
+					@if (storeFront.Authorization_IsAuthorized(profile, GStoreAction.Bundles_View))
+					{
+						@Html.ActionLink(bundleName, "Details", "BundleAdmin", new { id = bundleItem.ProductBundleId, Tab = "Items" }, new { target = target })
+					}
+					else
+					{
+						@(bundleName)
+					}
+					@if (storeFront.Authorization_IsAuthorized(profile, GStoreAction.Bundles_Edit))
+					{
+						@: - @Html.ActionLink("Edit Bundle", "Edit", "BundleAdmin", new { id = bundleItem.ProductBundleId, Tab = "Items" }, new { target = target })
+					}
 				</td>
 				<td>@(Html.DisplayFor(model => bundleItem.Quantity))</td>
 				<td>@(Html.DisplayFor(model => bundleItem.BaseUnitPrice, "CurrencyOrCall"))</td>

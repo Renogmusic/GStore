@@ -127,7 +127,8 @@
 			@:&nbsp;&nbsp;|&nbsp;&nbsp;
 			@Html.ActionLink("Sync Images Now!", "SyncImages", new { eraseImageFileNameIfNotFound = true, searchForImageIfImageFileNameIsBlank = true, preview = false, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
 		}
-
+		&nbsp;&nbsp;|&nbsp;&nbsp;
+		@Html.ActionLink("Update Counts", "UpdateCounts", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
 	</div>
 </div>
 @{
@@ -277,6 +278,29 @@
 	}
 }
 
+<div class="row">
+	<div class="col-xs-12">
+		@if (Model.ReturnToFrontEnd)
+		{
+			@Html.ActionLink("OK / Cancel", "Index", "Catalog", new { area = "" }, new { @class = "btn btn-default" })
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+		}
+
+		@if (userCanCreate)
+		{
+			@Html.ActionLink("Create a New Product Category", "Create", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+		}
+		@if (userCanSyncImages)
+		{
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Sync Images (preview)", "SyncImages", new { eraseImageFileNameIfNotFound = true, searchForImageIfImageFileNameIsBlank = true, preview = true, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+			@:&nbsp;&nbsp;|&nbsp;&nbsp;
+			@Html.ActionLink("Sync Images Now!", "SyncImages", new { eraseImageFileNameIfNotFound = true, searchForImageIfImageFileNameIsBlank = true, preview = false, verbose = true, returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+		}
+		&nbsp;&nbsp;|&nbsp;&nbsp;
+		@Html.ActionLink("Update Counts", "UpdateCounts", new { returnToFrontEnd = Model.ReturnToFrontEnd }, new { @class = "btn btn-sm btn-info" })
+	</div>
+</div>
 <div class="row">
 	<div class="xs-12">
 		<p>

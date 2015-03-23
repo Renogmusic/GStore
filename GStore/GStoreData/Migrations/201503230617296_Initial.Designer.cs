@@ -2,7 +2,8 @@
 namespace GStoreData.Migrations
 {
     using System.CodeDom.Compiler;
-	using System.Data.Entity.Migrations.Infrastructure;
+    using System.Data.Entity.Migrations;
+    using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
@@ -12,7 +13,7 @@ namespace GStoreData.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201503160423110_Initial"; }
+            get { return "201503230617296_Initial"; }
         }
         
         string IMigrationMetadata.Source

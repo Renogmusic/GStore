@@ -94,17 +94,9 @@
     <Compile Include="Extensions\TreeExtensions.cs" />
     <Compile Include="Extensions\UserProfileExtensions.cs" />
     <Compile Include="Extensions\WhereIsActiveExtensions.cs" />
-    <Compile Include="Migrations\201503160423110_Initial.cs" />
-    <Compile Include="Migrations\201503160423110_Initial.Designer.cs">
-      <DependentUpon>201503160423110_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201503171941194_release2.cs" />
-    <Compile Include="Migrations\201503171941194_release2.Designer.cs">
-      <DependentUpon>201503171941194_release2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.cs" />
-    <Compile Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.Designer.cs">
-      <DependentUpon>201503210630021_AddStoreFrontColForBundleItem.cs</DependentUpon>
+    <Compile Include="Migrations\201503230617296_Initial.cs" />
+    <Compile Include="Migrations\201503230617296_Initial.Designer.cs">
+      <DependentUpon>201503230617296_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\OrderBundle.cs" />
     <Compile Include="Models\CartBundle.cs" />
@@ -174,10 +166,7 @@
     <Compile Include="Models\PageTemplateSection.cs" />
     <Compile Include="Models\Payment.cs" />
     <Compile Include="Models\Product.cs" />
-    <Compile Include="Models\ProductAttribute.cs" />
     <Compile Include="Models\ProductCategory.cs" />
-    <Compile Include="Models\ProductCategoryAttribute.cs" />
-    <Compile Include="Models\ProductReview.cs" />
     <Compile Include="Models\StoreBinding.cs" />
     <Compile Include="Models\StoreFront.cs" />
     <Compile Include="Models\StoreFrontConfiguration.cs" />
@@ -286,7 +275,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -326,14 +315,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201503160423110_Initial.resx">
-      <DependentUpon>201503160423110_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201503171941194_release2.resx">
-      <DependentUpon>201503171941194_release2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201503210630021_AddStoreFrontColForBundleItem.resx">
-      <DependentUpon>201503210630021_AddStoreFrontColForBundleItem.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201503230617296_Initial.resx">
+      <DependentUpon>201503230617296_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

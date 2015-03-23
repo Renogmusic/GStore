@@ -169,6 +169,47 @@
 				<dd>
 					@Html.DisplayFor(model => model.ImageName, "ProductCategoryFileInfo")
 				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductTypeSingle)
+					@Html.HelpLabelPopoverFor(model => model.ProductTypeSingle, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductTypeSingle)
+					<br />@Html.HelpLabelFor(model => model.ProductTypeSingle)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.ProductTypePlural)
+					@Html.HelpLabelPopoverFor(model => model.ProductTypePlural, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.ProductTypePlural)
+					<br />@Html.HelpLabelFor(model => model.ProductTypePlural)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.BundleTypeSingle)
+					@Html.HelpLabelPopoverFor(model => model.BundleTypeSingle, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.BundleTypeSingle)
+					<br />@Html.HelpLabelFor(model => model.BundleTypeSingle)
+				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.BundleTypePlural)
+					@Html.HelpLabelPopoverFor(model => model.BundleTypePlural, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.BundleTypePlural)
+					<br />@Html.HelpLabelFor(model => model.BundleTypePlural)
+				</dd>
+
 			</dl>
 		</div>
 		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">

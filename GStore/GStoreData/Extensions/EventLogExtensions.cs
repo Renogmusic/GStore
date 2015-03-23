@@ -393,7 +393,7 @@ namespace GStoreData
 			IGstoreDb newctx = ctx.NewContext();
 
 			SystemEvent newEvent = newEvent = newctx.SystemEvents.Create();
-			newEvent.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			newEvent.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			newEvent.Level = (int)level;
 			newEvent.LevelText = level.ToString();
@@ -484,7 +484,7 @@ namespace GStoreData
 			string message = "PageView"
 				+ " \n-Url: " + context.HttpContext.Request.RawUrl;
 
-			newEvent.SetBasicFields(context.HttpContext, context.RouteData, source, message, !context.HttpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			newEvent.SetBasicFields(context.HttpContext, context.RouteData, source, message, !context.HttpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			string simpleInfo = newEvent.SimpleInfo();
 			System.Diagnostics.Trace.Indent();
@@ -533,7 +533,7 @@ namespace GStoreData
 				+ " \n-Label: " + label.ToString()
 				+ " \n-Success: " + success.ToString();
 
-			newEvent.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, newctx.GetCurrentUserProfile(false, false), controller);
+			newEvent.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), newctx.GetCurrentUserProfile(false, false), controller);
 			newEvent.CartId = cartId;
 			newEvent.Category = category;
 			newEvent.CategoryUrlName = categoryUrlName;
@@ -591,7 +591,7 @@ namespace GStoreData
 				source = routeData.ToSourceString();
 			}
 
-			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			newLog.ToName = toName.OrDefault("(blank)");
 			newLog.ToAddress = toAddress.OrDefault("(blank)");
@@ -645,7 +645,7 @@ namespace GStoreData
 				source = routeData.ToSourceString();
 			}
 
-			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			newLog.ToPhone = toPhone.OrDefault("(blank)");
 			newLog.FromPhone = fromPhone.OrDefault("(blank)");
@@ -694,7 +694,7 @@ namespace GStoreData
 				source = routeData.ToSourceString();
 			}
 
-			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			newLog.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			string simpleInfo = newLog.SimpleInfo();
 			System.Diagnostics.Trace.Indent();
@@ -738,7 +738,7 @@ namespace GStoreData
 				source = routeData.ToSourceString();
 			}
 
-			badRequest.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.Identity.IsAuthenticated, ctx.GetCurrentUserProfile(false, false), controller);
+			badRequest.SetBasicFields(httpContext, routeData, source, message, !httpContext.User.IsRegistered(), ctx.GetCurrentUserProfile(false, false), controller);
 
 			string simpleInfo = badRequest.SimpleInfo();
 			System.Diagnostics.Trace.Indent();

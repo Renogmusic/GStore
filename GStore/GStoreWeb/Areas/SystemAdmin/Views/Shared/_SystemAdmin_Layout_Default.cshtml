@@ -55,7 +55,7 @@
 	<link rel="apple-touch-startup-image" href="~/Content/Server/Images/Logo/Logo.png" />
 
 	<script>
-		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var userName = @(Html.Raw((User.IsRegistered() ? "'" + Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(null));
 	</script>
 

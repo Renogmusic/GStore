@@ -641,36 +641,6 @@ namespace GStoreData
 
 		}
 
-		public static IQueryable<ProductReview> WhereIsActive(this IQueryable<ProductReview> query)
-		{
-			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
-		}
-		public static IQueryable<ProductReview> WhereIsActiveOnOrSelected(this IQueryable<ProductReview> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
-		{
-
-			int selectedValue = selectedId ?? 0;
-
-			return query.Where(data => data.ProductReviewId == selectedValue
-				||
-				(
-					(includePending || !data.IsPending)
-					&& (data.StartDateTimeUtc < dateTimeUtc)
-					&& (data.EndDateTimeUtc > dateTimeUtc)
-					&& (includePending || !data.Product.IsPending)
-					&& (data.Product.StartDateTimeUtc < dateTimeUtc)
-					&& (data.Product.EndDateTimeUtc > dateTimeUtc)
-					&& (includePending || !data.StoreFront.IsPending)
-					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
-					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
-					&& (includePending || !data.Client.IsPending)
-					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
-					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
-				)
-				);
-
-		}
-
-
 		/// <summary>
 		/// Returns true if store front and client (parent record) are both active
 		/// </summary>

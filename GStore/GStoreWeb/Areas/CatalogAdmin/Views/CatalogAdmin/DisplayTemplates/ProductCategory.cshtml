@@ -22,7 +22,7 @@
 			
 			</a>
 			@:&nbsp;&nbsp;&nbsp;&nbsp;Active Products: @(Model.Products.AsQueryable().WhereIsActive().Count()) / Total: @(Model.Products.Count)
-			@:&nbsp;&nbsp;&nbsp;&nbsp;Active Child Products: @(Model.ChildActiveCount)
+			@:&nbsp;&nbsp;&nbsp;&nbsp;Active Child Products Public/Registered: @(Model.ChildActiveCountForAnonymous.ToString("N0")) / @(Model.ChildActiveCountForRegistered.ToString("N0"))
 		@:</span>
 	}
 }

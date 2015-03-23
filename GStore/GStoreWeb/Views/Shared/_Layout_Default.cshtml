@@ -68,7 +68,7 @@
 	<meta name="description" content="@(metaDescription)" />
 	<meta name="keywords" content="@(metaKeywords)" />
 	<script>
-		var userName = @(Html.Raw((User.Identity.IsAuthenticated ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
+		var userName = @(Html.Raw((User.IsRegistered() ? "'" + this.Ajax.JavaScriptStringEncode(User.Identity.Name) + "'": "null" )));
 		var googleAnalyticsWebPropertyId = @(Html.GoogleAnalyticsWebPropertyIdValueJs(storeFrontConfig));
 	</script>
 	@Styles.Render("~/Themes/" + themeFolderName + "/Bootstrap.min.css")

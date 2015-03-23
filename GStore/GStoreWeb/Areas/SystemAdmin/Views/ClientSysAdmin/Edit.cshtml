@@ -1,5 +1,10 @@
 ﻿@model Client
-@{ ViewData.SetColDisplay(0, 2, 8); }
+@{ 
+	ViewData.SetColDisplay(0, 2, 8);
+	bool populateThemes = false;
+	bool populatePageTemplates = false;
+	bool populateSampleWebForms = false;
+}
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -45,6 +50,11 @@
 		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
 		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
+		@Html.EditorFor(model => populateThemes, "FieldCheckbox", new { labelText = "Populate Themes" })
+		@Html.EditorFor(model => populatePageTemplates, "FieldCheckbox", new { labelText = "Populate Page Templates" })
+		@Html.EditorFor(model => populateSampleWebForms, "FieldCheckbox", new { labelText = "Populate Sample Web Forms" })
+
+
 	</div>
 	
 	<div class="row">

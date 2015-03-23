@@ -38,7 +38,6 @@ namespace GStoreData.ListProvider
 		public IGStoreRepository<Models.ProductBundle> ProductBundles { get { return new GenericGStoreListSourceRepository<Models.ProductBundle>(); } }
 		public IGStoreRepository<Models.ProductBundleItem> ProductBundleItems { get { return new GenericGStoreListSourceRepository<Models.ProductBundleItem>(); } }
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreListSourceRepository<Models.ProductCategory>(); } }
-		public IGStoreRepository<Models.ProductReview> ProductReviews { get { return new GenericGStoreListSourceRepository<Models.ProductReview>(); } }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreListSourceRepository<Models.SecurityEvent>(); } }
 		public IGStoreRepository<Models.SmsSent> SmssSent { get { return new GenericGStoreListSourceRepository<Models.SmsSent>(); } }
 		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreListSourceRepository<Models.StoreFront>(); } }

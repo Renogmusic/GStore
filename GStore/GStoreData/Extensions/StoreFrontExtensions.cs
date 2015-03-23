@@ -71,7 +71,20 @@ namespace GStoreData
 			{
 				if (throwErrorIfNotFound)
 				{
-					string error = "No Store bindings in database, be sure to run the Seed method or Set Settings.InitializeEFCodeFirstMigrateLatest or Settings.InitializeEFCodeFirstDropCreate";
+					string error = "No Store bindings in database.";
+					if (db.StoreFronts.IsEmpty())
+					{
+						error = "No Store Fronts in database. Be sure database is seeded or force a seed of the database." + "\n" + error;
+					}
+					if (db.Clients.IsEmpty())
+					{
+						error = "No Clients in database. Be sure database is seeded or force a seed of the database." + "\n" + error;
+					}
+					if (Settings.AppDoNotSeedDatabase)
+					{
+						error += "\nSettings.AppDoNotSeedDatabase = true. Change this settings to false to allow the system to seed the database with client and store front data.";
+					}
+
 					throw new Exceptions.NoMatchingBindingException(error, request.Url);
 				}
 				return null;
@@ -408,7 +421,7 @@ namespace GStoreData
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
 				.WhereRegisteredAnonymousCheck(isRegistered)
-				.WhereShowInNavBarMenu()
+				.WhereShowInNavBarMenu(isRegistered)
 				.OrderBy(cat => cat.Order)
 				.ThenBy(cat => cat.Name)
 				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
@@ -425,7 +438,7 @@ namespace GStoreData
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
 				.WhereRegisteredAnonymousCheck(isRegistered)
-				.WhereShowInCatalogList()
+				.WhereShowInCatalogList(isRegistered)
 				.OrderBy(cat => cat.Order)
 				.ThenBy(cat => cat.Name)
 				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
@@ -441,7 +454,7 @@ namespace GStoreData
 			var query = storeFront.ProductCategories.AsQueryable()
 				.WhereIsActive()
 				.WhereRegisteredAnonymousCheck(isRegistered)
-				.WhereShowInCatalogByName()
+				.WhereShowInCatalogByName(isRegistered)
 				.OrderBy(cat => cat.Order)
 				.ThenBy(cat => cat.Name)
 				.AsTree(cat => cat.ProductCategoryId, cat => cat.ParentCategoryId);
@@ -478,10 +491,12 @@ namespace GStoreData
 			return (maxLevels > category.Depth && category.Entity.AllowChildCategoriesInMenu && category.ChildNodes.Any());
 		}
 
+
 		public static bool HasChildMenuItems(this TreeNode<NavBarItem> navBarItem, int maxLevels)
 		{
 			return (maxLevels > navBarItem.Depth && navBarItem.ChildNodes.Any());
 		}
+
 
 		public static string OutgoingMessageSignature(this StoreFront storeFront)
 		{
@@ -951,15 +966,21 @@ namespace GStoreData
 			foreach (ProductCategory category in categories)
 			{
 				//foreach category, calculate direct activecount
-				int activeCount = category.Products.AsQueryable().WhereIsActive().Count();
-				category.DirectActiveCount = activeCount;
+				int activeCountForAnonymous = category.Products.AsQueryable().WhereIsActive().Where(p => !p.ForRegisteredOnly).Count() + category.ProductBundles.AsQueryable().WhereIsActive().Where(p => !p.ForRegisteredOnly).Count();
+				category.DirectActiveCountForAnonymous = activeCountForAnonymous;
+
+				int activeCountForRegistered = category.Products.AsQueryable().WhereIsActive().Where(p => !p.ForAnonymousOnly).Count() + category.ProductBundles.AsQueryable().WhereIsActive().Where(p => !p.ForAnonymousOnly).Count();
+				category.DirectActiveCountForRegistered = activeCountForRegistered;
+
 			}
 
 			foreach (ProductCategory category in categories)
 			{
 				TreeNode<ProductCategory> categoryNode = categoriesTree.FindEntity(category);
-				int childActiveCount = categoryNode.ActiveCountWithChildren();
-				categoryNode.Entity.ChildActiveCount = childActiveCount;
+				int childActiveCountForAnonymous = categoryNode.ActiveCountWithChildrenForAnonymous();
+				int childActiveCountForRegistered = categoryNode.ActiveCountWithChildrenForRegistered();
+				categoryNode.Entity.ChildActiveCountForAnonymous = childActiveCountForAnonymous;
+				categoryNode.Entity.ChildActiveCountForRegistered = childActiveCountForRegistered;
 			}
 			storeDb.SaveChangesEx(false, false, false, false);
 		}
@@ -975,15 +996,56 @@ namespace GStoreData
 			storeDb.RecalculateProductCategoryActiveCount(storeFront);
 		}
 
-		private static int ActiveCountWithChildren(this TreeNode<ProductCategory> categoryNode)
+		private static int ActiveCountWithChildrenForAnonymous(this TreeNode<ProductCategory> categoryNode)
 		{
-			int count = categoryNode.Entity.DirectActiveCount;
+			int count = categoryNode.Entity.DirectActiveCountForAnonymous;
 			foreach (TreeNode<ProductCategory> childNode in categoryNode.ChildNodes)
 			{
-				count += childNode.ActiveCountWithChildren();
+				count += childNode.ActiveCountWithChildrenForAnonymous();
 			}
 
 			return count;
+		}
+
+		private static int ActiveCountWithChildrenForRegistered(this TreeNode<ProductCategory> categoryNode)
+		{
+			int count = categoryNode.Entity.DirectActiveCountForRegistered;
+			foreach (TreeNode<ProductCategory> childNode in categoryNode.ChildNodes)
+			{
+				count += childNode.ActiveCountWithChildrenForRegistered();
+			}
+
+			return count;
+		}
+
+		/// <summary>
+		/// Returns a path of this category up to the top
+		/// </summary>
+		/// <param name="category"></param>
+		/// <returns></returns>
+		public static string CategoryPath(this ProductCategory category, string delimiter = " -> ", int maxLevels = 10)
+		{
+			if (category == null)
+			{
+				throw new ArgumentNullException("category");
+			}
+			return category.CategoryPathRecurse(delimiter, maxLevels);
+		}
+
+		private static string CategoryPathRecurse(this ProductCategory category, string delimiter = " -> " , int maxLevels = 10, int currentLevel = 1)
+		{
+			if (category == null)
+			{
+				throw new ArgumentNullException("category");
+			}
+
+			string text = category.Name;
+
+			if (category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+				text = category.ParentCategory.CategoryPathRecurse(delimiter, maxLevels, currentLevel + 1) + delimiter + text;
+			}
+			return text;
 		}
 
 		/// <summary>
@@ -2123,10 +2185,18 @@ namespace GStoreData
 			ProductCategory record = db.ProductCategories.Create();
 
 			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
-			record.ChildActiveCount = 0;
-			record.DirectActiveCount = 0;
+			record.ChildActiveCountForAnonymous = 0;
+			record.ChildActiveCountForRegistered = 0;
+			record.DirectActiveCountForAnonymous = 0;
+			record.DirectActiveCountForRegistered = 0;
+
 			record.ImageName = viewModel.ImageName;
 			record.ParentCategoryId = viewModel.ParentCategoryId;
+			record.ProductTypeSingle = viewModel.ProductTypeSingle;
+			record.ProductTypePlural = viewModel.ProductTypePlural;
+			record.BundleTypeSingle = viewModel.BundleTypeSingle;
+			record.BundleTypePlural = viewModel.BundleTypePlural;
+
 			record.HideInMenuIfEmpty = viewModel.HideInMenuIfEmpty;
 			record.ShowInMenu = viewModel.ShowInMenu;
 			record.DisplayForDirectLinks = viewModel.DisplayForDirectLinks;
@@ -2187,6 +2257,11 @@ namespace GStoreData
 			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
 			record.ImageName = viewModel.ImageName;
 			record.ParentCategoryId = viewModel.ParentCategoryId;
+			record.ProductTypeSingle = viewModel.ProductTypeSingle;
+			record.ProductTypePlural = viewModel.ProductTypePlural;
+			record.BundleTypeSingle = viewModel.BundleTypeSingle;
+			record.BundleTypePlural = viewModel.BundleTypePlural;
+
 			record.HideInMenuIfEmpty = viewModel.HideInMenuIfEmpty;
 			record.ShowInMenu = viewModel.ShowInMenu;
 			record.ShowInCatalogIfEmpty = viewModel.ShowInCatalogIfEmpty;
@@ -2734,7 +2809,89 @@ namespace GStoreData
 		}
 
 
+		/// <summary>
+		/// Creates a Product Bundle item with basic settings for a fast add admin command
+		/// This overload uses a Product entity and a ProductBundleId int value
+		/// </summary>
+		/// <param name="db"></param>
+		/// <param name="productBundleId"></param>
+		/// <param name="product"></param>
+		/// <param name="storeFront"></param>
+		/// <param name="userProfile"></param>
+		/// <param name="quantity"></param>
+		/// <returns></returns>
+		public static ProductBundleItem CreateProductBundleItemFastAdd(this IGstoreDb db, int productBundleId, Product product, StoreFront storeFront, UserProfile userProfile, int quantity = 1)
+		{
+			if (productBundleId == 0)
+			{
+				throw new ArgumentNullException("productBundleId cannot be 0");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+
+			ProductBundle productBundle = storeFront.ProductBundles.Where(pb => pb.ProductBundleId == productBundleId).SingleOrDefault();
+			if (productBundle == null)
+			{
+				throw new ApplicationException("Product Bundle not found by id: " + productBundleId);
+			}
+
+			return db.CreateProductBundleItemFastAdd(productBundle, product, storeFront, userProfile, quantity);
+		}
+
+		/// <summary>
+		/// Creates a Product Bundle item with basic settings for a fast add admin command
+		/// This overload uses a ProductBundle entity and a ProductId int value
+		/// </summary>
+		/// <param name="db"></param>
+		/// <param name="bundle"></param>
+		/// <param name="productId"></param>
+		/// <param name="storeFront"></param>
+		/// <param name="userProfile"></param>
+		/// <param name="quantity"></param>
+		/// <returns></returns>
 		public static ProductBundleItem CreateProductBundleItemFastAdd(this IGstoreDb db, ProductBundle bundle, int productId, StoreFront storeFront, UserProfile userProfile, int quantity = 1)
+		{
+			if (bundle == null)
+			{
+				throw new ArgumentNullException("bundle");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (productId == 0)
+			{
+				throw new ApplicationException("ProductId cannot be zero");
+			}
+
+			Product product = storeFront.Products.Where(p => p.ProductId == productId).SingleOrDefault();
+			if (product == null)
+			{
+				throw new ApplicationException("Product not found by id: " + productId);
+			}
+
+			return db.CreateProductBundleItemFastAdd(bundle, product, storeFront, userProfile, quantity);
+
+		}
+
+		/// <summary>
+		/// Creates a Product Bundle item with basic settings for a fast add admin command
+		/// This is the prefered overload
+		/// </summary>
+		/// <param name="db"></param>
+		/// <param name="bundle"></param>
+		/// <param name="product"></param>
+		/// <param name="storeFront"></param>
+		/// <param name="userProfile"></param>
+		/// <param name="quantity"></param>
+		/// <returns></returns>
+		public static ProductBundleItem CreateProductBundleItemFastAdd(this IGstoreDb db, ProductBundle bundle, Product product, StoreFront storeFront, UserProfile userProfile, int quantity = 1)
 		{
 			if (bundle == null)
 			{
@@ -2748,21 +2905,15 @@ namespace GStoreData
 			{
 				throw new ArgumentNullException("userProfile");
 			}
-			if (productId == 0)
-			{
-				throw new ApplicationException("ProductId cannot be zero");
-			}
-
-			Product product = storeFront.Products.Where(p => p.ProductId == productId).SingleOrDefault();
 			if (product == null)
 			{
-				throw new ApplicationException("Product not found by id: " + productId);
+				throw new ArgumentNullException("product");
 			}
 
 			ProductBundleItem bundleItem = db.ProductBundleItems.Create();
 			bundleItem.SetDefaultsForNew(bundle);
 
-			bundleItem.Quantity = 1;
+			bundleItem.Quantity = quantity;
 			bundleItem.ProductBundle = bundle;
 			bundleItem.ProductBundleId = bundle.ProductBundleId;
 
@@ -2972,9 +3123,16 @@ namespace GStoreData
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IQueryable<ProductCategory> WhereShowInNavBarMenu(this IQueryable<ProductCategory> query)
+		public static IQueryable<ProductCategory> WhereShowInNavBarMenu(this IQueryable<ProductCategory> query, bool isRegistered)
 		{
-			return query.Where(cat => cat.ShowInMenu && (!cat.HideInMenuIfEmpty || cat.ChildActiveCount > 0));
+			if (isRegistered)
+			{
+				return query.Where(cat => cat.ShowInMenu && (!cat.HideInMenuIfEmpty || cat.ChildActiveCountForRegistered > 0));
+			}
+			else
+			{
+				return query.Where(cat => cat.ShowInMenu && (!cat.HideInMenuIfEmpty || cat.ChildActiveCountForAnonymous > 0));
+			}
 		}
 
 		/// <summary>
@@ -2982,15 +3140,28 @@ namespace GStoreData
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IQueryable<ProductCategory> WhereShowInCatalogList(this IQueryable<ProductCategory> query)
+		public static IQueryable<ProductCategory> WhereShowInCatalogList(this IQueryable<ProductCategory> query, bool isRegistered)
 		{
-			return query.Where(cat =>
-				(cat.ChildActiveCount > 0)
-				||
-				(cat.ShowInCatalogIfEmpty)
-				||
-				(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
-				);
+			if (isRegistered)
+			{
+				return query.Where(cat =>
+					(cat.ShowInCatalogIfEmpty)
+					||
+					(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+					||
+					(cat.ChildActiveCountForRegistered != 0)
+					);
+			}
+			else
+			{
+				return query.Where(cat =>
+					(cat.ShowInCatalogIfEmpty)
+					||
+					(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+					||
+					(cat.ChildActiveCountForAnonymous != 0)
+					);
+			}
 		}
 
 		/// <summary>
@@ -2998,17 +3169,32 @@ namespace GStoreData
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		public static IQueryable<ProductCategory> WhereShowInCatalogByName(this IQueryable<ProductCategory> query)
+		public static IQueryable<ProductCategory> WhereShowInCatalogByName(this IQueryable<ProductCategory> query, bool isRegistered)
 		{
-			return query.Where(cat =>
-				cat.DisplayForDirectLinks
-				||
-				(cat.ChildActiveCount > 0)
-				||
-				(cat.ShowInCatalogIfEmpty)
-				||
-				(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
-				);
+			if (isRegistered)
+			{
+				return query.Where(cat =>
+					cat.DisplayForDirectLinks
+					||
+					(cat.ShowInCatalogIfEmpty)
+					||
+					(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+					||
+					(cat.ChildActiveCountForRegistered != 0)
+					);
+			}
+			else
+			{
+				return query.Where(cat =>
+					cat.DisplayForDirectLinks
+					||
+					(cat.ShowInCatalogIfEmpty)
+					||
+					(cat.ShowInMenu && (!cat.HideInMenuIfEmpty))
+					||
+					(cat.ChildActiveCountForAnonymous != 0)
+					);
+			}
 		}
 
 		/// <summary>
@@ -3721,7 +3907,7 @@ namespace GStoreData
 					if (!string.IsNullOrWhiteSpace(token.access_token))
 					{
 						//token appears good
-						controller.AddUserMessage("PayPal Test Passed!", "PayPal tested successfully using the " + (useSandbox ? " TEST" : " LIVE") + " server", UserMessageType.Danger);
+						controller.AddUserMessage("PayPal Test Passed!", "PayPal tested successfully using the " + (useSandbox ? " TEST" : " LIVE") + " server", UserMessageType.Success);
 						return true;
 					}
 					controller.AddUserMessage("PayPal Test Failed!", "PayPal test failed using the " + (useSandbox ? " TEST" : " LIVE") + " server", UserMessageType.Danger);

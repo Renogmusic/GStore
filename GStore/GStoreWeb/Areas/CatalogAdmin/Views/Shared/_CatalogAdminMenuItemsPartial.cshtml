@@ -1,26 +1,33 @@
-﻿<ul class="nav navbar-nav">
+﻿@model CatalogAdminViewModel
+@{
+	StoreFront storeFront = Model.StoreFront;
+}
+<ul class="nav navbar-nav">
 	<!-- Dynamic Catalog Admin Menu -->
 	@if (Html.UserHasPermission(GStoreAction.Categories_CatalogAdminMenuItem) && Html.UserHasPermission(GStoreAction.Categories_Manager))
 	{
 		<!-- Categories Menu Item -->
+		string categoryText = "Category Manager (" + storeFront.ProductCategories.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + storeFront.ProductCategories.Count.ToString("N0") + ")";
 		<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-			@Html.ActionLink("Category Manager", "Manager", "CategoryAdmin", null, new { accesskey = "c" })
+			@Html.ActionLink(categoryText, "Manager", "CategoryAdmin", null, new { accesskey = "c" })
 		</li>
 	}
 
 	@if (Html.UserHasPermission(GStoreAction.Categories_CatalogAdminMenuItem) && Html.UserHasPermission(GStoreAction.Categories_Manager))
 	{
 		<!-- Products Menu Item -->
+		string productText = "Product Manager (" + storeFront.Products.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + storeFront.Products.Count.ToString("N0") + ")";
 		<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-			@Html.ActionLink("Product Manager", "Manager", "ProductAdmin", null, new { accesskey = "p" })
+			@Html.ActionLink(productText, "Manager", "ProductAdmin", null, new { accesskey = "p" })
 		</li>
 	}
 
 	@if (Html.UserHasPermission(GStoreAction.Bundles_CatalogAdminMenuItem) && Html.UserHasPermission(GStoreAction.Bundles_Manager))
 	{
+		string bundleText = "Bundle Manager (" + storeFront.ProductBundles.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + storeFront.ProductBundles.Count.ToString("N0") + ")";
 		<!-- Bundles Menu Item -->
 		<li class="AdminMenuItemLevel2 AdminMenuItemLevel2">
-			@Html.ActionLink("Bundle Manager", "Manager", "BundleAdmin", null, new { accesskey = "b" })
+			@Html.ActionLink(bundleText, "Manager", "BundleAdmin", null, new { accesskey = "b" })
 		</li>
 	}
 

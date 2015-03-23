@@ -157,7 +157,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Products_Edit)]
-		public ActionResult Edit(ProductEditAdminViewModel viewModel, string saveAndView)
+		public ActionResult Edit(ProductEditAdminViewModel viewModel, string saveAndView, int? addToBundleId, string addTobundle, int? addToBundleQty)
 		{
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
@@ -181,9 +181,16 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			if (ModelState.IsValid && nameIsValid)
 			{
 				ProcessFileUploads(viewModel, storeFront);
+				bool addedToBundle = false;
+				if (!string.IsNullOrEmpty(addTobundle) && addToBundleId.HasValue && addToBundleId.Value != 0)
+				{
+					ProductBundleItem newItem = GStoreDb.CreateProductBundleItemFastAdd(addToBundleId.Value, product, storeFront, CurrentUserProfileOrThrow, addToBundleQty ?? 1);
+					addedToBundle = true;
+				}
+
 				product = GStoreDb.UpdateProduct(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Product updated successfully!", "Product updated successfully. Product '" + product.Name.ToHtml() + "' [" + product.ProductId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
-				if (!string.IsNullOrWhiteSpace(saveAndView))
+				if (!string.IsNullOrWhiteSpace(saveAndView) || addedToBundle)
 				{
 					return RedirectToAction("Details", new { id = product.ProductId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
 				}
@@ -193,7 +200,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				}
 				if (storeFront.Authorization_IsAuthorized(CurrentUserProfileOrThrow, GStoreAction.Products_Manager))
 				{
-					return RedirectToAction("Manager");
+					return RedirectToAction("Manager", new { productCategoryId = viewModel.ProductCategoryId });
 				}
 				return RedirectToAction("Index", "CatalogAdmin");
 			}

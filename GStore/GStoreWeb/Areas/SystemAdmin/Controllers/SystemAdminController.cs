@@ -10,8 +10,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 {
 	public class SystemAdminController : AreaBaseController.SystemAdminAreaBaseController
     {
-
-		        // GET: SystemAdmin/SystemAdmin
+        // GET: SystemAdmin/SystemAdmin
         public ActionResult Index(int? clientId, int? storeFrontId)
         {
 			UserProfile profile = CurrentUserProfileOrNull;
@@ -32,28 +31,81 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			catch(GStoreData.Exceptions.StoreFrontInactiveException exSFI)
 			{
 				hasErrorMessage = true;
-				string sfiMessageHtml = "StoreFront is inactive.\n"
-					+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + (exSFI.StoreFront.CurrentConfigOrAny() == null ? "" : exSFI.StoreFront.CurrentConfigOrAny().Name.ToHtml()) + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
-					+ exSFI.Message.ToHtml();
-				AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, UserMessageType.Danger);
+				StoreFrontConfiguration config = exSFI.StoreFront.CurrentConfigOrAny();
+				if (config == null)
+				{
+					string sfiMessageHtml = "Store Front is inactive for this URL.\n"
+						+ "\nStore Front Id: " + exSFI.StoreFront.StoreFrontId + " has no configuration defined."
+						+ "\n<a href=\"" + this.Url.Action("CreateConfig", "StoreFrontSysAdmin", new { id = exSFI.StoreFront.StoreFrontId }) + "\">Click here to Create a Default Configuration for Store Front Id: " + exSFI.StoreFront.StoreFrontId.ToString().ToHtml() + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
+						+ exSFI.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, UserMessageType.Danger);
+				}
+				else if (!config.IsActiveDirect())
+				{
+					string configName = config.Name;
+					string sfiMessageHtml = "Store Front is inactive for this Url.\n"
+						+ "\nStore Front '" + config.Name.ToHtml() + "' [" + config.StoreFrontId + "] has an Inactive configuration."
+						+ "\n<a href=\"" + this.Url.Action("ActivateConfig", "StoreFrontSysAdmin", new { id = config.StoreFrontConfigurationId }) + "\">Click here to Activate the inactive Configuration for Store Front " + configName.ToHtml() + " [" + config.StoreFrontId + "]" + "</a>\n"
+						+ exSFI.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, UserMessageType.Danger);
+				}
+				else
+				{
+					string configName = config == null ? "No Store Front Config found for Store Front Id: " + exSFI.StoreFront.StoreFrontId : config.Name;
+					string sfiMessageHtml = "StoreFront is inactive.\n"
+						+ "<a href=\"" + this.Url.Action("ActivateCurrentInactiveStoreFront") + "\">Click here to Activate StoreFront: " + configName.ToHtml() + " [" + exSFI.StoreFront.StoreFrontId + "]" + "</a>\n"
+						+ exSFI.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: Inactive", sfiMessageHtml, UserMessageType.Danger);
+				}
 			}
 			catch (GStoreData.Exceptions.NoMatchingBindingException exNMB)
 			{
 				hasErrorMessage = true;
-				if (GStoreDb.StoreFronts.IsEmpty())
+				if (GStoreDb.Clients.IsEmpty())
+				{
+					string nosfMessage = "There are no No Clients in the database.\n"
+						+ "<a href=\"" + this.Url.Action("ForceSeed") + "\">Click here to Create Force a Seed of the Database</a>\n"
+						+ "\n<a href=\"" + this.Url.Action("Create", "ClientSysAdmin") + "\">Click here to Create a new Client</a>\n"
+						+ exNMB.Message.ToHtml();
+					AddUserMessageBottom("Error getting current storefront: No matching bindings", nosfMessage, UserMessageType.Danger);
+				}
+				else if (GStoreDb.StoreFronts.IsEmpty())
 				{
 					string nosfMessage = "There are no No Store Fronts in the database.\n"
 						+ "<a href=\"" + this.Url.Action("ForceSeed") + "\">Click here to Create Force a Seed of the Database</a>\n"
+						+ "\n<a href=\"" + this.Url.Action("Create", "StoreFrontSysAdmin") + "\">Click here to Create a new Store Front</a>\n"
 						+ exNMB.Message.ToHtml();
 					AddUserMessageBottom("Error getting current storefront: No matching bindings", nosfMessage, UserMessageType.Danger);
 				}
 				else
 				{
 					StoreFront guessStoreFront = GStoreDb.SeedAutoMapStoreFrontBestGuess();
-					string nmbMessageHtml = "No store front found for this Url.\n"
-						+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + guessStoreFront.CurrentConfigOrAny().Name.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
-						+ exNMB.Message.ToHtml();
-					AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
+					StoreFrontConfiguration config = guessStoreFront.CurrentConfigOrAny();
+					if (config == null)
+					{
+						string nmbMessageHtml = "No store front found for this Url.\n"
+							+ "\nThe best guess store front id: " + guessStoreFront.StoreFrontId + " has no configuration defined."
+							+ "\n<a href=\"" + this.Url.Action("CreateConfig", "StoreFrontSysAdmin", new { id = guessStoreFront.StoreFrontId } ) + "\">Click here to Create a Default Configuration for Store Front Id: " + guessStoreFront.StoreFrontId.ToString().ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ exNMB.Message.ToHtml();
+						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
+					}
+					else if (!config.IsActiveDirect())
+					{
+						string configName = config.Name;
+						string nmbMessageHtml = "No store front found for this Url.\n"
+							+ "\nThe best guess store front '" + config.Name.ToHtml() + "' [" + guessStoreFront.StoreFrontId + "] has an Inactive configuration."
+							+ "\n<a href=\"" + this.Url.Action("ActivateConfig", "StoreFrontSysAdmin", new { id = config.StoreFrontConfigurationId }) + "\">Click here to Activate the inactive Configuration for Store Front " + configName.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ exNMB.Message.ToHtml();
+						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
+					}
+					else
+					{
+						string configName = config.Name;
+						string nmbMessageHtml = "No store front found for this Url.\n"
+							+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + configName.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ exNMB.Message.ToHtml();
+						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
+					}
 				}
 				
 			}
@@ -66,7 +118,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 
 			if (hasErrorMessage)
 			{
-				AddUserMessage("Errors found!!", "Errors were found in the system configuration. See bottom of this page for details or <a href=\"#UserMessagesBottom\">click here<a/>", UserMessageType.Danger);
+				AddUserMessage("Errors found!!", "Errors were found in the system configuration for the current URL. See bottom of this page for details or <a href=\"#UserMessagesBottom\">click here<a/>", UserMessageType.Danger);
 			}
 
 			ViewBag.StoreFrontFilterList = StoreFrontFilterListWithAllAndNull(clientId, storeFrontId);
@@ -147,9 +199,16 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			}
 
 			StoreBinding binding = inactiveBindings[0];
-			this.ActivateStoreFrontClientBindingAndConfig(binding);
 
-			AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.CurrentConfigOrAny().Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]", UserMessageType.Success);
+			bool result = this.ActivateStoreFrontClientBindingAndConfig(binding);
+			if (result)
+			{
+				AddUserMessage("ActivateCurrentInactiveStoreFront Success!", "Re-activated store front '" + binding.StoreFront.CurrentConfigOrAny().Name.ToHtml() + "' [" + binding.StoreFront.StoreFrontId + "]", UserMessageType.Success);
+			}
+			else
+			{
+				AddUserMessage("ActivateCurrentInactiveStoreFront Failed!", "Could not re-activate store front [" + binding.StoreFront.StoreFrontId + "]\n<br/><a href=\"" + Url.Action("CreateConfig", "StoreFrontSysAdmin", new { id = binding.StoreFrontId }) + "\">Click here to create a new config for this store front</a>", UserMessageType.Danger);
+			}
 
 			return RedirectToAction("Index");
 		}
@@ -273,9 +332,18 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			return RedirectToAction("Index");
 		}
 
-		public PartialViewResult RecordSummary(int? clientId)
+		public PartialViewResult RecordSummary(int? clientId, int? storeFrontId, bool? clientIdChanged)
 		{
-			return PartialView("_RecordSummaryPartial", clientId);
+			if (clientIdChanged ?? false)
+			{
+				storeFrontId = null;
+			}
+			if (ViewData.ModelState.ContainsKey("StoreFrontId"))
+			{
+				ViewData.ModelState.Remove("StoreFrontId");
+			}
+			Tuple<int?, int?> viewModel = new Tuple<int?, int?>(clientId, storeFrontId);
+			return PartialView("_RecordSummaryPartial", viewModel);
 		}
 
 	}

@@ -24,5 +24,4 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 			base.Seed(context);
 		}
 	}
-
 }

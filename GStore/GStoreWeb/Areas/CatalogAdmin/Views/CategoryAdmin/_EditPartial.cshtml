@@ -129,6 +129,12 @@
 					@Html.DisplayFor(model => model.ImageName, "ProductCategoryFileInfo")
 				</div>
 			</div>
+
+			@Html.EditorFor(model => model.ProductTypeSingle, "FieldText")
+			@Html.EditorFor(model => model.ProductTypePlural, "FieldText")
+			@Html.EditorFor(model => model.BundleTypeSingle, "FieldText")
+			@Html.EditorFor(model => model.BundleTypePlural, "FieldText")
+
 		</div>
 
 		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">

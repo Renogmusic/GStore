@@ -6,10 +6,16 @@
 	int colOffset = ViewData.ColOffset();
 	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
 	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	string labelText = ViewData.LabelText();
+	if (string.IsNullOrEmpty(labelText))
+	{
+		labelText = Html.DisplayNameForModel().ToString();
+	}
+
 	if (Model != null)
 	{
 		<div class="form-group">
-			@Html.LabelForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+			@Html.LabelForModel(labelText, new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
 			<div class="col-md-@(colData) title-align">
 				@Html.DisplayFor(model => model.ParentNavBarItem, new { htmlAttributes = new { @class = "form-control" } })
 				@if (useHelpLabelPopover)

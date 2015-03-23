@@ -342,13 +342,13 @@ namespace GStoreData.ControllerBase
 				throw new ApplicationException("Page is null");
 			}
 
-			if (page.ForRegisteredOnly && !User.Identity.IsAuthenticated)
+			if (page.ForRegisteredOnly && !User.IsRegistered())
 			{
 				AddUserMessage("Log in required", "Please log in to view this page. URL: " + Request.RawUrl.ToHtml(), UserMessageType.Danger);
 				RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl }).ExecuteResult(this.ControllerContext);
 			}
 
-			if (page.ForAnonymousOnly && User.Identity.IsAuthenticated)
+			if (page.ForAnonymousOnly && User.IsRegistered())
 			{
 				AddUserMessage("Page", "The page you tried to view is for Anonymous users only. Log off to view this page. URL: " + Request.RawUrl.ToHtml(), UserMessageType.Info);
 				RedirectToAction("Index", "Profile", null).ExecuteResult(this.ControllerContext);

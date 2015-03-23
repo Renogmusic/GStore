@@ -34,6 +34,26 @@ namespace GStoreData.Models
 		[Display(Name = "Product Category")]
 		public virtual ProductCategory ParentCategory { get; set; }
 
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Product Type Single", Description = "Singular Name used when showing a Product for this category. \nExample: Product, Item, Song, Toy.\nDefault: Item")]
+		public string ProductTypeSingle { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Product Type Plural", Description = "Singular Name used when showing a list of Products for this category. \nExample: Products, Items, Songs, Toys.\nDefault: Items")]
+		public string ProductTypePlural { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Bundle Type Single", Description="Singular Name used when showing a bundle for this category. \nExample: Bundle, Package, Album, Collection.\nDefault: Bundle")]
+		public string BundleTypeSingle { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Bundle Type Plural", Description = "Plural Name used when showing a list of bundles for this category. \nExample: Bundles, Packages, Albums, Collections.\nDefault: Bundles")]
+		public string BundleTypePlural { get; set; }
+
 		[Display(Name = "Allow child Categories in Menu")]
 		public bool AllowChildCategoriesInMenu { get; set; }
 
@@ -61,11 +81,17 @@ namespace GStoreData.Models
 		[Display(Name = "Show a Divider after this item")]
 		public bool UseDividerAfterOnMenu { get; set; }
 
-		[Display(Name = "Direct Active Product Count")]
-		public int DirectActiveCount { get; set; }
+		[Display(Name = "Direct Active Item Count for Anonymous")]
+		public int DirectActiveCountForAnonymous { get; set; }
 
-		[Display(Name = "Child Active Product Count")]
-		public int ChildActiveCount { get; set; }
+		[Display(Name = "Direct Active Item Count for Registered")]
+		public int DirectActiveCountForRegistered { get; set; }
+
+		[Display(Name = "Child Active Product Count for Anonymous")]
+		public int ChildActiveCountForAnonymous { get; set; }
+
+		[Display(Name = "Child Active Product Count for Registered")]
+		public int ChildActiveCountForRegistered { get; set; }
 
 		[Display(Name = "Theme Id", Description = "Theme for Category Details page and products that do not have a theme defined. Leave blank to use the store catalog theme")]
 		public int? ThemeId { get; set; }

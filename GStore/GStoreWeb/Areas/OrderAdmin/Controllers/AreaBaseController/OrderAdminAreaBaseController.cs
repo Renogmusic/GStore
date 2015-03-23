@@ -1,5 +1,6 @@
 ﻿using GStoreData.Identity;
 using GStoreData.Models;
+using GStoreData.AppHtmlHelpers;
 
 namespace GStoreWeb.Areas.OrderAdmin.Controllers.AreaBaseController
 {
@@ -23,7 +24,7 @@ namespace GStoreWeb.Areas.OrderAdmin.Controllers.AreaBaseController
 
 		protected override sealed void HandleUnknownAction(string actionName)
 		{
-			if (!User.Identity.IsAuthenticated)
+			if (!User.IsRegistered())
 			{
 				this.BounceToLogin("You must log in to view this page");
 				return;

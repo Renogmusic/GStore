@@ -1,6 +1,7 @@
 ﻿@model MenuViewModel
 <!-- NavBar Catalog Menu-->
 @{
+	bool isRegistered = User.IsRegistered();
 	int navBarCatalogMaxLevels = 6;
 	if (Model.StoreFront != null)
 	{
@@ -18,16 +19,16 @@
 		{
 			//Level 1 (root)
 			bool level1HasChildMenuItems  = level1Category.HasChildMenuItems(navBarCatalogMaxLevels);
-			@Html.CatalogMenuItemStart(level1Category, 1, navBarCatalogMaxLevels)
+			@Html.CatalogMenuItemStart(level1Category, 1, navBarCatalogMaxLevels, isRegistered)
 			if (level1HasChildMenuItems)
 			{
 				@Html.CatalogMenuChildContainerStart(level1Category, 1, navBarCatalogMaxLevels)
-				@Html.CatalogMenuItemAllLink(level1Category, 1, navBarCatalogMaxLevels)
+				@Html.CatalogMenuItemAllLink(level1Category, 1, navBarCatalogMaxLevels, isRegistered)
 				foreach (TreeNode<ProductCategory> level2Category in level1Category.ChildNodes)
 				{
 					//Level 2
 					bool level2HasChildMenuItems = level2Category.HasChildMenuItems(navBarCatalogMaxLevels);
-					@Html.CatalogMenuItemStart(level2Category, 2, navBarCatalogMaxLevels)
+					@Html.CatalogMenuItemStart(level2Category, 2, navBarCatalogMaxLevels, isRegistered)
 					if (level2HasChildMenuItems) 
 					{
 						@Html.CatalogMenuChildContainerStart(level2Category, 2, navBarCatalogMaxLevels)
@@ -35,7 +36,7 @@
 						{
 							//Level 3
 							bool level3HasChildMenuItems = level3Category.HasChildMenuItems(navBarCatalogMaxLevels);
-							@Html.CatalogMenuItemStart(level3Category, 3, navBarCatalogMaxLevels)
+							@Html.CatalogMenuItemStart(level3Category, 3, navBarCatalogMaxLevels, isRegistered)
 							if (level3HasChildMenuItems)
 							{
 								@Html.CatalogMenuChildContainerStart(level3Category, 3, navBarCatalogMaxLevels)
@@ -43,7 +44,7 @@
 								{
 									//Level 4
 									bool level4HasChildMenuItems = level4Category.HasChildMenuItems(navBarCatalogMaxLevels);
-									@Html.CatalogMenuItemStart(level4Category, 4, navBarCatalogMaxLevels)
+									@Html.CatalogMenuItemStart(level4Category, 4, navBarCatalogMaxLevels, isRegistered)
 									if (level4HasChildMenuItems)
 									{
 										@Html.CatalogMenuChildContainerStart(level4Category, 4, navBarCatalogMaxLevels)
@@ -51,14 +52,14 @@
 										{
 											//Level 5
 											bool level5HasChildMenuItems = level5Category.HasChildMenuItems(navBarCatalogMaxLevels);
-											@Html.CatalogMenuItemStart(level5Category, 5, navBarCatalogMaxLevels)
+											@Html.CatalogMenuItemStart(level5Category, 5, navBarCatalogMaxLevels, isRegistered)
 											if (level5HasChildMenuItems)
 											{
 												@Html.CatalogMenuChildContainerStart(level5Category, 5, navBarCatalogMaxLevels)
 												foreach (TreeNode<ProductCategory> level6Category in level5Category.ChildNodes)
 												{
 													//Level 6
-													@Html.CatalogMenuItemStart(level6Category, 6, navBarCatalogMaxLevels)
+													@Html.CatalogMenuItemStart(level6Category, 6, navBarCatalogMaxLevels, isRegistered)
 													@Html.CatalogMenuItemEnd(level6Category, 6, navBarCatalogMaxLevels)
 												}
 												@Html.CatalogMenuChildContainerEnd(level1Category, 5, navBarCatalogMaxLevels)

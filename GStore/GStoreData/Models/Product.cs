@@ -74,9 +74,6 @@ namespace GStoreData.Models
 		[Display(Name = "Max Quantity Per Order or 0 for no limit")]
 		public int MaxQuantityPerOrder { get; set; }
 
-		[Display(Name = "Product Reviews")]
-		public ICollection<ProductReview> ProductReviews { get; set; }
-
 		[Required]
 		[Display(Name="Unit Price")]
 		public decimal? BaseUnitPrice { get; set; }

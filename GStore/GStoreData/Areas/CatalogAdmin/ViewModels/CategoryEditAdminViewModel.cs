@@ -71,6 +71,10 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			this.Order = productCategory.Order;
 			this.ParentCategory = productCategory.ParentCategory;
 			this.ParentCategoryId = productCategory.ParentCategoryId;
+			this.ProductTypeSingle = productCategory.ProductTypeSingle;
+			this.ProductTypePlural = productCategory.ProductTypePlural;
+			this.BundleTypeSingle = productCategory.BundleTypeSingle;
+			this.BundleTypePlural = productCategory.BundleTypePlural;
 			this.StartDateTimeUtc = productCategory.StartDateTimeUtc;
 			this.StoreFront = productCategory.StoreFront;
 			this.StoreFrontId = productCategory.StoreFrontId;
@@ -171,6 +175,26 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 
 		[Display(Name = "Parent Category Id", Description = "Parent Category Id; use this to make a category into a sub-category.")]
 		public int? ParentCategoryId { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Product Type Single", Description = "Singular Name used when showing a Product for this category. \nExample: Product, Item, Song, Toy.\nDefault: Item")]
+		public string ProductTypeSingle { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Product Type Plural", Description = "Singular Name used when showing a list of Products for this category. \nExample: Products, Items, Songs, Toys.\nDefault: Items")]
+		public string ProductTypePlural { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Bundle Type Single", Description = "Singular Name used when showing a bundle for this category. \nExample: Bundle, Package, Album, Collection.\nDefault: Bundle")]
+		public string BundleTypeSingle { get; set; }
+
+		[Required]
+		[MaxLength(100)]
+		[Display(Name = "Bundle Type Plural", Description = "Plural Name used when showing a list of bundles for this category. \nExample: Bundles, Packages, Albums, Collections.\nDefault: Bundles")]
+		public string BundleTypePlural { get; set; }
 
 		[Display(Name = "Add Divider Before", Description = "Check this box to add a divider before this item in a dropdown menu.")]
 		public bool UseDividerAfterOnMenu { get; set; }

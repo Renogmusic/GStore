@@ -124,8 +124,9 @@ namespace GStoreData.ListProvider
 			return DeleteById(GetKeyFieldValue(entity), throwErrorIfNotFound);
 		}
 
-		public virtual bool DeleteRange(IEnumerable<TEntity> entities)
+		public virtual int DeleteRange(IEnumerable<TEntity> entities)
 		{
+			int recordCount = entities.Count();
 			foreach (var entity in entities)
 			{
 				if (_list.Contains(entity))
@@ -133,7 +134,7 @@ namespace GStoreData.ListProvider
 					_list.Remove(entity);
 				}
 			}
-			return true;
+			return recordCount;
 		}
 
 		public virtual TEntity Update(TEntity entity)

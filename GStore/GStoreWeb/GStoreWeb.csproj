@@ -36,6 +36,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <MvcBuildViews>true</MvcBuildViews>
+    <BaseIntermediateOutputPath>..\bin</BaseIntermediateOutputPath>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
@@ -1034,6 +1035,10 @@
     <Content Include="Content\bootstrap\badges.less" />
     <Content Include="Content\bootstrap\alerts.less" />
     <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\DisplayTemplates\Bundles.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\FilterProductCategoryIdWithLinks.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\EditorTemplates\ProductAddToBundle.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\RecordSummary.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\RecordSummary.cshtml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -2046,4 +2051,17 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <PropertyGroup>
+    <_EnableCleanOnBuildForMvcViews Condition=" '$(_EnableCleanOnBuildForMvcViews)'=='' ">true</_EnableCleanOnBuildForMvcViews>
+  </PropertyGroup>
+  <Target Name="CleanupForBuildMvcViews" Condition=" '$(_EnableCleanOnBuildForMvcViews)'=='true' and '$(MVCBuildViews)'=='true' " BeforeTargets="MvcBuildViews">
+    <ItemGroup>
+      <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\Package\**\*" />
+      <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\TransformWebConfig\**\*" />
+      <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\CSAutoParameterize\**\*" />
+      <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\TempPE\**\*" />
+    </ItemGroup>
+
+    <Delete Files="@(_TempWebConfigToDelete)"/>
+  </Target>
 </Project>

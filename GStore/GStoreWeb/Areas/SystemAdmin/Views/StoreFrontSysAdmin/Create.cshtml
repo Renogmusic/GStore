@@ -1,6 +1,10 @@
 ﻿@model StoreFront
-
-@{ ViewData.SetColDisplay(0, 2, 8); }
+@{
+	ViewData.SetColDisplay(0, 2, 8);
+	bool populateProducts = true;
+	bool populateDiscounts = true;
+	bool populatePages = true;
+}
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
@@ -37,7 +41,9 @@
 				@Html.CheckBox("createDefaultConfig", true, new { @class = "form-control" })
 			</div>
 		</div>
-
+		@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
+		@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
+		@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Sample Pages" })
 	</div>
 	
 	<div class="row">

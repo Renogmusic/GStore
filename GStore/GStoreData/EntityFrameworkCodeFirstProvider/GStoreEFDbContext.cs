@@ -111,9 +111,6 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 		public virtual DbSet<ProductCategory> ProductCategoriesTable { get; set; }
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreEFEntity<Models.ProductCategory>(this); } }
 
-		public virtual DbSet<ProductReview> ProductReviewsTable { get; set; }
-		public IGStoreRepository<Models.ProductReview> ProductReviews { get { return new GenericGStoreEFEntity<Models.ProductReview>(this); } }
-
 		public virtual DbSet<SecurityEvent> SecurityEventsTable { get; set; }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreEFEntity<Models.SecurityEvent>(this); } }
 
@@ -320,6 +317,16 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 						recordOptional.UpdateAuditFields(userProfileOptional);
 					}
 
+					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.ProductCategory)
+					{
+						StoreFront storeFront = ((ProductCategory)item.Entity).StoreFront;
+						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
+						if (!storeFrontIdsToRecalculate.Contains(storeFrontId))
+						{
+							storeFrontIdsToRecalculate.Add(storeFrontId);
+						}
+					}
+
 					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.Product)
 					{
 						StoreFront storeFront = ((Product)item.Entity).StoreFront;
@@ -330,9 +337,19 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 						}
 					}
 
-					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.ProductCategory)
+					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.ProductBundle)
 					{
-						StoreFront storeFront = ((ProductCategory)item.Entity).StoreFront;
+						StoreFront storeFront = ((ProductBundle)item.Entity).StoreFront;
+						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
+						if (!storeFrontIdsToRecalculate.Contains(storeFrontId))
+						{
+							storeFrontIdsToRecalculate.Add(storeFrontId);
+						}
+					}
+
+					if (updateCategoryCounts && (item.State == EntityState.Added || item.State == EntityState.Modified || item.State == EntityState.Deleted) && item.Entity is Models.ProductBundleItem)
+					{
+						StoreFront storeFront = ((ProductBundleItem)item.Entity).StoreFront;
 						int storeFrontId = storeFront == null ? item.OriginalValues.GetValue<int>("StoreFrontId") : storeFront.StoreFrontId;
 						if (!storeFrontIdsToRecalculate.Contains(storeFrontId))
 						{

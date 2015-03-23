@@ -1,0 +1,12 @@
+﻿@model ProductEditAdminViewModel
+
+@{
+	if (Model != null)
+	{
+		IEnumerable<SelectListItem> notInBundleList = Model.Product.AddToBundleDropdownList(Html.CurrentStoreFront(true));
+		
+		@Html.DropDownList("AddToBundleId", notInBundleList, "[Add to Bundle]", new { id="AddToBundleId", @class="form-control" })
+		@: Qty: <input type="text" size="3" maxlength="3" name="addToBundleQty" id="addToBundleQty" value="1">
+		<input type="submit" name="AddTobundle" value="Add to Bundle" />
+	}
+}

@@ -14,7 +14,7 @@ namespace GStoreWeb.Controllers
         // GET: Catalog
 		public ActionResult Index()
 		{
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogList(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogList(User.IsRegistered()), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, null, null, null, null);
 			return View("Index", this.LayoutNameForCatalog, model);
 		}
 
@@ -27,10 +27,10 @@ namespace GStoreWeb.Controllers
 			}
 
 			ProductCategory category = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable()
-				.WhereRegisteredAnonymousCheck(User.Identity.IsAuthenticated)
+				.WhereRegisteredAnonymousCheck(User.IsRegistered())
 				.Where(cat => cat.UrlName.ToLower() == urlName.ToLower())
 				.WhereIsActive()
-				.WhereShowInCatalogByName()
+				.WhereShowInCatalogByName(User.IsRegistered())
 				.SingleOrDefault();
 
 			if (category == null)
@@ -114,7 +114,7 @@ namespace GStoreWeb.Controllers
 			}
 			/// get current catalog item
 
-			List<TreeNode<ProductCategory>> categoryTree = CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.Identity.IsAuthenticated);
+			List<TreeNode<ProductCategory>> categoryTree = CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.IsRegistered());
 
 			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, categoryTree, CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, category, null, null, null);
 
@@ -142,7 +142,7 @@ namespace GStoreWeb.Controllers
 				throw new ApplicationException("Product is null, be sure product is set before calling ViewProduct");
 			}
 			/// get current catalog item
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product, null, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.IsRegistered()), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, product.Category, product, null, null);
 
 			if (product.Theme != null)
 			{
@@ -173,7 +173,7 @@ namespace GStoreWeb.Controllers
 				throw new ApplicationException("Product Bundle is null, be sure bundle is set before calling ViewBundle");
 			}
 			/// get current catalog item
-			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.Identity.IsAuthenticated), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, bundle.Category, null, bundle, null);
+			CatalogViewModel model = new CatalogViewModel(CurrentStoreFrontOrThrow, CurrentStoreFrontOrThrow.CategoryTreeWhereActiveForCatalogByName(User.IsRegistered()), CurrentStoreFrontConfigOrThrow.CatalogPageInitialLevels, bundle.Category, null, bundle, null);
 
 			if (bundle.Theme != null)
 			{

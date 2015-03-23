@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -58,7 +59,24 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			return View(client);
         }
 
-        // GET: SystemAdmin/ClientSysAdmin/Create
+		public ActionResult RecordSummary(int? id)
+		{
+			if (!id.HasValue)
+			{
+				return HttpBadRequest("client id is null");
+			}
+			IGstoreDb db = GStoreDb;
+			Client client = db.Clients.FindById(id.Value);
+			if (client == null)
+			{
+				return HttpNotFound();
+			}
+			ViewData.Add("RecordSummary", ChildRecordSummary(client, GStoreDb));
+			this.BreadCrumbsFunc = html => this.ClientBreadcrumb(html, id, false);
+			return View(client);
+		}
+
+		// GET: SystemAdmin/ClientSysAdmin/Create
         public ActionResult Create()
 		{
 			Client model = GStoreDb.Clients.Create();
@@ -72,7 +90,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Client client)
+        public ActionResult Create(Client client, bool? populateThemes, bool? populatePageTemplates, bool? populateSampleWebForms)
         {
 			//check if client name or folder is already taken
 			ValidateClientName(client);
@@ -83,9 +101,9 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				IGstoreDb db = GStoreDb;
 				client = db.Clients.Create(client);
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
-				client = GStoreDb.Clients.Add(client);
+				client = db.Clients.Add(client);
 				AddUserMessage("Client Added", "Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] created successfully!", UserMessageType.Success);
-				GStoreDb.SaveChanges();
+				db.SaveChanges();
 
 				string clientFolderVirtualPath = client.ClientVirtualDirectoryToMap(Request.ApplicationPath);
 				try
@@ -97,6 +115,23 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				{
 					AddUserMessage("Error Creating Client Folders!", "There was an error creating client folders in '" + clientFolderVirtualPath.ToHtml() + "'. You will need to create the folder manually. Error: " + ex.Message.ToHtml(), UserMessageType.Warning);
 				}
+
+				if (populateThemes.HasValue && populateThemes.Value)
+				{
+					List<Theme> newThemes = db.CreateSeedThemes(client);
+					AddUserMessage("Populated Themes", "New Themes added: " + newThemes.Count, UserMessageType.Success);
+				}
+				if (populatePageTemplates.HasValue && populatePageTemplates.Value)
+				{
+					List<PageTemplate> newPageTemplates = db.CreateSeedPageTemplates(client);
+					AddUserMessage("Populated Page Templates", "New Page Templates added: " + newPageTemplates.Count, UserMessageType.Success);
+				}
+				if (populateSampleWebForms.HasValue && populateSampleWebForms.Value)
+				{
+					List<WebForm> newWebForms = db.CreateSeedWebForms(client);
+					AddUserMessage("Populated Sample Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
+				}
+
                 return RedirectToAction("Index");
             }
 			this.BreadCrumbsFunc = html => this.ClientBreadcrumb(html, 0, false, "New"); 
@@ -124,22 +159,38 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Client client)
+		public ActionResult Edit(Client client, bool? populateThemes, bool? populatePageTemplates, bool? populateSampleWebForms)
 		{
 			ValidateClientName(client);
 			ValidateClientFolder(client);
 
             if (ModelState.IsValid)
 			{
-				Client originalValues = GStoreDb.Clients.Single(c => c.ClientId == client.ClientId);
+				IGstoreDb db = GStoreDb;
+				Client originalValues = db.Clients.Single(c => c.ClientId == client.ClientId);
 				string originalFolderName = originalValues.Folder;
 				string originalFolderToMap = originalValues.ClientVirtualDirectoryToMap(Request.ApplicationPath);
 
 				client.UpdateAuditFields(CurrentUserProfileOrThrow);
-				client = GStoreDb.Clients.Update(client);
+				client = db.Clients.Update(client);
 				AddUserMessage("Client Updated", "Client '" + client.Name.ToHtml() + "' [" + client.ClientId + "] updated!", UserMessageType.Success);
-				GStoreDb.SaveChanges();
+				db.SaveChanges();
 
+				if (populateThemes.HasValue && populateThemes.Value)
+				{
+					List<Theme> newThemes = db.CreateSeedThemes(client);
+					AddUserMessage("Populated Themes", "New Themes added: " + newThemes.Count, UserMessageType.Success);
+				}
+				if (populatePageTemplates.HasValue && populatePageTemplates.Value)
+				{
+					List<PageTemplate> newPageTemplates = db.CreateSeedPageTemplates(client);
+					AddUserMessage("Populated Page Templates", "New Page Templates added: " + newPageTemplates.Count, UserMessageType.Success);
+				}
+				if (populateSampleWebForms.HasValue && populateSampleWebForms.Value)
+				{
+					List<WebForm> newWebForms = db.CreateSeedWebForms(client);
+					AddUserMessage("Populated Sample Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
+				}
 				string originalClientFolder = Server.MapPath(originalFolderToMap);
 				string newClientFolder = Server.MapPath(client.ClientVirtualDirectoryToMap(Request.ApplicationPath));
 
@@ -321,44 +372,46 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 
 			output.AppendLine("--File and Child Record Summary for Client '" + client.Name.ToHtml() + " [" + client.ClientId + "]--");
 			output.AppendLine("--Client Linked Records--");
-			output.AppendLine("ClientRoles: " + db.ClientRoles.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ClientRoleActions: " + db.ClientRoleActions.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("PageTemplates: " + db.PageTemplates.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("PageTemplateSections: " + db.PageTemplateSections.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Client Roles: " + db.ClientRoles.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Client Role Actions: " + db.ClientRoleActions.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Page Templates: " + db.PageTemplates.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Page Template Sections: " + db.PageTemplateSections.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Themes: " + db.Themes.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("WebForms: " + db.WebForms.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ValueLists: " + db.ValueLists.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ValueListItems: " + db.ValueListItems.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("WebForms: " + db.WebForms.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("WebFormFields: " + db.WebFormFields.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Web Forms: " + db.WebForms.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Value Lists: " + db.ValueLists.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Value List Items: " + db.ValueListItems.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Web Forms: " + db.WebForms.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Web Form Fields: " + db.WebFormFields.Where(c => c.ClientId == clientId).Count());
 
 			output.AppendLine("--Store Front Linked Records--");
-			output.AppendLine("StoreFronts: " + db.StoreFronts.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ClientUserRoles: " + db.ClientUserRoles.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Store Fronts: " + db.StoreFronts.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Client User Roles: " + db.ClientUserRoles.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Carts: " + db.Carts.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("CartItems: " + db.CartItems.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Cart Items: " + db.CartItems.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Cart Bundles: " + db.CartBundles.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Discounts: " + db.Discounts.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("NavBarItems: " + db.NavBarItems.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Nav Bar Items: " + db.NavBarItems.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Notifications: " + db.Notifications.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("NotificationLink: " + db.NotificationLinks.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Notification Links: " + db.NotificationLinks.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Pages: " + db.Pages.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("PageSections: " + db.PageSections.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ProductCategories: " + db.ProductCategories.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Page Sections: " + db.PageSections.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Product Categories: " + db.ProductCategories.Where(c => c.ClientId == clientId).Count());
 			output.AppendLine("Products: " + db.Products.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("ProductReviews: " + db.ProductReviews.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("StoreBindings: " + db.StoreBindings.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("StoreFrontConfigurations: " + db.StoreFrontConfigurations.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("UserProfiles: " + db.UserProfiles.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("WebFormResponses: " + db.WebFormResponses.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("WebFormFieldResponses: " + db.WebFormFieldResponses.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Product Bundles: " + db.ProductBundles.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Product Bundle Items: " + db.ProductBundleItems.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Store Bindings: " + db.StoreBindings.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Store Front Configurations: " + db.StoreFrontConfigurations.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("User Profiles: " + db.UserProfiles.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Web Form Responses: " + db.WebFormResponses.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Web Form FieldResponses: " + db.WebFormFieldResponses.Where(c => c.ClientId == clientId).Count());
 
 			output.AppendLine("--event logs--");
-			output.AppendLine("BadRequests: " + db.BadRequests.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("FileNotFoundLogs: " + db.FileNotFoundLogs.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("PageViewEvent: " + db.PageViewEvents.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("SecurityEvents: " + db.SecurityEvents.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("SystemEvents: " + db.SystemEvents.Where(c => c.ClientId == clientId).Count());
-			output.AppendLine("UserActionEvents: " + db.UserActionEvents.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Bad Requests: " + db.BadRequests.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("File Not Found Logs: " + db.FileNotFoundLogs.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Page View Events: " + db.PageViewEvents.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("Security Events: " + db.SecurityEvents.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("System Events: " + db.SystemEvents.Where(c => c.ClientId == clientId).Count());
+			output.AppendLine("User Action Events: " + db.UserActionEvents.Where(c => c.ClientId == clientId).Count());
 
 			output.AppendLine("--File System--");
 			string clientFolderPath = Server.MapPath(client.ClientVirtualDirectoryToMap(Request.ApplicationPath));
@@ -384,52 +437,60 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			StringBuilder output = new StringBuilder();
 			IGstoreDb db = GStoreDb;
 			int clientId = client.ClientId;
+			int deletedRecordCount = 0;
 
+			int deletedMainRecords = 0;
 			output.AppendLine("Deleting main records...");
-			db.ClientRoles.DeleteRange(db.ClientRoles.Where(c => c.ClientId == clientId));
-			db.ClientRoleActions.DeleteRange(db.ClientRoleActions.Where(c => c.ClientId == clientId));
-			db.PageTemplates.DeleteRange(db.PageTemplates.Where(c => c.ClientId == clientId));
-			db.PageTemplateSections.DeleteRange(db.PageTemplateSections.Where(c => c.ClientId == clientId));
-			db.Themes.DeleteRange(db.Themes.Where(c => c.ClientId == clientId));
-			db.WebForms.DeleteRange(db.WebForms.Where(c => c.ClientId == clientId));
-			db.ValueLists.DeleteRange(db.ValueLists.Where(c => c.ClientId == clientId));
-			db.ValueListItems.DeleteRange(db.ValueListItems.Where(c => c.ClientId == clientId));
-			db.WebForms.DeleteRange(db.WebForms.Where(c => c.ClientId == clientId));
-			db.WebFormFields.DeleteRange(db.WebFormFields.Where(c => c.ClientId == clientId));
-			output.AppendLine("Deleted main records!");
+			deletedMainRecords += db.ClientRoles.DeleteRange(db.ClientRoles.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.ClientRoleActions.DeleteRange(db.ClientRoleActions.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.PageTemplates.DeleteRange(db.PageTemplates.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.PageTemplateSections.DeleteRange(db.PageTemplateSections.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.Themes.DeleteRange(db.Themes.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.WebForms.DeleteRange(db.WebForms.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.ValueLists.DeleteRange(db.ValueLists.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.ValueListItems.DeleteRange(db.ValueListItems.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.WebForms.DeleteRange(db.WebForms.Where(c => c.ClientId == clientId));
+			deletedMainRecords += db.WebFormFields.DeleteRange(db.WebFormFields.Where(c => c.ClientId == clientId));
+			output.AppendLine("Deleted " + deletedMainRecords.ToString("N0") + " main records!");
+			deletedRecordCount += deletedMainRecords;
 
-
+			int deletedStoreFrontRecords = 0;
 			output.AppendLine("Deleting storefront records...");
-			db.StoreFronts.DeleteRange(db.StoreFronts.Where(c => c.ClientId == clientId));
-			db.ClientUserRoles.DeleteRange(db.ClientUserRoles.Where(c => c.ClientId == clientId));
-			db.Carts.DeleteRange(db.Carts.Where(c => c.ClientId == clientId));
-			db.CartItems.DeleteRange(db.CartItems.Where(c => c.ClientId == clientId));
-			db.Discounts.DeleteRange(db.Discounts.Where(c => c.ClientId == clientId));
-			db.NavBarItems.DeleteRange(db.NavBarItems.Where(c => c.ClientId == clientId));
-			db.Notifications.DeleteRange(db.Notifications.Where(c => c.ClientId == clientId));
-			db.NotificationLinks.DeleteRange(db.NotificationLinks.Where(c => c.ClientId == clientId));
-			db.Pages.DeleteRange(db.Pages.Where(c => c.ClientId == clientId));
-			db.PageSections.DeleteRange(db.PageSections.Where(c => c.ClientId == clientId));
-			db.ProductCategories.DeleteRange(db.ProductCategories.Where(c => c.ClientId == clientId));
-			db.Products.DeleteRange(db.Products.Where(c => c.ClientId == clientId));
-			db.ProductReviews.DeleteRange(db.ProductReviews.Where(c => c.ClientId == clientId));
-			db.StoreBindings.DeleteRange(db.StoreBindings.Where(c => c.ClientId == clientId));
-			db.StoreFrontConfigurations.DeleteRange(db.StoreFrontConfigurations.Where(c => c.ClientId == clientId));
-			db.UserProfiles.DeleteRange(db.UserProfiles.Where(c => c.ClientId == clientId));
-			db.WebFormResponses.DeleteRange(db.WebFormResponses.Where(c => c.ClientId == clientId));
-			db.WebFormFieldResponses.DeleteRange(db.WebFormFieldResponses.Where(c => c.ClientId == clientId));
-			output.AppendLine("Deleted storefront records!");
+			deletedStoreFrontRecords += db.StoreFronts.DeleteRange(db.StoreFronts.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.ClientUserRoles.DeleteRange(db.ClientUserRoles.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.Carts.DeleteRange(db.Carts.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.CartItems.DeleteRange(db.CartItems.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.CartBundles.DeleteRange(db.CartBundles.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.Discounts.DeleteRange(db.Discounts.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.NavBarItems.DeleteRange(db.NavBarItems.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.Notifications.DeleteRange(db.Notifications.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.NotificationLinks.DeleteRange(db.NotificationLinks.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.Pages.DeleteRange(db.Pages.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.PageSections.DeleteRange(db.PageSections.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.ProductCategories.DeleteRange(db.ProductCategories.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.Products.DeleteRange(db.Products.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.ProductBundles.DeleteRange(db.ProductBundles.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.ProductBundleItems.DeleteRange(db.ProductBundleItems.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.StoreBindings.DeleteRange(db.StoreBindings.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.StoreFrontConfigurations.DeleteRange(db.StoreFrontConfigurations.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.UserProfiles.DeleteRange(db.UserProfiles.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.WebFormResponses.DeleteRange(db.WebFormResponses.Where(c => c.ClientId == clientId));
+			deletedStoreFrontRecords += db.WebFormFieldResponses.DeleteRange(db.WebFormFieldResponses.Where(c => c.ClientId == clientId));
+			output.AppendLine("Deleted " + deletedStoreFrontRecords.ToString("N0") + " storefront records!");
+			deletedRecordCount += deletedStoreFrontRecords;
 
 			if (deleteEventLogs)
 			{
+				int deletedEventLogs = 0;
 				output.AppendLine("Deleting event logs...");
-				db.BadRequests.DeleteRange(db.BadRequests.Where(c => c.ClientId == clientId));
-				db.FileNotFoundLogs.DeleteRange(db.FileNotFoundLogs.Where(c => c.ClientId == clientId));
-				db.PageViewEvents.DeleteRange(db.PageViewEvents.Where(c => c.ClientId == clientId));
-				db.SecurityEvents.DeleteRange(db.SecurityEvents.Where(c => c.ClientId == clientId));
-				db.SystemEvents.DeleteRange(db.SystemEvents.Where(c => c.ClientId == clientId));
-				db.UserActionEvents.DeleteRange(db.UserActionEvents.Where(c => c.ClientId == clientId));
-				output.AppendLine("Deleted event logs!");
+				deletedEventLogs += db.BadRequests.DeleteRange(db.BadRequests.Where(c => c.ClientId == clientId));
+				deletedEventLogs += db.FileNotFoundLogs.DeleteRange(db.FileNotFoundLogs.Where(c => c.ClientId == clientId));
+				deletedEventLogs += db.PageViewEvents.DeleteRange(db.PageViewEvents.Where(c => c.ClientId == clientId));
+				deletedEventLogs += db.SecurityEvents.DeleteRange(db.SecurityEvents.Where(c => c.ClientId == clientId));
+				deletedEventLogs += db.SystemEvents.DeleteRange(db.SystemEvents.Where(c => c.ClientId == clientId));
+				deletedEventLogs += db.UserActionEvents.DeleteRange(db.UserActionEvents.Where(c => c.ClientId == clientId));
+				output.AppendLine("Deleted " + deletedEventLogs.ToString("N0") + " event logs!");
+				deletedRecordCount += deletedEventLogs;
 			}
 
 			if (deleteFolders)
@@ -458,6 +519,8 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 					output.AppendLine("Deleted Files!");
 				}
 			}
+
+			output.AppendLine("Total Records deleted: " + deletedRecordCount.ToString("N0"));
 
 			return output.ToString();
 		}

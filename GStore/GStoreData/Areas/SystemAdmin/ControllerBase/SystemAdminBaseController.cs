@@ -95,10 +95,46 @@ namespace GStoreData.Areas.SystemAdmin.ControllerBase
 			return true;
 		}
 
-		public SelectList ClientFilterList()
+		public SelectList ClientFilterList(string labelForAll = "(ALL)", string labelForNull = "(NONE)")
 		{
 			int? clientId = FilterClientIdRaw();
-			return ClientFilterListHelper(clientId, true, true, false);
+			return ClientFilterListHelper(clientId, true, true, false, labelForAll, labelForNull);
+		}
+
+		public SelectList ClientFilterListDirect(int? clientId, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			return ClientFilterListHelper(clientId, true, true, false, labelForAll, labelForNull);
+		}
+
+		/// <summary>
+		/// Returns the StoreFrontId route value, includes -1 for all and 0 for null, and null if blank
+		/// </summary>
+		/// <returns></returns>
+		public int? FilterStoreFrontIdRaw()
+		{
+			var storeFrontId = RouteData.Values["StoreFrontId"];
+			if (storeFrontId == null)
+			{
+				return null;
+			}
+			int value = 0;
+			if (int.TryParse(storeFrontId.ToString(), out value))
+			{
+				return value;
+			}
+			return null;
+		}
+
+		public SelectList StoreFrontFilterList()
+		{
+			int? clientId = FilterClientIdRaw();
+			int? storeFrontId = FilterStoreFrontIdRaw();
+			return StoreFrontFilterListHelper(clientId, storeFrontId, true, true, false);
+		}
+
+		public SelectList StoreFrontFilterList(int? clientId, int? storeFrontId, string labelForAll = "(ALL)", string labelForNull = "(NONE)")
+		{
+			return StoreFrontFilterListHelper(clientId, storeFrontId, true, false, false, labelForAll, labelForNull);
 		}
 
 		public bool ShowAllClients()

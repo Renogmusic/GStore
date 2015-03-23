@@ -901,7 +901,7 @@ namespace GStoreData.AppHtmlHelpers
 		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper, object htmlAttributes)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string label = metaData.DisplayName ?? metaData.PropertyName;
+			string label = htmlHelper.ViewData.LabelText() ?? metaData.DisplayName ?? metaData.PropertyName;
 			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 			if (metaData.IsRequired)
 			{
@@ -1759,12 +1759,20 @@ namespace GStoreData.AppHtmlHelpers
 
 		}
 
-		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels, bool isRegistered)
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
 			string accessKey = category.Entity.Name.Substring(0, 1);
-			string displayName = category.Entity.Name + " (" + category.Entity.ChildActiveCount.ToString("N0") +")";
+			string displayName = category.Entity.Name;
+			if (isRegistered)
+			{
+				displayName += " (" + category.Entity.ChildActiveCountForRegistered.ToString("N0") + ")";
+			}
+			else
+			{
+				displayName += " (" + category.Entity.ChildActiveCountForAnonymous.ToString("N0") + ")";
+			}
 			if (level == 1 && category.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
@@ -1804,12 +1812,20 @@ namespace GStoreData.AppHtmlHelpers
 			return new MvcHtmlString(html.ToString());
 		}
 
-		public static MvcHtmlString CatalogMenuItemAllLink<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
+		public static MvcHtmlString CatalogMenuItemAllLink<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels, bool isRegistered)
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
 			string accessKey = category.Entity.Name.Substring(0, 1);
-			string displayName = category.Entity.Name + " (" + category.Entity.ChildActiveCount.ToString("N0") + ")";
+			string displayName = category.Entity.Name;
+			if (isRegistered)
+			{
+				displayName += " (" + category.Entity.ChildActiveCountForRegistered.ToString("N0") + ")";
+			}
+			else
+			{
+				displayName += " (" + category.Entity.ChildActiveCountForAnonymous.ToString("N0") + ")";
+			}
 
 			if (category.Entity.UseDividerBeforeOnMenu)
 			{
@@ -3214,6 +3230,28 @@ namespace GStoreData.AppHtmlHelpers
 			return true;
 		}
 
+		public static string LabelText(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("LabelText"))
+			{
+				return viewData["LabelText"] as string;
+			}
+			return null;
+		}
+
+		public static void LabelText(this ViewDataDictionary viewData, string value)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			viewData["LabelText"] = value;
+		}
+
 		/// <summary>
 		/// Returns True/False whether the template should show HelpLabel as display text on the screen
 		/// </summary>
@@ -4004,49 +4042,58 @@ namespace GStoreData.AppHtmlHelpers
 
 		}
 
+		public static IEnumerable<SelectListItem> AddToBundleDropdownList(this Product product, StoreFront storeFront)
+		{
+			return product.NotInBundles(storeFront).Select(b => new SelectListItem() { 
+				Value = b.ProductBundleId.ToString(), 
+				Text = b.Name + " [" + b.ProductBundleId + "]" }
+				);
+		}
 
-		//public static ActionResult RenderPartialView(this HttpContext httpContext, BaseController newController, string controllerName, string partialViewName, string area, object model)
-		//{
-		//	if (newController == null)
-		//	{
-		//		throw new ArgumentNullException("controller");
-		//	}
-		//	if (string.IsNullOrEmpty(controllerName))
-		//	{
-		//		throw new ArgumentNullException("controllerName");
-		//	}
-		//	if (string.IsNullOrEmpty(action))
-		//	{
-		//		throw new ArgumentNullException("action");
-		//	}
-			
-		//	var routeData = new RouteData();
-		//	if (!string.IsNullOrEmpty(area))
-		//	{
-		//		routeData.DataTokens.Add("area", area);
-		//	}
-		//	routeData.Values["controller"] = controllerName;
-		//	routeData.Values["action"] = action;
+		public static List<ProductBundle> NotInBundles(this Product product, StoreFront storeFront)
+		{
+			return storeFront.ProductBundles.Except(product.ProductBundleItems.Select(pbi => pbi.ProductBundle)).AsQueryable().ApplyDefaultSort().ToList();
+		}
 
-		//	newController.ControllerContext = new ControllerContext(new HttpContextWrapper(httpContext), routeData, newController);
-		//	//var x = new RequestContext(new HttpContextWrapper(httpContext), routeData);
+		/// <summary>
+		/// Returns True if the user is authenticated and logged in, False if anonymous
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
+		public static bool IsRegistered(this System.Security.Principal.IPrincipal user)
+		{
+			if (user == null)
+			{
+				return false;
+			}
+			return user.Identity.IsAuthenticated;
+		}
 
-		//	try
-		//	{
-		//		newController.ViewData.Model = model;
-		//		using (StringWriter sw = new StringWriter())
-		//		{
-		//			ViewEngineResult viewResult = ViewEngines.Engines.FindPartialView(newController.ControllerContext, partialViewName);
-		//			ViewContext viewContext = new ViewContext(newController.ControllerContext, viewResult.View, controller.ViewData, controller.TempData, sw);
-		//			viewResult.View.Render(viewContext, sw);
-		//			return sw.ToString();
-		//		}
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		throw new ApplicationException("Error executing controller " + (string.IsNullOrEmpty(area) ? "" : area + " -> ") + controllerName + " -> " + action, ex);
-		//	}
-		//}
+		/// <summary>
+		/// Returns True if the user is anonymous, False if user is authenticated and logged in
+		/// </summary>
+		/// <param name="user"></param>
+		/// <returns></returns>
+		public static bool IsAnonymous(this System.Security.Principal.IPrincipal user)
+		{
+			return !user.IsRegistered();
+		}
+
+		public static string DisplayNameWithCount(this ProductCategory category, bool isRegistered)
+		{
+			if (category == null)
+			{
+				throw new ArgumentNullException("category");
+			}
+			if (isRegistered)
+			{
+				return category.Name + " (" + category.ChildActiveCountForRegistered.ToString("N0") + ")";
+			}
+			else
+			{
+				return category.Name + " (" + category.ChildActiveCountForAnonymous.ToString("N0") + ")";
+			}
+		}
 
 	}
 }
