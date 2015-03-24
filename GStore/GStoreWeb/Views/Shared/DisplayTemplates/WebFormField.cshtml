@@ -3,13 +3,9 @@
 @{
 	WebFormFieldResponse oldResponse = ViewData["WebFormFieldResponse"] as WebFormFieldResponse;
 	
-	int? viewDataColOffset = ViewData["ColOffset"] as int?;
-	int? viewDataColLabel = ViewData["ColLabel"] as int?;
-	int? viewDataColData = ViewData["ColData"] as int?;
-
-	int offsetMdColspan = viewDataColOffset ?? 0;
-	int labelMdColspan = viewDataColLabel ?? Model.WebForm.LabelMdColSpan;
-	int fieldMdColspan = viewDataColData ?? Model.WebForm.FieldMdColSpan;
+	int offsetMdColspan = (ViewData["ColOffset"] as int?) ?? 0;
+	int labelMdColspan = (ViewData["ColLabel"] as int?) ?? Model.WebForm.LabelMdColSpan;
+	int fieldMdColspan = (ViewData["ColData"] as int?) ?? Model.WebForm.FieldMdColSpan;
 	if (labelMdColspan < 1 || labelMdColspan > 11)
 	{
 		labelMdColspan = 3;
@@ -228,7 +224,7 @@
 		}
 
 	</div>
-	@Html.ValidationMessage(Model.Name.ToHtmlAttribute(), new { @class = "text-danger row col-md-offset-" + labelMdColspan + " col-md-" + fieldMdColspan + " help-label " + align })
+	@Html.ValidationMessage(Model.Name.ToHtmlAttribute(), new { @class = "text-danger row col-md-offset-" + (offsetMdColspan + labelMdColspan) + " col-md-" + fieldMdColspan + " help-label " + align })
 	@{
 		if (!string.IsNullOrEmpty(Model.HelpLabelBottomText))
 		{

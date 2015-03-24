@@ -267,6 +267,8 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 
 			if (ModelState.IsValid)
 			{
+				string oldStoreFrontFolder = config.Folder;
+
 				config.AccountAdmin_UserProfileId = model.AccountAdmin_UserProfileId;
 				config.AccountThemeId = model.AccountThemeId;
 				config.AccountLoginRegisterLinkText = model.AccountLoginRegisterLinkText;
@@ -347,6 +349,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.OrderAdmin_UserProfileId = model.OrderAdmin_UserProfileId;
 
 				config.ConfigurationName = model.ConfigurationName;
+				config.Folder = model.Folder;
 				config.IsPending = model.IsPending;
 				config.StartDateTimeUtc = model.StartDateTimeUtc;
 				config.EndDateTimeUtc = model.EndDateTimeUtc;
@@ -369,7 +372,27 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 					}
 				}
 
-				config.CreateStoreFrontFolders(Request.ApplicationPath, Server);
+				if (!string.IsNullOrEmpty(oldStoreFrontFolder) && (oldStoreFrontFolder.ToLower() != config.Folder.ToLower()))
+				{
+					//move storefront folder; user messages are set in the function
+					bool result = config.MoveStoreFrontFolders(Request.ApplicationPath, Server, oldStoreFrontFolder, this);
+				}
+				else
+				{
+					//create folders if not existing in file system
+					if (!config.CheckStoreFrontFolders(Request.ApplicationPath, Server))
+					{
+						bool result = config.CreateStoreFrontFolders(Request.ApplicationPath, Server);
+						if (result)
+						{
+							AddUserMessage("Store Front Folders created!", "Store Front folders were created or sync'd in " + config.StoreFrontVirtualDirectoryToMapThisConfig(Request.ApplicationPath), UserMessageType.Info);
+						}
+						else
+						{
+							AddUserMessage("File System Error!", "File system error creating store front folders in " + config.StoreFrontVirtualDirectoryToMapThisConfig(Request.ApplicationPath), UserMessageType.Danger);
+						}
+					}
+				}
 
 				return RedirectToAction("StoreFrontView", new { id = model.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId, Tab = model.ActiveTab });
 			}
@@ -866,5 +889,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 			});
 			return new SelectList(items, "Value", "Text");
 		}
+
+
 	}
 }

@@ -133,7 +133,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				if (populatePages ?? false)
 				{
 					db.CreateSeedPages(storeFront);
-					AddUserMessage("Populated Pages", "Sample Pages with Menu Links are Loaded", UserMessageType.Success);
+					AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
 				}
 
 				if (configResult != null)
@@ -235,8 +235,15 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 
 			if (!System.IO.Directory.Exists(Server.MapPath(storeFrontFolderVirtualPath)))
 			{
-				newConfig.CreateStoreFrontFolders(Request.ApplicationPath, Server);
-				AddUserMessage("Store Front Folders Created.", "Store Front Folders Created for New Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] in '" + storeFrontFolderVirtualPath.ToHtml() + "'.", UserMessageType.Success);
+				bool result = newConfig.CreateStoreFrontFolders(Request.ApplicationPath, Server);
+				if (result)
+				{
+					AddUserMessage("Store Front Folders Created.", "Store Front Folders Created for New Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] in '" + storeFrontFolderVirtualPath.ToHtml() + "'.", UserMessageType.Success);
+				}
+				else
+				{
+					AddUserMessage("File system Error!", "Store Front Folders could not be created for New Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] in '" + storeFrontFolderVirtualPath.ToHtml() + "'.", UserMessageType.Success);
+				}
 			}
 
 			AddUserMessage("Store Front Configuration Created.", "Store Front Configuration '" + newConfig.ConfigurationName.ToHtml() + "' [" + newConfig.StoreFrontConfigurationId + "] created successfully for Store Front '" + newConfig.Name.ToHtml() + "' [" + newConfig.StoreFrontId + "].", UserMessageType.Success);
@@ -290,7 +297,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				if (populatePages ?? false)
 				{
 					db.CreateSeedPages(storeFront);
-					AddUserMessage("Populated Pages", "Sample Pages with Menu Links are Loaded", UserMessageType.Success);
+					AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
 				}
 
 				return RedirectToAction("Index");

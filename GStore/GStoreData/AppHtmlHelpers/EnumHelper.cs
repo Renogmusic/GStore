@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
+using System.Web.Routing;
 
 namespace GStoreData.AppHtmlHelpers
 {
@@ -26,6 +30,7 @@ namespace GStoreData.AppHtmlHelpers
 		public string DisplayDescription;
 		public DisplayAttribute FirstDisplayAttribute;
 		public int? Order;
+		public int? IntValue;
 	}
 
 	public static class EnumHelper
@@ -51,12 +56,16 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			List<EnumInfoValue> list = new List<EnumInfoValue>();
-			IEnumerable<TModel> enumValues = Enum.GetValues(enumType).Cast<TModel>();
-			foreach (TModel field in enumValues)
+
+			string[] enumNames = Enum.GetNames(enumType);
+			foreach (string name in enumNames)
 			{
-				Enum value = field as Enum;
+				Enum value = (Enum)Enum.Parse(enumType, name);
 				list.Add(value.ToEnumInfoValue());
+
 			}
+
+			list = list.ApplyDefaultSort().ToList();
 
 			EnumInfo info = new EnumInfo();
 			info.DisplayDescription = modelMetaData.Description;
@@ -100,6 +109,7 @@ namespace GStoreData.AppHtmlHelpers
 			enumInfo.FirstDisplayAttribute = displayAttributes[0];
 			enumInfo.Order = displayAttributes[0].GetOrder();
 
+			enumInfo.IntValue = Convert.ToInt32(value);
 			return enumInfo;
 		}
 
@@ -142,5 +152,160 @@ namespace GStoreData.AppHtmlHelpers
 			return (descriptionAttributes.Length > 0) ? descriptionAttributes[0].Description : string.Empty;
 		}
 
+		/// <summary>
+		/// Returns a dropdownlist with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel = null, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			return htmlHelper.EnumDropDownListForModel(optionLabel, null, addFormControlClass, removeHtmlFieldPrefix);
+		}
+
+		/// <summary>
+		/// Returns a dropdownlist with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel, object htmlAttributes, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metadata.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
+			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
+			{
+				return null;
+			}
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (addFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			string selectedValue = null;
+			if (htmlHelper.ViewData.Model != null)
+			{
+				selectedValue = htmlHelper.ViewData.Model.ToString();
+			}
+
+			List<EnumInfoValue> orderedEnumValues = enumInfo.Values.ToList();
+			IEnumerable<SelectListItem> options = orderedEnumValues.Select
+				(v => new SelectListItem() { Value = v.Value.ToString(), Text = (v.Value.ToString() == selectedValue ? "[SELECTED] " : "") + v.DisplayName, Selected = v.Value.ToString() == selectedValue }
+				);
+			return htmlHelper.DropDownList(fieldName, options, optionLabel, htmlAttribs);
+		}
+
+		/// <summary>
+		/// Returns a radio button list with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
+		{
+			return htmlHelper.EnumRadioButtonListForModel(null, htmlSeparator, selectFirst, addFormControlClass, removeHtmlFieldPrefix);
+		}
+
+		/// <summary>
+		/// Returns a radio button list with values from an enum using the current model
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="optionLabel"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, object htmlAttributes, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
+		{
+			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
+			string fieldName = metadata.PropertyName;
+			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
+
+			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
+			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
+			{
+				return null;
+			}
+			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			if (addFormControlClass)
+			{
+				if (htmlAttribs.ContainsKey("class"))
+				{
+					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
+				}
+				else
+				{
+					htmlAttribs.Add("class", "form-control");
+				}
+			}
+
+			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+
+			List<SelectListItem> options = enumInfo.Values.Select(v => new SelectListItem() { Value = v.Value.ToString(), Text = v.DisplayName }).ToList();
+
+			if (htmlHelper.ViewData.Model == null)
+			{
+				if (selectFirst)
+				{
+					//null model select first item
+					options.First().Selected = true;
+				}
+			}
+			else
+			{
+				SelectListItem firstMatch = options.FirstOrDefault(o => o.Value == htmlHelper.ViewData.Model.ToString());
+				if (firstMatch == null)
+				{
+					if (selectFirst)
+					{
+						//no match select first item
+						options.First().Selected = true;
+					}
+				}
+				else
+				{
+					firstMatch.Selected = true;
+					firstMatch.Text = "[SELECTED] " + firstMatch.Text;
+				}
+			}
+
+			StringBuilder html = new StringBuilder();
+
+			foreach (SelectListItem option in options)
+			{
+				string id = fieldName + "_" + option.Value;
+				htmlAttribs["id"] = id;
+				html.AppendLine(htmlHelper.RadioButton(fieldName, option.Value, option.Selected, htmlAttribs).ToHtmlString());
+				html.AppendLine("<label for=\"" + id + "\">" + option.Text.ToHtml() + "</label>");
+				html.AppendLine(htmlSeparator);
+			}
+			return new MvcHtmlString(html.ToString());
+		}
+
+		public static IOrderedEnumerable<EnumInfoValue> ApplyDefaultSort(this IEnumerable<EnumInfoValue> values)
+		{
+			return values.OrderBy(e => e.Order ?? 99999).ThenBy(e => e.IntValue).ThenBy(e => e.Name);
+		}
 	}
 }

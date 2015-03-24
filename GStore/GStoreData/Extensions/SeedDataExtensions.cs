@@ -284,8 +284,6 @@ namespace GStoreData
 			string browserPostalCode = "99999";
 			CountryCodeEnum browserCountryCode = CountryCodeEnum.US;
 
-			string pageTemplateViewName = Settings.AppDefaultPageTemplateViewName;
-			string pageTemplateName = Settings.AppDefaultPageTemplateName;
 			string preferedThemeName = Settings.AppDefaultThemeFolderName;
 			bool loadSampleProducts = Settings.AppSeedSampleProducts;
 
@@ -318,7 +316,7 @@ namespace GStoreData
 
 			if (storeDb.Clients.IsEmpty())
 			{
-				Client newClient = storeDb.CreateSeedClient("Sample Company", "SampleClient");
+				Client newClient = storeDb.CreateSeedClient("New Company", "NewClient");
 			}
 			Client firstClient = storeDb.Clients.All().First();
 
@@ -342,11 +340,9 @@ namespace GStoreData
 
 			if (storeDb.PageTemplates.IsEmpty())
 			{
-				PageTemplate newPageTemplate = storeDb.CreateSeedPageTemplate(pageTemplateName, pageTemplateViewName, firstClient);
 				storeDb.CreateSeedPageTemplates(firstClient);
 			}
 
-			PageTemplate firstPageTemplate = storeDb.PageTemplates.All().First();
 			if (storeDb.StoreFronts.IsEmpty())
 			{
 				StoreFront newStoreFront = storeDb.CreateSeedStoreFront(firstClient, adminProfile);
@@ -358,8 +354,8 @@ namespace GStoreData
 			StoreFrontConfiguration firstStoreFrontConfig = firstStoreFront.CurrentConfigOrAny();
 			if (firstStoreFrontConfig == null)
 			{
-				string storeFrontName = "Sample Storefront";
-				string storeFrontFolder = "SampleStoreFront";
+				string storeFrontName = "New Storefront";
+				string storeFrontFolder = "NewStoreFront";
 				firstStoreFrontConfig = storeDb.CreateSeedStoreFrontConfig(firstStoreFront, storeFrontName, storeFrontFolder, adminProfile, selectedTheme);
 			}
 
@@ -372,7 +368,7 @@ namespace GStoreData
 
 			if (storeDb.Pages.IsEmpty())
 			{
-				storeDb.CreateSeedPages(firstPageTemplate, firstStoreFrontConfig);
+				storeDb.CreateSeedPagesHelper(firstStoreFrontConfig);
 			}
 
 			if (storeDb.WebForms.IsEmpty())
@@ -450,7 +446,7 @@ namespace GStoreData
 		/// </summary>
 		public static WebForm CreateSeedWebFormRegister(this IGstoreDb storeDb, Client client, bool returnWebFormIfExists)
 		{
-			string formName = "Sample Register Form";
+			string formName = "New Register Form";
 			if (client.WebForms.Any(wf => wf.Name.ToLower() == formName.ToLower()))
 			{
 				if (returnWebFormIfExists)
@@ -460,7 +456,7 @@ namespace GStoreData
 				return null;
 			}
 
-			WebForm registerForm = storeDb.CreateSeedWebForm(formName, "Sample Register Form", client);
+			WebForm registerForm = storeDb.CreateSeedWebForm(formName, "New Register Form", client);
 			WebFormField customField = storeDb.CreateSeedWebFormField(registerForm, "How did you find us?", description: "How did you find us?", helpLabelBottomText: "Enter the name of the web site or person that referred you to us");
 			return registerForm;
 		}
@@ -560,17 +556,20 @@ namespace GStoreData
 		/// </summary>
 		public static void CreateSeedPages(this IGstoreDb storeDb, StoreFront storeFront)
 		{
-			PageTemplate template = storeFront.Client.PageTemplates.AsQueryable().ApplyDefaultSort().FirstOrDefault();
-			if (template == null)
+			if (storeFront == null)
 			{
-				throw new ArgumentException("storeFront.Client.PageTemplates is empty", "storeFront.Client.PageTemplates is empty");
+				throw new ArgumentNullException("storeFront");
+			}
+			if (!storeFront.Client.PageTemplates.Any())
+			{
+				throw new ArgumentException("storeFront.Client.PageTemplates is empty", "storeFront.Client.PageTemplates is empty. Be sure to seed database or add templates to client in sysadmin client edit before adding pages.");
 			}
 			StoreFrontConfiguration config = storeFront.CurrentConfigOrAny();
 			if (config == null)
 			{
-				throw new ArgumentNullException("storeFront.CurrentConfigOrAny()");
+				throw new ArgumentNullException("storeFront.CurrentConfigOrAny()", "Store does not have any configurations. Configuration is needed to select the page theme. Be sure to create a new storefront configuration in Store Admin (configuration manager) or System Admin (store front list) before adding seed pages.");
 			}
-			storeDb.CreateSeedPages(template, config);
+			storeDb.CreateSeedPagesHelper(config);
 		}
 
 		#endregion
@@ -580,26 +579,96 @@ namespace GStoreData
 		/// <summary>
 		/// Dupe-safe CreateSeedPage, CreateSeedNavBarItemForPage, CreateSeedWebFormContactUs, CreateSeedWebFormRegister, are all dupe-safe
 		/// </summary>
-		private static void CreateSeedPages(this IGstoreDb storeDb, PageTemplate pageTemplate, StoreFrontConfiguration storeFrontConfig)
+		private static void CreateSeedPagesHelper(this IGstoreDb storeDb, StoreFrontConfiguration storeFrontConfig)
 		{
 			if (storeFrontConfig == null)
 			{
 				throw new ArgumentNullException("storeFrontConfig");
 			}
 
-			Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, "/", 100, storeFrontConfig, pageTemplate, true);
+			List<PageTemplate> templates = storeFrontConfig.Client.PageTemplates.ToList();
+			if (templates.Count == 0)
+			{
+				throw new ApplicationException("No page templates found for this client. Be sure to seed database of load templates in sys admin client edit.");
+			}
 
-			Page aboutUsPage = storeDb.CreateSeedPage("About Us", "About Us", "/About", 200, storeFrontConfig, pageTemplate, true);
-			NavBarItem aboutLink = storeDb.CreateSeedNavBarItemForPage("About Us", aboutUsPage.PageId, false, null, storeFrontConfig.StoreFront, true);
+			PageTemplate defaultTemplate = templates.FirstOrDefault(pt => pt.ViewName.ToLower() == Settings.AppDefaultPageTemplateViewName.ToLower());
+			if (defaultTemplate == null)
+			{
+				defaultTemplate = templates.FirstOrDefault(pt => pt.ViewName.ToLower() == "page simple welcome");
+			}
+			if (defaultTemplate == null)
+			{
+				defaultTemplate = templates.First();
+			}
 
-			Page contactUsPage = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 300, storeFrontConfig, pageTemplate, true);
+			PageTemplate homeTemplate = null;
+			if (templates.Any(pt => pt.ViewName.ToLower() == "page simple welcome"))
+			{
+				homeTemplate = templates.Single(pt => pt.ViewName.ToLower() == "page simple welcome");
+			}
+			else
+			{
+				homeTemplate = defaultTemplate;
+			}
+			string homeUrl = "/";
+			if (storeFrontConfig.HomePageUseCatalog)
+			{
+				//no home page if catalog is home
+			}
+			else
+			{
+				Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, homeUrl, 100, storeFrontConfig, homeTemplate, true);
+				NavBarItem homeLink = storeDb.CreateSeedNavBarItemForPage("Home", homePage.PageId, false, null, storeFrontConfig.StoreFront, true);
+			}
+
+			PageTemplate contactUsTemplate = null;
+			if (templates.Any(pt => pt.ViewName.ToLower() == "page simple contact us"))
+			{
+				contactUsTemplate = templates.Single(pt => pt.ViewName.ToLower() == "page simple contact us");
+			}
+			else
+			{
+				contactUsTemplate = defaultTemplate;
+			}
+			Page contactUsPage = storeDb.CreateSeedPage("Contact Us", "Contact Us", "/Contact", 200, storeFrontConfig, contactUsTemplate, true);
 			NavBarItem contactUsLink = storeDb.CreateSeedNavBarItemForPage("Contact Us", contactUsPage.PageId, false, null, storeFrontConfig.StoreFront, true);
 
-			Page answersPage = storeDb.CreateSeedPage("Answers", "Answers", "/Answers", 400, storeFrontConfig, pageTemplate, true);
+			PageTemplate locationTemplate = null;
+			if (templates.Any(pt => pt.ViewName.ToLower() == "page simple location"))
+			{
+				locationTemplate = templates.Single(pt => pt.ViewName.ToLower() == "page simple location");
+			}
+			else
+			{
+				locationTemplate = defaultTemplate;
+			}
+			Page locationPage = storeDb.CreateSeedPage("Location", "Location", "/Location", 300, storeFrontConfig, locationTemplate, true);
+			NavBarItem locationLink = storeDb.CreateSeedNavBarItemForPage("Location", locationPage.PageId, false, null, storeFrontConfig.StoreFront, true);
+
+			PageTemplate answersTemplate = null;
+			if (templates.Any(pt => pt.ViewName.ToLower() == "page simple answers"))
+			{
+				answersTemplate = templates.Single(pt => pt.ViewName.ToLower() == "page simple answers");
+			}
+			else
+			{
+				answersTemplate = defaultTemplate;
+			}
+			Page answersPage = storeDb.CreateSeedPage("Answers", "Answers", "/Answers", 400, storeFrontConfig, answersTemplate, true);
 			NavBarItem answersLink = storeDb.CreateSeedNavBarItemForPage("Questions?", answersPage.PageId, false, null, storeFrontConfig.StoreFront, true);
 
-			Page locationPage = storeDb.CreateSeedPage("Location", "Location", "/Location", 500, storeFrontConfig, pageTemplate, true);
-			NavBarItem locationLink = storeDb.CreateSeedNavBarItemForPage("Location", locationPage.PageId, false, null, storeFrontConfig.StoreFront, true);
+			PageTemplate aboutUsTemplate = null;
+			if (templates.Any(pt => pt.ViewName.ToLower() == "page simple about us"))
+			{
+				aboutUsTemplate = templates.Single(pt => pt.ViewName.ToLower() == "page simple about us");
+			}
+			else
+			{
+				aboutUsTemplate = defaultTemplate;
+			}
+			Page aboutUsPage = storeDb.CreateSeedPage("About Us", "About Us", "/About", 500, storeFrontConfig, aboutUsTemplate, true);
+			NavBarItem aboutLink = storeDb.CreateSeedNavBarItemForPage("About Us", aboutUsPage.PageId, false, null, storeFrontConfig.StoreFront, true);
 
 			WebForm contactForm = storeDb.CreateSeedWebFormContactUs(storeFrontConfig.Client, true);
 			WebForm registerWebForm = storeDb.CreateSeedWebFormRegister(storeFrontConfig.Client, true);
@@ -610,7 +679,6 @@ namespace GStoreData
 				contactUsPage.WebFormId = contactForm.WebFormId;
 				contactUsPage.WebFormSaveToDatabase = true;
 				contactUsPage.WebFormSaveToFile = true;
-				contactUsPage.WebFormSuccessPageId = homePage.PageId;
 				contactUsPage = storeDb.Pages.Update(contactUsPage);
 				storeDb.SaveChangesEx(true, false, false, false);
 			}
@@ -629,7 +697,7 @@ namespace GStoreData
 		/// </summary>
 		private static WebForm CreateSeedWebFormContactUs(this IGstoreDb storeDb, Client client, bool returnWebFormIfExists)
 		{
-			string formName = "Sample Contact Form";
+			string formName = "Simple Contact Form";
 			if (client.WebForms.Any(wf => wf.Name.ToLower() == formName.ToLower()))
 			{
 				if (returnWebFormIfExists)
@@ -639,7 +707,7 @@ namespace GStoreData
 				return null;
 			}
 
-			WebForm contactForm = storeDb.CreateSeedWebForm(formName, "Sample Contact Form", client);
+			WebForm contactForm = storeDb.CreateSeedWebForm(formName, "Simple Contact Form", client);
 			WebFormField contactName = storeDb.CreateSeedWebFormField(contactForm, "Your Name", 100, isRequired: true, helpLabelBottomText: "Please enter your Name");
 			WebFormField contactEmail = storeDb.CreateSeedWebFormField(contactForm, "Your Email Address", 101, isRequired: true, helpLabelBottomText: "Please enter your Email Address", dataType: GStoreValueDataType.EmailAddress);
 			WebFormField contactPhone = storeDb.CreateSeedWebFormField(contactForm, "Phone (optional)", 102, isRequired: false, helpLabelTopText: "If you would like us to reach you by phone, please enter your phone number below.");
@@ -752,18 +820,12 @@ namespace GStoreData
 				return null;
 			}
 			NavBarItem newItem = storeDb.NavBarItems.Create();
-			newItem.Client = storeFront.Client;
-			newItem.StoreFront = storeFront;
+			newItem.SetDefaultsForNew(storeFront);
+
 			newItem.IsPage = true;
 			newItem.PageId = pageId;
 			newItem.Name = name;
-			newItem.Order = 100;
-			newItem.IsPending = false;
-			newItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
-			newItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			newItem.ForRegisteredOnly = forRegisteredOnly;
-			newItem.UseDividerAfterOnMenu = false;
-			newItem.UseDividerBeforeOnMenu = true;
 
 			if (parentNavBarItem != null)
 			{
@@ -876,13 +938,13 @@ namespace GStoreData
 			product.BaseListPrice = baseListPrice;
 			product.BaseUnitPrice = baseUnitPrice;
 			product.SummaryCaption= "Summary for " + product.Name;
-			product.SummaryHtml = "Sample product summary for " + product.Name;
+			product.SummaryHtml = "Summary has not been entered yet for " + product.Name;
 			product.TopDescriptionCaption= "Description for " + product.Name;
-			product.TopDescriptionHtml = "Sample product description for " + product.Name;
+			product.TopDescriptionHtml = "Description has not been entered yet for " + product.Name;
 			product.TopLinkLabel = null;
 			product.TopLinkHref = null;
 			product.BottomDescriptionCaption = "Details for " + product.Name;
-			product.BottomDescriptionHtml = "Sample product details for " + product.Name;
+			product.BottomDescriptionHtml = "Details have not been entered yet for " + product.Name;
 			product.BottomLinkLabel = null;
 			product.BottomLinkHref = null;
 			product.ProductDetailTemplate = ProductDetailTemplateEnum.Default;
@@ -928,13 +990,15 @@ namespace GStoreData
 			productBundle.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			productBundle.Category = category;
 			productBundle.SummaryCaption = "Summary for " + productBundle.Name;
-			productBundle.SummaryHtml = "Sample product summary for " + productBundle.Name;
+			productBundle.SummaryHtml = "Summary has not been entered yet for " + productBundle.Name;
 			productBundle.TopDescriptionCaption = "Description for " + productBundle.Name;
-			productBundle.TopDescriptionHtml = "Sample product description for " + productBundle.Name;
+			productBundle.TopDescriptionHtml = "Description has not been entered yet for " + productBundle.Name;
 			productBundle.TopLinkLabel = null;
 			productBundle.TopLinkHref = null;
 			productBundle.BottomDescriptionCaption = "Details for " + productBundle.Name;
-			productBundle.BottomDescriptionHtml = "Sample product details for " + productBundle.Name;
+			productBundle.BottomDescriptionHtml = "Details have not been entered yet for " + productBundle.Name;
+			productBundle.ProductTypeSingle = null;
+			productBundle.ProductTypePlural = null;
 			productBundle.BottomLinkLabel = null;
 			productBundle.BottomLinkHref = null;
 			productBundle.ProductBundleDetailTemplate = ProductBundleDetailTemplateEnum.Default;

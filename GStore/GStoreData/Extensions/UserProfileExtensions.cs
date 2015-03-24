@@ -8,7 +8,7 @@ namespace GStoreData
 	public static class UserProfileExtensions
 	{
 		/// <summary>
-		/// Gets the current user profile for a logged on user, or null if anonymous; uses CachedUserProfile from context if available
+		/// Gets the current user profile for a logged on user, or null if anonymous; uses CachedUserProfile from context if available, otherwise checks ctx.UserName to look up a profile
 		/// </summary>
 		/// <param name="ctx"></param>
 		/// <param name="throwErrorIfNotFound"></param>

@@ -279,7 +279,7 @@ namespace GStoreData.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Page Welcome")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Page Sample Welcome")]
         public string AppDefaultPageTemplateViewName {
             get {
                 return ((string)(this["AppDefaultPageTemplateViewName"]));

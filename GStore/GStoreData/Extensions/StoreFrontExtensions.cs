@@ -509,7 +509,7 @@ namespace GStoreData
 			{
 				throw new ArgumentNullException("storeFront.CurrentConfig()");
 			}
-			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfig().Folder.ToFileName());
+			return storeFront.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfig().Folder.ToFileName());
 		}
 
 		public static string StoreFrontVirtualDirectoryToMapAnyConfig(this StoreFront storeFront, string applicationPath)
@@ -518,7 +518,7 @@ namespace GStoreData
 			{
 				throw new ArgumentNullException("storeFront.CurrentConfigOrAny()");
 			}
-			return storeFront.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfigOrAny().Folder.ToFileName());
+			return storeFront.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + System.Web.HttpUtility.UrlEncode(storeFront.CurrentConfigOrAny().Folder.ToFileName());
 		}
 
 		public static string CatalogCategoryContentVirtualDirectoryToMap(this StoreFront storeFront, string applicationPath)
@@ -1220,6 +1220,14 @@ namespace GStoreData
 		}
 
 
+		/// <summary>
+		/// Returns the URL to the product sample audio file
+		/// </summary>
+		/// <param name="product"></param>
+		/// <param name="applicationPath"></param>
+		/// <param name="routeData"></param>
+		/// <param name="server"></param>
+		/// <returns></returns>
 		public static string SampleAudioUrl(this Product product, string applicationPath, RouteData routeData)
 		{
 			if (product == null)
@@ -1229,6 +1237,14 @@ namespace GStoreData
 			return product.StoreFront.ProductCatalogFileUrl(applicationPath, routeData, product.SampleAudioFileName);
 		}
 
+		/// <summary>
+		/// Returns the full file path to the product sample audio file
+		/// </summary>
+		/// <param name="product"></param>
+		/// <param name="applicationPath"></param>
+		/// <param name="routeData"></param>
+		/// <param name="server"></param>
+		/// <returns></returns>
 		public static string SampleAudioPath(this Product product, string applicationPath, RouteData routeData, HttpServerUtilityBase server)
 		{
 			if (product == null)
@@ -1352,9 +1368,14 @@ namespace GStoreData
 			return clientRecord.Client.ClientVirtualDirectoryToMap(applicationPath);
 		}
 
+		public static string ClientVirtualDirectoryToMapToStoreFronts(this Models.BaseClasses.ClientRecord clientRecord, string applicationPath)
+		{
+			return clientRecord.Client.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts";
+		}
+
 		public static string StoreFrontVirtualDirectoryToMap(this StoreFrontRecord record, string applicationPath)
 		{
-			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + record.StoreFront.CurrentConfig().Folder.ToFileName();
+			return record.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + record.StoreFront.CurrentConfig().Folder.ToFileName();
 		}
 
 		public static string StoreFrontVirtualDirectoryToMapAnyConfig(this StoreFrontRecord record, string applicationPath)
@@ -1363,7 +1384,7 @@ namespace GStoreData
 			{
 				throw new ArgumentNullException("record.CurrentConfigOrAny()");
 			}
-			return record.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + record.StoreFront.CurrentConfigOrAny().Folder.ToFileName();
+			return record.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + record.StoreFront.CurrentConfigOrAny().Folder.ToFileName();
 		}
 
 		public static string StoreFrontVirtualDirectoryToMapThisConfig(this StoreFrontConfiguration storeFrontConfig, string applicationPath)
@@ -1372,7 +1393,7 @@ namespace GStoreData
 			{
 				throw new ArgumentNullException("storeFrontConfig");
 			}
-			return storeFrontConfig.ClientVirtualDirectoryToMap(applicationPath) + "/StoreFronts/" + storeFrontConfig.Folder.ToFileName();
+			return storeFrontConfig.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + storeFrontConfig.Folder.ToFileName();
 		}
 
 		public static string EmailConfirmationCodeSubject(this StoreFront storeFront, string callbackUrl, Uri currentUrl)
@@ -2413,6 +2434,8 @@ namespace GStoreData
 			record.BottomLinkHref = viewModel.BottomLinkHref;
 			record.BottomLinkLabel = viewModel.BottomLinkLabel;
 			record.FooterHtml = viewModel.FooterHtml;
+			record.ProductTypeSingle = viewModel.ProductTypeSingle;
+			record.ProductTypePlural = viewModel.ProductTypePlural;
 
 			return record;
 		}
@@ -3820,6 +3843,32 @@ namespace GStoreData
 				return bundle.BottomDescriptionCaption;
 			}
 			return bundle.Category.DefaultBottomDescriptionCaptionOrSystemDefault(bundle.Name);
+		}
+
+		public static string ProductTypeSingleOrSystemDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		{
+			if (bundle == null)
+			{
+				throw new ArgumentNullException("bundle");
+			}
+			if (!string.IsNullOrEmpty(bundle.ProductTypeSingle))
+			{
+				return bundle.ProductTypeSingle;
+			}
+			return bundle.Category.ProductTypeSingle.OrDefault("Item");
+		}
+
+		public static string ProductTypePluralOrSystemDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		{
+			if (bundle == null)
+			{
+				throw new ArgumentNullException("bundle");
+			}
+			if (!string.IsNullOrEmpty(bundle.ProductTypePlural))
+			{
+				return bundle.ProductTypePlural;
+			}
+			return bundle.Category.ProductTypePlural.OrDefault("Items");
 		}
 
 		public static void SetDefaultsForNew(this Payment payment, StoreFrontConfiguration storeFrontConfig)

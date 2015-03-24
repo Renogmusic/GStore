@@ -191,9 +191,9 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 		{
 
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
-			bool urlIsValid = GStoreDb.ValidateNavBarItemName(this, viewModel.Name, storeFront.StoreFrontId, storeFront.ClientId, null);
+			bool nameIsValid = GStoreDb.ValidateNavBarItemName(this, viewModel.Name, storeFront.StoreFrontId, storeFront.ClientId, null);
 
-			if (urlIsValid && ModelState.IsValid)
+			if (nameIsValid && ModelState.IsValid)
 			{
 				try
 				{
@@ -244,9 +244,9 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 		public virtual ActionResult AdvancedCreate(NavBarItemEditAdminViewModel navBarItemEditViewModel)
 		{
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
-			bool urlIsValid = GStoreDb.ValidateNavBarItemName(this, navBarItemEditViewModel.Name, storeFront.StoreFrontId, storeFront.ClientId, null);
+			bool nameIsValid = GStoreDb.ValidateNavBarItemName(this, navBarItemEditViewModel.Name, storeFront.StoreFrontId, storeFront.ClientId, null);
 
-			if (urlIsValid && ModelState.IsValid)
+			if (nameIsValid && ModelState.IsValid)
 			{
 				try
 				{

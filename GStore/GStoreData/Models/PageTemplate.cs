@@ -25,13 +25,15 @@ namespace GStoreData.Models
 
 		/// <summary>
 		/// Name of the file name View for MVC to display in the /Views/Page folder  without the .cshtml extension
-		/// example: "Welcome"  to point this template to "/Views/Page/Welcome.cshtml"
+		/// example: "Page Simple Welcome"  to point this template to "/Views/Page/Page Simple Welcome.cshtml"
 		/// </summary>
 		[Required]
 		[Display(Name = "View Name (file name without .cshtml)", ShortName="View Name")]
 		public string ViewName { get; set; }
 
 		public virtual ICollection<PageTemplateSection> Sections { get; set; }
+
+		public virtual ICollection<Page> Pages { get; set; }
 
 	}
 }

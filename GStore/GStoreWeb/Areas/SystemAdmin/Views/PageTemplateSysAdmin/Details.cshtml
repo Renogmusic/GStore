@@ -37,6 +37,14 @@
 			</a>
 			<br/>Sync Sections to Update
 		</dd>
+
+		<dt>
+			Pages using this template
+		</dt>
+		<dd>
+			Active: @Model.Pages.AsQueryable().WhereIsActive().Count().ToString("N0") / Total @Model.Pages.Count().ToString("N0")
+		</dd>
+
 		<dt>
 			@Html.DisplayNameFor(model => model.PageTemplateId)
 		</dt>

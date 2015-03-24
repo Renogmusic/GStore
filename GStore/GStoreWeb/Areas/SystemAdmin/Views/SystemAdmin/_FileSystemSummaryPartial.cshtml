@@ -1,0 +1,146 @@
+﻿@model bool?
+@{
+	AjaxOptions formOptions = new AjaxOptions();
+	formOptions.AllowCache = false;
+	formOptions.InsertionMode = InsertionMode.Replace;
+	formOptions.UpdateTargetId = "FileSystemSummary";
+
+	string rootVirtualPath = "~/Content/Clients";
+	string rootPath = Server.MapPath(rootVirtualPath);
+	DirectoryInfo rootFolder = null;
+	List<DirectoryInfo> clientFolders = new List<DirectoryInfo>();
+	if (System.IO.Directory.Exists(rootPath))
+	{
+		rootFolder = new DirectoryInfo(rootPath);
+		clientFolders = rootFolder.GetDirectories().OrderBy(d => d.FullName).ToList();
+	}
+
+	bool showEmptyFolders = Model ?? false;
+}
+<script>
+	$(document).ready(function ()
+	{
+		$('[data-toggle="popover"]').popover()
+	});
+</script>
+
+<div class="text-center">
+	@using (Ajax.BeginForm("FileSystemSummary", null, formOptions, htmlAttributes: new { id = "FileSystemForm" }))
+	{
+		<input id="ShowEmptyFolders" type="checkbox" value="true" onclick="$('#FileSystemForm').trigger('submit');" name="ShowEmptyFolders" @(showEmptyFolders ? "checked=\"checked\"" : "")>
+		<label for="ShowEmptyFolders">Show Empty Folders</label>
+		@DateTime.UtcNow.ToUserDateTimeString(Html) @:&nbsp;&nbsp;|&nbsp;&nbsp; <input id="RefreshFileSystemInfo" type="submit" accesskey="R" value="Refresh" class="btn btn-sm btn-primary" />
+	}
+</div>
+<style>
+	.Empty
+	{
+		font-weight: lighter;
+	}
+
+	.HasFiles
+	{
+		font-weight: bolder;
+	}
+</style>
+
+<p>
+	Client Folders '@(rootVirtualPath)'
+	<br />
+	File system at '@(rootPath)'
+	<br/>
+	@(showEmptyFolders ? "" : "Not") Showing empty folders
+</p>
+<div id="ClientFolders" class="row">
+	<div class="col-xs-12 btn btn-info NoClick">
+		Client Folders @(clientFolders.Count)
+	</div>
+	<div class="ClientFolderDetails">
+		@if (rootFolder == null)
+		{
+			@:<h2 class="text-danger">Client Root folder '@(rootVirtualPath)' could not be found in file system at '@(rootPath)'</h2>
+		}
+		else if (clientFolders.Count == 0)
+		{
+			@:<h2 class="text-danger">No Client folders were found at '@(rootVirtualPath)' in file system at '@(rootPath)'</h2>
+		}
+		else
+		{
+			foreach (DirectoryInfo folder in clientFolders)
+			{
+				FileInfo[] files = folder.GetFiles("*.*", SearchOption.AllDirectories);
+				int fileCount = files.Count();
+				long size = files.Sum(f => f.Length);
+				if (showEmptyFolders || fileCount != 0)
+				{
+					<div class="col-xs-4">
+						@(folder.Name)
+					</div>
+					<div class="col-xs-4">
+						@(fileCount.ToString("N0")) file@(fileCount == 1 ? "" : "s")
+					</div>
+					<div class="col-xs-4">
+						@if (fileCount == 0)
+						{
+							@:-
+						}
+						else
+						{
+							@(size.ToByteString())
+						}
+					</div>
+				}
+			}
+		}
+		<div class="col-xs-12">
+			<hr />
+		</div>
+	</div>
+</div>
+
+@if (rootFolder != null)
+{
+	<div id="FolderView" class="row">
+		@foreach (DirectoryInfo clientFolder in clientFolders)
+		{
+			List<DirectoryInfo> folders = clientFolder.GetDirectories("*", SearchOption.AllDirectories).OrderBy(f => f.FullName).ToList();
+
+			<div class="col-xs-12 btn btn-info NoClick">
+				Client '@(clientFolder.Name)'
+			</div>
+			<div class="FolderViewDetails">
+				@foreach (DirectoryInfo folder in folders)
+				{
+					FileInfo[] files = folder.GetFiles("*.*", SearchOption.AllDirectories);
+					int fileCount = files.Count();
+					long size = files.Sum(f => f.Length);
+					string rowClass = fileCount == 0 ? "Empty" : "HasFiles";
+					if (showEmptyFolders || fileCount != 0)
+					{
+						<div class="row @(rowClass)">
+							<div class="col-xs-8">
+								@(folder.FullName.Replace(clientFolder.FullName + "\\", ""))
+							</div>
+							<div class="col-xs-2">
+								@(fileCount.ToString("N0")) file@(fileCount == 1 ? "" : "s")
+							</div>
+							<div class="col-xs-2">
+								@if (fileCount == 0)
+								{
+									@:-
+								}
+								else
+								{
+									@(size.ToByteString())
+								}
+							</div>
+						</div>
+					}
+				}
+				<div class="col-xs-12">
+					<hr />
+				</div>
+			</div>
+		}
+	</div>
+}

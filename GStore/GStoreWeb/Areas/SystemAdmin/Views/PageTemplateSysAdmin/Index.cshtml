@@ -76,6 +76,9 @@ else
 					@Html.ActionSortLinkFor(model => model.Sections, "Index")
 				</th>
 				<th class="small">
+					Pages
+				</th>
+				<th class="small">
 					@Html.ActionSortLink("Status", "Index", "Status")
 				</th>
 				<th class="small">
@@ -157,6 +160,11 @@ else
 							@:&nbsp;/&nbsp;
 							@item.Sections.Count()
 						}
+					</td>
+					<td class="text-left">
+						@item.Pages.AsQueryable().WhereIsActive().Count()
+						&nbsp;/&nbsp;
+						@item.Pages.Count()
 					</td>
 					<td>
 						@if (pageTemplateIsActive)

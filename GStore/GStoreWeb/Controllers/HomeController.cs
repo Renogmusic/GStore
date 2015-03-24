@@ -39,6 +39,7 @@ namespace GStoreWeb.Controllers
 			routeData.Values["action"] = "Index";
 			routeData.Values["controller"] = "Catalog";
 			catalogController.ControllerContext = new ControllerContext(HttpContext, routeData, catalogController);
+			catalogController.TempData = this.TempData;
 			return catalogController.Index();
 		}
 

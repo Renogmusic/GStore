@@ -127,6 +127,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -171,7 +174,7 @@
     </Reference>
     <Reference Include="Twilio.Twiml, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Twilio.TwiML.3.3.5\lib\3.5\Twilio.Twiml.dll</HintPath>
+      <HintPath>..\packages\Twilio.TwiML.3.3.6\lib\3.5\Twilio.Twiml.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1039,6 +1042,7 @@
     <Content Include="Areas\CatalogAdmin\Views\ProductAdmin\EditorTemplates\ProductAddToBundle.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\RecordSummary.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\RecordSummary.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\SystemAdmin\_FileSystemSummaryPartial.cshtml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -1168,7 +1172,6 @@
     <Content Include="Views\Shared\EditorTemplates\FieldPageId.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldParentNavBarItemId.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldParentNavBarItemIdNullable.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\FieldParentNavBarItemOrBlank.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldValueListIdNullable.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldKey.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\FieldClientId.cshtml" />
@@ -1824,7 +1827,7 @@
     <Content Include="Views\Profile\Logins.cshtml" />
     <Content Include="Views\Profile\SetPassword.cshtml" />
     <Content Include="Views\Profile\VerifyPhoneNumber.cshtml" />
-    <Content Include="Views\Page\Page Welcome.cshtml" />
+    <Content Include="Views\Page\Page Simple Answers.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Notifications\Create.cshtml" />
     <Content Include="Views\Notifications\Delete.cshtml" />
@@ -1962,6 +1965,12 @@
     <Content Include="Views\Catalog\SimpleBlocked\_CategoryDetails_Partial.cshtml" />
     <Content Include="Views\Catalog\SimpleBlocked\_Top_CategoryList_Partial.cshtml" />
     <Content Include="Views\Catalog\SimpleBlocked\_BundleItemList_Partial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Enum.cshtml" />
+    <Content Include="Views\Page\Page Simple About Us.cshtml" />
+    <Content Include="Views\Page\Page Simple Contact Us.cshtml" />
+    <Content Include="Views\Page\Page Simple Welcome.cshtml" />
+    <Content Include="Views\Page\Page Simple Location.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SampleAudio.cshtml" />
     <None Include="Views\Shared\EditorTemplates\FieldProductCategoryFile.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCatalogFile.cshtml" />
   </ItemGroup>
@@ -2061,7 +2070,6 @@
       <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\CSAutoParameterize\**\*" />
       <_TempWebConfigToDelete Include="$(BaseIntermediateOutputPath)**\TempPE\**\*" />
     </ItemGroup>
-
-    <Delete Files="@(_TempWebConfigToDelete)"/>
+    <Delete Files="@(_TempWebConfigToDelete)" />
   </Target>
 </Project>

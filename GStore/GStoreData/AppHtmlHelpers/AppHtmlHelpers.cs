@@ -699,154 +699,6 @@ namespace GStoreData.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns a dropdownlist with values from an enum using the current model
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="optionLabel"></param>
-		/// <param name="htmlAttributes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel = null, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
-		{
-			return htmlHelper.EnumDropDownListForModel(optionLabel, null,  addFormControlClass, removeHtmlFieldPrefix);
-		}
-
-		/// <summary>
-		/// Returns a dropdownlist with values from an enum using the current model
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="optionLabel"></param>
-		/// <param name="htmlAttributes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString EnumDropDownListForModel(this HtmlHelper<Enum> htmlHelper, string optionLabel, object htmlAttributes, bool addFormControlClass = true, bool removeHtmlFieldPrefix = true)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metadata.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
-
-			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
-			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
-			{
-				return null;
-			}
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			if (addFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			string selectedValue = null;
-			if (htmlHelper.ViewData.Model != null)
-			{
-				selectedValue = htmlHelper.ViewData.Model.ToString();
-			}
-			
-			List<EnumInfoValue> orderedEnumValues = enumInfo.Values.OrderBy(v => v.Order ?? 999999).ThenBy(v => v.Name).ToList();
-			IEnumerable<SelectListItem> options = orderedEnumValues.Select(v => new SelectListItem() { Value = v.Value.ToString(), Text = v.DisplayName, Selected = v.Value.ToString() == selectedValue });
-			return htmlHelper.DropDownList(fieldName, options, optionLabel, htmlAttribs);
-		}
-
-		/// <summary>
-		/// Returns a radio button list with values from an enum using the current model
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="optionLabel"></param>
-		/// <param name="htmlAttributes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
-		{
-			return htmlHelper.EnumRadioButtonListForModel(null, htmlSeparator, selectFirst, addFormControlClass, removeHtmlFieldPrefix);
-		}
-
-		/// <summary>
-		/// Returns a radio button list with values from an enum using the current model
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="optionLabel"></param>
-		/// <param name="htmlAttributes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString EnumRadioButtonListForModel(this HtmlHelper<Enum> htmlHelper, object htmlAttributes, string htmlSeparator = "<br/>", bool selectFirst = true, bool addFormControlClass = false, bool removeHtmlFieldPrefix = true)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metadata.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
-
-			EnumInfo enumInfo = htmlHelper.EnumIntInfoListForModel<Enum>();
-			if (!enumInfo.HasValue || enumInfo.Values.Count == 0)
-			{
-				return null;
-			}
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			if (addFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"];
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			List<EnumInfoValue> orderedEnumValues = enumInfo.Values.OrderBy(v => v.Order).ThenBy(v => v.Name).ToList();
-			List<SelectListItem> options = orderedEnumValues.Select(v => new SelectListItem() { Value = v.Value.ToString(), Text = v.DisplayName }).ToList();
-
-			if (htmlHelper.ViewData.Model == null)
-			{
-				if (selectFirst)
-				{
-					//null model select first item
-					options.First().Selected = true;
-				}
-			}
-			else
-			{
-				SelectListItem firstMatch = options.FirstOrDefault(o => o.Value == htmlHelper.ViewData.Model.ToString());
-				if (firstMatch == null)
-				{
-					if (selectFirst)
-					{
-						//no match select first item
-						options.First().Selected = true;
-					}
-				}
-				else
-				{
-					firstMatch.Selected = true;
-				}
-			}
-
-			StringBuilder html = new StringBuilder();
-			
-			foreach (SelectListItem option in options)
-			{
-				string id = fieldName + "_" + option.Value;
-				htmlAttribs["id"] = id;
-				html.AppendLine(htmlHelper.RadioButton(fieldName, option.Value, option.Selected, htmlAttribs).ToHtmlString());
-				html.AppendLine("<label for=\"" + id + "\">" + option.Text.ToHtml() + "</label>");
-				html.AppendLine(htmlSeparator);
-			}
-			return new MvcHtmlString(html.ToString());
-		}
-
-		/// <summary>
 		/// Returns a watermark for the current field. Gets data from Prompt display attribute
 		/// </summary>
 		/// <typeparam name="TModel"></typeparam>
@@ -1852,7 +1704,7 @@ namespace GStoreData.AppHtmlHelpers
 
 		}
 
-		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
+		public static MvcHtmlString NavBarItemMenuItemStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> navBarItem, int level, int maxLevels, bool noDropdown = false)
 		{
 			StringBuilder html = new StringBuilder();
 			UrlHelper urlHelper = htmlHelper.UrlHelper();
@@ -1866,7 +1718,7 @@ namespace GStoreData.AppHtmlHelpers
 
 			string accessKey = navBarItem.Entity.Name.Substring(0, 1);
 
-			if (level == 1 && navBarItem.HasChildMenuItems(maxLevels))
+			if (!noDropdown && (level == 1) && navBarItem.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
 				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
@@ -1931,7 +1783,7 @@ namespace GStoreData.AppHtmlHelpers
 			}
 			else
 			{
-				html += Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
+				html = Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1942,11 +1794,13 @@ namespace GStoreData.AppHtmlHelpers
 			string html = string.Empty;
 			if (level == 1)
 			{
-				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu NavBarItemChildContainer NavBarItemChildContainerLevel" + level + "\" role=\"menu\">\n";
+				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu NavBarItemChildContainer NavBarItemChildContainerLevel" + level + "\" role=\"menu\">\n"
+					+ NavBarItemMenuItemStart(htmlHelper, NavBarItem, level, maxLevels, true).ToHtmlString()
+					+ NavBarItemMenuItemEnd(htmlHelper, NavBarItem, level, maxLevels).ToHtmlString();
 			}
 			else
 			{
-				html += Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
+				html = Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1984,38 +1838,12 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static string UrlResolved(this Page page, UrlHelper urlHelper)
 		{
-			string url = page.Url.Trim('~').Trim('/');
-			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
-			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
-			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
-			{
-				url = appRoot + "/" + url;
-			}
-			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
-			if (!string.IsNullOrEmpty(urlStoreName))
-			{
-				url = "Stores/" + urlStoreName + "/" + url;
-			}
-
-			return "/" + url;
+			return urlHelper.GStoreLocalUrl(page.Url);
 		}
 
 		public static string UrlResolved(this PageEditViewModel pageEditViewModel, UrlHelper urlHelper)
 		{
-			string url = pageEditViewModel.Url.Trim('~').Trim('/');
-			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
-			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
-			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
-			{
-				url = appRoot + "/" + url;
-			}
-			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
-			if (!string.IsNullOrEmpty(urlStoreName))
-			{
-				url = "Stores/" + urlStoreName + "/" + url;
-			}
-
-			return "/" + url;
+			return urlHelper.GStoreLocalUrl(pageEditViewModel.Url);
 		}
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
@@ -2199,8 +2027,12 @@ namespace GStoreData.AppHtmlHelpers
 
 		/// <summary>
 		/// Converts a local url like "/foo" into a local url using app path and /stores/storename if necessary
+		/// Respects application root path, and StoresFolder if in use
+		/// Set absoluteLink to create a fully qualified URL starting with http
 		/// </summary>
-		/// <param name="url"></param>
+		/// <param name="urlHelper">URL Helper</param>
+		/// <param name="localUrl">Local URL may be "" or "/" or "~/" for root. slashes are trimmed</param>
+		/// <param name="absoluteLink"></param>
 		/// <returns></returns>
 		public static string GStoreLocalUrl(this UrlHelper urlHelper, string localUrl, bool absoluteLink = false)
 		{
@@ -2295,6 +2127,8 @@ namespace GStoreData.AppHtmlHelpers
 				throw new ArgumentOutOfRangeException("description", "Template Error! Section Description cannot be blank");
 			}
 
+			bool autoSyncPageTemplateSection = htmlHelper.ViewData.PageTemplateAutoSync();
+
 			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
 			if (pageViewModel == null)
 			{
@@ -2320,11 +2154,68 @@ namespace GStoreData.AppHtmlHelpers
 				IGstoreDb db = htmlHelper.GStoreDb();
 				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, pageTemplate.ClientId, db.SeedAutoMapUserBestGuess());
 			}
+			else if (autoSyncPageTemplateSection)
+			{
+				//if flag is set to resync fields, update database if template has changed
+				bool updateSection = false;
+
+				if (pageTemplateSection.Description != description)
+				{
+					pageTemplateSection.Description = description;
+					updateSection = true;
+				}
+				if (pageTemplateSection.DefaultRawHtmlValue != defaultRawHtmlValue)
+				{
+					pageTemplateSection.DefaultRawHtmlValue = defaultRawHtmlValue;
+					updateSection = true;
+				}
+				if (pageTemplateSection.PreTextHtml != preTextHtml)
+				{
+					pageTemplateSection.PreTextHtml = preTextHtml;
+					updateSection = true;
+				}
+				if (pageTemplateSection.PostTextHtml != postTextHtml)
+				{
+					pageTemplateSection.PostTextHtml = postTextHtml;
+					updateSection = true;
+				}
+				if (pageTemplateSection.DefaultTextCssClass != defaultTextCssClass)
+				{
+					pageTemplateSection.DefaultTextCssClass = defaultTextCssClass;
+					updateSection = true;
+				}
+				if (pageTemplateSection.EditInTop != editInTop)
+				{
+					pageTemplateSection.EditInTop = editInTop;
+					updateSection = true;
+				}
+				if (pageTemplateSection.EditInBottom != editInBottom)
+				{
+					pageTemplateSection.EditInBottom = editInBottom;
+					updateSection = true;
+				}
+
+				if (updateSection)
+				{
+					IGstoreDb db = htmlHelper.GStoreDb();
+					UserProfile profile = htmlHelper.CurrentUserProfile(false);
+					if (profile == null)
+					{
+						profile = db.SeedAutoMapUserBestGuess();
+					}
+					db.CachedUserProfile = profile;
+					pageTemplateSection = db.PageTemplateSections.Update(pageTemplateSection);
+					db.SaveChanges();
+					db.CachedUserProfile = null;
+				}
+
+			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
 				.Where(ps => ps.PageTemplateSectionId == pageTemplateSection.PageTemplateSectionId)
 				.OrderBy(ps => ps.Order).ThenBy(ps => ps.PageSectionId)
 				.FirstOrDefault();
+
 
 			if (!pageViewModel.EditMode)
 			{
@@ -3457,6 +3348,26 @@ namespace GStoreData.AppHtmlHelpers
 				throw new ArgumentNullException("viewData");
 			}
 			viewData["OptionLabel"] = value;
+		}
+
+		/// <summary>
+		/// Gets the page setting for PageTemplateAutoSync. Returns false if not set (default for performance)
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <returns></returns>
+		public static bool PageTemplateAutoSync(this ViewDataDictionary viewData)
+		{
+			return (viewData["PageTemplateAutoSync"] as bool?) ?? false;
+		}
+
+		/// <summary>
+		/// Sets the page setting for PageTemplateAutoSync. default is false for performance
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <returns></returns>
+		public static void PageTemplateAutoSync(this ViewDataDictionary viewData, bool value)
+		{
+			viewData["PageTemplateAutoSync"] = value;
 		}
 
 		/// <summary>

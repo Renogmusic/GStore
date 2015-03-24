@@ -6,17 +6,34 @@
 	}
 	Product product = Model.CurrentProductOrNull;
 	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	ProductDetailTemplateEnum detailTemplate = product.Category.ProductDetailTemplate;
+
 	string url = Url.Action("ViewProductByName", "Catalog", new { urlName = product.UrlName });
 	string imageUrl = product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
 	decimal? unitPrice = product.UnitPrice(1);
 	decimal? listPrice = product.ListPrice(1);
 	bool showListPrice = config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+	bool showImage = (imageUrl != null);
+	bool showSampleAudio = false;
+
+	if (!string.IsNullOrEmpty(product.SampleAudioFileName))
+	{
+		showSampleAudio = true;
+	}
 
 	<div class="ProductListItemBox boxshadowjs">
-		@if (imageUrl != null)
+		@if (showImage)
 		{
 			<a class="ProductListImageLink" href="@(url)"><img class="ProductListImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(product.Name)))" title="@(Html.Raw(Html.AttributeEncode(product.Name)))" /></a>
 			<br />
+			if (showSampleAudio)
+			{
+				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+				<div class="ProductMusicRow">
+					<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductMusicLabel">@(product.SampleAudioCaptionOrDefault())</span>
+				</div>
+			}
 			if (showListPrice)
 			{
 				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>

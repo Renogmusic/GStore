@@ -136,8 +136,8 @@ namespace GStoreData.ControllerBase
 
 			if (FormProcessorExtensions.ProcessWebForm(this, page.WebForm, page, false, null))
 			{
-				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Thank You!" : page.WebFormThankYouTitle);
-				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information!" : page.WebFormThankYouMessage);
+				string messageTitle = (string.IsNullOrEmpty(page.WebFormThankYouTitle) ? "Your form has been Sent!" : page.WebFormThankYouTitle);
+				string messageBody = (string.IsNullOrEmpty(page.WebFormThankYouMessage) ? "Thank you for your information, we will get back to you soon!" : page.WebFormThankYouMessage);
 
 				messageBody = messageBody.ReplaceVariables(CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull, string.Empty);
 				messageTitle = messageTitle.ReplaceVariables(CurrentClientOrNull, CurrentStoreFrontConfigOrThrow, CurrentUserProfileOrNull, CurrentPageOrNull, string.Empty);
@@ -147,7 +147,7 @@ namespace GStoreData.ControllerBase
 				AddUserMessage(messageTitle.ToHtml(), messageBody, UserMessageType.Success);
 				if (page.WebFormSuccessPageId == null)
 				{
-					return Display();
+					return Redirect(Url.GStoreLocalUrl("/"));
 				}
 				Page redirectPageTarget = CurrentStoreFrontOrThrow.Pages.SingleOrDefault(p => p.PageId == page.WebFormSuccessPageId.Value);
 				if (redirectPageTarget == null)
@@ -158,7 +158,7 @@ namespace GStoreData.ControllerBase
 				{
 					return Redirect(redirectPageTarget.UrlResolved(Url));
 				}
-				return Display();
+				return Redirect(Url.GStoreLocalUrl("/"));
 			}
 			//re-display form if process error
 			AddUserMessage("Form Error", "There was a problem with your form values. Please correct the errors below.", UserMessageType.Danger);

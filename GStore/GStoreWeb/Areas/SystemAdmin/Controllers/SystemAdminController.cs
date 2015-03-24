@@ -346,5 +346,10 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			return PartialView("_RecordSummaryPartial", viewModel);
 		}
 
+		public PartialViewResult FileSystemSummary(bool showEmptyFolders = false)
+		{
+			return PartialView("_FileSystemSummaryPartial", showEmptyFolders);
+		}
+
 	}
 }

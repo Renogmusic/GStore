@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using GStoreData.AppHtmlHelpers;
+using GStoreData.ControllerBase;
 using GStoreData.Models;
 using GStoreData.Models.BaseClasses;
 
@@ -400,8 +401,10 @@ namespace GStoreData
 				navBarItem.Name = "New Menu Item " + navBarItem.Order;
 			}
 			navBarItem.ForRegisteredOnly = false;
+			navBarItem.ForAnonymousOnly = false;
 			navBarItem.IsPage = true;
 			navBarItem.OpenInNewWindow = false;
+			navBarItem.UseDividerBeforeOnMenu = true;
 			navBarItem.UseDividerAfterOnMenu = true;
 			navBarItem.IsPending = false;
 			navBarItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -768,7 +771,62 @@ namespace GStoreData
 			CreateClientFolders(path);
 		}
 
-		public static void CreateStoreFrontFolders(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
+		public static bool MoveStoreFrontFolders(this StoreFrontConfiguration config, string applicationPath, HttpServerUtilityBase server, string oldFolder, BaseController controller)
+		{
+
+			string oldFolderToMap = config.ClientVirtualDirectoryToMapToStoreFronts(applicationPath) + "/" + oldFolder;
+			string newFolderToMap = config.StoreFrontVirtualDirectoryToMap(applicationPath);
+			string oldFolderPath = server.MapPath(oldFolderToMap);
+			string newFolderPath = server.MapPath(newFolderToMap);
+
+			//default behavior is to move the old folder to the new name
+			if (System.IO.Directory.Exists(oldFolderPath))
+			{
+				try
+				{
+					System.IO.Directory.Move(oldFolderPath, newFolderPath);
+					if (controller != null)
+					{
+						controller.AddUserMessage("Store Front Folder Moved", "Store Front folder was moved from '" + oldFolderToMap.ToHtml() + "' to '" + newFolderToMap.ToHtml() + "'", UserMessageType.Success);
+					}
+					return true;
+				}
+				catch (Exception ex)
+				{
+					if (controller != null)
+					{
+						controller.AddUserMessage("Error Moving Client Folder!", "There was an error moving the client folder from '" + oldFolderToMap.ToHtml() + "' to '" + newFolderToMap.ToHtml() + "'. You will need to move the folder manually. Error: " + ex.Message, UserMessageType.Warning);
+					}
+					return false;
+				}
+			}
+			else
+			{
+				try
+				{
+					bool result = config.CreateStoreFrontFolders(applicationPath, server);
+					if (result)
+					{
+						if (controller != null)
+						{
+							controller.AddUserMessage("Folders Created", "Store Front folders were created in : " + newFolderToMap.ToHtml(), UserMessageType.Info);
+						}
+						return true;
+					}
+					return false;
+				}
+				catch (Exception ex)
+				{
+					if (controller != null)
+					{
+						controller.AddUserMessage("Error Creating Store Front Folders!", "There was an error creating the Store Front folders in '" + newFolderToMap.ToHtml() + "'. You will need to create the folders manually. Error: " + ex.Message, UserMessageType.Warning);
+					}
+					return false;
+				}
+			}
+		}
+
+		public static bool CreateStoreFrontFolders(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
 		{
 			if (storeFrontConfig == null)
 			{
@@ -780,6 +838,21 @@ namespace GStoreData
 			}
 			string path = server.MapPath(storeFrontConfig.StoreFrontVirtualDirectoryToMapThisConfig(applicationPath));
 			CreateStoreFrontFolders(path);
+			return true;
+		}
+
+		public static bool CheckStoreFrontFolders(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
+		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+			if (server == null)
+			{
+				throw new ArgumentNullException("server");
+			}
+			string path = server.MapPath(storeFrontConfig.StoreFrontVirtualDirectoryToMapThisConfig(applicationPath));
+			return CheckStoreFrontFolders(path);
 		}
 
 		public static void CreateClientFolders(string basePath)
@@ -794,6 +867,51 @@ namespace GStoreData
 			CreateFolderIfNotExists(basePath + "\\Scripts");
 			CreateFolderIfNotExists(basePath + "\\StoreFronts");
 			CreateFolderIfNotExists(basePath + "\\Styles");
+		}
+
+		public static bool CheckStoreFrontFolders(string basePath)
+		{
+			if (!System.IO.Directory.Exists(basePath + "\\CatalogContent\\Categories"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\CatalogContent\\Products"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\DigitalDownload\\Products"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\ErrorPages"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Fonts"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Forms"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Images"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Pages"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Scripts"))
+			{
+				return false;
+			}
+			if (!System.IO.Directory.Exists(basePath + "\\Styles"))
+			{
+				return false;
+			}
+			return true;
 		}
 
 		/// <summary>

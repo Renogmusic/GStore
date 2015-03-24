@@ -53,7 +53,7 @@ namespace GStoreWeb
 			try
 			{
 				BaseController gstoreController = GetGStoreControllerFromException(ex);
-				gstoreController.InitContext(this.Context, "GStore", "AppError", "");
+				gstoreController.InitContext(this.Context, "GStore", "AppError", "", null);
 				if (ex is HttpException)
 				{
 					ExceptionHandler.HandleHttpException(ex as HttpException, true, HttpContext.Current, null, gstoreController);

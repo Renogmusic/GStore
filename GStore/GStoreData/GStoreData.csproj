@@ -98,6 +98,10 @@
     <Compile Include="Migrations\201503230617296_Initial.Designer.cs">
       <DependentUpon>201503230617296_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503240837402_Release4.cs" />
+    <Compile Include="Migrations\201503240837402_Release4.Designer.cs">
+      <DependentUpon>201503240837402_Release4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\OrderBundle.cs" />
     <Compile Include="Models\CartBundle.cs" />
     <Compile Include="Models\BaseClasses\GStorePaymentSourceEnum.cs" />
@@ -317,6 +321,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201503230617296_Initial.resx">
       <DependentUpon>201503230617296_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503240837402_Release4.resx">
+      <DependentUpon>201503240837402_Release4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

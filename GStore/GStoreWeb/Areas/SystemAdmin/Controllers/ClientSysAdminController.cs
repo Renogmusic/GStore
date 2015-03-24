@@ -129,7 +129,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				if (populateSampleWebForms.HasValue && populateSampleWebForms.Value)
 				{
 					List<WebForm> newWebForms = db.CreateSeedWebForms(client);
-					AddUserMessage("Populated Sample Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
+					AddUserMessage("Populated Simple Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
 				}
 
                 return RedirectToAction("Index");
@@ -189,7 +189,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				if (populateSampleWebForms.HasValue && populateSampleWebForms.Value)
 				{
 					List<WebForm> newWebForms = db.CreateSeedWebForms(client);
-					AddUserMessage("Populated Sample Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
+					AddUserMessage("Populated Simple Web Forms", "New Forms added: " + newWebForms.Count, UserMessageType.Success);
 				}
 				string originalClientFolder = Server.MapPath(originalFolderToMap);
 				string newClientFolder = Server.MapPath(client.ClientVirtualDirectoryToMap(Request.ApplicationPath));

@@ -92,7 +92,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AppDefaultPageTemplateViewName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Page Welcome</Value>
+      <Value Profile="(Default)">Page Sample Welcome</Value>
     </Setting>
     <Setting Name="RepositoryProvider" Type="System.String" Scope="Application">
       <Value Profile="(Default)">EntityFrameworkCodeFirstProvider</Value>

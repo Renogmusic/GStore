@@ -126,7 +126,7 @@ namespace GStoreData.AppHtmlHelpers
 					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
 				}
 
-				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Images" };
 				serverListItems = serverFiles.Select(fil =>
 					new SelectListItem()
 					{
@@ -232,7 +232,7 @@ namespace GStoreData.AppHtmlHelpers
 					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
 				}
 
-				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Files" };
 				serverListItems = serverFiles.Select(fil =>
 					new SelectListItem()
 					{
@@ -339,7 +339,7 @@ namespace GStoreData.AppHtmlHelpers
 					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
 				}
 
-				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Files" };
 				serverListItems = serverFiles.Select(fil =>
 					new SelectListItem()
 					{
@@ -448,7 +448,7 @@ namespace GStoreData.AppHtmlHelpers
 					serverFiles = serverFiles.Where(f => f.Name.FileExtensionIsAudio()).ToList();
 				}
 
-				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Samples" };
+				SelectListGroup serverGroup = new SelectListGroup() { Name = "GStore Files" };
 				serverListItems = serverFiles.Select(fil =>
 					new SelectListItem()
 					{

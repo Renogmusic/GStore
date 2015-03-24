@@ -1,0 +1,12 @@
+﻿@model Enum
+
+@{
+	if (Model == null)
+	{
+		@:(blank)
+	}
+	else
+	{
+		@(Model.ToDisplayName())
+	}
+}

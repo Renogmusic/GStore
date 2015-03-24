@@ -125,6 +125,14 @@ namespace GStoreData.Models
 		[Display(Name = "Bottom Link Label", Description = "Link Label for the bottom link that appears after the bottom description field. Leave this blank if there is no link.")]
 		public string BottomLinkLabel { get; set; }
 
+		[MaxLength(100)]
+		[Display(Name = "Product Type Single", Description = "Singular Name used when showing a Product for this bundle. \nExample: Product, Item, Song, Toy.\nDefault: Item\nLeave this blank to use the category default setting.")]
+		public string ProductTypeSingle { get; set; }
+
+		[MaxLength(100)]
+		[Display(Name = "Product Type Plural", Description = "Singular Name used when showing a list of Products for this bundle. \nExample: Products, Items, Songs, Toys.\nDefault: Items\nLeave this blank to use the category default setting.")]
+		public string ProductTypePlural { get; set; }
+
 		public virtual ICollection<CartBundle> CartBundles { get; set; }
 
 		public virtual ICollection<ProductBundleItem> ProductBundleItems { get; set; }

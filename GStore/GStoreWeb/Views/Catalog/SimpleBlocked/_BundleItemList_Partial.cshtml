@@ -1,8 +1,13 @@
 ﻿@model CatalogViewModel
 <!-- Bundle Item List Start -->
 @{
+	ProductBundle bundle = Model.CurrentProductBundleOrNull;
 	List<ProductBundleItem> bundleItems = Model.CurrentProductBundleItemsListOrNull();
 
+	if (bundle == null)
+	{
+		throw new ArgumentNullException("Model.CurrentProductBundleOrNull");
+	}
 	if (bundleItems == null || bundleItems.Count == 0)
 	{
 		@:There are no items for this bundle
@@ -30,7 +35,11 @@
 			offsets = " col-lg-offset-" + lgOffset;
 		}
 
-		
+		<div class="row">
+			<div class="col-xs-12">
+				<h2>Includes the following @(bundleItems.Count == 1 ? bundle.ProductTypeSingleOrSystemDefault() : bundle.ProductTypePluralOrSystemDefault() )</h2>
+			</div>
+		</div>
 		@:<div class="row BundleItemListContainer">
 		foreach (ProductBundleItem bundleItem in bundleItems)
 		{

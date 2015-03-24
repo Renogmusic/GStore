@@ -906,7 +906,7 @@ namespace GStoreData.ControllerBase
 		/// <param name="controller"></param>
 		/// <param name="action"></param>
 		/// <param name="area"></param>
-		public void InitContext(System.Web.HttpContext httpContext, string controller, string action, string area)
+		public void InitContext(System.Web.HttpContext httpContext, string controller, string action, string area, TempDataDictionary tempData)
 		{
 			if (httpContext == null)
 			{
@@ -928,6 +928,10 @@ namespace GStoreData.ControllerBase
 				routeData.Controller(controller);
 				routeData.Action(action);
 				this.ControllerContext = new ControllerContext(new HttpContextWrapper(System.Web.HttpContext.Current), routeData, this);
+				if (tempData != null)
+				{
+					this.TempData = tempData;
+				}
 			}
 		}
 
@@ -935,11 +939,12 @@ namespace GStoreData.ControllerBase
 		/// Bounces the user to the login page with a specific error explaining why
 		/// </summary>
 		/// <param name="userMessage"></param>
-		public void BounceToLogin(string userMessage)
+		public void BounceToLogin(string userMessage, TempDataDictionary tempData)
 		{
 			if (this.ControllerContext == null)
 			{
 				this.ControllerContext = new ControllerContext(new HttpContextWrapper(System.Web.HttpContext.Current), this.RouteData, this);
+				this.TempData = tempData;
 			}
 			AddUserMessage("Login required", userMessage, UserMessageType.Warning);
 

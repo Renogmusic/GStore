@@ -132,14 +132,14 @@
 		{
 			if (Model.IsStoreAdminEdit)
 			{
-				<li class=""><a target="_blank" href="~/Edit@(Model.OriginalPageUrl)?Tab=Content"><u>Content <small>(new window)</small></u></a></li>
+				<li class=""><a target="_blank" href="@(Url.GStoreLocalUrl("/Edit/" + Model.OriginalPageUrl.Trim('~').Trim('/')))?Tab=Content"><u>Content <small>(new window)</small></u></a></li>
 			}
 
-			<li class=""><a target="_blank" href="@(Model.OriginalPageUrl)"><u>Live Page <small>(new window)</small></u></a></li>
+			<li class=""><a target="_blank" href="@(Url.GStoreLocalUrl(Model.OriginalPageUrl))"><u>Live Page <small>(new window)</small></u></a></li>
 
 			if (Model.IsStoreAdminEdit)
 			{
-				<li class=""><a href="~/Edit@(Model.OriginalPageUrl)"><u>Edit in Site</u></a></li>
+				<li class=""><a href="@(Url.GStoreLocalUrl("/Edit/" + Model.OriginalPageUrl.Trim('~').Trim('/')))"><u>Edit in Site</u></a></li>
 			}
 			else
 			{

@@ -387,6 +387,26 @@
 				@Html.DisplayFor(model => model.FooterHtml)
 				<br />@Html.HelpLabelFor(model => model.FooterHtml)
 			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ProductTypeSingle)
+				@Html.HelpLabelPopoverFor(model => model.ProductTypeSingle, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ProductTypeSingle)
+				<br />@Html.HelpLabelFor(model => model.ProductTypeSingle)
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ProductTypePlural)
+				@Html.HelpLabelPopoverFor(model => model.ProductTypePlural, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ProductTypePlural)
+				<br />@Html.HelpLabelFor(model => model.ProductTypePlural)
+			</dd>
 		</dl>
 	</div>
 
