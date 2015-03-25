@@ -40,7 +40,7 @@
 {
 	if (!hasChildCategories && (bundles == null || bundles.Count == 0))
 	{
-		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.NoProductsMessageHtml.OrDefault("<h2>There are no current products in Category: " + Model.CurrentCategoryOrNull.Name + "</h2>")))
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault().ToHtmlString()))
 	}
 }
 else

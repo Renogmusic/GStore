@@ -86,19 +86,6 @@
 	</div>
 }
 
-@if (!string.IsNullOrWhiteSpace(productBundle.TopDescriptionHtml))
-{
-	<div class="row">
-		<div class="btn btn-info NoClick">
-			@productBundle.TopDescriptionCaptionOrDefault()
-		</div>
-	</div>
-	<div class="row">
-		@Html.Raw(Html.ReplaceVariables(productBundle.TopDescriptionHtml))
-		<hr />
-	</div>
-}
-
 @if (!string.IsNullOrWhiteSpace(productBundle.TopLinkHref))
 {
 	<div class="row">
@@ -108,6 +95,19 @@
 	</div>
 	<div class="row">
 		<a href="@(productBundle.TopLinkHref)" title="@(productBundle.TopLinkHref) - @(productBundle.TopLinkLabel)" target="_blank">@(productBundle.TopLinkLabel)</a>
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(productBundle.TopDescriptionHtml))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@productBundle.TopDescriptionCaptionOrDefault()
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(productBundle.TopDescriptionHtml))
 		<hr />
 	</div>
 }

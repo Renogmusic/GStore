@@ -659,7 +659,7 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, bool addTextDangerClass = true, bool addSpanNoWrap = true, bool removeHtmlFieldPrefix = true)
 		{
-			return htmlHelper.ValidationMessageForModel(null, addTextDangerClass);
+			return htmlHelper.ValidationMessageForModel(null, addTextDangerClass, removeHtmlFieldPrefix);
 		}
 
 		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool addTextDangerClass = true, bool addSpanNoWrap = true, bool removeHtmlFieldPrefix = true)
@@ -684,18 +684,26 @@ namespace GStoreData.AppHtmlHelpers
 			{
 				fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
 			}
-			if (removeHtmlFieldPrefix && !string.IsNullOrEmpty(fieldName))
+			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
 			{
 				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
 			}
+			MvcHtmlString result = null;
 			if (!addSpanNoWrap)
 			{
-				return htmlHelper.ValidationMessage(fieldName, htmlAttribs);
+				result = htmlHelper.ValidationMessage(fieldName, htmlAttribs);
 			}
 			else
 			{
-				return new MvcHtmlString("<span style=\"white-space: nowrap\">" + htmlHelper.ValidationMessage(fieldName, htmlAttribs).ToHtmlString() + "</span>");
+				result = new MvcHtmlString("<span style=\"white-space: nowrap\">" + htmlHelper.ValidationMessage(fieldName, htmlAttribs).ToHtmlString() + "</span>");
 			}
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -849,9 +857,18 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			MvcHtmlString result = htmlHelper.TextBox(fieldName, htmlHelper.ViewData.Model, null, htmlAttribs);
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
+			}
+			return result;
 
-			return htmlHelper.TextBox(fieldName, htmlHelper.ViewData.Model, null, htmlAttribs);
 		}
 
 		public static MvcHtmlString PasswordWithWatermarkForModel(this HtmlHelper htmlHelper, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
@@ -893,9 +910,18 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+			}
+			MvcHtmlString result = htmlHelper.Password(fieldName, htmlHelper.ViewData.Model, htmlAttribs);
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
+			}
+			return result;
 
-			return htmlHelper.Password(fieldName, htmlHelper.ViewData.Model, htmlAttribs);
 		}
 
 
@@ -981,12 +1007,19 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			string dropdownField = "";
-			if (removeHtmlFieldPrefix && !string.IsNullOrEmpty(fieldName))
+			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			if (removeHtmlFieldPrefix)
 			{
 				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
 				dropdownField = fieldName;
 			}
-			return htmlHelper.DropDownList(dropdownField, selectList, optionLabel, htmlAttribs);
+			MvcHtmlString result = htmlHelper.DropDownList(dropdownField, selectList, optionLabel, htmlAttribs);
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
+			}
+			return result;
+
 		}
 
 
@@ -1016,12 +1049,26 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
 			if (removeHtmlFieldPrefix)
 			{
 				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
 			}
+			if (string.IsNullOrEmpty(fieldName))
+			{
+				fieldName = metaData.PropertyName;
+			}
+			if (string.IsNullOrEmpty(fieldName))
+			{
+				fieldName = htmlHelper.IdForModel().ToHtmlString();
+			}
+			MvcHtmlString result = htmlHelper.CheckBox(fieldName, (htmlHelper.ViewData.Model as bool?) ?? false, htmlAttribs);
+			if (removeHtmlFieldPrefix)
+			{
+				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
+			}
+			return result;
 			
-			return htmlHelper.CheckBox(fieldName, (htmlHelper.ViewData.Model as bool?) ?? false, htmlAttribs);
 		}
 
 
@@ -2074,6 +2121,11 @@ namespace GStoreData.AppHtmlHelpers
 		/// <returns></returns>
 		public static string ToByteString(this long byteCount)
 		{
+			if (byteCount < 1)
+			{
+				// 0 or negative number
+				return "0";
+			}
 			decimal value = byteCount;
 			if (value < 1024)
 			{
@@ -3406,7 +3458,7 @@ namespace GStoreData.AppHtmlHelpers
 			StringBuilder html = new StringBuilder();
 			foreach (string line in lines)
 			{
-				if (line.Contains("line ") || line.Contains("ASP.") || line.Contains("GStore."))
+				if (line.Contains("line ") || line.Contains("ASP.") || line.Contains("GStore.") || line.Contains("GStoreWeb.") || line.Contains("GStoreData."))
 				{
 					html.Append("<span class='StackHighlight'>" + line.ToHtml() + "</span>");
 				}

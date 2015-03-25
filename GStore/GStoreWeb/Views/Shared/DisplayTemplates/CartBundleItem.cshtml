@@ -22,6 +22,7 @@
 
 		//preview mode
 		<div class="row CartItemNameRow">
+			(included)<br />
 			<a href="JavaScript:alert('FYI - You are in @(mode) mode.\nThis link to view a product does not do anything.\nIt is only here to give you an idea how your cart looks.');">@Model.ProductBundleItem.Product.Name</a>
 		</div>
 		if (!string.IsNullOrEmpty(Model.ProductBundleItem.Product.ImageName))
@@ -34,6 +35,7 @@
 	else
 	{
 		<div class="row CartItemNameRow">
+			(included)<br/>
 			@(Html.ActionLink(Model.ProductBundleItem.Product.Name, "ViewProductByName", "Catalog", new { urlName = Model.ProductBundleItem.Product.UrlName }, null))
 		</div>
 		if (!string.IsNullOrEmpty(Model.ProductBundleItem.Product.ImageName))

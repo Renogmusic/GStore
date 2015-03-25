@@ -40,7 +40,7 @@
 				<h2>Includes the following @(bundleItems.Count == 1 ? bundle.ProductTypeSingleOrSystemDefault() : bundle.ProductTypePluralOrSystemDefault() )</h2>
 			</div>
 		</div>
-		@:<div class="row BundleItemListContainer">
+		@:<div class="BundleItemListContainer">
 		foreach (ProductBundleItem bundleItem in bundleItems)
 		{
 			@:<div class="BundleItemListRow col-sm-@(Model.StoreFrontConfig.CatalogProductBundleItemColSm) col-md-@(Model.StoreFrontConfig.CatalogProductBundleItemColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductBundleItemColLg)@(offsets)">

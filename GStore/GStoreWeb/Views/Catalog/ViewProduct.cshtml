@@ -43,5 +43,7 @@
 {
 	<hr />
 	@Html.ActionLink("Edit Product", "Edit", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
+	<br /><br/>
+	@Html.ActionLink("New Product in this category", "Create", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductCategoryId, ReturnToFrontEnd = true }, null)
 }
 <!-- View Product End -->

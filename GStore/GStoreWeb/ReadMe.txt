@@ -6,7 +6,7 @@ Personal Home Page
 http://www.renog.info
 
 GStore Home Page
-http://www.GStoreWeb.renog.info
+http://www.gstore.renog.info
 
 
 GStore eCommerce Site Builder and CMS Platform

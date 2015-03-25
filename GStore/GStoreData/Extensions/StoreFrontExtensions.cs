@@ -196,8 +196,13 @@ namespace GStoreData
 		public static StoreBinding GetCurrentStoreBindingOrNull(this IGstoreDb db, string urlStoreName, string bindingHostName, string bindingRootPath, int bindingPort)
 		{
 
+			string bindingHostNameNoWww = null;
+			if (bindingHostName.ToLower().StartsWith("www."))
+			{
+				bindingHostNameNoWww = bindingHostName.Substring(4);
+			}
 			IQueryable<StoreBinding> queryBindings = db.StoreBindings.Where(
-				sb => ((sb.HostName == "*") || (sb.HostName.ToLower() == bindingHostName))
+				sb => ((sb.HostName == "*") || (sb.HostName.ToLower() == bindingHostName) || (sb.HostName.ToLower() == bindingHostNameNoWww))
 					&& ((sb.Port == 0) || (sb.Port == bindingPort))
 					&& ((sb.RootPath == "*") || (sb.RootPath.ToLower() == bindingRootPath))
 				).WhereIsActive().OrderBy(sb => sb.Order).ThenBy(sb => sb.StoreBindingId);
@@ -229,7 +234,7 @@ namespace GStoreData
 
 			if (!string.IsNullOrEmpty(urlStoreName))
 			{
-				IQueryable<StoreBinding> queryByStoreName = queryBindings.Where(sb => sb.UseUrlStoreName && (sb.UrlStoreName.ToLower() == "*" || sb.UrlStoreName.ToLower() == urlStoreName.ToLower()));
+				IQueryable<StoreBinding> queryByStoreName = queryBindings.Where(sb => sb.UseUrlStoreName && (sb.UrlStoreName.ToLower() == "*" || sb.UrlStoreName.ToLower() == urlStoreName));
 				return queryByStoreName.ToList();
 			}
 
@@ -239,18 +244,41 @@ namespace GStoreData
 			return results;
 		}
 
+		/// <summary>
+		/// Returns the binding host name to lower case
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		public static string BindingHostName(this HttpRequestBase request)
 		{
 			return request.Url.Host.Trim().ToLower();
 		}
+
+		/// <summary>
+		/// Returns the binding root path to lowercase
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		public static string BindingRootPath(this HttpRequestBase request)
 		{
 			return request.ApplicationPath.ToLower();
 		}
+
+		/// <summary>
+		/// Returns the binding port
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		public static int BindingPort(this HttpRequestBase request)
 		{
 			return request.Url.Port;
 		}
+
+		/// <summary>
+		/// Returns the binding url store name to lower case
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		public static string BindingUrlStoreName(this HttpRequestBase request)
 		{
 			return request.RequestContext.RouteData.UrlStoreName();
@@ -1689,6 +1717,7 @@ namespace GStoreData
 			string errorConflictMessage = "URL Name '" + urlName + "' is already in use for Category '" + conflict.Name + "' [" + conflict.ProductCategoryId + "] in Store Front '" + conflict.StoreFront.CurrentConfig().Name.ToHtml() + "' [" + conflict.StoreFrontId + "]. \n You must enter a unique URL Name or change the conflicting Category URL Name.";
 
 			controller.ModelState.AddModelError(nameField, errorConflictMessage);
+
 			return false;
 
 		}
@@ -2989,7 +3018,7 @@ namespace GStoreData
 				return null;
 			}
 
-			return routeData.Values["urlstorename"].ToString();
+			return routeData.Values["urlstorename"].ToString().ToLower();
 		}
 
 		public static void ApplyDefaultCartConfig(this StoreFrontConfiguration storeFrontConfig)
@@ -3728,6 +3757,32 @@ namespace GStoreData
 			return "Sample Audio for " + productName;
 		}
 
+		public static MvcHtmlString NoProductsMessageHtmlOrSystemDefault(this ProductCategory category, bool wrapForAdmin = false)
+		{
+			if ((category != null) && (!string.IsNullOrEmpty(category.NoProductsMessageHtml)))
+			{
+				if (wrapForAdmin)
+				{
+					return new MvcHtmlString("(Category Default: '" + category.NoProductsMessageHtml + "')");
+				}
+				return new MvcHtmlString(category.NoProductsMessageHtml);
+			}
+			if (category != null)
+			{
+				if (wrapForAdmin)
+				{
+					return new MvcHtmlString("(System Default: <h2>There are no current " + category.ProductTypePlural.ToHtml() + " in this Category</h2>");
+				}
+				return new MvcHtmlString("<h2>There are no current " + category.ProductTypePlural.ToHtml() + " in this Category</h2>");
+			}
+
+			if (wrapForAdmin)
+			{
+				return new MvcHtmlString("(System Default: <h2>There are no current products in this Category</h2>");
+			}
+			return new MvcHtmlString("<h2>There are no current products in this Category</h2>");
+		}
+
 		public static string SummaryCaptionOrDefault(this Product product, bool wrapForAdmin = false)
 		{
 			if (product == null)
@@ -4160,6 +4215,49 @@ namespace GStoreData
 			}
 
 			return path;
+		}
+
+		public static void CloneFromParentForNew(this ProductCategory productCategory, ProductCategory parentProductCategory)
+		{
+			productCategory.ParentCategory = parentProductCategory;
+			productCategory.ParentCategoryId = parentProductCategory.ProductCategoryId;
+
+			productCategory.AllowChildCategoriesInMenu = parentProductCategory.AllowChildCategoriesInMenu;
+			productCategory.BundleListTemplate = parentProductCategory.BundleListTemplate;
+			productCategory.BundleTypePlural = parentProductCategory.BundleTypePlural;
+			productCategory.BundleTypeSingle = parentProductCategory.BundleTypeSingle;
+			productCategory.CategoryDetailTemplate = parentProductCategory.CategoryDetailTemplate;
+			productCategory.ChildCategoryFooterHtml = parentProductCategory.ChildCategoryFooterHtml;
+			productCategory.ChildCategoryHeaderHtml = parentProductCategory.ChildCategoryHeaderHtml;
+			productCategory.DefaultBottomDescriptionCaption = parentProductCategory.DefaultBottomDescriptionCaption;
+			productCategory.DefaultSampleAudioCaption = parentProductCategory.DefaultSampleAudioCaption;
+			productCategory.DefaultSampleDownloadCaption = parentProductCategory.DefaultSampleDownloadCaption;
+			productCategory.DefaultSampleImageCaption = parentProductCategory.DefaultSampleImageCaption;
+			productCategory.DefaultSummaryCaption = parentProductCategory.DefaultSummaryCaption;
+			productCategory.DefaultTopDescriptionCaption = parentProductCategory.DefaultTopDescriptionCaption;
+			productCategory.DisplayForDirectLinks = parentProductCategory.DisplayForDirectLinks;
+			productCategory.ForAnonymousOnly = parentProductCategory.ForAnonymousOnly;
+			productCategory.ForRegisteredOnly = parentProductCategory.ForRegisteredOnly;
+			productCategory.HideInMenuIfEmpty = parentProductCategory.HideInMenuIfEmpty;
+			productCategory.ImageName = parentProductCategory.ImageName;
+			productCategory.MetaDescription = parentProductCategory.MetaDescription;
+			productCategory.MetaKeywords = parentProductCategory.MetaKeywords;
+			productCategory.NoProductsMessageHtml = parentProductCategory.NoProductsMessageHtml;
+			productCategory.ProductBundleDetailTemplate = parentProductCategory.ProductBundleDetailTemplate;
+			productCategory.ProductBundleFooterHtml = parentProductCategory.ProductBundleFooterHtml;
+			productCategory.ProductBundleHeaderHtml = parentProductCategory.ProductBundleHeaderHtml;
+			productCategory.ProductDetailTemplate = parentProductCategory.ProductDetailTemplate;
+			productCategory.ProductFooterHtml = parentProductCategory.ProductFooterHtml;
+			productCategory.ProductHeaderHtml = parentProductCategory.ProductHeaderHtml;
+			productCategory.ProductListTemplate = parentProductCategory.ProductListTemplate;
+			productCategory.ProductTypePlural = parentProductCategory.ProductTypePlural;
+			productCategory.ProductTypeSingle = parentProductCategory.ProductTypeSingle;
+			productCategory.ShowInCatalogIfEmpty = parentProductCategory.ShowInCatalogIfEmpty;
+			productCategory.ShowInMenu = parentProductCategory.ShowInMenu;
+			productCategory.Theme = parentProductCategory.Theme;
+			productCategory.ThemeId = parentProductCategory.ThemeId;
+			productCategory.UseDividerAfterOnMenu = parentProductCategory.UseDividerAfterOnMenu;
+			productCategory.UseDividerBeforeOnMenu = parentProductCategory.UseDividerBeforeOnMenu;
 		}
 	}
 }

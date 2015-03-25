@@ -1,5 +1,6 @@
 ﻿@model CategoryEditAdminViewModel
 @{
+
 	string tabBasicActive = string.Empty;
 	string tabDisplayActive = string.Empty;
 	string tabMenusActive = string.Empty;
@@ -276,16 +277,6 @@
 				</dd>
 
 				<dt>
-					@Html.DisplayNameFor(model => model.HideInMenuIfEmpty)
-					@Html.HelpLabelPopoverFor(model => model.HideInMenuIfEmpty, placement: AppHtmlHelper.PopoverPlacementEnum.top)
-				</dt>
-
-				<dd>
-					@Html.DisplayFor(model => model.HideInMenuIfEmpty)
-					<br />@Html.HelpLabelFor(model => model.HideInMenuIfEmpty)
-				</dd>
-
-				<dt>
 					@Html.DisplayNameFor(model => model.ShowInCatalogIfEmpty)
 					@Html.HelpLabelPopoverFor(model => model.ShowInCatalogIfEmpty, placement: AppHtmlHelper.PopoverPlacementEnum.top)
 				</dt>
@@ -324,6 +315,17 @@
 					@Html.DisplayFor(model => model.UseDividerAfterOnMenu)
 					<br />@Html.HelpLabelFor(model => model.UseDividerAfterOnMenu)
 				</dd>
+
+				<dt>
+					@Html.DisplayNameFor(model => model.HideInMenuIfEmpty)
+					@Html.HelpLabelPopoverFor(model => model.HideInMenuIfEmpty, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+				</dt>
+
+				<dd>
+					@Html.DisplayFor(model => model.HideInMenuIfEmpty)
+					<br />@Html.HelpLabelFor(model => model.HideInMenuIfEmpty)
+				</dd>
+
 			</dl>
 		</div>
 

@@ -217,6 +217,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 
 			if (ModelState.IsValid && nameIsValid)
 			{
+				bool removedItem = false;
 				ProcessFileUploads(viewModel, storeFront);
 				productBundle = GStoreDb.UpdateProductBundle(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Product Bundle updated successfully!", "Product Bundle updated successfully. Product Bundle '" + productBundle.Name.ToHtml() + "' [" + productBundle.ProductBundleId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
@@ -228,10 +229,11 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				}
 				if (removeItemId.HasValue && removeItemId.Value != 0)
 				{
+					removedItem = true;
 					RemoveItem(productBundle, removeItemId.Value);
 				}
 
-				if (!string.IsNullOrEmpty(addProductId))
+				if (!string.IsNullOrEmpty(addProductId) || removedItem)
 				{
 					return RedirectToAction("Edit", new { id = productBundle.ProductBundleId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
 				}

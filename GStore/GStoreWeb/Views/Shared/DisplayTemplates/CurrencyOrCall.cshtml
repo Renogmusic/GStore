@@ -1,8 +1,12 @@
 ﻿@model System.Decimal?
 @{
-	if ((Model ?? 0) == 0)
+	if (!Model.HasValue)
 	{
 		@:Call for Price
+	}
+	else if (Model.Value == 0)
+	{
+		@:FREE!
 	}
 	else
 	{

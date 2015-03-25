@@ -48,7 +48,7 @@
 	Client Folders '@(rootVirtualPath)'
 	<br />
 	File system at '@(rootPath)'
-	<br/>
+	<br />
 	@(showEmptyFolders ? "" : "Not") Showing empty folders
 </p>
 <div id="ClientFolders" class="row">
@@ -68,25 +68,32 @@
 		{
 			foreach (DirectoryInfo folder in clientFolders)
 			{
-				FileInfo[] files = folder.GetFiles("*.*", SearchOption.AllDirectories);
-				int fileCount = files.Count();
-				long size = files.Sum(f => f.Length);
-				if (showEmptyFolders || fileCount != 0)
+				FileInfo[] filesDirect = folder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+				FileInfo[] filesAll = folder.GetFiles("*.*", SearchOption.AllDirectories);
+				int fileCountDirect = filesDirect.Count();
+				int fileCountAll = filesAll.Count();
+				long sizeDirect = filesDirect.Sum(f => f.Length);
+				long sizeAll = filesAll.Sum(f => f.Length);
+				if (showEmptyFolders || fileCountAll != 0)
 				{
 					<div class="col-xs-4">
 						@(folder.Name)
 					</div>
 					<div class="col-xs-4">
-						@(fileCount.ToString("N0")) file@(fileCount == 1 ? "" : "s")
+						@(fileCountDirect.ToString("N0")) file@(fileCountDirect == 1 ? "" : "s")
+						&nbsp;/&nbsp;
+						@(fileCountAll.ToString("N0")) file@(fileCountAll == 1 ? "" : "s")
 					</div>
 					<div class="col-xs-4">
-						@if (fileCount == 0)
+						@if (fileCountAll == 0)
 						{
 							@:-
 						}
 						else
 						{
-							@(size.ToByteString())
+							@(sizeDirect.ToByteString())
+							@:&nbsp/&nbsp;
+							@(sizeAll.ToByteString())
 						}
 					</div>
 				}
@@ -111,27 +118,35 @@
 			<div class="FolderViewDetails">
 				@foreach (DirectoryInfo folder in folders)
 				{
-					FileInfo[] files = folder.GetFiles("*.*", SearchOption.AllDirectories);
-					int fileCount = files.Count();
-					long size = files.Sum(f => f.Length);
-					string rowClass = fileCount == 0 ? "Empty" : "HasFiles";
-					if (showEmptyFolders || fileCount != 0)
+					FileInfo[] filesDirect = folder.GetFiles("*.*", SearchOption.TopDirectoryOnly);
+					FileInfo[] filesAll = folder.GetFiles("*.*", SearchOption.AllDirectories);
+					int fileCountDirect = filesDirect.Count();
+					int fileCountAll = filesAll.Count();
+					long sizeDirect = filesDirect.Sum(f => f.Length);
+					long sizeAll = filesAll.Sum(f => f.Length);
+					
+					string rowClass = fileCountAll == 0 ? "Empty" : "HasFiles";
+					if (showEmptyFolders || fileCountAll != 0)
 					{
 						<div class="row @(rowClass)">
 							<div class="col-xs-8">
 								@(folder.FullName.Replace(clientFolder.FullName + "\\", ""))
 							</div>
 							<div class="col-xs-2">
-								@(fileCount.ToString("N0")) file@(fileCount == 1 ? "" : "s")
+								@(fileCountDirect.ToString("N0")) file@(fileCountDirect == 1 ? "" : "s")
+								&nbsp;/&nbsp;
+								@(fileCountAll.ToString("N0")) file@(fileCountAll == 1 ? "" : "s")
 							</div>
 							<div class="col-xs-2">
-								@if (fileCount == 0)
+								@if (fileCountAll == 0)
 								{
 									@:-
 								}
 								else
 								{
-									@(size.ToByteString())
+									@(sizeDirect.ToByteString())
+									@:&nbsp;/&nbsp;
+									@(sizeAll.ToByteString())
 								}
 							</div>
 						</div>

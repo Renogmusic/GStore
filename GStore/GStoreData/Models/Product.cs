@@ -74,11 +74,9 @@ namespace GStoreData.Models
 		[Display(Name = "Max Quantity Per Order or 0 for no limit")]
 		public int MaxQuantityPerOrder { get; set; }
 
-		[Required]
 		[Display(Name="Unit Price")]
 		public decimal? BaseUnitPrice { get; set; }
 
-		[Required]
 		[Display(Name = "List Price")]
 		public decimal? BaseListPrice { get; set; }
 
@@ -152,7 +150,7 @@ namespace GStoreData.Models
 		public string SampleDownloadCaption { get; set; }
 
 		[DataType(DataType.Url)]
-		[Display(Name = "Top Link URL", Description = "Link URL for the top link that appears before the top description field. Leave this blank if there is no link.")]
+		[Display(Name = "Top Link URL", Description = "Link URL for the top link that appears before the top description field. Leave this blank if there is no link. Use the full URL\nExample: http://www.google.com")]
 		public string TopLinkHref { get; set; }
 
 		[DataType(DataType.Text)]

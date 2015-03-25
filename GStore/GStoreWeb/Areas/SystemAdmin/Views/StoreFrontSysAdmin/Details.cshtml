@@ -33,6 +33,25 @@
 				Active: @Model.StoreBindings.AsQueryable().WhereIsActive().Count() / Total @Model.StoreBindings.Count()
 			</a>
 		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.StoreFrontConfigurations)
+		</dt>
+
+		<dd>
+			@if (Model.StoreFrontConfigurations.Count == 0)
+			{
+				@:No configurations, @(Html.ActionLink("Create a Configuration", "StoreFrontNewConfig", "ClientConfigAdmin", new { area = "StoreAdmin", id = Model.StoreFrontId }, null))
+			}
+			@foreach (StoreFrontConfiguration config in Model.StoreFrontConfigurations.AsQueryable().ApplyDefaultSort())
+			{
+				@(config.ConfigurationName) @:[@(config.StoreFrontConfigurationId)]
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("View Config", "StoreFrontView", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, null)
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("Edit Config", "StoreFrontEdit", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, null)
+				<br /><br />
+			}
+		</dd>
+
 		<dt>
 			@Html.DisplayNameFor(model => model.Client)
 		</dt>
@@ -105,6 +124,9 @@
 			@Html.DisplayFor(model => model.UpdatedBy)
 		</dd>
 	</dl>
+
+
+
 </div>
 
 <hr/>

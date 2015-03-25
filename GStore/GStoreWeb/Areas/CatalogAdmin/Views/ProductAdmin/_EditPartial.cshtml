@@ -237,9 +237,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">@(Html.DisplayNameFor(model => model.DigitalDownloadFileName)) Preview</label>
 				<div class="col-md-7 title-align">
-					@{
-					}
-					@Html.DisplayFor(model => digitalDownloadInfo, "ProductDigitalDownloadFileInfo")
+					@Html.DisplayFor(model => digitalDownloadInfo, "ProductDigitalDownloadFileInfo", new { LinkToEdit = false})
 				</div>
 			</div>
 
@@ -300,7 +298,7 @@
 					@Model.Category.MetaDescriptionOrSystemDefault(storeFrontConfig)
 				</div>
 			</div>
-			@Html.EditorFor(model => model.MetaDescription, "FieldText")
+			@Html.EditorFor(model => model.MetaDescription, "FieldTextArea")
 
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Meta Keywords</label>
@@ -308,7 +306,7 @@
 					@Model.Category.MetaKeywordsOrSystemDefault(storeFrontConfig)
 				</div>
 			</div>
-			@Html.EditorFor(model => model.MetaKeywords, "FieldText")
+			@Html.EditorFor(model => model.MetaKeywords, "FieldTextArea")
 		</div>
 
 		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
@@ -341,7 +339,7 @@
 			@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 		</div>
 
-		@if (!Model.IsCreatePage && userCanViewBundles)
+		@if (!Model.IsCreatePage && userCanViewBundles && Model.Product != null && Model.Product.ProductBundleItems != null)
 		{
 			List<ProductBundleItem> bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
 			<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">

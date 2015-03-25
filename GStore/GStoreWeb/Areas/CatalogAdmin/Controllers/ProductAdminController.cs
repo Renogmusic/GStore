@@ -120,6 +120,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
 
 			viewModel.IsSimpleCreatePage = true;
+			viewModel.IsCreatePage = true;
 			ViewData.Add("ReturnToFrontEnd", viewModel.ReturnToFrontEnd);
 			return View("CreateOrEdit", viewModel);
 		}

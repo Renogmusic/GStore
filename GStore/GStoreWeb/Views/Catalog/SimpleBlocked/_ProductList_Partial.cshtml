@@ -11,7 +11,7 @@
 		}
 		else
 		{
-			@Html.Raw(Model.CurrentCategoryOrNull.NoProductsMessageHtml.OrDefault("<h2>There are no current products in Category: " + Model.CurrentCategoryOrNull.Name + "</h2>"))
+			@Html.Raw(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault())
 		}
 	}
 	else

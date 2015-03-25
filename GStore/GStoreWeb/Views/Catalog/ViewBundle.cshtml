@@ -43,5 +43,7 @@
 {
 	<hr />
 	@Html.ActionLink("Edit Bundle", "Edit", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductBundleId, ReturnToFrontEnd = true }, null)
+	<br /><br/>
+	@Html.ActionLink("New Bundle in this category", "Create", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductCategoryId, ReturnToFrontEnd = true }, null)
 }
 <!-- View Bundle End -->

@@ -179,6 +179,7 @@ namespace GStoreData
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			storeBinding.RootPath = "/";
+			storeBinding.Order = 9000;
 			if (HttpContext.Current == null)
 			{
 				storeBinding.HostName = "*";
@@ -379,7 +380,7 @@ namespace GStoreData
 
 			if (loadSampleProducts && storeDb.ProductCategories.IsEmpty())
 			{
-				CreateSeedProducts(storeDb, firstStoreFront);
+				CreateSeedProducts(storeDb, firstStoreFrontConfig);
 			}
 
 			//add sample discount codes
@@ -469,29 +470,40 @@ namespace GStoreData
 		/// <summary>
 		/// Creates seed products, categories, and bundles and recalculates product counts at the end.
 		/// Does not create dupes. Uses Product.Url, Bundle.UrlName, Category.UrlName, and NavBarItem.Url to prevent dupes.
+		/// Also updates storefront config to show "Sample Catalog" in header and footer
 		/// </summary>
-		public static void CreateSeedProducts(this IGstoreDb storeDb, StoreFront storeFront)
+		public static void CreateSeedProducts(this IGstoreDb storeDb, StoreFrontConfiguration storeFrontConfig)
 		{
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
 
-			ProductCategory topCatComputers = storeDb.CreateSeedProductCategory("Computers and Tablets", "Computers-And-Tablets", 100, true, null, storeFront, true, true);
+			storeFrontConfig.CatalogHeaderHtml = "<h1>Sample Catalog</h1>";
+			storeFrontConfig.CatalogFooterHtml = "<h1>Sample Catalog</h1>";
+			storeFrontConfig = storeDb.StoreFrontConfigurations.Update(storeFrontConfig);
+			storeDb.SaveChanges();
 
-			ProductCategory topCatTvs = storeDb.CreateSeedProductCategory("TV's", "TVs", 110, true, null, storeFront, true, true);
-			ProductCategory topCatCameras = storeDb.CreateSeedProductCategory("Cameras", "Cameras", 110, true, null, storeFront, true, true);
-			ProductCategory notebooks = storeDb.CreateSeedProductCategory("Notebooks", "Notebooks", 200, true, topCatComputers, storeFront, true, true);
+			StoreFront storeFront = storeFrontConfig.StoreFront;
+			ProductCategory topCatComputers = storeDb.CreateSeedProductCategory("Computers and Tablets", "Computers-And-Tablets", 100, false, null, storeFront, true, true);
 
-			ProductCategory studentNotebooks = storeDb.CreateSeedProductCategory("Student Notebooks", "Student-Notebooks", 220, true, notebooks, storeFront, true, true);
+			ProductCategory topCatTvs = storeDb.CreateSeedProductCategory("TV's", "TVs", 110, false, null, storeFront, true, true);
+			ProductCategory topCatCameras = storeDb.CreateSeedProductCategory("Cameras", "Cameras", 110, false, null, storeFront, true, true);
+			ProductCategory notebooks = storeDb.CreateSeedProductCategory("Notebooks", "Notebooks", 200, false, topCatComputers, storeFront, true, true);
 
-			ProductCategory gamingNotebooks = storeDb.CreateSeedProductCategory("Gaming Notebooks", "Gaming-Notebooks", 230, true, notebooks, storeFront, true, true);
-			ProductCategory desktops = storeDb.CreateSeedProductCategory("Desktops", "Desktops", 300, true, topCatComputers, storeFront, true, true);
-			ProductCategory gamingDesktops = storeDb.CreateSeedProductCategory("Gaming Desktops", "Gaming-Desktops", 350, true, desktops, storeFront, true, true);
-			ProductCategory officeDesktops = storeDb.CreateSeedProductCategory("Office Desktops", "Office-Desktops", 380, true, desktops, storeFront, true, true);
-			ProductCategory valueDesktops = storeDb.CreateSeedProductCategory("Value Desktops", "Value-Desktops", 390, true, desktops, storeFront, true, true);
-			ProductCategory budgetDesktops = storeDb.CreateSeedProductCategory("Budget Desktops", "Budget-Desktops", 390, true, valueDesktops, storeFront, true, true);
-			ProductCategory refurbishedDesktops = storeDb.CreateSeedProductCategory("Refurbished Desktops", "Refurbished-Desktops", 395, true, valueDesktops, storeFront, true, true);
-			ProductCategory offLeaseDesktops = storeDb.CreateSeedProductCategory("Off-Lease Desktops", "Off-Lease-Desktops", 398, true, refurbishedDesktops, storeFront, true, true);
-			ProductCategory manufacturerRefurbishedDesktops = storeDb.CreateSeedProductCategory("Manufacturer Refurbished", "Manufacturer-Refurbished-Desktops", 399, true, refurbishedDesktops, storeFront, true, true);
+			ProductCategory studentNotebooks = storeDb.CreateSeedProductCategory("Student Notebooks", "Student-Notebooks", 220, false, notebooks, storeFront, true, true);
 
-			ProductCategory tablets = storeDb.CreateSeedProductCategory("Tablets", "Tablets", 400, true, topCatComputers, storeFront, true, true);
+			ProductCategory gamingNotebooks = storeDb.CreateSeedProductCategory("Gaming Notebooks", "Gaming-Notebooks", 230, false, notebooks, storeFront, true, true);
+			ProductCategory desktops = storeDb.CreateSeedProductCategory("Desktops", "Desktops", 300, false, topCatComputers, storeFront, true, true);
+			ProductCategory gamingDesktops = storeDb.CreateSeedProductCategory("Gaming Desktops", "Gaming-Desktops", 350, false, desktops, storeFront, true, true);
+			ProductCategory officeDesktops = storeDb.CreateSeedProductCategory("Office Desktops", "Office-Desktops", 380, false, desktops, storeFront, true, true);
+			ProductCategory valueDesktops = storeDb.CreateSeedProductCategory("Value Desktops", "Value-Desktops", 390, false, desktops, storeFront, true, true);
+			ProductCategory budgetDesktops = storeDb.CreateSeedProductCategory("Budget Desktops", "Budget-Desktops", 390, false, valueDesktops, storeFront, true, true);
+			ProductCategory refurbishedDesktops = storeDb.CreateSeedProductCategory("Refurbished Desktops", "Refurbished-Desktops", 395, false, valueDesktops, storeFront, true, true);
+			ProductCategory offLeaseDesktops = storeDb.CreateSeedProductCategory("Off-Lease Desktops", "Off-Lease-Desktops", 398, false, refurbishedDesktops, storeFront, true, true);
+			ProductCategory manufacturerRefurbishedDesktops = storeDb.CreateSeedProductCategory("Manufacturer Refurbished", "Manufacturer-Refurbished-Desktops", 399, false, refurbishedDesktops, storeFront, true, true);
+
+			ProductCategory tablets = storeDb.CreateSeedProductCategory("Tablets", "Tablets", 400, false, topCatComputers, storeFront, true, true);
 
 			//Defer category count updating until the whole set of products is loaded instead of one by one to save cpu cycles
 			Product productA1 = storeDb.CreateSeedProduct("Toshiba A205", "Toshiba-A205", 100, 9, gamingNotebooks, storeFront, true, true, 229M, 249M, false, true);
@@ -554,22 +566,9 @@ namespace GStoreData
 		/// <summary>
 		/// Creates seed Pages and NavBarItem links to those pages.
 		/// </summary>
-		public static void CreateSeedPages(this IGstoreDb storeDb, StoreFront storeFront)
+		public static void CreateSeedPages(this IGstoreDb storeDb, StoreFrontConfiguration storeFrontConfig)
 		{
-			if (storeFront == null)
-			{
-				throw new ArgumentNullException("storeFront");
-			}
-			if (!storeFront.Client.PageTemplates.Any())
-			{
-				throw new ArgumentException("storeFront.Client.PageTemplates is empty", "storeFront.Client.PageTemplates is empty. Be sure to seed database or add templates to client in sysadmin client edit before adding pages.");
-			}
-			StoreFrontConfiguration config = storeFront.CurrentConfigOrAny();
-			if (config == null)
-			{
-				throw new ArgumentNullException("storeFront.CurrentConfigOrAny()", "Store does not have any configurations. Configuration is needed to select the page theme. Be sure to create a new storefront configuration in Store Admin (configuration manager) or System Admin (store front list) before adding seed pages.");
-			}
-			storeDb.CreateSeedPagesHelper(config);
+			storeDb.CreateSeedPagesHelper(storeFrontConfig);
 		}
 
 		#endregion

@@ -103,8 +103,17 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(StoreFront storeFront, bool? createDefaultConfig, bool? populateProducts, bool? populateDiscounts, bool? populatePages)
+		public ActionResult Create(StoreFront storeFront, bool? createDefaultConfig, bool? populateProducts, bool? populateDiscounts, bool? populatePages, int? themeId)
 		{
+			if (!(createDefaultConfig ?? false) && (populatePages ?? false))
+			{
+				ModelState.AddModelError("createDefaultConfig", "You must select check the Create Default Configuration box when using Load Simple Sample Pages");
+			}
+			if ((storeFront.CurrentConfigOrAny() == null) && !(createDefaultConfig ?? false) && (populateProducts ?? false))
+			{
+				ModelState.AddModelError("createDefaultConfig", "You must select check the Create Default Configuration box when using Load Sample Products");
+			}
+
 			if (ModelState.IsValid)
 			{
 				IGstoreDb db = GStoreDb;
@@ -117,23 +126,37 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				ActionResult configResult = null;
 				if (createDefaultConfig.HasValue && createDefaultConfig.Value)
 				{
-					configResult = CreateConfig(storeFront.StoreFrontId);
+					configResult = CreateConfig(storeFront.StoreFrontId, themeId);
 				}
 
-				if (populateProducts ?? false)
-				{
-					db.CreateSeedProducts(storeFront);
-					AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
-				}
 				if (populateDiscounts ?? false)
 				{
 					db.CreateSeedDiscounts(storeFront);
 					AddUserMessage("Populated Discounts", "Sample Discounts are Loaded", UserMessageType.Success);
 				}
+				if (populateProducts ?? false)
+				{
+					if (storeFront.CurrentConfigOrAny() == null)
+					{
+						AddUserMessage("Could not Populate Products", "Could not populate products. Store Front does not have an active configuration", UserMessageType.Danger);
+					}
+					else
+					{
+						db.CreateSeedProducts(storeFront.CurrentConfigOrAny());
+						AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
+					}
+				}
 				if (populatePages ?? false)
 				{
-					db.CreateSeedPages(storeFront);
-					AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
+					if (storeFront.CurrentConfigOrAny() == null)
+					{
+						AddUserMessage("Could not Populate Pages", "Could not populate pages. Store Front does not have an active configuration", UserMessageType.Danger);
+					}
+					else
+					{
+						db.CreateSeedPages(storeFront.CurrentConfigOrAny());
+						AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
+					}
 				}
 
 				if (configResult != null)
@@ -157,7 +180,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public ActionResult CreateConfig(int? id)
+		public ActionResult CreateConfig(int? id, int? themeId)
 		{
 			if (!id.HasValue || id.Value == 0)
 			{
@@ -188,7 +211,21 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 						+ "<br/><a href=\"" + Url.Action("Create", "UserProfileSysAdmin") + "\">Click HERE to create a new user profile for this client.</a>", UserMessageType.Danger);
 					return RedirectToAction("Create", "UserProfileSysAdmin", new { clientId = storeFront.ClientId, storeFrontId = storeFront.StoreFrontId });
 				}
-				Theme theme = storeFront.Client.Themes.AsQueryable().ApplyDefaultSort().FirstOrDefault();
+
+				Theme theme = null;
+				if (themeId.HasValue && themeId != 0)
+				{
+					theme = storeFront.Client.Themes.SingleOrDefault(t => t.ThemeId == themeId.Value);
+				}
+				if (theme == null)
+				{
+					theme = storeFront.Client.Themes.FirstOrDefault(t => t.FolderName.ToLower() == Settings.AppDefaultThemeFolderName.ToLower());
+				}
+				if (theme == null)
+				{
+					theme = storeFront.Client.Themes.AsQueryable().ApplyDefaultSort().FirstOrDefault();
+				}
+
 				if (theme == null)
 				{
 					AddUserMessage("Config Create Error!", "No Themes found to link to new configuration for client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]. Method: FirstTheme"
@@ -273,31 +310,67 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(StoreFront storeFront, bool? createDefaultConfig, bool? populateProducts, bool? populateDiscounts, bool? populatePages)
+		public ActionResult Edit(StoreFront storeFront, bool? createDefaultConfig, int? themeId, bool? populateProducts, bool? populateDiscounts, bool? populatePages)
 		{
+			if ((storeFront.CurrentConfigOrAny() == null) && !(createDefaultConfig ?? false) && (populatePages ?? false))
+			{
+				ModelState.AddModelError("createDefaultConfig", "You must select check the Create Default Configuration box when using Load Simple Sample Pages");
+			}
+			if ((storeFront.CurrentConfigOrAny() == null) && !(createDefaultConfig ?? false) && (populateProducts ?? false))
+			{
+				ModelState.AddModelError("createDefaultConfig", "You must select check the Create Default Configuration box when using Load Sample Products");
+			}
 			if (ModelState.IsValid)
 			{
 				IGstoreDb db = GStoreDb;
 				storeFront.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeFront = db.StoreFronts.Update(storeFront);
 				db.SaveChanges();
-				storeFront.CurrentConfigOrAny().CreateStoreFrontFolders(Request.ApplicationPath, Server);
+
+				if (createDefaultConfig.HasValue && createDefaultConfig.Value)
+				{
+					ActionResult configResult = CreateConfig(storeFront.StoreFrontId, themeId);
+				}
+
+				if (storeFront.CurrentConfigOrAny() != null)
+				{
+					StoreFrontConfiguration config = storeFront.CurrentConfigOrAny();
+					if (!config.StoreFrontFoldersAllExist(Request.ApplicationPath, Server))
+					{
+						config.CreateStoreFrontFolders(Request.ApplicationPath, Server);
+						AddUserMessage("Store Front Folders Sync'd", "Store Front Folder sync'd or created for StoreFront '" + config.Name.ToHtml() + "' [" + storeFront.StoreFrontId + "] for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "]", UserMessageType.Success);
+					}
+				}
 				AddUserMessage("Store Front Updated", "Store Front [" + storeFront.StoreFrontId + "] for client '" + storeFront.Client.Name.ToHtml() + "' [" + storeFront.ClientId + "] was updated successfully!", UserMessageType.Success);
 
-				if (populateProducts ?? false)
-				{
-					db.CreateSeedProducts(storeFront);
-					AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
-				}
 				if (populateDiscounts ?? false)
 				{
 					db.CreateSeedDiscounts(storeFront);
 					AddUserMessage("Populated Discounts", "Sample Discounts are Loaded", UserMessageType.Success);
 				}
+				if (populateProducts ?? false)
+				{
+					if (storeFront.CurrentConfigOrAny() == null)
+					{
+						AddUserMessage("Could not Populate Products", "Could not populate products. Store Front does not have an active configuration", UserMessageType.Danger);
+					}
+					else
+					{
+						db.CreateSeedProducts(storeFront.CurrentConfigOrAny());
+						AddUserMessage("Populated Products", "Sample Products, Bundles, and Categories are Loaded", UserMessageType.Success);
+					}
+				}
 				if (populatePages ?? false)
 				{
-					db.CreateSeedPages(storeFront);
-					AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
+					if (storeFront.CurrentConfigOrAny() == null)
+					{
+						AddUserMessage("Could not Populate Pages", "Could not populate Pages. Store front does not have an active configuration", UserMessageType.Danger);
+					}
+					else
+					{
+						db.CreateSeedPages(storeFront.CurrentConfigOrAny());
+						AddUserMessage("Populated Pages", "Simple Pages with Menu Links are Loaded", UserMessageType.Success);
+					}
 				}
 
 				return RedirectToAction("Index");

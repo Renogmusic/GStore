@@ -380,7 +380,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				else
 				{
 					//create folders if not existing in file system
-					if (!config.CheckStoreFrontFolders(Request.ApplicationPath, Server))
+					if (!config.StoreFrontFoldersAllExist(Request.ApplicationPath, Server))
 					{
 						bool result = config.CreateStoreFrontFolders(Request.ApplicationPath, Server);
 						if (result)

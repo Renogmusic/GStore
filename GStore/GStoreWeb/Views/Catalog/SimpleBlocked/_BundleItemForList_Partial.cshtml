@@ -48,7 +48,7 @@
 				<span class="BundleItemUnitPrice">@Html.DisplayFor(model => unitPrice, "CurrencyOrCall")</span>
 			</div>
 		}
-		<h3 style="display: inline;">@(bundleItem.Product.Name)</h3>
+		<h4 style="display: inline;">@(bundleItem.Product.Name)</h4>
 		<br />
 		@:&nbsp;&nbsp;&nbsp;&nbsp;<a id="ShowBundleItem_@(bundleItem.ProductBundleItemId)" href="javascript:showItemDetails_@(bundleItem.ProductBundleItemId)();">Show Details</a>
 		<a id="HideBundleItem_@(bundleItem.ProductBundleItemId)" href="javascript:hideItemDetails_@(bundleItem.ProductBundleItemId)();" style="display: none">Hide Details</a>

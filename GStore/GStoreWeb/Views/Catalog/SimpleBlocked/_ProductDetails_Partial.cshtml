@@ -107,19 +107,6 @@
 	</div>
 }
 
-@if (!string.IsNullOrWhiteSpace(product.TopDescriptionHtml))
-{
-	<div class="row">
-		<div class="btn btn-info NoClick">
-			@product.TopDescriptionCaptionOrDefault()
-		</div>
-	</div>
-	<div class="row">
-		@Html.Raw(Html.ReplaceVariables(product.TopDescriptionHtml))
-		<hr />
-	</div>
-}
-
 @if (!string.IsNullOrWhiteSpace(product.TopLinkHref))
 {
 	<div class="row">
@@ -158,6 +145,19 @@
 			<br/>
 			<a href="@(Html.Raw(sampleAudioUrl))">Download Audio File</a>
 		}
+		<hr />
+	</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(product.TopDescriptionHtml))
+{
+	<div class="row">
+		<div class="btn btn-info NoClick">
+			@product.TopDescriptionCaptionOrDefault()
+		</div>
+	</div>
+	<div class="row">
+		@Html.Raw(Html.ReplaceVariables(product.TopDescriptionHtml))
 		<hr />
 	</div>
 }

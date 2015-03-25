@@ -31,7 +31,7 @@
 				</span>
 				<span class="BundleListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span>
 			</div>
-			<a class="BundleListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(bundle.Name)))">@(bundle.Name)</a>
+			<a class="BundleListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(bundle.Name)))"><h4>@(bundle.Name)</h4></a>
 		}
 		else
 		{

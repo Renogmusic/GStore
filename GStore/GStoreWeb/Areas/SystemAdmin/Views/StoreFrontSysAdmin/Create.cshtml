@@ -1,9 +1,11 @@
 ﻿@model StoreFront
 @{
 	ViewData.SetColDisplay(0, 2, 8);
+	int? themeId = null;
 	bool populateProducts = true;
 	bool populateDiscounts = true;
 	bool populatePages = true;
+	bool createDefaultConfig = true;
 }
 @using (Html.BeginForm())
 {
@@ -35,12 +37,8 @@
 		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
-		<div class="form-group">
-			<label for="createDefaultConfig" class="control-label col-md-2">Create Default Configuration</label>
-			<div class="col-md-10 text-left">
-				@Html.CheckBox("createDefaultConfig", true, new { @class = "form-control" })
-			</div>
-		</div>
+		@Html.EditorFor(model => createDefaultConfig, "FieldCheckbox", new { labelText = "Create Default Configuration" })
+		@Html.EditorFor(model => themeId, "FieldThemeId", new { labelText = "Theme for Configuration" })
 		@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
 		@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
 		@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Simple Sample Pages" })

@@ -198,6 +198,7 @@ namespace GStoreData.Models
 
 		public virtual ICollection<ProductBundle> ProductBundles { get; set; }
 
+
 	}
 
 

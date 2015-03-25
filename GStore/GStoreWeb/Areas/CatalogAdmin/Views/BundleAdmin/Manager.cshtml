@@ -128,7 +128,11 @@
 				<td onclick="GoToDetails(@(item.ProductBundleId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
 				<td onclick="GoToDetails(@(item.ProductBundleId));"><small>@(Html.DisplayFor(model => item.ProductBundleId))</small></td>
 				<td onclick="GoToDetails(@(item.ProductBundleId));"><small>@(Html.DisplayFor(model => item.ProductCategoryId))</small></td>
-				<td onclick="GoToDetails(@(item.ProductBundleId));"><small>@(Html.DisplayFor(model => item.Category))</small></td>
+				<td>
+					<small>@(Html.DisplayFor(model => item.Category))</small>
+					<br/>
+					Active Items @(item.ProductBundleItems.AsQueryable().WhereIsActive().Count().ToString("N0")) / @(item.ProductBundleItems.Count.ToString("N0")) Total
+				</td>
 				<td onclick="GoToDetails(@(item.ProductBundleId));">
 					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
 						@(item.IsActiveDirect() ? "Active" : "Inactive")

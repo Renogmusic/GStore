@@ -152,11 +152,16 @@ else
 					</td>
 					<td>
 						@Html.DisplayFor(modelItem => config.ConfigurationName)
+						<br />
 					</td>
 					<td>
 						@if (configIsActive)
 						{
 							<span class="text-success">Active</span>
+							<br/>
+							<small>@Html.ActionLink("View Config", "StoreFrontView", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, null)</small>
+							<br />
+							<small>@Html.ActionLink("Edit Config", "StoreFrontEdit", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, null)</small>
 						}
 						else
 						{

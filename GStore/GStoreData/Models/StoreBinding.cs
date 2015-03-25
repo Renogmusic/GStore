@@ -13,7 +13,7 @@ namespace GStoreData.Models
 
 		[Required]
 		[MaxLength(250)]
-		[Display(Name = "Host Name", Description = "Host Name or * for all. Default: *")]
+		[Display(Name = "Host Name", Description = "Host Name or * for all. Default: *\nExample: gstore.renog.info (also covers www.[hostname])")]
 		public string HostName { get; set; }
 
 		[Display(Name = "Port", Description = "Http Port Number or 0 for All. \nDefault: 80")]

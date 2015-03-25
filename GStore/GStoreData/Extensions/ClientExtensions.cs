@@ -405,7 +405,7 @@ namespace GStoreData
 			navBarItem.IsPage = true;
 			navBarItem.OpenInNewWindow = false;
 			navBarItem.UseDividerBeforeOnMenu = true;
-			navBarItem.UseDividerAfterOnMenu = true;
+			navBarItem.UseDividerAfterOnMenu = false;
 			navBarItem.IsPending = false;
 			navBarItem.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 			navBarItem.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
@@ -439,8 +439,8 @@ namespace GStoreData
 			productCategory.UseDividerAfterOnMenu = false;
 			productCategory.ShowInMenu = true;
 			productCategory.AllowChildCategoriesInMenu = true;
-			productCategory.HideInMenuIfEmpty = true;
-			productCategory.ShowInCatalogIfEmpty = false;
+			productCategory.HideInMenuIfEmpty = false;
+			productCategory.ShowInCatalogIfEmpty = true;
 			productCategory.DisplayForDirectLinks = true;
 			productCategory.ProductTypeSingle = "Item";
 			productCategory.ProductTypePlural = "Items";
@@ -494,7 +494,7 @@ namespace GStoreData
 			productBundle.Client = storeFront.Client;
 			productBundle.StoreFrontId = storeFront.StoreFrontId;
 			productBundle.StoreFront = storeFront;
-			if (storeFront.Products == null || storeFront.Products.Count == 0)
+			if (storeFront.ProductBundles == null || storeFront.ProductBundles.Count == 0)
 			{
 				productBundle.Name = "New Product Bundle";
 				productBundle.Order = 100;
@@ -841,7 +841,7 @@ namespace GStoreData
 			return true;
 		}
 
-		public static bool CheckStoreFrontFolders(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
+		public static bool StoreFrontFoldersAllExist(this StoreFrontConfiguration storeFrontConfig, string applicationPath, HttpServerUtilityBase server)
 		{
 			if (storeFrontConfig == null)
 			{
@@ -852,7 +852,7 @@ namespace GStoreData
 				throw new ArgumentNullException("server");
 			}
 			string path = server.MapPath(storeFrontConfig.StoreFrontVirtualDirectoryToMapThisConfig(applicationPath));
-			return CheckStoreFrontFolders(path);
+			return StoreFrontFoldersAllExist(path);
 		}
 
 		public static void CreateClientFolders(string basePath)
@@ -869,7 +869,7 @@ namespace GStoreData
 			CreateFolderIfNotExists(basePath + "\\Styles");
 		}
 
-		public static bool CheckStoreFrontFolders(string basePath)
+		public static bool StoreFrontFoldersAllExist(string basePath)
 		{
 			if (!System.IO.Directory.Exists(basePath + "\\CatalogContent\\Categories"))
 			{

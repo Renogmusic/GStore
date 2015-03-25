@@ -265,7 +265,7 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 
 		[AllowHtml]
 		[DataType(DataType.Html)]
-		[Display(Name = "No Products Message Html", Description = "Message shown when there are no products in this category.")]
+		[Display(Name = "No Products Message Html", Description = "Message shown when there are no products in this category.\nLeave this blank to show the default message of 'There are no products in this Category")]
 		public string NoProductsMessageHtml { get; set; }
 
 		[DataType(DataType.Text)]

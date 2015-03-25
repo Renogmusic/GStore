@@ -222,7 +222,7 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 		public string TopDescriptionHtml { get; set; }
 
 		[DataType(DataType.Url)]
-		[Display(Name = "Top Link URL", Description = "Link URL for the top link that appears before the top description field. Leave this blank if there is no link.")]
+		[Display(Name = "Top Link URL", Description = "Link URL for the top link that appears before the top description field. Leave this blank if there is no link. Use the full URL\nExample: http://www.google.com")]
 		public string TopLinkHref { get; set; }
 
 		[DataType(DataType.Text)]

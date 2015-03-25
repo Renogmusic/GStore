@@ -1,9 +1,11 @@
 ﻿@model StoreFront
-@{ 
+@{
 	ViewData.SetColDisplay(0, 2, 8);
+	int? themeId = null;
 	bool populateProducts = false;
 	bool populateDiscounts = false;
 	bool populatePages = false;
+	bool createDefaultConfig = false;
 }
 @using (Html.BeginForm())
 {
@@ -11,11 +13,11 @@
 
 	<div class="row">
 		<h2 class="jumbotron SysAdminEditPageTitle col-md-offset-2 col-md-10 text-warning title-align">
-			Edit Store Front<br/>
+			Edit Store Front<br />
 			'@(Model.CurrentConfigOrAny() == null ? "" : Model.CurrentConfigOrAny().Name)' [@(Model.StoreFrontId)]
 		</h2>
 	</div>
-	
+
 	<div class="row">
 		<div class="form-actions col-md-offset-2 col-md-10">
 			<input type="submit" value="Save" class="btn btn-warning" />
@@ -31,16 +33,45 @@
 			@Html.HiddenAuditFields()
 		</div>
 	</div>
-	
+
 	<div class="form-horizontal">
+		<div class="row">
+			@if (Model.CurrentConfigOrAny() == null)
+			{
+				@:No configurations
+			}
+			else
+			{
+				@(Html.DisplayNameFor(model => model.StoreFrontConfigurations))@: (new window)<br/>
+			foreach (StoreFrontConfiguration config in Model.StoreFrontConfigurations.AsQueryable().ApplyDefaultSort())
+			{
+				@(config.ConfigurationName) @:[@(config.StoreFrontConfigurationId)]
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("View Config", "StoreFrontView", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, new { target="_blank" })
+				@:&nbsp;&nbsp;|&nbsp;&nbsp;@Html.ActionLink("Edit Config", "StoreFrontEdit", "ClientConfigAdmin", new { area = "StoreAdmin", id = config.StoreFrontId, storeFrontConfigId = config.StoreFrontConfigurationId }, new { target = "_blank" })
+				<br /><br />
+			}
+			}
+		</div>
+
 		@Html.EditorFor(model => model.ClientId, "FieldClientId")
 		@Html.EditorFor(model => model.Order, "FieldInt")
 		@Html.EditorFor(model => model.IsPending, "FieldCheckbox")
 		@Html.EditorFor(model => model.StartDateTimeUtc, "FieldDateTime")
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
-		@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
-		@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
-		@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Simple Sample Pages" })
+		@if (Model.CurrentConfigOrAny() == null)
+		{
+			@Html.EditorFor(model => createDefaultConfig, "FieldCheckbox", new { labelText = "Create Default Configuration" })
+			@Html.EditorFor(model => themeId, "FieldThemeId", new { labelText = "Theme for Configuration" })
+			@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
+			@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
+			@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Simple Sample Pages" })
+		}
+		else
+		{
+			@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
+			@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
+			@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Simple Sample Pages" })
+		}
 	</div>
 
 	<div class="row">
@@ -52,7 +83,7 @@
 	</div>
 }
 
-<hr/>
+<hr />
 
 <div>
 	@Html.ActionLink("Back to List", "Index")

@@ -39,11 +39,11 @@
 				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>
 			}
 			<div class="ProductListUnitPriceRow"><span class="ProductListUnitPriceLabel">@(config.CartItemUnitPriceColumnLabel.OrDefault("Your Price"))</span> <span class="ProductListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span></div>
-			<a class="ProductListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))">@(product.Name)</a>
+			<a class="ProductListTextLink" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))"><h4>@(product.Name)</h4></a>
 		}
 		else
 		{
-			<a class="ProductListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))"><h3 style="margin-top: 0">@(product.Name)</h3></a>
+			<a class="ProductListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))"><h4 style="margin-top: 0">@(product.Name)</h4></a>
 			if (showListPrice)
 			{
 				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>

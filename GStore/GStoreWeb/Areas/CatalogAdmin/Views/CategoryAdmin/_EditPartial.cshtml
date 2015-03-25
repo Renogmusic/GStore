@@ -1,5 +1,6 @@
 ﻿@model CategoryEditAdminViewModel
 @{
+	
 	string tabBasicActive = string.Empty;
 	string tabDisplayActive = string.Empty;
 	string tabMenusActive = string.Empty;
@@ -155,11 +156,11 @@
 				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Menus</h3>
 			</div>
 			@Html.EditorFor(model => model.ShowInMenu, "FieldCheckbox")
-			@Html.EditorFor(model => model.HideInMenuIfEmpty, "FieldCheckbox")
 			@Html.EditorFor(model => model.ShowInCatalogIfEmpty, "FieldCheckbox")
 			@Html.EditorFor(model => model.AllowChildCategoriesInMenu, "FieldCheckbox")
 			@Html.EditorFor(model => model.UseDividerAfterOnMenu, "FieldCheckbox")
 			@Html.EditorFor(model => model.UseDividerBeforeOnMenu, "FieldCheckbox")
+			@Html.EditorFor(model => model.HideInMenuIfEmpty, "FieldCheckbox")
 		</div>
 
 		<div id="sectionMetaTags" class="tab-pane fade in @(tabMetaTagsActive)">

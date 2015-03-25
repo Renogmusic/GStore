@@ -39,8 +39,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				ProductCategory parentProductCategory = CurrentStoreFrontOrThrow.ProductCategories.SingleOrDefault(pc => pc.ProductCategoryId == id.Value);
 				if (parentProductCategory != null)
 				{
-					productCategory.ParentCategory = parentProductCategory;
-					productCategory.ParentCategoryId = parentProductCategory.ProductCategoryId;
+					productCategory.CloneFromParentForNew(parentProductCategory);
 				}
 			}
 

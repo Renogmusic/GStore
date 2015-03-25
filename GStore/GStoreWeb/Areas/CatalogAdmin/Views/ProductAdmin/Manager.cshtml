@@ -1,6 +1,7 @@
 ﻿@model CatalogAdminViewModel
 @{
 	UserProfile profile = Html.CurrentUserProfile(true);
+	
 	bool userCanCreate = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Create);
 	bool userCanEdit = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Edit);
 	bool userCanDelete = Model.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Products_Delete);
@@ -67,7 +68,7 @@
 	{
 		<div class="row">
 			<div class="col-xs-12">
-				@if (Model.FilterProductCategoryId.HasValue)
+				@if (Model.FilterProductCategoryId.HasValue && Model.FilterProductCategoryId.Value != 0)
 				{
 					<h2 class="text-warning">No Products found for this Category</h2>
 					@Html.ActionLink("Click here to View All Categories", "Manager", new { ProductCategoryId = 0 })
@@ -105,6 +106,7 @@
 		{
 			bool isActive = item.IsActiveBubble();
 			string rowClass = (isActive ? string.Empty : "text-warning");
+			DigitalDownloadFileInfo digitalDownloadInfo = new DigitalDownloadFileInfo(item.DigitalDownloadFileName, item.ProductId);
 
 			<tr class="@(rowClass)">
 				<td onclick="GoToDetails(@(item.ProductId));">
@@ -127,7 +129,13 @@
 				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.Order))</small></td>
 				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.ProductId))</small></td>
 				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.ProductCategoryId))</small></td>
-				<td onclick="GoToDetails(@(item.ProductId));"><small>@(Html.DisplayFor(model => item.Category))</small></td>
+				<td>
+					<small>@(Html.DisplayFor(model => item.Category))</small>
+					<br/>
+					@Html.DisplayFor(model => item.DigitalDownload) @Html.DisplayNameFor(model => item.DigitalDownload)
+					<br/>
+					@Html.DisplayFor(model => digitalDownloadInfo, "ProductDigitalDownloadFileInfo", new { ShortStatus = true })
+				</td>
 				<td onclick="GoToDetails(@(item.ProductId));">
 					<span class="@(item.IsActiveDirect() ? "text-success": "text-warning")">
 						@(item.IsActiveDirect() ? "Active" : "Inactive")
