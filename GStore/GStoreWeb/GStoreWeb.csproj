@@ -1961,7 +1961,6 @@
     <Content Include="Views\Catalog\SimpleBlocked\_ProductForList_Partial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryIdNullable.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldThemeIdNullable.cshtml" />
-    <Content Include="Views\Page\Test Simple 3x3 With Carousel.cshtml" />
     <Content Include="Views\Page\Page Simple 3x3 With Carousel.cshtml" />
     <Content Include="Views\Catalog\ViewProduct.cshtml" />
     <Content Include="Views\Catalog\SimpleBlocked\_Top_Partial.cshtml" />

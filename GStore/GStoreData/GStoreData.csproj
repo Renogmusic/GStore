@@ -102,6 +102,10 @@
     <Compile Include="Migrations\201503240837402_Release4.Designer.cs">
       <DependentUpon>201503240837402_Release4.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201503271212357_Release5.cs" />
+    <Compile Include="Migrations\201503271212357_Release5.Designer.cs">
+      <DependentUpon>201503271212357_Release5.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\OrderBundle.cs" />
     <Compile Include="Models\CartBundle.cs" />
     <Compile Include="Models\BaseClasses\GStorePaymentSourceEnum.cs" />
@@ -324,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503240837402_Release4.resx">
       <DependentUpon>201503240837402_Release4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503271212357_Release5.resx">
+      <DependentUpon>201503271212357_Release5.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

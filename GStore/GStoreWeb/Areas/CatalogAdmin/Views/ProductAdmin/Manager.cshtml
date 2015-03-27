@@ -109,7 +109,7 @@
 			DigitalDownloadFileInfo digitalDownloadInfo = new DigitalDownloadFileInfo(item.DigitalDownloadFileName, item.ProductId);
 
 			<tr class="@(rowClass)">
-				<td onclick="GoToDetails(@(item.ProductId));">
+				<td>
 					@Html.ActionLink("Details", "Details", new { id = item.ProductId }, new { @class = "btn btn-sm btn-success" })
 					@{
 			if (userCanEdit)

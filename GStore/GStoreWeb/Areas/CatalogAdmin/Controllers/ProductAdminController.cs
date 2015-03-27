@@ -543,13 +543,27 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				System.IO.Directory.CreateDirectory(fileFolder);
 			}
 
+
 			HttpPostedFileBase imageFile = Request.Files["ImageName_File"];
 			if (imageFile != null && imageFile.ContentLength != 0)
 			{
-				string newFileName = viewModel.UrlName + "_Image." + imageFile.FileName.FileExtension();
-				imageFile.SaveAs(fileFolder + "\\" + newFileName);
+				string newFileName = imageFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["ImageName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_Image." + imageFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					imageFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving product image file '" + imageFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.ImageName = newFileName;
-				AddUserMessage("Image Uploaded!", "Image '" + imageFile.FileName.ToHtml() + "' " + imageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				AddUserMessage("Image Uploaded!", "Product Image '" + imageFile.FileName.ToHtml() + "' " + imageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}
 
 			HttpPostedFileBase digitalDownloadFile = Request.Files["DigitalDownloadFileName_File"];
@@ -561,35 +575,88 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				{
 					System.IO.Directory.CreateDirectory(digitalDownloadFileFolder);
 				}
-				string newFileName = viewModel.UrlName + "_DigitalDownload." + digitalDownloadFile.FileName.FileExtension();
-				digitalDownloadFile.SaveAs(digitalDownloadFileFolder + "\\" + newFileName);
+
+				string newFileName = digitalDownloadFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["DigitalDownloadFileName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_DigitalDownload." + digitalDownloadFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					digitalDownloadFile.SaveAs(digitalDownloadFileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving product digital download file '" + digitalDownloadFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.DigitalDownloadFileName = newFileName;
-				AddUserMessage("Digital Download Uploaded!", "Digital Download File '" + digitalDownloadFile.FileName.ToHtml() + "' " + digitalDownloadFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				AddUserMessage("Digital Download Uploaded!", "Product Digital Download File '" + digitalDownloadFile.FileName.ToHtml() + "' " + digitalDownloadFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}
 
 			HttpPostedFileBase sampleAudioFile = Request.Files["SampleAudioFileName_File"];
 			if (sampleAudioFile != null && sampleAudioFile.ContentLength != 0)
 			{
-				string newFileName = viewModel.UrlName + "_SampleAudio." + sampleAudioFile.FileName.FileExtension();
-				sampleAudioFile.SaveAs(fileFolder + "\\" + newFileName);
+				string newFileName = digitalDownloadFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["SampleAudioFileName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_SampleAudio." + sampleAudioFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					sampleAudioFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving product sample audio file '" + sampleAudioFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.SampleAudioFileName = newFileName;
-				AddUserMessage("Sample Audio Uploaded!", "Sample Audio File '" + sampleAudioFile.FileName.ToHtml() + "' " + sampleAudioFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				AddUserMessage("Sample Audio Uploaded!", "Product Sample Audio File '" + sampleAudioFile.FileName.ToHtml() + "' " + sampleAudioFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}
 
 			HttpPostedFileBase sampleDownloadFile = Request.Files["SampleDownloadFileName_File"];
 			if (sampleDownloadFile != null && sampleDownloadFile.ContentLength != 0)
 			{
-				string newFileName = viewModel.UrlName + "_SampleDownload." + sampleDownloadFile.FileName.FileExtension();
-				sampleDownloadFile.SaveAs(fileFolder + "\\" + newFileName);
+				string newFileName = sampleDownloadFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["SampleAudioFileName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_SampleDownload." + sampleDownloadFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					sampleDownloadFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving product sample download file '" + sampleDownloadFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.SampleDownloadFileName = newFileName;
-				AddUserMessage("Sample Download File Uploaded!", "Sample Download File '" + sampleDownloadFile.FileName.ToHtml() + "' " + sampleDownloadFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				AddUserMessage("Sample Download File Uploaded!", "Product Sample Download File '" + sampleDownloadFile.FileName.ToHtml() + "' " + sampleDownloadFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}
 
 			HttpPostedFileBase sampleImageFile = Request.Files["SampleImageFileName_File"];
 			if (sampleImageFile != null && sampleImageFile.ContentLength != 0)
 			{
-				string newFileName = viewModel.UrlName + "_SampleImage." + sampleImageFile.FileName.FileExtension();
-				sampleImageFile.SaveAs(fileFolder + "\\" + newFileName);
+				string newFileName = sampleImageFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["SampleAudioFileName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_SampleImage." + sampleImageFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					sampleImageFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving product sample image file '" + sampleImageFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.SampleImageFileName = newFileName;
 				AddUserMessage("Sample Image File Uploaded!", "Sample Image File '" + sampleImageFile.FileName.ToHtml() + "' " + sampleImageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}

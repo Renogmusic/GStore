@@ -2260,7 +2260,6 @@ namespace GStoreData.AppHtmlHelpers
 					db.SaveChanges();
 					db.CachedUserProfile = null;
 				}
-
 			}
 
 			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
@@ -2431,25 +2430,8 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static MvcHtmlString Editor<TModel>(this PageTemplateSection pageTemplateSection, Page page, PageSection pageSection, int index, bool autoSubmit, HtmlHelper<TModel> htmlHelper) where TModel : PageViewModel
 		{
-
-			string value = string.Empty;
-			StringBuilder html = new StringBuilder();
-			if (pageSection != null)
-			{
-				if (pageSection.HasRawHtml && !string.IsNullOrEmpty(pageSection.RawHtml))
-				{
-					value = pageSection.RawHtml;
-				}
-				else if (pageSection.HasPlainText && !string.IsNullOrEmpty(pageSection.PlainText))
-				{
-					value = HttpUtility.HtmlEncode(pageSection.PlainText).Replace("\n", "<br/>\n");
-				}
-			}
-
 			ViewModels.PageSectionEditViewModel viewModel = new ViewModels.PageSectionEditViewModel(pageTemplateSection, page, pageSection, index, autoSubmit);
-
-			return htmlHelper.EditorFor(model => viewModel);
-
+			return htmlHelper.EditorFor(model => viewModel, "PageSectionEditViewModel");
 		}
 
 		public static string ReplaceVariables(this HtmlHelper htmlHelper, string text, string nullValue = "")

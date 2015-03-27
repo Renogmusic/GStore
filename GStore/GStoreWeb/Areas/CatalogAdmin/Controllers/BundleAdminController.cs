@@ -535,8 +535,6 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 
 		protected void ProcessFileUploads(ProductBundleEditAdminViewModel viewModel, StoreFront storeFront)
 		{
-			//todo: temporary file process
-
 			string virtualFolder = storeFront.CatalogProductBundleContentVirtualDirectoryToMap(Request.ApplicationPath);
 			string fileFolder = Server.MapPath(virtualFolder);
 			if (!System.IO.Directory.Exists(fileFolder))
@@ -547,13 +545,24 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			HttpPostedFileBase imageFile = Request.Files["ImageName_File"];
 			if (imageFile != null && imageFile.ContentLength != 0)
 			{
-				string newFileName = viewModel.UrlName + "_Image." + imageFile.FileName.FileExtension();
-				imageFile.SaveAs(fileFolder + "\\" + newFileName);
+				string newFileName = imageFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["ImageName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_Image." + imageFile.FileName.FileExtension();
+				}
+
+				try
+				{
+					imageFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving bundle image file '" + imageFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
 				viewModel.ImageName = newFileName;
-				AddUserMessage("Image Uploaded!", "Image '" + imageFile.FileName.ToHtml() + "' " + imageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+				AddUserMessage("Image Uploaded!", "Bundle Image '" + imageFile.FileName.ToHtml() + "' " + imageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
 			}
-
 		}
-
 	}
 }

@@ -23,7 +23,7 @@
 					<small>
 						Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
 						<br />
-						$@(Model.Cart.Subtotal.ToString("N2"))
+						$@(Model.Cart.Total.ToString("N2"))
 					</small>
 				</a>
 			}
@@ -67,7 +67,7 @@ else
 						<a href="@Url.Action("Index", "Cart")" accesskey="c" title="Shopping Cart - @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")"><small>
 							Cart @(Model.Cart.ItemCount.ToString("N0")) item@(Model.Cart.ItemCount == 1 ? "" : "s")
 							<br/>
-							$@(Model.Cart.Subtotal.ToString("N2"))
+							$@(Model.Cart.Total.ToString("N2"))
 							</small>
 						</a>
 					}

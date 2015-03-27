@@ -108,7 +108,7 @@
 			string rowClass = (isActive ? string.Empty : "text-warning");
 
 			<tr class="@(rowClass)">
-				<td onclick="GoToDetails(@(item.ProductBundleId));">
+				<td>
 					@Html.ActionLink("Details", "Details", new { id = item.ProductBundleId }, new { @class = "btn btn-sm btn-success" })
 					@{
 			if (userCanEdit)

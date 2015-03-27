@@ -4173,7 +4173,7 @@ namespace GStoreData
 			return FolderRandomImageFileName(folderPath);
 		}
 
-		public static string FolderRandomImageFileName(string folderPath)
+		public static string FolderRandomImageFileName(string folderPath, string excludeFileNameStartsWith = "RenoG")
 		{
 			if (!System.IO.Directory.Exists(folderPath))
 			{
@@ -4182,7 +4182,17 @@ namespace GStoreData
 
 			DirectoryInfo folderInfo = new System.IO.DirectoryInfo(folderPath);
 
-			List<FileInfo> files = folderInfo.GetFiles().Where(f => f.Name.FileExtensionIsImage()).ToList();
+			IEnumerable<FileInfo> query = null;
+			if (string.IsNullOrEmpty(excludeFileNameStartsWith))
+			{
+				query = folderInfo.GetFiles().Where(f => f.Name.FileExtensionIsImage()).ToList();
+			}
+			else
+			{
+				query = folderInfo.GetFiles().Where(f => f.Name.FileExtensionIsImage() && !f.Name.StartsWith(excludeFileNameStartsWith));
+			}
+
+			List<FileInfo> files = query.ToList();
 			if (files.Count == 0)
 			{
 				return null;

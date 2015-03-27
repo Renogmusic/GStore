@@ -1335,6 +1335,10 @@ namespace GStoreData
 						pageTemplate.Name = name;
 						pageTemplate.ViewName = viewName;
 						pageTemplate.Order = 2000 + counter;
+						if (name.ToLower() == "custom html page template")
+						{
+							pageTemplate.Order = 9000 + counter;
+						}
 						pageTemplate.Description = pageTemplate.Name;
 						pageTemplate.IsPending = false;
 						pageTemplate.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);

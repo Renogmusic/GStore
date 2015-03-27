@@ -45,7 +45,7 @@ namespace GStoreData.Models
 
 		[Display(Name = "Is HTML")]
 		public bool HasRawHtml { get; set; }
-		
+
 		[System.Web.Mvc.AllowHtml]
 		[UIHint("RawHtml")]
 		[Display(Name = "Raw Html")]

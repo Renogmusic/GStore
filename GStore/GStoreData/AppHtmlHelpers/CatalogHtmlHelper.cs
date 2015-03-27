@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using GStoreData.Models;
 using GStoreData.ViewModels;
 using System.Web.Mvc.Html;
+using System.Web;
 
 namespace GStoreData.AppHtmlHelpers
 {
@@ -345,6 +346,22 @@ namespace GStoreData.AppHtmlHelpers
 				.CanAddToCart(config.StoreFront)
 				.ApplyDefaultSort()
 				.ToList();
+		}
+
+		/// <summary>
+		/// Returns the file name and extension from an uploaded file
+		/// accounts for differences in IE and chrome for adding file path or not
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public static string FileNameNoPath(this HttpPostedFileBase file)
+		{
+			string fileName = file.FileName;
+			if (fileName.Contains('/') || fileName.Contains('\\'))
+			{
+				return System.IO.Path.GetFileName(fileName);
+			}
+			return fileName;
 		}
 
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using GStoreData;
 using GStoreData.AppHtmlHelpers;
@@ -61,21 +62,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			{
 				try
 				{
-					var file = Request.Files["ImageName_File"];
-					if (file != null && file.ContentLength != 0)
-					{
-						string newFileName = viewModel.UrlName + "_Image." + file.FileName.FileExtension();
-						string virtualFolder = storeFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
-						string fileFolder = Server.MapPath(virtualFolder);
-						if (!System.IO.Directory.Exists(fileFolder))
-						{
-							System.IO.Directory.CreateDirectory(fileFolder);
-						}
-						file.SaveAs(fileFolder + "\\" + newFileName);
-						viewModel.ImageName = newFileName;
-						AddUserMessage("Image Uploaded!", "Image '" + file.FileName.ToHtml() + "' " + file.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
-					}
-
+					ProcessFileUploads(viewModel, storeFront);
 					ProductCategory productCategory = GStoreDb.CreateProductCategory(viewModel, storeFront, CurrentUserProfileOrThrow);
 					AddUserMessage("Category Created!", "Category '" + productCategory.Name.ToHtml() + "' [" + productCategory.ProductCategoryId + "] was created successfully for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
 
@@ -165,21 +152,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 
 			if (ModelState.IsValid && nameIsValid)
 			{
-				var file = Request.Files["ImageName_File"];
-				if (file != null && file.ContentLength != 0)
-				{
-					string newFileName = viewModel.UrlName + "_Image." + file.FileName.FileExtension();
-					string virtualFolder = storeFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
-					string fileFolder = Server.MapPath(virtualFolder);
-					if (!System.IO.Directory.Exists(fileFolder))
-					{
-						System.IO.Directory.CreateDirectory(fileFolder);
-					}
-					file.SaveAs(fileFolder + "\\" + newFileName);
-					viewModel.ImageName = newFileName;
-					AddUserMessage("Image Uploaded!", "Image '" + file.FileName.ToHtml() + "' " + file.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
-				}
-
+				ProcessFileUploads(viewModel, storeFront);
 				productCategory = GStoreDb.UpdateProductCategory(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Category updated successfully!", "Category updated successfully. Category '" + productCategory.Name.ToHtml() + "' [" + productCategory.ProductCategoryId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
 
@@ -565,5 +538,36 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			return RedirectToAction("Index", "CatalogAdmin", new { returnToFrontEnd = returnToFrontEnd });
 		}
 
+		protected void ProcessFileUploads(CategoryEditAdminViewModel viewModel, StoreFront storeFront)
+		{
+			string virtualFolder = storeFront.CatalogCategoryContentVirtualDirectoryToMap(Request.ApplicationPath);
+			string fileFolder = Server.MapPath(virtualFolder);
+			if (!System.IO.Directory.Exists(fileFolder))
+			{
+				System.IO.Directory.CreateDirectory(fileFolder);
+			}
+
+			HttpPostedFileBase imageFile = Request.Files["ImageName_File"];
+			if (imageFile != null && imageFile.ContentLength != 0)
+			{
+				string newFileName = imageFile.FileNameNoPath();
+				if (!string.IsNullOrEmpty(Request.Form["ImageName_ChangeFileName"]))
+				{
+					newFileName = viewModel.UrlName + "_Image." + imageFile.FileName.FileExtension();
+				}
+				
+				try
+				{
+					imageFile.SaveAs(fileFolder + "\\" + newFileName);
+				}
+				catch (Exception ex)
+				{
+					throw new ApplicationException("Error saving category image file '" + imageFile.FileName + "' as '" + newFileName + "'", ex);
+				}
+
+				viewModel.ImageName = newFileName;
+				AddUserMessage("Image Uploaded!", "Category Image '" + imageFile.FileName.ToHtml() + "' " + imageFile.ContentLength.ToByteString() + " was saved as '" + newFileName + "'", UserMessageType.Success);
+			}
+		}
 	}
 }

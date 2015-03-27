@@ -45,11 +45,11 @@
 	{
 		<hr />
 		@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-		<br/>
-		<br/>
+		@:&nbsp;&nbsp;|&nbsp;&nbsp;
+		@Html.ActionLink("View " + Model.CurrentCategoryOrNull.ProductTypePlural, "Manager", "ProductAdmin", new { area = "CatalogAdmin", productCategoryId = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+		@:&nbsp;&nbsp;|&nbsp;&nbsp;
 		@Html.ActionLink("New " + Model.CurrentCategoryOrNull.ProductTypeSingle, "Create", "ProductAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-		<br />
-		<br />
+		@:&nbsp;&nbsp;|&nbsp;&nbsp;
 		@Html.ActionLink("New " + Model.CurrentCategoryOrNull.BundleTypeSingle, "Create", "BundleAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
 	}
 }

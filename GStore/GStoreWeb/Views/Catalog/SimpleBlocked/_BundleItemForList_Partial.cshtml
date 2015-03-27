@@ -13,6 +13,12 @@
 	decimal? listPrice = bundleItem.ListPrice(1);
 	bool showListPrice = config.CartBundleShowPriceOfIncludedItems && config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
 	bool showUnitPrice = config.CartBundleShowPriceOfIncludedItems;
+	bool showImage = (imageUrl != null);
+	bool showSampleAudio = false;
+	if (!string.IsNullOrEmpty(bundleItem.Product.SampleAudioFileName))
+	{
+		showSampleAudio = true;
+	}
 }
 <script>
 	function showItemDetails_@(bundleItem.ProductBundleItemId)()
@@ -29,11 +35,19 @@
 	}
 </script>
 <div class="ProductListItemBox boxshadowjs">
-	@if (imageUrl != null)
+	@if (showImage)
 	{
 		@(Html.DisplayFor(model => bundleItem.Quantity))@:&nbsp;X&nbsp;
 		<img class="BundleItemImage" src="@(imageUrl)" alt="@(Html.Raw(Html.AttributeEncode(bundleItem.Product.Name)))" title="@(Html.Raw(Html.AttributeEncode(bundleItem.Product.Name)))" />
 		<br />
+		if (showSampleAudio)
+		{
+			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+			<div class="ProductMusicRow">
+				<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductMusicLabel">@(bundleItem.Product.SampleAudioCaptionOrDefault())</span>
+			</div>
+		}
 		if (showListPrice)
 		{
 			<div class="BundleItemListPriceRow">
@@ -58,6 +72,14 @@
 	{
 		@(Html.DisplayFor(model => bundleItem.Quantity))@:&nbsp;X&nbsp;
 		<h3 style="display: inline;">@(bundleItem.Product.Name)</h3>
+		if (showSampleAudio)
+		{
+			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+			<div class="ProductMusicRow">
+				<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductMusicLabel">@(bundleItem.Product.SampleAudioCaptionOrDefault())</span>
+			</div>
+		}
 		if (showListPrice)
 		{
 			<div class="BundleItemListPriceRow">

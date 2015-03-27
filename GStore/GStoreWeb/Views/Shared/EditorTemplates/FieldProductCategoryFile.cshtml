@@ -26,6 +26,7 @@
 			<br />@Html.HelpLabelForModel()
 		}
 		<br/>
-		New File: <input class="form-control" type="file" name="@(Html.FieldNameForModel() + "_File")" style="display: inline" />
+		<label for="@(Html.IdForModel())_File">New File</label> <input id="@(Html.IdForModel())_File" class="form-control" type="file" name="@(Html.FieldNameForModel() + "_File")" style="display: inline" />
+		<label for="@(Html.IdForModel())_ChangeFileName">Update File Name:</label> <input id="@(Html.IdForModel())_ChangeFileName" type="checkbox" name="@(Html.FieldNameForModel() + "_ChangeFileName")" checked="checked" value="true" style="display: inline" />
 	</div>
 </div>

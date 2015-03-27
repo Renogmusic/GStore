@@ -44,6 +44,14 @@
 		else
 		{
 			<a class="ProductListTextLinkNoImage" href="@(url)" title="@(Html.Raw(Html.AttributeEncode(product.Name)))"><h4 style="margin-top: 0">@(product.Name)</h4></a>
+			if (showSampleAudio)
+			{
+				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
+				<div class="ProductMusicRow">
+					<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductMusicLabel">@(product.SampleAudioCaptionOrDefault())</span>
+				</div>
+			}
 			if (showListPrice)
 			{
 				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>

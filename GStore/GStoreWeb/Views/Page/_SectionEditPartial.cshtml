@@ -10,7 +10,8 @@
 	}
 }
 <script>
-	function ShowNothing_@(Model.Index)() {
+	function ShowNothing_@(Model.Index)()
+	{
 		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
 		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
 		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
@@ -24,7 +25,8 @@
 		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
 	}
 
-	function ShowDefault_@(Model.Index)() {
+	function ShowDefault_@(Model.Index)()
+	{
 		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "true";
 		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
 		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = false;
@@ -38,22 +40,8 @@
 		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
 	}
 
-
-	function ShowRawHtml_@(Model.Index)() {
-		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
-		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
-		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
-
-		document.getElementById("HasNothing_@(Model.Index)").value = "false";
-
-		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
-		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
-
-		document.getElementById("HasRawHtml_@(Model.Index)").value = "true";
-		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = false;
-	}
-
-	function ShowPlainText_@(Model.Index)() {
+	function ShowPlainText_@(Model.Index)()
+	{
 		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
 		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
 		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
@@ -67,37 +55,83 @@
 		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = true;
 	}
 
-	function AutoSubmitForm_@(Model.Index)() {
+	function ShowRawHtml_@(Model.Index)()
+	{
+		document.getElementById("UseDefaultFromTemplate_@(Model.Index)").value = "false";
+		document.getElementById("DefaultViewRaw_@(Model.Index)").hidden = true;
+		document.getElementById("DefaultViewPreview_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasNothing_@(Model.Index)").value = "false";
+
+		document.getElementById("HasPlainText_@(Model.Index)").value = "false";
+		document.getElementById("PlainTextEditor_@(Model.Index)").hidden = true;
+
+		document.getElementById("HasRawHtml_@(Model.Index)").value = "true";
+		document.getElementById("RawHtmlEditor_@(Model.Index)").hidden = false;
+
+		document.getElementById("HtmlCodeButton_@(Model.Index)").hidden = false;
+		document.getElementById("HtmlEditorButton_@(Model.Index)").hidden = true;
+	}
+
+	function AutoSubmitForm_@(Model.Index)()
+	{
 		@if (Model.AutoSubmit)
 		{
 			@:document.getElementById("IsAutoPosted_@(Model.Index)").value = "true";
-											@:$('#SectionEditForm_@(Model.Index)').trigger('submit');
-										}
+			@:$('#SectionEditForm_@(Model.Index)').trigger('submit');
+		}
 	}
 
-	function LoadDefaultHtml_@(Model.Index)() {
+	function LoadDefaultHtml_@(Model.Index)()
+	{
 		var defaultHtml = '@(Model.DefaultRawHtmlValue.ToJavaScriptMvcString())';
-		var data = CKEDITOR.instances.RawHtml_@(Model.Index).setData(defaultHtml);
+		if (CKEDITOR.instances.RawHtml_@(Model.Index))
+		{
+			var data = CKEDITOR.instances.RawHtml_@(Model.Index).setData(defaultHtml);
+		}
+		else
+		{
+			document.getElementById("RawHtml_@(Model.Index)").value = defaultHtml;
+		}
 	}
 
+	function GoHtmlCode_@(Model.Index)()
+	{
+		if (CKEDITOR.instances.RawHtml_@(Model.Index))
+		{
+			CKEDITOR.instances.RawHtml_@(Model.Index).destroy();
+			document.getElementById("HtmlCodeButton_@(Model.Index)").hidden = true;
+			document.getElementById("HtmlEditorButton_@(Model.Index)").hidden = false;
+		}
+	}
+
+	function GoHtmlEditor_@(Model.Index)()
+	{
+		if (CKEDITOR.instances.RawHtml_@(Model.Index))
+		{
+			return;
+		}
+		CKEDITOR.replace('RawHtml_@(Model.Index)');
+		document.getElementById("HtmlCodeButton_@(Model.Index)").hidden = false;
+		document.getElementById("HtmlEditorButton_@(Model.Index)").hidden = true;
+	}
 
 	@if (Model.UseDefaultFromTemplate)
 	{
 		@:$(document).ready(function () { ShowDefault_@(Model.Index)(); });
-										}
+							}
 	else if (Model.HasNothing)
 	{
 		@:$(document).ready(function () { ShowNothing_@(Model.Index)(); });
-										}
+							}
 	else if (Model.HasRawHtml)
 	{
 		@:$(document).ready(function () { ShowRawHtml_@(Model.Index)(); });
-										}
+							}
 	else
 	{
 		@:$(document).ready(function () { ShowPlainText_@(Model.Index)(); });
-										}
-
+							}
 </script>
 @Html.AntiForgeryToken()
 <div class="@(containerClasses)">
@@ -169,11 +203,17 @@
 			</div>
 		</div>
 		<div id="RawHtmlEditor_@(Model.Index)" class="form-group">
-			<div class="col-md-12">
+			<div class="col-md-12 text-center">
 				<center><a href="javascript:LoadDefaultHtml_@(Model.Index)()" class="btn btn-xs btn-warning">Click here to load the default HTML</a></center>
-				<textarea id="RawHtml_@(Model.Index)" class="form-control" name="@(prefix)RawHtml" rows="4" cols="20">@Model.RawHtml</textarea>
+				<textarea id="RawHtml_@(Model.Index)" class="form-control" name="@(prefix)RawHtml" rows="30" style="width: 100%; max-width: 100%">@Model.RawHtml</textarea>
 				<script>CKEDITOR.replace('RawHtml_@(Model.Index)');</script>
-			</div>
+				<br/>
+				<div id="HtmlCodeButton_@(Model.Index)">
+					<input id="GoHtmlCodeButton_@(Model.Index)" type="button" class="btn btn-info" value="HTML Code" onclick="GoHtmlCode_@(Model.Index)();" />
+				</div>
+				<div id="HtmlEditorButton_@(Model.Index)">
+					<input id="GoHtmlEditorButton_@(Model.Index)" type="button" class="btn btn-info" value="HTML Editor" onclick="GoHtmlEditor_@(Model.Index)();" />
+				</div>
 		</div>
 	</div>
 </div>

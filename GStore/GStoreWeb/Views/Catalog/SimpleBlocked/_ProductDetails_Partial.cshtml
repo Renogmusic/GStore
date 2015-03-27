@@ -30,12 +30,14 @@
 	bool showBottomInfo = true;
 	bool crossSellBundles = true;
 	bool showRequestAQuote = !isBundlePage && product.RequestAQuote_Show && product.RequestAQuote_PageId.HasValue;
+	bool showSampleAudio = !string.IsNullOrEmpty(product.SampleAudioFileName);
 	if (isBundlePage)
 	{
 		showUnitPrice = storeFrontConfig.CartBundleShowPriceOfIncludedItems;
 		showAddToCart = false;
 		showBuyNow = false;
 		showBottomInfo = false;
+		showSampleAudio = false;
 	}
 	
 	ViewBag.Title = product.Name + " - " + product.Category.Name;
@@ -120,7 +122,7 @@
 	</div>
 }
 
-@if (!string.IsNullOrWhiteSpace(product.SampleAudioFileName))
+@if (showSampleAudio)
 {
 	string audioType = "audio/mpeg";
 	if (product.SampleAudioFileName.FileExtensionIs("wav"))
@@ -143,7 +145,7 @@
 		@if (showSampleAudioDownloadLink)
 		{
 			<br/>
-			<a href="@(Html.Raw(sampleAudioUrl))">Download Audio File</a>
+			<a href="@(Html.Raw(sampleAudioUrl))">Download Sample Audio File</a>
 		}
 		<hr />
 	</div>
