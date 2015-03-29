@@ -112,7 +112,7 @@
 		<tr class="@rowClass" onclick='window.location.href ="@Url.Action("Details", "Notifications", new { id = item.NotificationId })";'>
 			<td align="right" valign="top">Message</td>
 			<td colspan="4">
-				@Html.DisplayTextMaxLines(modelItem => item.Message, 5, 100)
+				@Html.DisplayFor(model => item.Message, "DisplayTextMaxLines", new { MaxLines = 5, LineLength = 100 })
 			</td>
 			<td>
 				@Html.ActionLink("Open", "Details", new { id = item.NotificationId }, new { @class = "btn btn-info" })

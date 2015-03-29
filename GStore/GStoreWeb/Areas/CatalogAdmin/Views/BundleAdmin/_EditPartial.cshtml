@@ -42,6 +42,9 @@
 
 	List<ProductBundleItem> bundleItems = null;
 	List<SelectListItem> addProductList = null;
+	decimal? unitPrice = null;
+	decimal? listPrice = null;
+
 	if (!Model.IsCreatePage)
 	{
 		List<Product> addProductsSameCat = Model.ProductBundle.StoreFront.Products.Where(p => p.ProductCategoryId == Model.ProductCategoryId && !p.ProductBundleItems.Any(pbi => pbi.ProductBundleId == Model.ProductBundleId)).AsQueryable().ApplyDefaultSort().ToList();
@@ -54,10 +57,11 @@
 		addProductList.AddRange(addProductsOtherCat.Select(p => new SelectListItem() { Value = p.ProductId.ToString(), Text = p.Category.Name + " [" + p.ProductCategoryId + "] -> " + p.Name + " [" + p.ProductId + "]", Group = otherCatGroup }));
 		
 		bundleItems = Model.ProductBundle.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
+
+		unitPrice = Model.ProductBundle.UnitPrice(1);
+		listPrice = Model.ProductBundle.ListPrice(1);
 	}
 
-	decimal? unitPrice = Model.ProductBundle.UnitPrice(1);
-	decimal? listPrice = Model.ProductBundle.ListPrice(1);
 
 	bool userCanViewProducts = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Products_View);
 
@@ -184,7 +188,7 @@
 				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Basic Info</h3>
 			</div>
 			@Html.EditorFor(model => model.Name, "FieldText")
-			@Html.EditorFor(model => model.UrlName, "FieldText")
+			@Html.EditorFor(model => model.UrlName, "FieldUrlName")
 			@Html.EditorFor(model => model.Order, "FieldInt")
 			@Html.EditorFor(model => model.ProductCategoryId, "FieldProductCategoryId")
 		</div>
@@ -212,42 +216,42 @@
 								<th>&nbsp;</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.ProductBundleItemId))
-									@Html.HelpLabelPopoverFor(model => nullModel.ProductBundleItemId, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.ProductBundleItemId, placement: PopoverPlacementEnum.top)
 									<br/>Status
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.Product.Name))
-									@Html.HelpLabelPopoverFor(model => nullModel.Product.Name, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.Product.Name, placement: PopoverPlacementEnum.top)
 									[Id]
-									@Html.HelpLabelPopoverFor(model => nullModel.ProductId, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.ProductId, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.Quantity))
-									@Html.HelpLabelPopoverFor(model => nullModel.Quantity, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.Quantity, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.BaseUnitPrice))
-									@Html.HelpLabelPopoverFor(model => nullModel.BaseUnitPrice, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.BaseUnitPrice, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.BaseListPrice))
-									@Html.HelpLabelPopoverFor(model => nullModel.BaseListPrice, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.BaseListPrice, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.Order))
-									@Html.HelpLabelPopoverFor(model => nullModel.Order, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.Order, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.IsPending))
-									@Html.HelpLabelPopoverFor(model => nullModel.IsPending, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.IsPending, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.StartDateTimeUtc))
-									@Html.HelpLabelPopoverFor(model => nullModel.StartDateTimeUtc, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.StartDateTimeUtc, placement: PopoverPlacementEnum.top)
 								</th>
 								<th class="text-center">
 									@(Html.DisplayNameFor(model => nullModel.EndDateTimeUtc))
-									@Html.HelpLabelPopoverFor(model => nullModel.EndDateTimeUtc, placement: AppHtmlHelper.PopoverPlacementEnum.top)
+									@Html.HelpLabelPopoverFor(model => nullModel.EndDateTimeUtc, placement: PopoverPlacementEnum.top)
 								</th>
 							</tr>
 				}

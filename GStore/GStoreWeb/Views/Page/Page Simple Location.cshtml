@@ -12,12 +12,27 @@ else if (Model.EditMode)
 {
 	Html.RenderPartial("_EditLinkTopPartial", Model);
 }
+@{
+	string googleMapsApiKey = Settings.AppGoogleMapsApiKey;
+	string googleMapLocation = Html.PageVariableString("Google Map Location", 7, "Google Map Location", "San Diego, CA 92101", true, false);
+	string googleMapUrl = "https://www.google.com/maps/embed/v1/place?"
+		+ "q=" + Url.Encode(googleMapLocation)
+		+ "&attribution_source=" + Url.Encode(Html.CurrentStoreFrontConfig(true).Name)
+		+ "&attribution_web_url=" + Url.Encode(Url.GStoreLocalUrl("/", true))
+		+ (string.IsNullOrEmpty(googleMapsApiKey) ? "" : "&key=" + googleMapsApiKey);
+		
+	MvcHtmlString googleMapsApiUrl = new MvcHtmlString(googleMapUrl);
+}
 <div id="PageContent">
 	@Html.DisplayPageSection("Headline1", 1, "Headline 1", "<h1>:::page.title:::</h1>", "<h1>", "</h1>", "", false, false)
 	@Html.DisplayPageSection("Headline2", 2, "Headline 2", "<h2 class=\"text-danger\">Welcome to :::storefront.name:::!</h2>", "<h2 class=\"text-danger\">", "</h2>", "", false, false)
-	@Html.DisplayPageSection("Headline3", 3, "Headline 3", "<h3>&nbsp</h3>", "<h3>", "</h3>", "", false, false)
-	@Html.DisplayPageSection("BodyText", 4, "Body Text", "<h4>Google Map and directions coming soon!</h4>", "<h4>", "</h4>", "", false, false)
-	@Html.DisplayPageSection("BodyLink", 5, "Body Link", "<p>&nbsp;</p>", "<p>", "</p>", "", false, false)
+	@Html.DisplayPageSection("Headline3", 3, "Headline 3", "", "<h3>", "</h3>", "", false, false)
+	<div>
+		@Html.DisplayPageSection("MapHeader", 4, "Map Header", "<h3 class=\"text-danger\">Sample Location</h3>", "<h3>", "</h3>", "", false, false)
+		<iframe width="600" height="450" frameborder="0" style="border:0" src="@(googleMapsApiUrl)"></iframe>
+	</div>
+	@Html.DisplayPageSection("BodyText", 5, "Body Text", "<h4>&nbsp;</h4>", "<h4>", "</h4>", "", false, false)
+	@Html.DisplayPageSection("BodyLink", 6, "Body Link", "<p>&nbsp;</p>", "<p>", "</p>", "", false, false)
 </div>
 <div id="PageForm" class="PageForm">
 	@Html.DisplayPageForm()

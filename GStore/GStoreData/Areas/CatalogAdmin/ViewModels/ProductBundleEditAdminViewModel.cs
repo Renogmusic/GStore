@@ -26,7 +26,7 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			LoadValues(userProfile, productBundle);
 		}
 
-		public ProductBundleEditAdminViewModel(ProductBundle productBundle, UserProfile userProfile, string activeTab, bool isCreatePage = false, bool isSimpleCreatePage = false, bool isEditPage = false, bool isDetailsPage = false, bool isDeletePage = false)
+		public ProductBundleEditAdminViewModel(ProductBundle productBundle, UserProfile userProfile, string activeTab, bool isCreatePage = false, bool isEditPage = false, bool isDetailsPage = false, bool isDeletePage = false)
 		{
 			if (userProfile == null)
 			{
@@ -37,7 +37,6 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 				throw new ArgumentNullException("productBundle", "Product Bundle cannot be null");
 			}
 			this.IsCreatePage = isCreatePage;
-			this.IsSimpleCreatePage = isSimpleCreatePage;
 			this.IsEditPage = isEditPage;
 			this.IsDetailsPage = isDetailsPage;
 			this.IsDeletePage = isDeletePage;
@@ -115,9 +114,6 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			this.ProductBundle = productBundle;
 			this.Category = productBundle.Category;
 		}
-
-		[Editable(false)]
-		public bool IsSimpleCreatePage { get; set; }
 
 		[Editable(false)]
 		public bool IsCreatePage { get; set; }

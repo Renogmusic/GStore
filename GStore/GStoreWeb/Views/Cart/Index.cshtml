@@ -41,8 +41,6 @@
 		cartBundles = Model.CartBundles.AsQueryable().ApplyDefaultSort().ToList();
 	}
 
-
-
 	if (isPreview || isViewConfig || isEditConfig)
 	{
 		string title = string.Empty;
@@ -986,17 +984,29 @@
 						}
 					</td>
 					<td class="CartCheckoutBottonCol">
-						<strong>
 						@if (isPreview || isViewConfig || isEditConfig)
 						{
 							string mode = isPreview ? "Preview" : "Configuration";
-							<a class="btn btn-lg btn-success" href="JavaScript:alert('FYI - You are in @(mode) mode.\nThe Check Out button does not do anything.\nIt is only here to give you an idea how your cart looks.');">@(config.CartCheckoutButtonLabel.OrDefault("Check Out"))</a>
+							<strong>
+								<a class="btn btn-lg btn-success" href="JavaScript:alert('FYI - You are in @(mode) mode.\nThe Check Out button does not do anything.\nIt is only here to give you an idea how your cart looks.');">@(config.CartCheckoutButtonLabel.OrDefault("Check Out"))</a>
+							</strong>
 						}
 						else
 						{
-							@Html.ActionLink(config.CartCheckoutButtonLabel.OrDefault("Check Out"), "Index", "CheckOut", null, new { @class = "btn btn-lg btn-success" })
+							if (Model.Total >= config.CheckoutOrderMinimum)
+							{
+								<strong>
+									@Html.ActionLink(config.CartCheckoutButtonLabel.OrDefault("Check Out"), "Index", "CheckOut", null, new { @class = "btn btn-lg btn-success" })
+								</strong>
+							}
+							else
+							{
+								<p>
+									You need to add $@((config.CheckoutOrderMinimum - Model.Total).ToString("N2")) of items to complete this order<br />
+									Minimum Order amount is $@(config.CheckoutOrderMinimum.ToString("N2"))<br />
+								</p>
+							}
 						}
-						</strong>
 					</td>
 				</tr>
 			</table>

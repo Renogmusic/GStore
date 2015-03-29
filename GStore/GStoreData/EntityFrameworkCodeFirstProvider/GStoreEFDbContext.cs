@@ -513,7 +513,7 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 			{
 				foreach (int storeFrontId in storeFrontIdsToRecalculate)
 				{
-					StoreFrontExtensions.RecalculateProductCategoryActiveCount(this, storeFrontId);
+					this.RecalculateProductCategoryActiveCount(storeFrontId);
 				}
 			}
 

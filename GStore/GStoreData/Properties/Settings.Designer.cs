@@ -474,5 +474,14 @@ namespace GStoreData.Properties {
                 return ((bool)(this["AppLogSmsSentToFile"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AppGoogleMapsApiKey {
+            get {
+                return ((string)(this["AppGoogleMapsApiKey"]));
+            }
+        }
     }
 }

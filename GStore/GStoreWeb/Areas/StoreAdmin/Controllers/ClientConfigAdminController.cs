@@ -277,6 +277,8 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.BodyBottomScriptTag = model.BodyBottomScriptTag;
 				config.BodyTopScriptTag = model.BodyTopScriptTag;
 				config.CartThemeId = model.CartThemeId;
+
+				config.CheckoutOrderMinimum = model.CheckoutOrderMinimum;
 				config.CheckoutThemeId = model.CheckoutThemeId;
 				config.CheckoutLogInOrGuestWebFormId = model.CheckoutLogInOrGuestWebFormId;
 				config.CheckoutDeliveryInfoDigitalOnlyWebFormId = model.CheckoutDeliveryInfoDigitalOnlyWebFormId;
@@ -516,6 +518,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.AccountLoginShowRegisterLink = model.AccountLoginShowRegisterLink;
 				config.AdminThemeId = model.AdminThemeId;
 				config.CartThemeId = model.CartThemeId;
+				config.CheckoutOrderMinimum = model.CheckoutOrderMinimum;
 				config.CheckoutThemeId = model.CheckoutThemeId;
 				config.CheckoutLogInOrGuestWebFormId = model.CheckoutLogInOrGuestWebFormId;
 				config.CheckoutDeliveryInfoDigitalOnlyWebFormId = model.CheckoutDeliveryInfoDigitalOnlyWebFormId;

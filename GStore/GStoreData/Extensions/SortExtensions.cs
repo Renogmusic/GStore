@@ -4079,5 +4079,12 @@ namespace GStoreData
 			return query.OrderBy(p => p.Order).ThenBy(p => p.Code).ThenBy(p => p.GiftCardId);
 		}
 
+		public static IOrderedQueryable<PageTemplateSection> ApplyDefaultSort(this IQueryable<PageTemplateSection> query)
+		{
+			return query.OrderBy(pts => pts.Order).ThenBy(pts => pts.PageTemplateSectionId);
+		}
+
+
+
 	}
 }

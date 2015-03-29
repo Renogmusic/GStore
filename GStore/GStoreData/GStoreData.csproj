@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,14 +37,17 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AppHtmlHelpers\AppHtmlHelpers.cs" />
+    <Compile Include="AppHtmlHelpers\GStoreHtmlHelper.cs" />
+    <Compile Include="AppHtmlHelpers\MvcHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\CatalogHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\EnumHelper.cs" />
     <Compile Include="AppHtmlHelpers\GaEvent.cs" />
+    <Compile Include="ViewModels\PageVariableEditViewModel.cs" />
     <Compile Include="AppHtmlHelpers\StoreAdminHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\UserMessage.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\ProductBundleItemEditAdminViewModel.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\ProductBundleEditAdminViewModel.cs" />
+    <Compile Include="Extensions\CatalogExtensions.cs" />
     <Compile Include="Identity\IdentityConfig.cs" />
     <Compile Include="Areas\CatalogAdmin\ControllerBase\CatalogAdminBaseController.cs" />
     <Compile Include="Areas\CatalogAdmin\ViewModels\CatalogAdminViewModel.cs" />
@@ -105,6 +109,10 @@
     <Compile Include="Migrations\201503271212357_Release5.cs" />
     <Compile Include="Migrations\201503271212357_Release5.Designer.cs">
       <DependentUpon>201503271212357_Release5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503281132464_Release6.cs" />
+    <Compile Include="Migrations\201503281132464_Release6.Designer.cs">
+      <DependentUpon>201503281132464_Release6.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\OrderBundle.cs" />
     <Compile Include="Models\CartBundle.cs" />
@@ -331,6 +339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503271212357_Release5.resx">
       <DependentUpon>201503271212357_Release5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503281132464_Release6.resx">
+      <DependentUpon>201503281132464_Release6.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

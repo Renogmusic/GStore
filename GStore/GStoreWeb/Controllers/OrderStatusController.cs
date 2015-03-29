@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using GStoreData;
 using GStoreData.Models;
+using GStoreData.AppHtmlHelpers;
 
 namespace GStoreWeb.Controllers
 {
@@ -97,6 +98,8 @@ namespace GStoreWeb.Controllers
 
 		public ActionResult Download(string id, string email, int? orderItemId)
 		{
+			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
+
 			IGstoreDb db = GStoreDb;
 			if (string.IsNullOrEmpty(id) || id == "0")
 			{
@@ -110,7 +113,7 @@ namespace GStoreWeb.Controllers
 				return HttpBadRequest("Order Item ID cannot be null or zero");
 			}
 
-			Order order = CurrentStoreFrontOrThrow.Orders.Where(o => o.OrderNumber == id && o.Email.ToLower() == email.ToLower()).SingleOrDefault();
+			Order order = config.StoreFront.Orders.Where(o => o.OrderNumber == id && o.Email.ToLower() == email.ToLower()).SingleOrDefault();
 			if (order == null)
 			{
 				db.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_DigitalDownload_Failure, "Order not found by Id and email. Order Id: " + id + " Email: " + email, false, orderNumber: id, orderItemId: orderItemId.Value);
@@ -135,6 +138,9 @@ namespace GStoreWeb.Controllers
 			if (string.IsNullOrEmpty(product.DigitalDownloadFileName))
 			{
 				//no file name
+				string errorMessage = "There is no file set for digital download for Product '" + product.Name.ToHtmlLines() + "' [" + product.ProductId + "]";
+				db.CreateDigitalDownloadErrorNotificationToOrderAdminAndSave(config, CurrentUserProfileOrNull, orderItem, Url, errorMessage);
+
 				db.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_DigitalDownload_Failure, "Product '" + product.UrlName + "' [" + product.ProductId + "] has no file set for Digital Download. Order Id: " + id + " Email: " + email + " Order Item Id: " + orderItemId.Value, false, orderNumber: id, orderItemId: orderItemId.Value);
 				return HttpNotFound("Product '" + product.UrlName + "' [" + product.ProductId + "] has no file set for Digital Download. Order Id: " + id + " Email: " + email + " Order Item Id: " + orderItemId.Value);
 			}
@@ -142,6 +148,10 @@ namespace GStoreWeb.Controllers
 			string filePath = product.DigitalDownloadFilePath(Request.ApplicationPath, RouteData, Server);
 			if (string.IsNullOrEmpty(filePath))
 			{
+				string errorMessage = "File Not Found '" + filePath.ToHtmlLines()  + "' for digital download for Product '" + product.Name + "' [" + product.ProductId + "]";
+				db.CreateDigitalDownloadErrorNotificationToOrderAdminAndSave(config, CurrentUserProfileOrNull, orderItem, Url, errorMessage);
+
+
 				//file not found
 				db.LogUserActionEvent(HttpContext, RouteData, this, UserActionCategoryEnum.Orders, UserActionActionEnum.Orders_DigitalDownload_Failure, "Product '" + product.UrlName + "' [" + product.ProductId + "] digital download file '" + product.DigitalDownloadFileName + "' is not found. Order Id: " + id + " Email: " + email + " Order Item Id: " + orderItemId.Value, false, orderNumber: id, orderItemId: orderItemId.Value);
 				return HttpNotFound("Product '" + product.UrlName + "' [" + product.ProductId + "] digital download file '" + product.DigitalDownloadFileName + "' is not found. Order Id: " + id + " Email: " + email + " Order Item Id: " + orderItemId.Value);
@@ -170,8 +180,6 @@ namespace GStoreWeb.Controllers
 			}
 
 			return result;
-			//return new FilePathResult(filePath, mimeType) { FileDownloadName = XXX}
-
 		}
 
 		protected override string ThemeFolderName

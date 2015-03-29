@@ -330,6 +330,10 @@ namespace GStoreData.Models
 		#region Checkout
 
 		[Required]
+		[Display(Name = "Check Out Order Minimum Amount", Description = "Minimum order amount in dollars. Use 0 to allow free orders or no minimum. Default is 0.")]
+		public decimal CheckoutOrderMinimum { get; set; }
+
+		[Required]
 		[Display(Name = "Checkout Theme Id")]
 		public int CheckoutThemeId { get; set; }
 

@@ -21,7 +21,7 @@
 		@foreach (var cat in data)
 		{
 			counter++;
-			Product product = Html.ProductFromUrlName(cat.First().ProductUrlName);
+			Product product = Html.ProductFromUrlNameOrNull(cat.First().ProductUrlName);
 			@(counter + ". ") @(product.Name) @: - @(cat.Count())<br />
 			}
 		@{

@@ -242,3 +242,47 @@ function ApplyBoxShadow(element) {
 	$(element).css('border', '1px solid silver');
 	$(element).css('box-shadow', 'rgba(0, 0, 0, 0.2) 6px 6px');
 }
+
+function ValidateUrlName(element)
+{
+	var value = element.value;
+	if (UrlNameIsValid(value))
+	{
+		return;
+	}
+	element.value = FixUrlName(value);
+}
+
+var invalidUrlNameCharacters = [ '/', '\\', '%', '?', '<', '>', '*', ':', '&', '"', '\'', ' ', '!' ];
+
+function UrlNameIsValid(value)
+{
+	for (var i = 0; i <= invalidUrlNameCharacters.length; i++)
+	{
+		if (value.indexOf(invalidUrlNameCharacters[i]) != -1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+function FixUrlName(value)
+{
+	for (var i = 0; i <= invalidUrlNameCharacters.length; i++)
+	{
+		value = value.replace(invalidUrlNameCharacters[i], "-");
+	}
+	if (!UrlNameIsValid(value))
+	{
+		return FixUrlName(value);
+	}
+	return value;
+}
+
+function UpdateUrlName(idUrlName, idName)
+{
+	var newName = $('#' + idName).val();
+	var newUrlName = FixUrlName(newName);
+	$('#' + idUrlName).val(newUrlName);
+}

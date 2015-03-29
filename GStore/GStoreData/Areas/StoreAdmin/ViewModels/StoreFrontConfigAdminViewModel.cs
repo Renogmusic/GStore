@@ -33,7 +33,7 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.CartThemeId = storeFrontConfig.CartThemeId;
 			this.CheckoutTheme = storeFrontConfig.CheckoutTheme;
 			this.CheckoutThemeId = storeFrontConfig.CheckoutThemeId;
-
+			this.CheckoutOrderMinimum = storeFrontConfig.CheckoutOrderMinimum;
 
 			this.CheckoutLogInOrGuestWebFormId = storeFrontConfig.CheckoutLogInOrGuestWebFormId;
 			this.CheckoutLogInOrGuestWebForm = storeFrontConfig.CheckoutLogInOrGuestWebForm;
@@ -196,6 +196,10 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Required]
 		[Display(Name = "Shopping Cart Theme", Description = "Choose a Theme for the Shopping Cart section of the site")]
 		public int CartThemeId { get; set; }
+
+		[Required]
+		[Display(Name = "Check Out Order Minimum Amount", Description = "Minimum order amount in dollars. Use 0 to allow free orders or no minimum. Default is 0.")]
+		public decimal CheckoutOrderMinimum { get; set; }
 
 		[Display(Name = "Checkout Theme", Description = "Choose a Theme for the Checkout section of the site")]
 		public Theme CheckoutTheme { get; protected set; }

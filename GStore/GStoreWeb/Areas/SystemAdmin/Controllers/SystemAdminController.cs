@@ -127,7 +127,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			return View("Index");
         }
 
-		public ActionResult ClearAllLogs()
+		public PartialViewResult ClearAllLogs(int? filterClientId, int? filterStoreFrontId)
 		{
 			ClearLogFolderHelper("GStoreFolder_BadRequests");
 			ClearLogFolderHelper("GStoreFolder_EmailSent");
@@ -139,18 +139,19 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			ClearLogFolderHelper("GStoreFolder_SystemEvents");
 			ClearLogFolderHelper("GStoreFolder_UserActionEvents");
 
-			return RedirectToAction("Index");
+			return RecordSummary(filterClientId, filterStoreFrontId, false);
 		}
 
-		public ActionResult ClearLogFolder(string folder)
+		public PartialViewResult ClearLogFolder(string folder, int? filterClientId, int? filterStoreFrontId)
 		{
 			if (string.IsNullOrEmpty(folder))
 			{
-				return HttpBadRequest("Folder is null");
+				HttpBadRequest("Folder is null");
+				return null;
 			}
 
 			ClearLogFolderHelper(folder);
-			return RedirectToAction("Index");
+			return RecordSummary(filterClientId, filterStoreFrontId, false);
 		}
 
 		protected void ClearLogFolderHelper(string folder)

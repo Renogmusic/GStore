@@ -19,11 +19,12 @@ namespace GStoreWeb.Controllers
 			
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+
 			if (cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("LogInOrGuest");
@@ -49,11 +50,12 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -104,11 +106,12 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -144,11 +147,12 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -178,9 +182,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -274,11 +278,12 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
+
 			if (!cart.StatusStartedCheckout)
 			{
 				return RedirectToAction("Index");
@@ -378,9 +383,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -422,9 +427,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -475,9 +480,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -511,9 +516,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -601,9 +606,8 @@ namespace GStoreWeb.Controllers
 			StoreFrontConfiguration storeFrontConfig = CurrentStoreFrontConfigOrThrow;
 			Cart cart = storeFrontConfig.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 
-			if (cart == null || cart.CartItems.Count == 0)
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -646,9 +650,8 @@ namespace GStoreWeb.Controllers
 			StoreFrontConfiguration storeFrontConfig = CurrentStoreFrontConfigOrThrow;
 			Cart cart = storeFrontConfig.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
 
-			if (cart == null || cart.CartItems.Count == 0)
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -822,9 +825,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 
@@ -862,9 +865,9 @@ namespace GStoreWeb.Controllers
 		{
 			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
 			Cart cart = config.StoreFront.GetCart(Session.SessionID, CurrentUserProfileOrNull);
-			if (cart == null || cart.CartItems.Count == 0)
+
+			if (!cart.CartIsValidForCheckout(this))
 			{
-				AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
 				return RedirectToAction("Index", "Cart");
 			}
 

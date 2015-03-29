@@ -21,7 +21,7 @@
 		@*alert('OnComplete_@(Model.Index)');*@
 	}
 	function PageEdit_OnFailure() {
-		AddUserMessageDanger("Save Failed.", "Page Edit failed with a server error. Please try again or re-load the page and try again. Page: '@(Model.Name)' [@(Model.PageId)]");
+		AddUserMessageDanger("Save Failed.", "Page Edit failed with an AJAX server error. Please try again or re-load the page and try again. Page: '@(Model.Name)' [@(Model.PageId)]");
 	}
 	function PageEdit_OnSuccess() {
 		@*alert('OnSuccess_@(Model.Index)');*@

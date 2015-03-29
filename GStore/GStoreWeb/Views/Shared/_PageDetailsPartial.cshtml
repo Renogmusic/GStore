@@ -13,8 +13,9 @@
 	bool showContentTab = true;
 	bool showCancelTab = false;
 
-	string sectionPageActive = " active";
+	string sectionPageActive = string.Empty;
 	string sectionContentActive = string.Empty;
+	string sectionVariablesActive = string.Empty;
 	string sectionThemeActive = string.Empty;
 	string sectionMetaActive = string.Empty;
 	string sectionFormActive = string.Empty;
@@ -23,31 +24,29 @@
 	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())
 	{
 		case "page":
+			sectionPageActive = " active";
 			break;
-
 		case "content":
 			sectionContentActive = " active";
-			sectionPageActive = string.Empty;
+			break;
+		case "variables":
+			sectionVariablesActive = " active";
 			break;
 		case "theme":
 			sectionThemeActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "meta":
 			sectionMetaActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "form":
 			sectionFormActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "activation":
 			sectionActivationActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 
 		default:
-			break;
+			goto case "page";
 	}
 
 	MvcHtmlString cancelUrl = null;
@@ -77,16 +76,20 @@
 		}
 	}
 
+	bool showVariables = (Model.Variables != null && Model.Variables.Count != 0);
+
 }
 <style>
-	.form-group .form-control {
+	.form-group .form-control
+	{
 		padding-top: 0;
 		margin-top: 0;
 		padding-bottom: 0;
 		margin-bottom: 10px;
 	}
 
-	.form-group label {
+	.form-group label
+	{
 		padding-top: 0;
 		margin-top: 5px;
 		padding-bottom: 0;
@@ -95,11 +98,14 @@
 </style>
 @Html.HiddenFor(model => model.ActiveTab)
 <script>
-	function SetActiveTab(tabName) {
-		if (document.getElementById('PageEditViewModel_ActiveTab')) {
+	function SetActiveTab(tabName)
+	{
+		if (document.getElementById('PageEditViewModel_ActiveTab'))
+		{
 			document.getElementById('PageEditViewModel_ActiveTab').value = tabName;
 		}
-		if (document.getElementById('ActiveTab')) {
+		if (document.getElementById('ActiveTab'))
+		{
 			document.getElementById('ActiveTab').value = tabName;
 		}
 	}
@@ -115,7 +121,11 @@
 		{
 			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content');">Content</a></li>
 		}
-	}
+		if (showVariables)
+		{
+			<li class="@(sectionVariablesActive)"><a data-toggle="tab" href="#sectionVariables" onclick="SetActiveTab('Variables');">Variables</a></li>
+		}
+}
 	@{
 		if (showCancelTab)
 		{
@@ -162,6 +172,38 @@
 	<div id="sectionContent" class="tab-pane fade in@(sectionContentActive)">
 		<h3 class="col-md-offset-3 col-md-9 bg-success">Page Content</h3>
 	</div>
+
+	@if (showVariables)
+	{
+		<div id="sectionVariables" class="tab-pane fade in@(sectionVariablesActive)">
+			<div class="row form-group text-left-md text-left-lg">
+				<h3 class="col-md-offset-3 col-md-9 bg-success">Variables</h3>
+				@foreach (PageVariableEditViewModel variable in Model.Variables)
+				{
+					string dataClass = string.Empty;
+					string value = variable.CurrentValue(true);
+					bool isDefault = variable.CurrentValueIsDefault();
+					if (!isDefault)
+					{
+						dataClass = " bold";
+					}
+
+					<div class="form-group">
+						<label class="text-right control-label col-md-3">@(variable.PageTemplateSection.Name)</label>
+						<div class="col-md-9 text-left@(dataClass)">
+							@(value)
+						</div>
+						<div class="row">
+							<div class="col-md-offset-3 col-md-9 help-label">
+								@(variable.PageTemplateSection.Description)<br />
+								Default: '@(variable.PageTemplateSection.DefaultStringValue)'
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
 
 	<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
 		<div class="row form-group text-left-md text-left-lg">
@@ -345,13 +387,13 @@
 						<label class="text-right control-label col-md-3">Web Form Fields</label>
 						<div class="col-md-9 text-left">
 							@{
-								if (Model.OriginalWebForm != null && Model.OriginalWebForm.WebFormFields != null)
-								{
-									@:Active Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().WhereIsActive().Count().ToString("N0"))
-									@:&nbsp;&nbsp;|&nbsp;&nbsp;
-									@:Total Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().Count().ToString("N0"))
+					if (Model.OriginalWebForm != null && Model.OriginalWebForm.WebFormFields != null)
+					{
+						@:Active Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().WhereIsActive().Count().ToString("N0"))
+								@:&nbsp;&nbsp;|&nbsp;&nbsp;
+								@:Total Fields: @(Model.OriginalWebForm.WebFormFields.AsQueryable().Count().ToString("N0"))
 								<br />
-								}
+					}
 							}
 							@{
 					if (Html.UserHasPermission(GStoreAction.WebForms_View))

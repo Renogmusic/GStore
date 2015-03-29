@@ -12,8 +12,9 @@
 	bool showSaveCancelButtons = true;
 	bool displayUserMessages = true;
 
-	string sectionPageActive = " active";
+	string sectionPageActive = string.Empty;
 	string sectionContentActive = string.Empty;
+	string sectionVariablesActive = string.Empty;
 	string sectionThemeActive = string.Empty;
 	string sectionMetaActive = string.Empty;
 	string sectionFormActive = string.Empty;
@@ -24,35 +25,33 @@
 	{
 		containerClasses += " modelinvalid";
 	}
-	
+
 	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())
 	{
 		case "page":
+			sectionPageActive = " active";
 			break;
-
 		case "content":
 			sectionContentActive = " active";
-			sectionPageActive = string.Empty;
+			break;
+		case "variables":
+			sectionVariablesActive = " active";
 			break;
 		case "theme":
 			sectionThemeActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "meta":
 			sectionMetaActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "form":
 			sectionFormActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 		case "activation":
 			sectionActivationActive = " active";
-			sectionPageActive = string.Empty;
 			break;
 
 		default:
-			break;
+			goto case "page";
 	}
 
 	MvcHtmlString cancelUrl = null;
@@ -79,23 +78,28 @@
 		}
 	}
 
+	bool showVariables = (Model.Variables != null && Model.Variables.Count != 0);
+
 	ViewData.SetColDisplay(1, 2, 9);
 
 }
 <style>
-	.form-group .form-control {
+	.form-group .form-control
+	{
 		padding-top: 0;
 		margin-top: 0;
 		padding-bottom: 0;
 	}
 
-	.form-group label {
+	.form-group label
+	{
 		padding-top: 0;
 		padding-bottom: 0;
 		margin-bottom: 0;
 	}
 
-	.form-group .help-label {
+	.form-group .help-label
+	{
 		margin-right: 0;
 		padding-left: 30px;
 	}
@@ -105,14 +109,14 @@
 
 	@{
 		@:$(document).ready(function () { HideFormPreview(); });
-												if (sectionContentActive.Length == 0)
+					if (sectionContentActive.Length == 0)
 		{
 			@:$(document).ready(function () { HidePageSections(); });
-																	}
+					}
 		else
 		{
 			@:$(document).ready(function () { ShowPageSections(); });
-																	}
+					}
 	}
 	function ShowPageSections() {
 		if (document.getElementById('PageContent')) {
@@ -181,19 +185,19 @@
 		if (showRefresh)
 		{
 			@:function RefreshPage()
-							@:{
-							@:	var url = '@(refreshUrl.ToHtmlString().ToJavaScriptString())';
-							@:	if (document.getElementById('PageEditViewModel_ActiveTab'))
-									@:	{
-									@:		url = url.replace("XXXX", document.getElementById("PageEditViewModel_ActiveTab").value);
-									@:	}
-									@:	else if (document.getElementById("ActiveTab"))
-											@:	{
-											@:		url = url.replace("XXXX", document.getElementById("ActiveTab").value);
-											@:	}
-							@:	document.location.href = url;
-							@:}
-				}
+															@:{
+															@:	var url = '@(refreshUrl.ToHtmlString().ToJavaScriptString())';
+															@:	if (document.getElementById('PageEditViewModel_ActiveTab'))
+																					@:	{
+																					@:		url = url.replace("XXXX", document.getElementById("PageEditViewModel_ActiveTab").value);
+																					@:	}
+																					@:	else if (document.getElementById("ActiveTab"))
+																											@:	{
+																											@:		url = url.replace("XXXX", document.getElementById("ActiveTab").value);
+																											@:	}
+															@:	document.location.href = url;
+															@:}
+								}
 }
 </script>
 <div class="@(containerClasses)">
@@ -215,6 +219,10 @@
 			if (showContentTab)
 			{
 				<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content');ShowPageSections();">Content</a></li>
+			}
+			if (showVariables)
+			{
+				<li class="@(sectionVariablesActive)"><a data-toggle="tab" href="#sectionVariables" onclick="SetActiveTab('Variables');HidePageSections();">Variables</a></li>
 			}
 		}
 		@{
@@ -250,8 +258,17 @@
 				}
 			}
 		}
-		<li class=""><a href="@(Url.Action("Edit", new { ResetContentToDefault = true }))" onclick="return ConfirmResetToDefault();"><u>Reset Content to Defaults</u></a></li>
+		@if (!Model.IsCreatePage)
+		{
+			<li class="">
+				<a href="@(Url.Action("Edit", new { ResetContentToDefault = true }))" onclick="return ConfirmResetToDefault();"><u>Reset Content to Defaults</u></a>
+			</li>
+		}
 	</ul>
+
+
+
+
 
 
 
@@ -262,6 +279,51 @@
 				<h3 class="col-md-offset-2 col-md-8 bg-warning">Page Content</h3>
 			</div>
 		</div>
+
+		@if (showVariables)
+		{
+			<div id="sectionVariables" class="tab-pane fade in@(sectionVariablesActive)">
+				<div class="row form-group text-left-md text-left-lg">
+					<h3 class="col-md-offset-2 col-md-8 bg-warning">Variables</h3>
+				</div>
+				@{
+					int variableIndex = 0;
+					PageVariableEditViewModel[] variables = Model.Variables.ToArray();
+				}
+				@foreach (PageVariableEditViewModel variable in Model.Variables)
+				{
+					try
+					{
+						@Html.EditorFor(model => variables[variableIndex], "PageVariableEditViewModel", new { index = variableIndex })
+					}
+					catch (Exception)
+					{
+						@:Error displaying variable editor<br/>
+					}
+					variableIndex++;
+				}
+
+				@{
+					if (showSaveCancelButtons)
+					{
+						<div class="row">
+							<div class="form-actions col-md-offset-2 col-md-8">
+								<input type="submit" value="Save" class="btn btn-warning" />
+								&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+								<a class="btn btn-default" href="@(cancelUrl)">Cancel</a>
+								@{
+						if (showRefresh)
+						{
+							@:&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+									<a class="btn btn-primary" href="@(refreshUrl)">Refresh this Page</a>
+						}
+								}
+							</div>
+						</div>
+					}
+				}
+			</div>
+		}
 
 		<div id="sectionPage" class="tab-pane fade in @(sectionPageActive)">
 			<div class="row form-group text-left-md text-left-lg">

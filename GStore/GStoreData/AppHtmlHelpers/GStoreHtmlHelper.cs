@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -19,7 +15,7 @@ using GStoreData.ViewModels;
 
 namespace GStoreData.AppHtmlHelpers
 {
-	public static class AppHtmlHelper
+	public static class GStoreHtmlHelper
 	{
 		public static string GStoreVersionNumber(this HtmlHelper htmlHelper)
 		{
@@ -396,697 +392,6 @@ namespace GStoreData.AppHtmlHelpers
 			return returnValue;
 		}
 
-		public static MvcHtmlString DisplayShortNameFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string name = metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName;
-			return new MvcHtmlString(htmlHelper.Encode(name));
-		}
-
-		public static MvcHtmlString DisplayShortName(this HtmlHelper htmlHelper, string expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromStringExpression(expression, htmlHelper.ViewData);
-			string name = metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName;
-			return new MvcHtmlString(htmlHelper.Encode(name));
-		}
-
-		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, null, null);
-		}
-
-		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, null, typedHtmlAttributes);
-		}
-
-		public static MvcHtmlString ShortLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string labelText, object htmlAttributes)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			return ShortLabelHelper(htmlHelper, metadata, htmlFieldName, labelText, typedHtmlAttributes);
-		}
-
-		internal static MvcHtmlString ShortLabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string labelText = null, IDictionary<string, object> htmlAttributes = null)
-        {
-            string resolvedLabelText = labelText ?? metadata.ShortDisplayName ?? metadata.DisplayName ?? metadata.PropertyName ?? htmlFieldName.Split('.').Last();
-            if (String.IsNullOrEmpty(resolvedLabelText))
-            {
-                return MvcHtmlString.Empty;
-            }
-
-            TagBuilder tag = new TagBuilder("label");
-            tag.Attributes.Add("for", TagBuilder.CreateSanitizedId(html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)));
-            tag.SetInnerText(resolvedLabelText);
-            tag.MergeAttributes(htmlAttributes, replaceExisting: true);
-            return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
-        }
-
-		/// <summary>
-		/// Renders a label with help text from the "Description" data attribute if found using classes help-label and help-label-top
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelTopFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, HtmlHelper.AnonymousObjectToHtmlAttributes(new { @class = "help-label help-label-top" }));
-		}
-
-		/// <summary>
-		/// Renders a label with help text from the "Description" data attribute if found
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, HtmlHelper.AnonymousObjectToHtmlAttributes(new { @class="help-label" }));
-		}
-
-		/// <summary>
-		/// Renders a label with help text from the "Description" data attribute if found
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, null, typedHtmlAttributes);
-		}
-
-		/// <summary>
-		/// Renders a label with help text from the "Description" data attribute if found
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string labelText, object htmlAttributes)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
-			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, labelText, typedHtmlAttributes);
-		}
-
-		public static MvcHtmlString HelpLabelForModel(this HtmlHelper htmlHelper)
-		{
-			return htmlHelper.HelpLabelForModel(null);
-		}
-
-		public static MvcHtmlString HelpLabelForModel(this HtmlHelper htmlHelper, object htmlAttributes)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			string htmlFieldName = metadata.PropertyName;
-			string labelText = metadata.Description;
-			IDictionary<string, object> typedHtmlAttributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			return HelpLabelHelper(htmlHelper, metadata, htmlFieldName, labelText, typedHtmlAttributes);
-		}
-
-		internal static MvcHtmlString HelpLabelHelper(HtmlHelper html, ModelMetadata metadata, string htmlFieldName, string labelText = null, IDictionary<string, object> htmlAttributes = null)
-		{
-			string resolvedLabelText = labelText ?? metadata.Description;
-			if (string.IsNullOrEmpty(resolvedLabelText))
-			{
-				return MvcHtmlString.Empty;
-			}
-			if (htmlAttributes == null)
-			{
-				htmlAttributes = new RouteValueDictionary();
-				htmlAttributes.Add("class", "help-label");
-			}
-			else
-			{
-				if (!htmlAttributes.ContainsKey("class"))
-				{
-					htmlAttributes.Add("class", "help-label");
-				}
-				else if (!(htmlAttributes["class"] as string).ToLower().Contains("help-label"))
-				{
-					htmlAttributes["class"] = "help-label " + htmlAttributes["class"].ToString();
-				}
-			}
-
-			TagBuilder tag = new TagBuilder("label");
-			tag.Attributes.Add("for", TagBuilder.CreateSanitizedId(html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)));
-			tag.InnerHtml = resolvedLabelText.ToHtmlLines();
-			tag.MergeAttributes(htmlAttributes, replaceExisting: true);
-			return new MvcHtmlString(tag.ToString(TagRenderMode.Normal));
-		}
-
-		public static MvcHtmlString HelpLabelPopover(this HtmlHelper htmlHelper, string displayName, string helpText, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
-		{
-			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
-				+ (string.IsNullOrEmpty(helpText) ? "" : helpText + "\n")
-				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
-
-			string title = "Help for " + displayName;
-
-			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
-		}
-
-		/// <summary>
-		/// Displays a help label (Description attribute) in a pop-over triggered by focus anchored to the body tag with help label inside and displayname as the title
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="label"></param>
-		/// <param name="topLineText"></param>
-		/// <param name="bottomLineText"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelPopoverForModel(this HtmlHelper htmlHelper, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			if (string.IsNullOrEmpty(metadata.Description))
-			{
-				return MvcHtmlString.Empty;
-			}
-
-			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
-
-			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
-				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
-				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
-
-			string title = "Help for " + propertyName;
-			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
-
-		}
-
-		/// <summary>
-		/// Displays a help label (Description attribute) in a pop-over triggered by focus anchored to the body tag with help label inside and displayname as the title
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <param name="label"></param>
-		/// <param name="topLineText"></param>
-		/// <param name="bottomLineText"></param>
-		/// <returns></returns>
-		public static MvcHtmlString HelpLabelPopoverFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, string label = "?", string topLineText = "", string bottomLineText = "", PopoverPlacementEnum placement = PopoverPlacementEnum.right )
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-			if (string.IsNullOrEmpty(metadata.Description))
-			{
-				return MvcHtmlString.Empty;
-			}
-
-			string propertyName = (string.IsNullOrEmpty(metadata.DisplayName) ? metadata.PropertyName : metadata.DisplayName);
-			string title = "Help for " + propertyName;
-
-			string dataContent = (string.IsNullOrEmpty(topLineText) ? "" : topLineText + "\n")
-				+ (string.IsNullOrEmpty(metadata.Description) ? "" : metadata.Description + "\n")
-				+ (string.IsNullOrEmpty(bottomLineText) ? "" : bottomLineText + "\n");
-
-			return htmlHelper.HelpLabelPopoverHelper(title, dataContent, label, placement);
-		}
-
-		public static MvcHtmlString HelpLabelPopoverHelper(this HtmlHelper htmlHelper, string title, string dataContent, string label = "?", PopoverPlacementEnum placement = PopoverPlacementEnum.right)
-		{
-			return new MvcHtmlString(
-			"<a href=\"javascript://\" tabindex=\"0\" class=\"help-label-popup\" role=\"button\" data-toggle=\"popover\" data-html=\"true\" data-trigger=\"focus\" "
-				+ "data-container=\"body\" onclick=\"return false;\" "
-				+ "data-placement=\"" + placement.ToString() + "\" "
-				+ "title=\"" + title.ToHtmlAttribute() + "\" "
-				+ "data-content=\"" + dataContent.ToHtmlLines().ToHtmlAttribute() + "\">" + label.ToHtmlLines() + "</a>"
-				);
-		}
-
-		/// <summary>
-		/// Returns a display description (help text) for a model property, empty string if no description
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString DisplayDescriptionFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-
-			if (string.IsNullOrEmpty(metadata.Description))
-			{
-				return new MvcHtmlString(string.Empty);
-			}
-			return new MvcHtmlString(metadata.Description);
-		}
-
-		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, bool addTextDangerClass = true, bool addSpanNoWrap = true, bool removeHtmlFieldPrefix = true)
-		{
-			return htmlHelper.ValidationMessageForModel(null, addTextDangerClass, removeHtmlFieldPrefix);
-		}
-
-		public static MvcHtmlString ValidationMessageForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool addTextDangerClass = true, bool addSpanNoWrap = true, bool removeHtmlFieldPrefix = true)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metadata.PropertyName;
-
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			if (addTextDangerClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "text-danger " + htmlAttribs["class"];
-				}
-				else
-				{
-					htmlAttribs.Add("class", "text-danger");
-				}
-			}
-
-			if (string.IsNullOrEmpty(fieldName))
-			{
-				fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			}
-			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			MvcHtmlString result = null;
-			if (!addSpanNoWrap)
-			{
-				result = htmlHelper.ValidationMessage(fieldName, htmlAttribs);
-			}
-			else
-			{
-				result = new MvcHtmlString("<span style=\"white-space: nowrap\">" + htmlHelper.ValidationMessage(fieldName, htmlAttribs).ToHtmlString() + "</span>");
-			}
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Returns a watermark for the current field. Gets data from Prompt display attribute
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static string WatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-
-			if (string.IsNullOrEmpty(metadata.Watermark))
-			{
-				return metadata.DisplayName ?? metadata.PropertyName;
-			}
-			return metadata.Watermark;
-		}
-
-		/// <summary>
-		/// Returns a watermark for the current field. Gets data from Prompt display attribute
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <returns></returns>
-		public static string WatermarkForModel(this HtmlHelper htmlHelper)
-		{
-			ModelMetadata metadata = htmlHelper.ViewData.ModelMetadata;
-			if (string.IsNullOrEmpty(metadata.Watermark))
-			{
-				return metadata.DisplayName ?? metadata.PropertyName;
-			}
-			return metadata.Watermark;
-		}
-
-		/// <summary>
-		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString TextBoxWithWatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression)
-		{
-			return htmlHelper.TextBoxWithWatermarkFor(expression, null);
-		}
-
-		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper)
-		{
-			return htmlHelper.LabelWithRequiredForModel(null);
-		}
-
-		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper, object htmlAttributes)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string label = htmlHelper.ViewData.LabelText() ?? metaData.DisplayName ?? metaData.PropertyName;
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			if (metaData.IsRequired)
-			{
-				label += " *";
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "text-required " + htmlAttribs["class"];
-				}
-				else
-				{
-					htmlAttribs["class"] = "text-required";
-				}
-			}
-			return htmlHelper.LabelForModel(label, htmlAttribs);
-		}
-
-		public static MvcHtmlString RequiredForModel(this HtmlHelper htmlHelper)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			if (metaData.IsRequired)
-			{
-				return new MvcHtmlString("<span class=\"text-required\">(*)</span>");
-			}
-			return null;
-		}
-
-		/// <summary>
-		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <param name="htmlAttributes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString TextBoxWithWatermarkFor<TModel, TValue>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
-		{
-			string watermark = htmlHelper.WatermarkFor(expression);
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			htmlAttribs.Add("placeholder", watermark);
-			return htmlHelper.TextBoxFor(expression, htmlAttribs);
-		}
-
-
-		/// <summary>
-		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			return htmlHelper.TextBoxWithWatermarkForModel(null, setSizeToMaxLength, removeHtmlFieldPrefix, doNotAddFormControlClass);
-		}
-
-		/// <summary>
-		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <returns></returns>
-		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metaData.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
-
-			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName) + (metaData.IsRequired ? " (Required)" : ""));
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-			
-			htmlAttribs.Add("placeholder", watermark);
-
-			if (!doNotAddFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			int? viewDataMaxLength = htmlHelper.ViewData.MaxLength();
-			int? maxLengthForModel = htmlHelper.MaxLengthAttributeForModel();
-			if (viewDataMaxLength.HasValue || maxLengthForModel.HasValue)
-			{
-				htmlAttribs["maxlength"] = viewDataMaxLength ?? maxLengthForModel;
-				if (setSizeToMaxLength)
-				{
-					htmlAttribs["size"] = viewDataMaxLength ?? maxLengthForModel;
-				}
-			}
-
-			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			MvcHtmlString result = htmlHelper.TextBox(fieldName, htmlHelper.ViewData.Model, null, htmlAttribs);
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
-			}
-			return result;
-
-		}
-
-		public static MvcHtmlString PasswordWithWatermarkForModel(this HtmlHelper htmlHelper, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			return htmlHelper.PasswordWithWatermarkForModel(null, setSizeToMaxLength, removeHtmlFieldPrefix, doNotAddFormControlClass);
-		}
-
-		public static MvcHtmlString PasswordWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metaData.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
-
-			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName) + (metaData.IsRequired ? " (Required)" : ""));
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			htmlAttribs.Add("placeholder", watermark);
-
-			if (!doNotAddFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			int? maxLength = htmlHelper.MaxLengthAttributeForModel();
-			if (maxLength.HasValue)
-			{
-				htmlAttribs["maxlength"] = maxLength.Value;
-				if (setSizeToMaxLength)
-				{
-					htmlAttribs["size"] = maxLength.Value;
-				}
-			}
-
-			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			MvcHtmlString result = htmlHelper.Password(fieldName, htmlHelper.ViewData.Model, htmlAttribs);
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
-			}
-			return result;
-
-		}
-
-
-		public static MvcHtmlString TextAreaWithWatermarkForModel(this HtmlHelper htmlHelper, int cols = 40, int rows = 10, bool doNotAddFormControlClass = false)
-		{
-			return htmlHelper.TextAreaWithWatermarkForModel(null, cols, rows, doNotAddFormControlClass);
-		}
-
-		/// <summary>
-		/// Returns a TextBox with a watermark for the current field. Watermark from Prompt display attribute, adds class for form-control unless doNotAddFormControl is true
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <returns></returns>
-		public static MvcHtmlString TextAreaWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, int cols = 40, int rows = 10, bool doNotAddFormControlClass = false)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metaData.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
-
-			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName));
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			htmlAttribs.Add("placeholder", watermark);
-
-			if (!doNotAddFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			return htmlHelper.TextArea("", htmlHelper.ViewData.Model as string, rows, cols, htmlAttribs);
-		}
-
-		public static MvcHtmlString FieldNameForModel(this HtmlHelper htmlHelper)
-		{
-			return new MvcHtmlString(htmlHelper.ViewData.ModelMetadata.PropertyName);
-		}
-
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false)
-		{
-			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, doNotAddFormControlClass, addIdToPropertyName, removeHtmlFieldPrefix);
-		}
-
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, object htmlAttributes, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metaData.PropertyName ?? "";
-			if (addIdToPropertyName && !fieldName.EndsWith("Id", StringComparison.CurrentCultureIgnoreCase))
-			{
-				fieldName += "Id";
-			}
-			
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
-
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			if (!doNotAddFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			if (allowNull)
-			{
-				htmlAttribs.Add("data-val", "false");
-			}
-
-			if (selectList == null)
-			{
-				selectList = new List<SelectListItem>();
-			}
-
-			string dropdownField = "";
-			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-				dropdownField = fieldName;
-			}
-			MvcHtmlString result = htmlHelper.DropDownList(dropdownField, selectList, optionLabel, htmlAttribs);
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
-			}
-			return result;
-
-		}
-
-
-		public static MvcHtmlString CheckboxForModel(this HtmlHelper htmlHelper, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			return htmlHelper.CheckboxForModel(null, removeHtmlFieldPrefix, doNotAddFormControlClass);
-		}
-
-		public static MvcHtmlString CheckboxForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string fieldName = metaData.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
-
-			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-
-			if (!doNotAddFormControlClass)
-			{
-				if (htmlAttribs.ContainsKey("class"))
-				{
-					htmlAttribs["class"] = "form-control " + htmlAttribs["class"].ToString();
-				}
-				else
-				{
-					htmlAttribs.Add("class", "form-control");
-				}
-			}
-
-			fieldName = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			string oldHtmlFieldPrefix = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-			}
-			if (string.IsNullOrEmpty(fieldName))
-			{
-				fieldName = metaData.PropertyName;
-			}
-			if (string.IsNullOrEmpty(fieldName))
-			{
-				fieldName = htmlHelper.IdForModel().ToHtmlString();
-			}
-			MvcHtmlString result = htmlHelper.CheckBox(fieldName, (htmlHelper.ViewData.Model as bool?) ?? false, htmlAttribs);
-			if (removeHtmlFieldPrefix)
-			{
-				htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix = oldHtmlFieldPrefix;
-			}
-			return result;
-			
-		}
-
-
-		public static int? MaxLengthAttributeForModel(this HtmlHelper htmlHelper)
-		{
-			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string propertyName = metaData.PropertyName;
-			Type containerType = metaData.ContainerType;
-
-			MaxLengthAttribute[] maxLengthAttribs = containerType.GetProperty(propertyName).GetCustomAttributes<MaxLengthAttribute>(false).ToArray();
-			if (maxLengthAttribs == null || maxLengthAttribs.Length == 0)
-			{
-				return null;
-			}
-			return maxLengthAttribs[0].Length;
-		}
-
-
 		/// <summary>
 		/// Renders alerts from viewbag and tempdata if any exist (messages to user)
 		/// </summary>
@@ -1208,8 +513,6 @@ namespace GStoreData.AppHtmlHelpers
 			returnValue.AppendLine("})");
 			returnValue.AppendLine("</script>");
 
-
-
 			return new MvcHtmlString(returnValue.ToString());
 		}
 
@@ -1255,151 +558,6 @@ namespace GStoreData.AppHtmlHelpers
 		public static MvcHtmlString RenderNotificationLink<TModel>(this HtmlHelper<TModel> htmlHelper, Models.NotificationLink link, int counter)
 		{
 			return new MvcHtmlString(link.NotificationLinkTag(counter));
-		}
-
-
-		public static MvcHtmlString DisplayTextMaxLines<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, int maxLines = 4, int lineLength = 40)
-		{
-			return htmlHelper.DisplayFor(expression, "DisplayTextMaxLines", new { MaxLines = maxLines, LineLength = lineLength });
-		}
-
-
-		/// <summary>
-		/// Simple file dropdown helper, use overload for more options most are optional
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TProperty"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <param name="virtualPathDefault"></param>
-		/// <returns></returns>
-		public static MvcHtmlString FileHelperFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string virtualPathDefault)
-		{
-			return FileHelperFor(htmlHelper, expression, null, virtualPathDefault, string.Empty, null);
-		}
-
-		public static MvcHtmlString FileHelperFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, string virtualPathDefault = "", string virtualPathFieldName = "", IQueryable<string> usedFileQuery = null, string fieldNameSuffix = "_FileHelper")
-		{
-
-			string virtualPath = virtualPathDefault;
-			if (!string.IsNullOrEmpty(virtualPathFieldName))
-			{
-				MvcHtmlString virtualPathData = htmlHelper.Value(virtualPathFieldName);
-				if (!string.IsNullOrEmpty(virtualPathData.ToString()))
-				{
-					virtualPath = virtualPathData.ToString();
-				}
-			}
-
-			string fieldName = htmlHelper.MetaModel(expression).PropertyName;
-			string currentValue = string.Empty;
-
-			MvcHtmlString fieldValueData = htmlHelper.Value(fieldName);
-			if (!string.IsNullOrEmpty(fieldValueData.ToString()))
-			{
-				currentValue = fieldValueData.ToString();
-			}
-
-			string filePath = htmlHelper.ViewContext.HttpContext.Server.MapPath(virtualPath);
-
-			DirectoryInfo dir = new DirectoryInfo(filePath);
-			List<FileInfo> fileInfos = new List<FileInfo>();
-			if (!dir.Exists)
-			{
-				htmlHelper.ViewBag.Message = "Path not found: " + virtualPath;
-			}
-			else
-			{
-				fileInfos = dir.GetFiles("*.mp3").ToList();
-			}
-
-			string[] existingValues = null;
-			if (usedFileQuery != null)
-			{
-				existingValues = usedFileQuery.ToArray();
-			}
-
-			Debug.Print(fileInfos.Count() + " existing files in " + HttpUtility.HtmlEncode(virtualPath));
-			List<SelectListItem> selectList = new List<SelectListItem>();
-
-			SelectListGroup group1Selected = new SelectListGroup();
-			group1Selected.Name = "--Currently Selected File";
-			SelectListGroup group2Unused = new SelectListGroup();
-			group2Unused.Name = "--Files Available";
-			SelectListGroup group3InUse = new SelectListGroup();
-			group3InUse.Name = "--Files That are Already in Use";
-			SelectListGroup group4Unknown = new SelectListGroup();
-			group4Unknown.Name = "--Unknown status";
-
-			foreach (FileInfo file in fileInfos)
-			{
-				string text = file.Name;
-				string value = file.Name;
-				bool isSelected = false;
-				SelectListGroup group = group4Unknown;
-				if (existingValues != null)
-				{
-					if (existingValues.Contains(value))
-					{
-						text += " [in use]";
-						group = group3InUse;
-					}
-					else
-					{
-						text = " [Unused] " + text;
-						group = group2Unused;
-					}
-
-				}
-
-				if (file.Name.ToLower() == currentValue.ToLower())
-				{
-					isSelected = true;
-					text = "[selected] " + text;
-					group = group1Selected;
-				}
-
-
-				selectList.Add(new SelectListItem() { Text = text, Value = value, Selected = isSelected, Group = group });
-			}
-
-			selectList = selectList.OrderBy(sl => (sl.Group.Name)).ToList();
-
-			return htmlHelper.DropDownList(fieldName + fieldNameSuffix, selectList, htmlAttributes: htmlAttributes);
-
-		}
-
-		/// <summary>
-		/// Returns a set of meta data about a field in the model, use overload for ienumerable models
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static ModelMetadata MetaModel<TModel, TValue>(
-							 this HtmlHelper<TModel> htmlHelper,
-							 Expression<Func<TModel, TValue>> expression)
-		{
-			return ModelMetadata.FromLambdaExpression<TModel, TValue>(expression, htmlHelper.ViewData);
-		}
-
-		/// <summary>
-		/// Returns a set of meta data about a field in the model, this is for ienumerable models
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <typeparam name="TValue"></typeparam>
-		/// <param name="htmlHelper"></param>
-		/// <param name="expression"></param>
-		/// <returns></returns>
-		public static ModelMetadata MetaModel<TModel, TValue>(
-							 this HtmlHelper<System.Collections.Generic.IEnumerable<TModel>> htmlHelper,
-							 Expression<Func<TModel, TValue>> expression)
-		{
-			var name = ExpressionHelper.GetExpressionText(expression);
-			name = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
-			var metadata = ModelMetadataProviders.Current.GetMetadataForProperty(() => Activator.CreateInstance<TModel>(), typeof(TModel), name);
-			return metadata;
 		}
 
 		/// <summary>
@@ -1675,8 +833,8 @@ namespace GStoreData.AppHtmlHelpers
 			if (level == 1 && category.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
-				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown CatalogMenu CatalogMenuLevel" + level + "\">"
-					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
+				html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"dropdown CatalogMenu CatalogMenuLevel" + level + "\">"
+					+ "\n" + htmlHelper.Tab(4 + level * 2) + "<a href=\"#\""
 						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" accesskey=\"" + accessKey + "\" title=\"" +
 						htmlHelper.AttributeEncode(displayName)
 						+ "\">"
@@ -1689,23 +847,23 @@ namespace GStoreData.AppHtmlHelpers
 				//regular Leaf category no dropdown
 				if (level != 1 && category.Entity.UseDividerBeforeOnMenu)
 				{
-					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
+					html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
 				}
-				html.AppendLine(Tab(3 + level * 2)
+				html.AppendLine(htmlHelper.Tab(3 + level * 2)
 					+ "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">"
-					+ "\n" + Tab(4 + level * 2)
+					+ "\n" + htmlHelper.Tab(4 + level * 2)
 						+ "<a href=\""
 							+ urlHelper.Action("ViewCategoryByName", "Catalog", new { urlName = category.Entity.UrlName })
 							+ "\""
 							+ " accesskey=\"" + accessKey + "\" title=\"" +
 							htmlHelper.AttributeEncode(displayName)
 						+ "\">"
-						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
+						+ (level <= 2 ? string.Empty : htmlHelper.RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
 						+ htmlHelper.Encode(displayName)
 					+ "</a>");
 				if (category.Entity.UseDividerAfterOnMenu)
 				{
-					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
+					html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
 				}
 			}
 			return new MvcHtmlString(html.ToString());
@@ -1728,23 +886,23 @@ namespace GStoreData.AppHtmlHelpers
 
 			if (category.Entity.UseDividerBeforeOnMenu)
 			{
-				html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
+				html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
 			}
-			html.AppendLine(Tab(3 + level * 2)
+			html.AppendLine(htmlHelper.Tab(3 + level * 2)
 				+ "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">"
-				+ "\n" + Tab(4 + level * 2)
+				+ "\n" + htmlHelper.Tab(4 + level * 2)
 					+ "<a href=\""
 						+ urlHelper.Action("ViewCategoryByName", "Catalog", new { urlName = category.Entity.UrlName })
 						+ "\""
 						+ " accesskey=\"" + accessKey + "\" title=\"" +
 						htmlHelper.AttributeEncode(displayName)
 					+ "\">"
-					+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
+					+ (level <= 2 ? string.Empty : htmlHelper.RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
 					+ htmlHelper.Encode("- All -")
 				+ "</a>");
 			if (category.Entity.UseDividerAfterOnMenu)
 			{
-				html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
+				html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n");
 			}
 
 			return new MvcHtmlString(html.ToString());
@@ -1768,8 +926,8 @@ namespace GStoreData.AppHtmlHelpers
 			if (!noDropdown && (level == 1) && navBarItem.HasChildMenuItems(maxLevels))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
-				html.AppendLine(Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
-					+ "\n" + Tab(4 + level * 2) + "<a href=\"#\""
+				html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"dropdown NavBarItem NavBarItemLevel" + level + "\">"
+					+ "\n" + htmlHelper.Tab(4 + level * 2) + "<a href=\"#\""
 						+ " class=\"dropdown-toggle\" data-toggle=\"dropdown\" accesskey=\"" + accessKey + "\" title=\"" +
 						htmlHelper.AttributeEncode(navBarItem.Entity.Name)
 						+ targetTag + "\">"
@@ -1782,19 +940,19 @@ namespace GStoreData.AppHtmlHelpers
 				//regular Leaf NavBarItem no dropdown
 				if (level != 1 && navBarItem.Entity.UseDividerBeforeOnMenu)
 				{
-					html.AppendLine(Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n");
+					html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n");
 				}
 
-				html.AppendLine(Tab(3 + level * 2)
+				html.AppendLine(htmlHelper.Tab(3 + level * 2)
 					+ "<li class=\"NavBarItem NavBarItemLevel" + level + "\">"
-					+ "\n" + Tab(4 + level * 2)
+					+ "\n" + htmlHelper.Tab(4 + level * 2)
 						+ "<a href=\""
 							+ navBarItem.Entity.Url(urlHelper)
 							+ "\""
 							+ " accesskey=\"" + accessKey + "\" title=\"" +
 							htmlHelper.AttributeEncode(navBarItem.Entity.Name)
 						+ targetTag + "\">"
-						+ (level <= 2 ? string.Empty : RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
+						+ (level <= 2 ? string.Empty : htmlHelper.RepeatString("&nbsp;&nbsp;&nbsp;", (level - 2)))
 						+ htmlHelper.Encode(navBarItem.Entity.Name)
 					+ "</a>");
 			}
@@ -1803,20 +961,20 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static MvcHtmlString CatalogMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels)
 		{
-			string html = Tab(3 + level * 2) + "</li>\n";
+			string html = htmlHelper.Tab(3 + level * 2) + "</li>\n";
 			if (category.Entity.UseDividerAfterOnMenu && level != 1)
 			{
-				html += Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
+				html += htmlHelper.Tab(3 + level * 2) + "<li class=\"divider CatalogMenu CatalogMenuLevel" + level + "\"></li>\n";
 			}
 			return new MvcHtmlString(html);
 		}
 
 		public static MvcHtmlString NavBarItemMenuItemEnd<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> navBarItem, int level, int maxLevels)
 		{
-			string html = Tab(3 + level * 2) + "</li>\n";
+			string html = htmlHelper.Tab(3 + level * 2) + "</li>\n";
 			if (navBarItem.Entity.UseDividerAfterOnMenu && level != 1)
 			{
-				html += Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
+				html += htmlHelper.Tab(3 + level * 2) + "<li class=\"divider NavBarItem NavBarItemLevel" + level + "\"></li>\n";
 			}
 			return new MvcHtmlString(html);
 		}
@@ -1826,11 +984,11 @@ namespace GStoreData.AppHtmlHelpers
 			string html = string.Empty;
 			if (level == 1)
 			{
-				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu CatalogMenuChildContainer CatalogMenuChildContainerLevel" + level + "\" role=\"menu\">\n";
+				html = htmlHelper.Tab(4 + level * 2) + "<ul class=\"dropdown-menu CatalogMenuChildContainer CatalogMenuChildContainerLevel" + level + "\" role=\"menu\">\n";
 			}
 			else
 			{
-				html = Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
+				html = htmlHelper.Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + "\">\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1841,13 +999,13 @@ namespace GStoreData.AppHtmlHelpers
 			string html = string.Empty;
 			if (level == 1)
 			{
-				html = Tab(4 + level * 2) + "<ul class=\"dropdown-menu NavBarItemChildContainer NavBarItemChildContainerLevel" + level + "\" role=\"menu\">\n"
+				html = htmlHelper.Tab(4 + level * 2) + "<ul class=\"dropdown-menu NavBarItemChildContainer NavBarItemChildContainerLevel" + level + "\" role=\"menu\">\n"
 					+ NavBarItemMenuItemStart(htmlHelper, NavBarItem, level, maxLevels, true).ToHtmlString()
 					+ NavBarItemMenuItemEnd(htmlHelper, NavBarItem, level, maxLevels).ToHtmlString();
 			}
 			else
 			{
-				html = Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
+				html = htmlHelper.Tab(4 + level * 2) + "<li class=\"NavBarItem NavBarItemLevel" + level + "\">\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1858,11 +1016,11 @@ namespace GStoreData.AppHtmlHelpers
 			string html = string.Empty;
 			if (level == 1)
 			{
-				html = Tab(4 + level * 2) + "</ul>\n";
+				html = htmlHelper.Tab(4 + level * 2) + "</ul>\n";
 			}
 			else
 			{
-				html = Tab(4 + level * 2) + "</li>\n";
+				html = htmlHelper.Tab(4 + level * 2) + "</li>\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1873,11 +1031,11 @@ namespace GStoreData.AppHtmlHelpers
 			string html = string.Empty;
 			if (level == 1)
 			{
-				html = Tab(4 + level * 2) + "</ul>\n";
+				html = htmlHelper.Tab(4 + level * 2) + "</ul>\n";
 			}
 			else
 			{
-				html = Tab(4 + level * 2) + "</li>\n";
+				html = htmlHelper.Tab(4 + level * 2) + "</li>\n";
 			}
 
 			return new MvcHtmlString(html);
@@ -1976,16 +1134,6 @@ namespace GStoreData.AppHtmlHelpers
 
 		}
 
-		public static string Tab(int tabs)
-		{
-			return new string('\t', tabs);
-		}
-
-		public static string RepeatString(string value, int count)
-		{
-			return string.Concat(Enumerable.Repeat(value, count));
-		}
-
 		/// <summary>
 		/// Renders hidden fields for CreatedBy_UserProfileId, UpdatedBy_UserProfileId, CreateDateTimeUtc, UpdateDateTimeUtc
 		/// </summary>
@@ -2034,21 +1182,6 @@ namespace GStoreData.AppHtmlHelpers
 				+ htmlHelper.Hidden("UpdatedBy_UserProfileId", profile.UserProfileId).ToHtmlString()
 				+ htmlHelper.Hidden("UpdateDateTimeUtc", DateTime.UtcNow).ToHtmlString());
 
-		}
-
-		public static UrlHelper UrlHelper(this HtmlHelper htmlHelper)
-		{
-			return new UrlHelper(htmlHelper.ViewContext.RequestContext, htmlHelper.RouteCollection);
-		}
-
-		public static string ToJsValue(this string value, bool addDoubleQuotes = true)
-		{
-			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes);
-		}
-
-		public static MvcHtmlString JavaScriptEncode(this HtmlHelper htmlHelper, string value, bool addDoubleQuotes = false)
-		{
-			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
 		}
 
 		public static MvcHtmlString GStoreLocalLink(this HtmlHelper htmlHelper, string linkText, string localUrl)
@@ -2105,57 +1238,6 @@ namespace GStoreData.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns a string representing the number of bytes, kb, mb, gb, tb
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToByteString(this int byteCount)
-		{
-			return ToByteString((long)byteCount);
-		}
-
-		/// <summary>
-		/// Returns a string representing the number of bytes, kb, mb, gb, tb
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToByteString(this long byteCount)
-		{
-			if (byteCount < 1)
-			{
-				// 0 or negative number
-				return "0";
-			}
-			decimal value = byteCount;
-			if (value < 1024)
-			{
-				return value + " B";
-			}
-			value = value / 1024;
-			if (value < 1024)
-			{
-				return value.ToString("N2") + " KB";
-			}
-			value = value / 1024;
-			if (value < 1024)
-			{
-				return value.ToString("N2") + " MB";
-			}
-			value = value / 1024;
-			if (value < 1024)
-			{
-				return value.ToString("N2") + " GB";
-			}
-			value = value / 1024;
-			if (value < 1024)
-			{
-				return value.ToString("N2") + " TB";
-			}
-			return value.ToString() + " (over 1,024 TB limit)";
-
-		}
-
-		/// <summary>
 		/// Displays a dynamic page section
 		/// sectionName is the PageTemplateSections.Name
 		/// Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section
@@ -2165,6 +1247,88 @@ namespace GStoreData.AppHtmlHelpers
 		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
 		/// <returns></returns>
 		public static MvcHtmlString DisplayPageSection(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, bool editInTop, bool editInBottom)
+		{
+
+			PageSectionHelperResult pageSectionHelperResult = htmlHelper.PageSectionHelper(sectionName, index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, null, false, editInTop, editInBottom);
+
+			if (pageSectionHelperResult.IsHtmlResult)
+			{
+				return pageSectionHelperResult.MvcHtmlString;
+			}
+			if (!htmlHelper.ViewData.Model.EditMode)
+			{
+				return pageSectionHelperResult.PageTemplateSection.HtmlDisplay(pageSectionHelperResult.PageSection, htmlHelper);
+			}
+			return pageSectionHelperResult.PageTemplateSection.Editor(pageSectionHelperResult.Page, pageSectionHelperResult.PageSection, index, htmlHelper.ViewData.Model.AutoPost, htmlHelper);
+		}
+
+		/// <summary>
+		/// Gets a value field for the current page stored in page content
+		/// sectionName is the PageTemplateSections.Name
+		/// Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section
+		/// If the string value is blank, returns default value
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="variableName">variableName is the same as sectionName (PageTemplateSections.Name)</param>
+		/// <param name="index">Index is a 1-based index for the current section on the page. This index is used to keep scripts and updates in sync. Make sure to increment for every section</param>
+		/// <returns></returns>
+		public static string PageVariableString(this HtmlHelper<PageViewModel> htmlHelper, string variableName, int index, string description, string defaultValue, bool editInTop, bool editInBottom)
+		{
+			if (!editInTop && !editInBottom)
+			{
+				throw new ApplicationException("For page data, you must select either EditInTop or EditInBottom. Both cannot be false.");
+			}
+
+			PageSectionHelperResult pageSectionHelperResult = htmlHelper.PageSectionHelper(variableName, index, description, null, null, null, null, defaultValue, true, editInTop, editInBottom);
+
+			if (pageSectionHelperResult.IsHtmlResult)
+			{
+				htmlHelper.BaseControllerOrThrow().AddUserMessage("Page Variable '" + variableName.ToHtml() + "'", pageSectionHelperResult.MvcHtmlString.ToHtmlString(), UserMessageType.Info);
+				return null;
+			}
+
+			if (pageSectionHelperResult.PageSection != null && !string.IsNullOrEmpty(pageSectionHelperResult.PageSection.StringValue))
+			{
+				return pageSectionHelperResult.PageSection.StringValue;
+			}
+			return pageSectionHelperResult.PageTemplateSection.DefaultStringValue;
+		}
+
+		public struct PageSectionHelperResult
+		{
+			public PageSectionHelperResult(PageViewModel pageViewModel, PageTemplate pageTemplate, PageTemplateSection pageTemplateSection, Page page, PageSection pageSection)
+			{
+				this.PageViewModel = pageViewModel;
+				this.PageTemplate = pageTemplate;
+				this.PageTemplateSection = pageTemplateSection;
+				this.Page = page;
+				this.PageSection = pageSection;
+				this.IsHtmlResult = false;
+				this.MvcHtmlString = null;
+			}
+
+			public PageSectionHelperResult(MvcHtmlString htmlResult, PageViewModel pageViewModel)
+			{
+				this.PageViewModel = pageViewModel;
+				this.PageTemplate = null;
+				this.PageTemplateSection = null;
+				this.Page = null;
+				this.PageSection = null;
+				this.IsHtmlResult = true;
+				this.MvcHtmlString = htmlResult;
+			}
+
+			public PageViewModel PageViewModel;
+			public PageSection PageSection;
+			public Page Page;
+			public PageTemplate PageTemplate;
+			public PageTemplateSection PageTemplateSection;
+
+			public bool IsHtmlResult;
+			public MvcHtmlString MvcHtmlString;
+		}
+
+		private static PageSectionHelperResult PageSectionHelper(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, string defaultStringValue, bool isVariable, bool editInTop, bool editInBottom)
 		{
 			if (index < 1)
 			{
@@ -2189,7 +1353,8 @@ namespace GStoreData.AppHtmlHelpers
 
 			if (pageViewModel.ForTemplateSyncOnly)
 			{
-				return SyncTemplateSectionHelper(htmlHelper, sectionName, index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, pageViewModel);
+				MvcHtmlString syncResult = SyncTemplateSectionHelper(htmlHelper, sectionName, index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, defaultStringValue, isVariable, editInTop, editInBottom, pageViewModel);
+				return new PageSectionHelperResult(syncResult, htmlHelper.ViewData.Model);
 			}
 
 			if (pageViewModel.Page == null)
@@ -2198,13 +1363,13 @@ namespace GStoreData.AppHtmlHelpers
 			}
 			Page page = pageViewModel.Page;
 			PageTemplate pageTemplate = page.PageTemplate;
-			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
+			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower() && pts.IsVariable == isVariable).SingleOrDefault();
 
 			if (pageTemplateSection == null)
 			{
 				System.Diagnostics.Trace.WriteLine("--Auto-creating page template section. Template: " + pageTemplate.Name + " [" + pageTemplate.PageTemplateId + "] Section Name: " + sectionName);
 				IGstoreDb db = htmlHelper.GStoreDb();
-				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, pageTemplate.ClientId, db.SeedAutoMapUserBestGuess());
+				pageTemplateSection = db.CreatePageTemplateSection(pageTemplate.PageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, defaultStringValue, isVariable, editInTop, editInBottom, pageTemplate.ClientId, db.SeedAutoMapUserBestGuess());
 			}
 			else if (autoSyncPageTemplateSection)
 			{
@@ -2234,6 +1399,16 @@ namespace GStoreData.AppHtmlHelpers
 				if (pageTemplateSection.DefaultTextCssClass != defaultTextCssClass)
 				{
 					pageTemplateSection.DefaultTextCssClass = defaultTextCssClass;
+					updateSection = true;
+				}
+				if (pageTemplateSection.DefaultStringValue != defaultStringValue)
+				{
+					pageTemplateSection.DefaultStringValue = defaultStringValue;
+					updateSection = true;
+				}
+				if (pageTemplateSection.IsVariable != isVariable)
+				{
+					pageTemplateSection.IsVariable = isVariable;
 					updateSection = true;
 				}
 				if (pageTemplateSection.EditInTop != editInTop)
@@ -2267,58 +1442,10 @@ namespace GStoreData.AppHtmlHelpers
 				.OrderBy(ps => ps.Order).ThenBy(ps => ps.PageSectionId)
 				.FirstOrDefault();
 
-
-			if (!pageViewModel.EditMode)
-			{
-				return pageTemplateSection.HtmlDisplay(pageSection, htmlHelper);
-			}
-			return pageTemplateSection.Editor(page, pageSection, index, htmlHelper.ViewData.Model.AutoPost, htmlHelper);
-
+			return new PageSectionHelperResult(pageViewModel, pageTemplate, pageTemplateSection, page, pageSection);
 		}
 
-		/// <summary>
-		/// Displays a page section as a copy; and does not enable in-line editing for this copy
-		/// </summary>
-		/// <param name="htmlHelper"></param>
-		/// <param name="sectionName"></param>
-		/// <returns></returns>
-		public static MvcHtmlString DisplayPageSectionCopy(this HtmlHelper<PageViewModel> htmlHelper, string sectionName)
-		{
-			if (string.IsNullOrWhiteSpace(sectionName))
-			{
-				throw new ArgumentOutOfRangeException("sectionName", "Template Error! Page Section Name cannot be blank");
-			}
-			PageViewModel pageViewModel = htmlHelper.ViewData.Model;
-			if (pageViewModel == null)
-			{
-				throw new ArgumentNullException("pageViewModel");
-			}
-			if (pageViewModel.ForTemplateSyncOnly || pageViewModel.EditMode)
-			{
-				return null;
-			}
-			if (pageViewModel.Page == null)
-			{
-				throw new ArgumentNullException("Page", "Page cannot be null except in ForTemplateSyncOnly which is false");
-			}
-
-			Page page = pageViewModel.Page;
-			PageTemplate pageTemplate = page.PageTemplate;
-			PageTemplateSection pageTemplateSection = pageTemplate.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
-			if (pageTemplateSection == null)
-			{
-				return null;
-			}
-
-			PageSection pageSection = page.Sections.AsQueryable().WhereIsActive()
-				.Where(ps => ps.PageTemplateSectionId == pageTemplateSection.PageTemplateSectionId)
-				.OrderBy(ps => ps.Order).ThenBy(ps => ps.PageSectionId)
-				.FirstOrDefault();
-
-			return pageTemplateSection.HtmlDisplay(pageSection, htmlHelper);
-		}
-
-		private static MvcHtmlString SyncTemplateSectionHelper(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, bool editInTop, bool editInBottom, PageViewModel pageViewModel)
+		private static MvcHtmlString SyncTemplateSectionHelper(this HtmlHelper<PageViewModel> htmlHelper, string sectionName, int index, string description, string defaultRawHtmlValue, string preTextHtml, string postTextHtml, string defaultTextCssClass, string defaultStringValue, bool isVariable, bool editInTop, bool editInBottom, PageViewModel pageViewModel)
 		{
 			if (!pageViewModel.PageTemplateIdForSync.HasValue)
 			{
@@ -2334,31 +1461,40 @@ namespace GStoreData.AppHtmlHelpers
 			PageTemplateSection sectionTest = template.Sections.Where(pts => pts.Name.ToLower() == sectionName.ToLower()).SingleOrDefault();
 			if (sectionTest == null)
 			{
-				sectionTest = db.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, editInTop, editInBottom, template.ClientId, htmlHelper.CurrentUserProfile(true));
+				sectionTest = db.CreatePageTemplateSection(pageTemplateId, sectionName, 1000 + index, description, defaultRawHtmlValue, preTextHtml, postTextHtml, defaultTextCssClass, defaultStringValue, isVariable, editInTop, editInBottom, template.ClientId, htmlHelper.CurrentUserProfile(true));
 				return new MvcHtmlString("<span class=\"text-info\"><strong>New Section '" + htmlHelper.Encode(sectionTest.Name) + "' [" + sectionTest.PageTemplateSectionId + "] Created</strong></span><br/>");
 			}
 			bool update = false;
-			if (!string.IsNullOrEmpty(defaultRawHtmlValue) && (sectionTest.DefaultRawHtmlValue != defaultRawHtmlValue))
+			if (sectionTest.DefaultRawHtmlValue != defaultRawHtmlValue)
 			{
 				sectionTest.DefaultRawHtmlValue = defaultRawHtmlValue;
 				update = true;
 			}
-			if (!string.IsNullOrEmpty(preTextHtml) && (sectionTest.PreTextHtml != preTextHtml))
+			if (sectionTest.PreTextHtml != preTextHtml)
 			{
 				sectionTest.PreTextHtml = preTextHtml;
 				update = true;
 			}
-			if (!string.IsNullOrEmpty(postTextHtml) && (sectionTest.PostTextHtml != postTextHtml))
+			if (sectionTest.PostTextHtml != postTextHtml)
 			{
 				sectionTest.PostTextHtml = postTextHtml;
 				update = true;
 			}
-			if (!string.IsNullOrEmpty(defaultTextCssClass) && (sectionTest.DefaultTextCssClass != defaultTextCssClass))
+			if (sectionTest.DefaultTextCssClass != defaultTextCssClass)
 			{
 				sectionTest.DefaultTextCssClass = defaultTextCssClass;
 				update = true;
 			}
-
+			if (sectionTest.DefaultStringValue != defaultStringValue)
+			{
+				sectionTest.DefaultStringValue = defaultStringValue;
+				update = true;
+			}
+			if (sectionTest.IsVariable != isVariable)
+			{
+				sectionTest.IsVariable = isVariable;
+				update = true;
+			}
 
 			if (sectionTest.Description != description)
 			{
@@ -2604,235 +1740,6 @@ namespace GStoreData.AppHtmlHelpers
 		}
 
 		/// <summary>
-		/// Returns a string, or the default value if the string is null or empty
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string OrDefault(this string value, string defaultValue)
-		{
-			if (value == null || string.IsNullOrEmpty(value))
-			{
-				return defaultValue;
-			}
-			return value;
-		}
-
-		public static string IfMatch(this string value, string valueToMatch, string returnIfMatch, string returnIfNoMatch = "", bool caseInsensitive = true)
-		{
-			if (value == null || string.IsNullOrEmpty(value))
-			{
-				if (string.IsNullOrEmpty(valueToMatch))
-				{
-					return returnIfMatch;
-				}
-				else
-				{
-					return returnIfNoMatch;
-				}
-			}
-
-			valueToMatch = valueToMatch ?? string.Empty;
-			if (caseInsensitive)
-			{
-				value = value.ToLower();
-				valueToMatch = valueToMatch.ToLower();
-			}
-			if (value == valueToMatch)
-			{
-				return returnIfMatch;
-			}
-			return returnIfNoMatch;
-		}
-
-		public static string IfNoMatch(this string value, string valueToMatch, string returnIfMatch, string returnIfNoMatch = "", bool caseInsensitive = true)
-		{
-			//reverse returns to make the opposite of a match
-			return value.IfMatch(valueToMatch, returnIfNoMatch, returnIfMatch, caseInsensitive);
-		}
-
-		/// <summary>
-		/// Returns a delimiter if string is not null or empty
-		/// Converts a null string into string.empty
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string DelimiterIfNotEmpty(this string value, string delimiter)
-		{
-			if (value == null || string.IsNullOrEmpty(value))
-			{
-				return string.Empty;
-			}
-			return delimiter;
-		}
-
-		/// <summary>
-		/// Returns the original string plus a delimiter if string is not null or empty
-		/// Converts a null string into string.empty
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string AndDelimiter(this string value, string delimiter)
-		{
-			if (value == null || string.IsNullOrEmpty(value))
-			{
-				return string.Empty;
-			}
-			return value + delimiter;
-		}
-
-		/// <summary>
-		/// Returns HTML Encoded character
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToHtml(this char value)
-		{
-			return HttpUtility.HtmlEncode(value);
-		}
-
-		/// <summary>
-		/// Returns HTML Encoded string
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToHtml(this string value)
-		{
-			return HttpUtility.HtmlEncode(value);
-		}
-
-		/// <summary>
-		/// Returns HTML Encoded string and replaces line feeds (new lines) with BR tag
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToHtmlLines(this string value)
-		{
-			if (string.IsNullOrEmpty(value))
-			{
-				return null;
-			}
-			return HttpUtility.HtmlEncode(value).Replace("\n", "<br/>");
-		}
-
-		/// <summary>
-		/// Returns HTML attribute Encoded string
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToHtmlAttribute(this string value)
-		{
-			return HttpUtility.HtmlAttributeEncode(value);
-		}
-
-		/// <summary>
-		/// Returns JavaScript String Encoded string
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="addDoubleQuotes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ToJavaScriptMvcString(this string value, bool addDoubleQuotes = false)
-		{
-			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes).Replace("\n", "\\n"));
-		}
-
-		/// <summary>
-		/// Returns JavaScript String Encoded string
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="addDoubleQuotes"></param>
-		/// <returns></returns>
-		public static string ToJavaScriptString(this string value, bool addDoubleQuotes = false)
-		{
-			return HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes).Replace("\n", "\\n");
-		}
-
-		/// <summary>
-		/// Returns HTML Encoded string in MvcHtmlString format
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ToMvcHtml(this string value)
-		{
-			return new MvcHtmlString(HttpUtility.HtmlEncode(value));
-		}
-
-		/// <summary>
-		/// Returns HTML attribute Encoded string in MvcHtmlString format
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ToMvcHtmlAttribute(this string value)
-		{
-			return new MvcHtmlString(HttpUtility.HtmlAttributeEncode(value));
-		}
-
-		/// <summary>
-		/// Returns Javascript String Encoded string in MvcHtmlString format
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="addDoubleQuotes"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ToMvcJavaScriptString(this string value, bool addDoubleQuotes = false)
-		{
-			return new MvcHtmlString(HttpUtility.JavaScriptStringEncode(value, addDoubleQuotes));
-		}
-
-		public static object GetModelStateValue(this HtmlHelper htmlHelper, string key, Type destinationType)
-		{
-			ModelState modelState;
-			if (htmlHelper.ViewData.ModelState.TryGetValue(key, out modelState))
-			{
-				if (modelState.Value != null)
-				{
-					return modelState.Value.ConvertTo(destinationType, null /* culture */);
-				}
-			}
-			return null;
-		}
-
-		/// <summary>
-		/// Returns a string useful for file names from a date/time value in yyyy-mm-dd_hh_mm_ss
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string ToFileSafeString(this DateTime value)
-		{
-			return value.ToString("yyyy-MM-dd_hh_mm_ss");
-		}
-
-		/// <summary>
-		/// Gets a display attribute for an object without using HTML Helper
-		/// works for any object, if display attribute is not found, will return property name
-		/// </summary>
-		/// <typeparam name="TModel"></typeparam>
-		/// <param name="model"></param>
-		/// <param name="fieldName"></param>
-		/// <param name="shortName"></param>
-		/// <returns></returns>
-		public static string GetDisplayName<TModel>(this TModel model, string fieldName, bool shortName = false) where TModel : class
-		{
-			PropertyInfo prop = model.GetType().GetProperty(fieldName);
-			if (prop == null)
-			{
-				throw new ApplicationException("Property '" + fieldName + "' not found in this object: " + model.GetType().FullName);
-			}
-			DisplayAttribute displayAttribute = prop.GetCustomAttribute<DisplayAttribute>();
-			if (displayAttribute != null)
-			{
-				if (shortName && !(string.IsNullOrEmpty(displayAttribute.ShortName)))
-				{
-					return displayAttribute.ShortName;
-				}
-				if (!string.IsNullOrEmpty(displayAttribute.Name))
-				{
-					return displayAttribute.Name;
-				}
-			}
-
-			return prop.Name;
-		}
-
-		/// <summary>
 		/// Date and time of start of visit to site for this session
 		/// </summary>
 		/// <param name="session"></param>
@@ -2890,7 +1797,7 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static char[] InvalidUrlNameCharactersArray(this string urlName)
 		{
-			return new char[] { '/', '\\', '%', '?', '<', '>', '*', ':', '&', '"', '\'', ' ' };
+			return new char[] { '/', '\\', '%', '?', '<', '>', '*', ':', '&', '"', '\'', ' ', '!' };
 		}
 
 		public static string InvalidUrlNameCharacters(this string urlName)
@@ -2924,185 +1831,6 @@ namespace GStoreData.AppHtmlHelpers
 		public static string ToFileName(this string value)
 		{
 			return HttpUtility.UrlEncode(value);
-		}
-
-		public static string FileExtension(this string fileName)
-		{
-			if (string.IsNullOrEmpty(fileName))
-			{
-				return null;
-			}
-			int lastDot = fileName.LastIndexOf('.');
-			if (lastDot == -1)
-			{
-				return null;
-			}
-
-			return fileName.Substring(lastDot + 1).ToUpper();
-		}
-
-		public static bool FileExtensionIsImage(this string fileName)
-		{
-			return fileName.FileExtensionIsAny("png", "jpg", "gif", "jpeg", "bmp");
-		}
-
-		public static bool FileExtensionIsAudio(this string fileName)
-		{
-			return fileName.FileExtensionIsAny("mp3", "wma", "ogg", "wav");
-		}
-
-		public static string FileMimeType(this string fileName)
-		{
-			return MimeMapping.GetMimeMapping(fileName);
-		}
-
-		public static bool FileExtensionIs(this string fileName, string extension)
-		{
-			string fileExtension = fileName.FileExtension();
-			if (string.IsNullOrEmpty(fileExtension))
-			{
-				return false;
-			}
-
-			if (fileExtension.ToLower() == extension.ToLower())
-			{
-				return true;
-			}
-			return false;
-		}
-
-		public static bool FileExtensionIsAny(this string fileName, params string[] extensions)
-		{
-			string fileExtension = fileName.FileExtension();
-			if (string.IsNullOrEmpty(fileExtension))
-			{
-				return false;
-			}
-
-			fileExtension = fileExtension.ToLower();
-
-			foreach (string ext in extensions)
-			{
-				if (fileExtension == ext.ToLower())
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Gets the route data action
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <returns></returns>
-		public static string Action(this RouteData routeData)
-		{
-			if (routeData == null)
-			{
-				return null;
-			}
-			return routeData.Values["action"].ToString();
-		}
-
-		/// <summary>
-		/// Sets the routedata action
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <param name="action"></param>
-		/// <returns></returns>
-		public static void Action(this RouteData routeData, string action)
-		{
-			if (routeData == null)
-			{
-				throw new ArgumentNullException("routeData");
-			}
-			if (routeData.Values.ContainsKey("action"))
-			{
-				routeData.Values["action"] = action;
-			}
-			else
-			{
-				routeData.Values.Add("action", action);
-			}
-			
-		}
-
-		/// <summary>
-		/// Gets the route data controller
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <returns></returns>
-		public static string Controller(this RouteData routeData)
-		{
-			if (routeData == null)
-			{
-				return null;
-			}
-			return routeData.Values["controller"].ToString();
-		}
-
-		/// <summary>
-		/// Sets the routedata controller
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <param name="action"></param>
-		/// <returns></returns>
-		public static void Controller(this RouteData routeData, string controller)
-		{
-			if (routeData == null)
-			{
-				throw new ArgumentNullException("routeData");
-			}
-			if (routeData.Values.ContainsKey("controller"))
-			{
-				routeData.Values["controller"] = controller;
-			}
-			else
-			{
-				routeData.Values.Add("controller", controller);
-			}
-
-		}
-
-		/// <summary>
-		/// Gets the route data area
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <returns></returns>
-		public static string Area(this RouteData routeData)
-		{
-			if (routeData == null)
-			{
-				return null;
-			}
-			if (routeData.DataTokens.ContainsKey("area"))
-			{
-				return routeData.DataTokens["area"].ToString();
-			}
-			return null;
-		}
-
-		/// <summary>
-		/// Sets the routedata area
-		/// </summary>
-		/// <param name="routeData"></param>
-		/// <param name="action"></param>
-		/// <returns></returns>
-		public static void Area(this RouteData routeData, string area)
-		{
-			if (routeData == null)
-			{
-				throw new ArgumentNullException("routeData");
-			}
-			if (routeData.DataTokens.ContainsKey("area"))
-			{
-				routeData.DataTokens["area"] = area;
-			}
-			else
-			{
-				routeData.DataTokens.Add("area", area);
-			}
 		}
 
 		/// <summary>
@@ -3424,95 +2152,6 @@ namespace GStoreData.AppHtmlHelpers
 			viewData["Theme"] = theme;
 		}
 
-		/// <summary>
-		/// returns a stack trace with highlighting applicable inside a PRE element
-		/// </summary>
-		/// <param name="stackTrace"></param>
-		/// <returns></returns>
-		public static MvcHtmlString StackTraceWithHighlight(this HtmlHelper htmlHelper, string stackTrace)
-		{
-			if (string.IsNullOrEmpty(stackTrace))
-			{
-				return null;
-			}
-			string[] lines = stackTrace.Split(new string[] {"\n"}, StringSplitOptions.None);
-			
-			StringBuilder html = new StringBuilder();
-			foreach (string line in lines)
-			{
-				if (line.Contains("line ") || line.Contains("ASP.") || line.Contains("GStore.") || line.Contains("GStoreWeb.") || line.Contains("GStoreData."))
-				{
-					html.Append("<span class='StackHighlight'>" + line.ToHtml() + "</span>");
-				}
-				else
-				{
-					html.Append(line.ToHtml());
-				}
-			}
-
-			return new MvcHtmlString(html.ToString());
-		}
-
-		/// <summary>
-		/// returns an Exception.ToString() with highlighting applicable inside a PRE element
-		/// </summary>
-		/// <param name="stackTrace"></param>
-		/// <returns></returns>
-		public static MvcHtmlString ExceptionToStringWithHighlight(this HtmlHelper htmlHelper, string exceptionToString)
-		{
-			if (string.IsNullOrEmpty(exceptionToString))
-			{
-				return null;
-			}
-			string[] lines = exceptionToString.Split(new string[] { "\n" }, StringSplitOptions.None);
-
-			StringBuilder html = new StringBuilder();
-			foreach (string line in lines)
-			{
-				if (line.Contains("line ") || line.Contains("ASP.") || line.Contains("GStore."))
-				{
-					html.Append("<span class='ExceptionHighlight'>" + line.ToHtml() + "</span>");
-				}
-				else
-				{
-					html.Append(line.ToHtml());
-				}
-			}
-
-			return new MvcHtmlString(html.ToString());
-		}
-
-		/// <summary>
-		/// Reads and renders an HTML file to the output stream like a render partial
-		/// </summary>
-		/// <param name="fullFilePath"></param>
-		/// <returns></returns>
-		public static void RenderFilePartial(this HtmlHelper htmlHelper, string fullFilePath)
-		{
-			if (string.IsNullOrEmpty(fullFilePath))
-			{
-				throw new ArgumentNullException("fullFilePath");
-			}
-
-			if (!System.IO.File.Exists(fullFilePath))
-			{
-				throw new ApplicationException("File not found: " + fullFilePath);
-			}
-
-			htmlHelper.ViewContext.Writer.Write(System.IO.File.ReadAllText(fullFilePath));
-		}
-
-		public static MvcHtmlString Repeat(this HtmlHelper htmlHelper, string html, int count)
-		{
-			StringBuilder htmlOut = new StringBuilder();
-			for (int i = 0; i < count; i++)
-			{
-				htmlOut.Append(html);
-			}
-			return new MvcHtmlString(htmlOut.ToString());
-
-		}
-
 		const string Session_CatalogAdminVisitLogged = "CatalogAdminVisitLogged";
 		public static bool CatalogAdminVisitLogged(this HttpSessionStateBase session)
 		{
@@ -3571,14 +2210,6 @@ namespace GStoreData.AppHtmlHelpers
 		public static void SystemAdminVisitLogged(this HttpSessionStateBase session, bool value)
 		{
 			session[Session_SystemAdminVisitLogged] = value;
-		}
-
-		public enum PopoverPlacementEnum : int
-		{
-			left = 0,
-			top = 1,
-			right = 2,
-			bottom = 3
 		}
 
 		public static TimeZoneInfo StoreFrontTimeZone(this HtmlHelper htmlHelper)
@@ -3733,26 +2364,6 @@ namespace GStoreData.AppHtmlHelpers
 			return TimeZoneInfo.Local;
 		}
 
-		public static TimeZoneInfo ServerTimeZone(this HtmlHelper htmlHelper)
-		{
-			return ServerTimeZone();
-		}
-
-		public static TimeZoneInfo ServerTimeZone()
-		{
-			return TimeZoneInfo.Local;
-		}
-
-		public static TimeZoneInfo UtcTimeZone(this HtmlHelper htmlHelper)
-		{
-			return UtcTimeZone();
-		}
-
-		public static TimeZoneInfo UtcTimeZone()
-		{
-			return TimeZoneInfo.Utc;
-		}
-
 		public static string ToUserDateTimeString(this DateTime utcTime, HtmlHelper htmlHelper)
 		{
 			return utcTime.ToUserDateTime(htmlHelper).ToString() + " " + htmlHelper.UserTimeZone().ToShortName();
@@ -3763,12 +2374,12 @@ namespace GStoreData.AppHtmlHelpers
 			return utcTime.ToUserDateTime(profile, storeFrontConfig, client).ToString() + " " + profile.UserTimeZone(storeFrontConfig, client).ToShortName();
 		}
 
-		public static DateTime ToUserDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		public static DateTime ToUserDateTime(this DateTime utcTime, HtmlHelper htmlHelper)
 		{
-			TimeZoneInfo timeZone = htmlhelper.UserTimeZone();
+			TimeZoneInfo timeZone = htmlHelper.UserTimeZone();
 			if (timeZone != null)
 			{
-				return TimeZoneInfo.ConvertTime(utcTime, UtcTimeZone(), timeZone);
+				return TimeZoneInfo.ConvertTime(utcTime, MvcHtmlHelper.UtcTimeZone(), timeZone);
 			}
 			return utcTime.ToLocalTime();
 		}
@@ -3778,7 +2389,7 @@ namespace GStoreData.AppHtmlHelpers
 			TimeZoneInfo timeZone = profile.UserTimeZone(storeFrontConfig, client);
 			if (timeZone != null)
 			{
-				return TimeZoneInfo.ConvertTime(utcTime, UtcTimeZone(), timeZone);
+				return TimeZoneInfo.ConvertTime(utcTime, MvcHtmlHelper.UtcTimeZone(), timeZone);
 			}
 			return utcTime.ToLocalTime();
 		}
@@ -3799,10 +2410,10 @@ namespace GStoreData.AppHtmlHelpers
 			return utcTime.ToStoreDateTime(storeFrontConfig, client) + " " + storeFrontConfig.StoreFrontTimeZone(client).ToShortName();
 		}
 
-		public static DateTime ToStoreDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		public static DateTime ToStoreDateTime(this DateTime utcTime, HtmlHelper htmlHelper)
 		{
-			StoreFrontConfiguration storeFrontConfig = htmlhelper.CurrentStoreFrontConfig(false);
-			Client client = htmlhelper.CurrentClient(false);
+			StoreFrontConfiguration storeFrontConfig = htmlHelper.CurrentStoreFrontConfig(false);
+			Client client = htmlHelper.CurrentClient(false);
 			return utcTime.ToStoreDateTime(storeFrontConfig, client);
 		}
 
@@ -3812,7 +2423,7 @@ namespace GStoreData.AppHtmlHelpers
 
 			if (storeFrontTimeZone != null)
 			{
-				return TimeZoneInfo.ConvertTime(utcTime, UtcTimeZone(), storeFrontTimeZone);
+				return TimeZoneInfo.ConvertTime(utcTime, MvcHtmlHelper.UtcTimeZone(), storeFrontTimeZone);
 			}
 			return utcTime.ToLocalTime();
 		}
@@ -3827,9 +2438,9 @@ namespace GStoreData.AppHtmlHelpers
 			return utcTime.ToClientDateTime(client).ToString() + " " + client.ClientTimeZone().ToShortName();
 		}
 
-		public static DateTime ToClientDateTime(this DateTime utcTime, HtmlHelper htmlhelper)
+		public static DateTime ToClientDateTime(this DateTime utcTime, HtmlHelper htmlHelper)
 		{
-			Client client = htmlhelper.CurrentClient(false);
+			Client client = htmlHelper.CurrentClient(false);
 			return utcTime.ToClientDateTime(client);
 		}
 
@@ -3839,14 +2450,14 @@ namespace GStoreData.AppHtmlHelpers
 
 			if (clientTimeZone != null)
 			{
-				return TimeZoneInfo.ConvertTime(utcTime, UtcTimeZone(), clientTimeZone);
+				return TimeZoneInfo.ConvertTime(utcTime, MvcHtmlHelper.UtcTimeZone(), clientTimeZone);
 			}
 			return utcTime.ToLocalTime();
 		}
 
-		public static string ToGStoreSystemDefaultDateTimeString(this DateTime utcTime, HtmlHelper htmlhelper)
+		public static string ToGStoreSystemDefaultDateTimeString(this DateTime utcTime, HtmlHelper htmlHelper)
 		{
-			return utcTime.ToGStoreSystemDefaultDateTime().ToString() + " " + htmlhelper.GStoreSystemDefaultTimeZone().ToShortName();
+			return utcTime.ToGStoreSystemDefaultDateTime().ToString() + " " + htmlHelper.GStoreSystemDefaultTimeZone().ToShortName();
 		}
 
 		public static string ToGStoreSystemDefaultDateTimeString(this DateTime utcTime)
@@ -3856,43 +2467,7 @@ namespace GStoreData.AppHtmlHelpers
 
 		public static DateTime ToGStoreSystemDefaultDateTime(this DateTime utcTime)
 		{
-			return TimeZoneInfo.ConvertTime(utcTime, UtcTimeZone(), GStoreSystemDefaultTimeZone());
-		}
-
-		public static string ToShortName(this TimeZoneInfo timeZone)
-		{
-			if (timeZone == null)
-			{
-				return "(none)";
-			}
-
-			string timeZoneName = timeZone.IsDaylightSavingTime(DateTime.Now)
-						  ? timeZone.DaylightName
-						  : timeZone.StandardName;
-
-			string output = string.Empty;
-
-			string[] timeZoneWords = timeZoneName.Split(' ');
-			foreach (string timeZoneWord in timeZoneWords)
-			{
-				if (timeZoneWord == "UTC")
-				{
-					output += timeZoneWord;
-				}
-				else if (timeZoneWord == "US")
-				{
-					output += timeZoneWord + " ";
-				}
-				else if (timeZoneWord[0] != '(')
-				{
-					output += timeZoneWord[0];
-				}
-				else
-				{
-					output += timeZoneWord;
-				}
-			}
-			return output;
+			return TimeZoneInfo.ConvertTime(utcTime, MvcHtmlHelper.UtcTimeZone(), GStoreSystemDefaultTimeZone());
 		}
 
 		public static MvcHtmlString MetaApplicationName(this HtmlHelper html)
@@ -4000,30 +2575,6 @@ namespace GStoreData.AppHtmlHelpers
 			return storeFront.ProductBundles.Except(product.ProductBundleItems.Select(pbi => pbi.ProductBundle)).AsQueryable().ApplyDefaultSort().ToList();
 		}
 
-		/// <summary>
-		/// Returns True if the user is authenticated and logged in, False if anonymous
-		/// </summary>
-		/// <param name="user"></param>
-		/// <returns></returns>
-		public static bool IsRegistered(this System.Security.Principal.IPrincipal user)
-		{
-			if (user == null)
-			{
-				return false;
-			}
-			return user.Identity.IsAuthenticated;
-		}
-
-		/// <summary>
-		/// Returns True if the user is anonymous, False if user is authenticated and logged in
-		/// </summary>
-		/// <param name="user"></param>
-		/// <returns></returns>
-		public static bool IsAnonymous(this System.Security.Principal.IPrincipal user)
-		{
-			return !user.IsRegistered();
-		}
-
 		public static string DisplayNameWithCount(this ProductCategory category, bool isRegistered)
 		{
 			if (category == null)
@@ -4039,6 +2590,5 @@ namespace GStoreData.AppHtmlHelpers
 				return category.Name + " (" + category.ChildActiveCountForAnonymous.ToString("N0") + ")";
 			}
 		}
-
 	}
 }

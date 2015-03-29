@@ -1,0 +1,34 @@
+﻿@model PageVariableEditViewModel
+@{
+	string dataClass = string.Empty;
+	string value = Model.CurrentValue(true);
+	bool isDefault = Model.CurrentValueIsDefault();
+	if (!isDefault)
+	{
+		dataClass = "bold";
+	}
+	int? index = ViewData["Index"] as int?;
+}
+<div class="form-group">
+	<label class="text-right control-label col-md-3">@(Model.PageTemplateSection.Name)</label>
+	<div class="col-md-9 text-left @(dataClass)">
+		@Html.TextBoxWithWatermarkFor(model => model.StringValue, new { placeholder = Model.PageTemplateSection.DefaultStringValue })
+		<input id="@(Html.IdForModel())_PageId" name="@(Html.NameForModel()).PageId" type="hidden" value="@(Model.PageId)" />
+		<input id="@(Html.IdForModel())_PageSectionId" name="@(Html.NameForModel()).PageSectionId" type="hidden" value="@(Model.PageSectionId)" />
+		<input id="@(Html.IdForModel())_PageTemplateSectionId" name="@(Html.NameForModel()).PageTemplateSectionId" type="hidden" value="@(Model.PageTemplateSectionId)" />
+		<input id="@(Html.IdForModel())_DefaultStringValue" name="@(Html.NameForModel()).DefaultStringValue" type="hidden" value="@(Model.PageTemplateSection.DefaultStringValue)" />
+		<input type="button" value="Default" onclick="$('#@(Html.IdForModel())_StringValue').val($('#@(Html.IdForModel())_DefaultStringValue').val());" />
+	</div>
+	<div class="row">
+		<div class="col-md-offset-3 col-md-9 help-label">
+			@(Model.PageTemplateSection.Description)
+			 - 
+			Default: '@(Model.PageTemplateSection.DefaultStringValue)'
+			@if (!Model.PageSectionId.HasValue)
+			{
+				@:&nbsp;<span>New!</span>
+			}
+		</div>
+	</div>
+</div>
+

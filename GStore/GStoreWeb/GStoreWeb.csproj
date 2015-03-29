@@ -33,6 +33,7 @@
     </DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <MvcBuildViews>true</MvcBuildViews>
@@ -1082,6 +1083,12 @@
     <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\RecordSummary.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\RecordSummary.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\SystemAdmin\_FileSystemSummaryPartial.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -1484,12 +1491,6 @@
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Html.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Text.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Theme.cshtml" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\Page.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\String.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\BundleAdmin\Manager.cshtml" />
@@ -1921,7 +1922,7 @@
     <Content Include="Views\Shared\DisplayTemplates\WebForm.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\WebFormField.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\PageEditViewModel.cshtml" />
-    <Content Include="Views\Shared\_PageDisplayPartial.cshtml" />
+    <Content Include="Views\Shared\_PageDetailsPartial.cshtml" />
     <Content Include="Views\Account\_RegisterWebFormFieldsPartial.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\WebFormAdmin\EditorTemplates\WebFormEditAdminViewModel.cshtml" />
     <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\WebFormEditAdminViewModel.cshtml" />
@@ -2011,6 +2012,8 @@
     <Content Include="Views\Shared\DisplayTemplates\SampleAudio.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryFile.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCatalogFile.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\FieldUrlName.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PageVariableEditViewModel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

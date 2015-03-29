@@ -579,6 +579,8 @@ namespace GStoreData
 				+ "\nUser: " + (order.UserProfile == null ? "(guest)" : order.UserProfile.FullName + " <" + order.UserProfile.Email + "> [" + order.UserProfileId + "]")
 				+ "\nEmail: " + order.Email;
 
+			notification.Message = notification.Message.ToHtmlLines();
+
 			if (order.LoginOrGuestWebFormResponse != null)
 			{
 				//add custom fields from LoginOrGuestWebFormResponse
@@ -674,6 +676,89 @@ namespace GStoreData
 			db.SaveChanges();
 		}
 
+
+		public static void CreateDigitalDownloadErrorNotificationToOrderAdminAndSave(this IGstoreDb db, StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, OrderItem orderItem, UrlHelper urlHelper, string errorMessage)
+		{
+			//user profile is null if user purchased as a guest
+			if (storeFrontConfig == null)
+			{
+				throw new ArgumentNullException("storeFrontConfig");
+			}
+			if (orderItem == null)
+			{
+				throw new ArgumentNullException("orderItem");
+			}
+			if (urlHelper == null)
+			{
+				throw new ArgumentNullException("urlHelper");
+			}
+
+			Uri currentUrl = urlHelper.RequestContext.HttpContext.Request.Url;
+			string orderAdminUrl = urlHelper.Action("View", "Orders", new { area = "OrderAdmin", id = orderItem.Order.OrderNumber });
+			string userViewOrderStatusUrl = urlHelper.Action("View", "OrderStatus", new { area = "", id = orderItem.Order.OrderNumber, Email = orderItem.Order.Email });
+
+			UserProfile orderAdmin = storeFrontConfig.OrderAdmin;
+			Notification notification = db.Notifications.Create();
+
+			notification.StoreFront = storeFrontConfig.StoreFront;
+			notification.StoreFront = storeFrontConfig.StoreFront;
+			notification.ClientId = storeFrontConfig.ClientId;
+			notification.Client = storeFrontConfig.Client;
+			notification.From = "GStore Order Admin";
+			notification.FromUserProfileId = orderAdmin.UserProfileId;
+			notification.OrderId = orderItem.OrderId;
+
+			notification.ToUserProfileId = orderAdmin.UserProfileId;
+			notification.To = orderAdmin.FullName;
+
+			notification.Importance = "High";
+			notification.Subject = "Digital Download Error! with Order #" + orderItem.Order.OrderNumber + " on " + currentUrl.Host + " at " + DateTime.UtcNow.ToStoreDateTimeString(storeFrontConfig, storeFrontConfig.Client);
+
+			notification.UrlHost = currentUrl.Host;
+			if (!currentUrl.IsDefaultPort)
+			{
+				notification.UrlHost += ":" + currentUrl.Port;
+			}
+			notification.BaseUrl = urlHelper.Action("Details", "Notifications", new { area = "", id = "" });
+			notification.Message = notification.Subject
+				+ "\n\nError: " + errorMessage
+				+ "\nStore Front: " + storeFrontConfig.Name + " [" + storeFrontConfig.StoreFrontId + "]"
+				+ "\nClient: " + orderItem.Client.Name + " [" + orderItem.ClientId + "]"
+				+ "\n\nOrder Number: " + orderItem.Order.OrderNumber
+				+ "\nOrder Date/Time: " + orderItem.CreateDateTimeUtc.ToStoreDateTimeString(storeFrontConfig, storeFrontConfig.Client)
+				+ "\nOrder User: " + (orderItem.Order.UserProfile == null ? "(guest)" : orderItem.Order.UserProfile.FullName + " <" + orderItem.Order.UserProfile.Email + "> [" + orderItem.Order.UserProfileId + "]")
+				+ "\nOrder Email: " + orderItem.Order.Email;
+
+			notification.Message = notification.Message.ToHtmlLines();
+
+			notification.IsPending = false;
+			notification.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			notification.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			List<NotificationLink> links = new List<NotificationLink>();
+
+			NotificationLink link1 = db.NotificationLinks.Create();
+			
+			link1.SetDefaultsForNew(notification);
+			link1.Order = 1;
+			link1.LinkText = "Admin Order #" + orderItem.Order.OrderNumber;
+			link1.Url = orderAdminUrl;
+			link1.IsExternal = false;
+			links.Add(link1);
+
+			NotificationLink link2 = db.NotificationLinks.Create();
+			link2.SetDefaultsForNew(notification);
+			link2.Order = 2;
+			link2.LinkText = "Order Status Link for User";
+			link2.Url = userViewOrderStatusUrl;
+			link2.IsExternal = false;
+			links.Add(link2);
+
+			notification.NotificationLinks = links;
+			db.Notifications.Add(notification);
+
+			db.SaveChanges();
+		}
 
 		/// <summary>
 		/// Shows order status (not order items)

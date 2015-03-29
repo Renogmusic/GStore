@@ -102,10 +102,10 @@
 			<label class="control-label col-md-2">Link 1 <input id="Link1Checkbox" type="checkbox" @(link1Checked) onclick="LinkClick(1);" value="true" /></label>
 			<div id="Link1Div" class="col-md-10">
 				@Html.LabelFor(model => model.Link1Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link1Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link1Text, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link1Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
 				@Html.LabelFor(model => model.Link1Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link1Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link1Url, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link1Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
 				<br />
 				@Html.ValidationMessageFor(model => model.Link1Text, "", new { @class = "text-danger" })
@@ -117,10 +117,10 @@
 			<label class="control-label col-md-2">Link 2 <input id="Link2Checkbox" type="checkbox" @(link2Checked) onclick="LinkClick(2);" value="true" /></label>
 			<div id="Link2Div" class="col-md-10">
 				@Html.LabelFor(model => model.Link2Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link2Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link2Text, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link2Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
 				@Html.LabelFor(model => model.Link2Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link2Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link2Url, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link2Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
 				<br />
 				@Html.ValidationMessageFor(model => model.Link2Text, "", new { @class = "text-danger" })
@@ -132,10 +132,10 @@
 			<label class="control-label col-md-2">Link 3 <input id="Link3Checkbox" type="checkbox" @(link3Checked) onclick="LinkClick(3);" value="true" /></label>
 			<div id="Link3Div" class="col-md-10">
 				@Html.LabelFor(model => model.Link3Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link3Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link3Text, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link3Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
 				@Html.LabelFor(model => model.Link3Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link3Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link3Url, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link3Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
 				<br />
 				@Html.ValidationMessageFor(model => model.Link3Text, "", new { @class = "text-danger" })
@@ -147,10 +147,10 @@
 			<label class="control-label col-md-2">Link 4 <input id="Link4Checkbox" type="checkbox" @(link4Checked) onclick="LinkClick(4);" value="true" /></label>
 			<div id="Link4Div" class="col-md-10">
 				@Html.LabelFor(model => model.Link4Text, htmlAttributes: new { @class = "control-label col-md-2", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link4Text, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link4Text, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link4Text, new { htmlAttributes = new { @class = "form-control", style = "width: 10%;" } })
 				@Html.LabelFor(model => model.Link4Url, htmlAttributes: new { @class = "control-label", style = "width: auto;" })
-				@Html.HelpLabelPopoverFor(model => model.Link4Url, placement: AppHtmlHelper.PopoverPlacementEnum.bottom)
+				@Html.HelpLabelPopoverFor(model => model.Link4Url, placement: PopoverPlacementEnum.bottom)
 				@Html.EditorFor(model => model.Link4Url, new { htmlAttributes = new { @class = "form-control", style = "width: 30%;" } })
 				<br />
 				@Html.ValidationMessageFor(model => model.Link4Text, "", new { @class = "text-danger" })

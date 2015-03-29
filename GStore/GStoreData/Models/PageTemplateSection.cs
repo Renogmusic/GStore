@@ -33,6 +33,12 @@ namespace GStoreData.Models
 		[Display(Name="Default Raw Html Value")]
 		public string DefaultRawHtmlValue { get; set; }
 
+		[Display(Name = "Is Variable", Description = "Flags this field as a variable")]
+		public bool IsVariable { get; set; }
+
+		[Display(Name = "Default String Value", Description="Default string value for variable fields")]
+		public string DefaultStringValue { get; set; }
+
 		[Display(Name = "Pre-Text Html")]
 		public string PreTextHtml { get; set; }
 

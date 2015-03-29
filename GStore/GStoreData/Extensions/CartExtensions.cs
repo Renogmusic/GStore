@@ -994,6 +994,53 @@ namespace GStoreData
 			return cart;
 		}
 
+		/// <summary>
+		/// Returns true if order has items and meets the order minimum and any other requirements for checkout
+		/// Sets user messages using controller (required)
+		/// </summary>
+		/// <param name="cart"></param>
+		/// <param name="controller">User for user messages (required)</param>
+		/// <returns></returns>
+		public static bool CartIsValidForCheckout(this Cart cart, BaseController controller)
+		{
+			if (controller == null)
+			{
+				throw new ArgumentNullException("controller");
+			}
+
+			StoreFrontConfiguration config = controller.CurrentStoreFrontConfigOrNull;
+			if (config == null)
+			{
+				throw new ArgumentNullException("controller.CurrentStoreFrontConfigOrNull");
+			}
+
+			if (cart == null || cart.CartItems.Count == 0)
+			{
+				controller.AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
+				return false;
+			}
+
+			if (cart == null || cart.CartItems.Count == 0)
+			{
+				controller.AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
+				return false;
+			}
+
+			if (cart == null || cart.CartItems.Count == 0)
+			{
+				controller.AddUserMessage("Nothing to check out.", "Your cart is empty.", UserMessageType.Info);
+				return false;
+			}
+
+			if (cart.Total < config.CheckoutOrderMinimum)
+			{
+				controller.AddUserMessage("Order minimum not met", "Sorry, the minimum order amount is $" + config.CheckoutOrderMinimum.ToString("N2"), UserMessageType.Danger);
+				return false;
+			}
+
+			return true;
+		}
+
 		public static Cart ValidateCartAndSave(this Cart cart, BaseController controller)
 		{
 			if (cart == null)

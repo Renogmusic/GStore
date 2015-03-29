@@ -662,13 +662,22 @@ namespace GStoreData.AppHtmlHelpers
 			return DateTime.UtcNow;
 		}
 
-		public static Product ProductFromUrlName(this HtmlHelper htmlHelper, string productUrlName)
+		public static Product ProductFromUrlNameOrNull(this HtmlHelper htmlHelper, string productUrlName)
 		{
 			if (string.IsNullOrWhiteSpace(productUrlName))
 			{
-				throw new ArgumentNullException("productUrlName");
+				return null;
 			}
 			return htmlHelper.CurrentStoreFront(true).Products.SingleOrDefault(p => p.UrlName.ToLower() == productUrlName.ToLower());
+		}
+
+		public static ProductBundle ProductBundleFromUrlNameOrNull(this HtmlHelper htmlHelper, string productBundleUrlName)
+		{
+			if (string.IsNullOrWhiteSpace(productBundleUrlName))
+			{
+				return null;
+			}
+			return htmlHelper.CurrentStoreFront(true).ProductBundles.SingleOrDefault(p => p.UrlName.ToLower() == productBundleUrlName.ToLower());
 		}
 
 		public static ProductCategory ProductCategoryFromUrlName(this HtmlHelper htmlHelper, string categoryUrlName)

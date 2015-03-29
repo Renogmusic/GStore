@@ -6,7 +6,18 @@
 
 		public static string EnvironmentOrAppSettingString(string key)
 		{
-			string value = System.Environment.GetEnvironmentVariable("APPSETTING_" + key);
+			string value = System.Environment.GetEnvironmentVariable("GStore_APPSETTING_" + key);
+			if (!string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
+
+			value = System.Environment.GetEnvironmentVariable("APPSETTING_" + key);
+			if (!string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
+
 			if (!string.IsNullOrEmpty(value))
 			{
 				return value;
@@ -16,7 +27,11 @@
 
 		public static bool? EnvironmentOrAppSettingBool(string key)
 		{
-			string value = System.Environment.GetEnvironmentVariable("APPSETTING_" + key);
+			string value = System.Environment.GetEnvironmentVariable("GStore_APPSETTING_" + key);
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				value = System.Environment.GetEnvironmentVariable("APPSETTING_" + key);
+			}
 			if (string.IsNullOrWhiteSpace(value))
 			{
 				value = System.Web.Configuration.WebConfigurationManager.AppSettings.Get(key);
@@ -355,6 +370,14 @@
             }
         }
 
+		public static string AppGoogleMapsApiKey
+		{
+			get
+			{
+				return EnvironmentOrAppSettingString("AppGoogleMapsApiKey") ?? _projectSettings.AppGoogleMapsApiKey;
+			}
+		}
+
 		public static bool IdentityEnableNewUserRegisteredBroadcast
 		{
             get
@@ -424,6 +447,8 @@
             get
 			{
                 return EnvironmentOrAppSettingString("IdentityTwoFactorSignature") ?? _projectSettings.IdentityTwoFactorSignature;
+
+				
             }
         }
 

@@ -51,8 +51,8 @@ namespace GStoreData.ViewModels
 				this.StartDateTimeUtc = pageSection.StartDateTimeUtc;
 				this.EndDateTimeUtc = pageSection.EndDateTimeUtc;
 				this.IsPending = pageSection.IsPending;
-				this.UpdatedBy = pageSection.UpdatedBy;
 				this.UpdateDateTimeUtc = pageSection.UpdateDateTimeUtc;
+				this.UpdatedBy = pageSection.UpdatedBy;
 			}
 		}
 
@@ -128,11 +128,11 @@ namespace GStoreData.ViewModels
 		public DateTime StartDateTimeUtc { get; set; }
 		public DateTime EndDateTimeUtc { get; set; }
 
-		[Display(Name = "Save as Draft")]
+		[Display(Name = "Inactive")]
 		public bool IsPending { get; set; }
 
-		public DateTime? UpdateDateTimeUtc { get; set; }
+		public UserProfile UpdatedBy { get; protected set; }
 
-		public UserProfile UpdatedBy { get; set; }
+		public DateTime UpdateDateTimeUtc { get; protected set; }
 	}
 }

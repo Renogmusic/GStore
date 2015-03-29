@@ -97,10 +97,13 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				AddUserMessage("Create Category Error", "There was an error with your entry for new Category '" + viewModel.Name.ToHtml() + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", UserMessageType.Danger);
 			}
 
+			if (Request.HasFiles())
+			{
+				AddUserMessage("Files not uploaded", "You must correct the form values below and re-upload your files", UserMessageType.Danger);
+			}
+
 			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
-
 			viewModel.IsSimpleCreatePage = true;
-
 			return View("CreateOrEdit", viewModel);
 		}
 
@@ -170,6 +173,10 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			if (this.ModelState.ContainsKey("UrlName"))
 			{
 				ModelState["UrlName"].Value = new ValueProviderResult(viewModel.UrlName, viewModel.UrlName, null);
+			}
+			if (Request.HasFiles())
+			{
+				AddUserMessage("Files not uploaded", "You must correct the form values below and re-upload your files", UserMessageType.Danger);
 			}
 
 			viewModel.UpdateProductCategoryAndParent(productCategory);

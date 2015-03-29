@@ -8,16 +8,19 @@
 	StoreBinding currentStoreBinding = Html.GetCurrentStoreBinding(false);
 }
 <style>
-	#SystemInfo {
+	#SystemInfo
+	{
 	}
 
-		#SystemInfo .header {
+		#SystemInfo .header
+		{
 			text-align: right;
 			min-width: 20%;
 			padding: 10px;
 		}
 
-		#SystemInfo .data {
+		#SystemInfo .data
+		{
 			text-align: left;
 			padding: 10px;
 		}
@@ -85,9 +88,22 @@
 		</p>
 		<p>
 			<strong>How GStore determines which setting to use</strong><br />
-			The Settings.Current object checks settings from 3 locations to allow overrides in web.config, Azure environment variables, and default settings in the Application Properties -&gt; Settings tab. The order settings are checked is as follows:
+			The Settings.Current object checks settings from 4 locations to allow overrides.
+			<br /> Priority is
+			<br />1) GStore_APPSETTING environment variable,
+			<br />2) APPSETTING_ Azure environment variable
+			<br />3) web.config,
+			<br />4) Default settings in the Application Properties -&gt; Settings tab.
 		</p>
 		<ol class="text-left">
+			<li>
+				Environment Variable in the operating system with the prefix GStore_APPSETTING (option for local environments)
+				<br /><strong>Notes:</strong> You can use this option to override settings.
+				<br /><strong>Example How to Set:</strong> Right-click My Computer, Properties, click Advanced System Settings, Environment Variables. Under System Variables, click New.
+				Enter the variable name (example: GStore_AppSetting_AppEnableEmail) and the variable value (i.e. true)
+				<br /><strong>Internal Read:</strong> string value = System.Environment.GetEnvironmentVariable("GStore_APPSETTING_" + "AppEnableEmail"))
+				<br /><br />
+			</li>
 			<li>
 				Environment Variable in the operating system with the prefix APPSETTING_ (this is how Azure sets up application settings)
 				<br /><strong>Notes:</strong> Only used for Azure and web hosts that use environment variables.
@@ -100,7 +116,7 @@
 				<br /><strong>Notes:</strong> Not recommended. This is only in place because a lot of developers are familiar with it.
 				<br /><strong>Example How To Set:</strong> (in web.config file, edit the setting under &lt;appSettings&gt;<br />
 				&lt;setting name=&quot;AppEnableEmail&quot; serializeas=&quot;String&quot;&gt;
-					&lt;value&gt;<b><u>False</u></b>&lt;/value&gt;
+				&lt;value&gt;<b><u>False</u></b>&lt;/value&gt;
 				&lt;/setting&gt;
 
 				<br /><strong>Internal Read:</strong> string value = System.Web.Configuration.WebConfigurationManager.AppSettings.Get("AppEnableEmail");

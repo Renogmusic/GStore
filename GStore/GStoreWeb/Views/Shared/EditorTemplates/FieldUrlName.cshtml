@@ -1,0 +1,34 @@
+﻿@model String
+@{
+	int colLabel = ViewData.ColLabel();
+	int colData = ViewData.ColData();
+	int colOffset = ViewData.ColOffset();
+	bool useHelpLabelPopover = ViewData.UseHelpLabelPopover();
+	bool useHelpLabelText = ViewData.UseHelpLabelText();
+	bool showLabel = ViewData.ShowLabel();
+	string nameField = ViewData["NameField"] as string ?? "Name";
+	//set NameField = "" in ViewData to disable name linking
+
+}
+<div class="form-group">
+	@if (showLabel)
+	{
+		@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
+	}
+	<div class="col-md-@(colData) title-align">
+		@Html.TextBoxWithWatermarkForModel(new { MaxLength = 100, onblur = "ValidateUrlName(this);" })
+		@if (useHelpLabelPopover)
+		{
+			@Html.HelpLabelPopoverForModel()
+		}
+		@Html.ValidationMessageForModel()
+		@if (!string.IsNullOrEmpty(nameField))
+		{
+			<input type="button" value="Update" onclick="UpdateUrlName(@(Html.IdForModel().ToHtmlString().ToJsValue(true)), @(nameField.ToJsValue(true)));" />
+		}
+		@if (useHelpLabelText)
+		{
+			<br />@Html.HelpLabelForModel()
+		}
+	</div>
+</div>

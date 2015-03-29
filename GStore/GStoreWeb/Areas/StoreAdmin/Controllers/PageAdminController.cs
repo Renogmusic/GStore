@@ -107,8 +107,6 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 			return View("Create", pageEditViewModel);
 		}
 
-
-
 		[AuthorizeGStoreAction(GStoreAction.Pages_Edit)]
 		public ActionResult Edit(int? id, string Tab)
 		{
@@ -285,7 +283,6 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 
 			if (urlIsValid && ModelState.IsValid)
 			{
-
 				Page page = null;
 				try
 				{

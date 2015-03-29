@@ -27,7 +27,7 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			LoadValues(userProfile, product);
 		}
 
-		public ProductEditAdminViewModel(Product product, UserProfile userProfile, string activeTab, bool isCreatePage = false, bool isSimpleCreatePage = false, bool isEditPage = false, bool isDetailsPage = false, bool isDeletePage = false)
+		public ProductEditAdminViewModel(Product product, UserProfile userProfile, string activeTab, bool isCreatePage = false, bool isEditPage = false, bool isDetailsPage = false, bool isDeletePage = false)
 		{
 			if (userProfile == null)
 			{
@@ -38,7 +38,6 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 				throw new ArgumentNullException("product", "Product cannot be null");
 			}
 			this.IsCreatePage = isCreatePage;
-			this.IsSimpleCreatePage = isSimpleCreatePage;
 			this.IsEditPage = isEditPage;
 			this.IsDetailsPage = isDetailsPage;
 			this.IsDeletePage = isDeletePage;
@@ -124,9 +123,6 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			this.Product = product;
 			this.Category = product.Category;
 		}
-
-		[Editable(false)]
-		public bool IsSimpleCreatePage { get; set; }
 
 		[Editable(false)]
 		public bool IsCreatePage { get; set; }

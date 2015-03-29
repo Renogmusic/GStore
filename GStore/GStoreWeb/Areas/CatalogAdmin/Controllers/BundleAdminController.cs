@@ -116,11 +116,17 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			else
 			{
 				AddUserMessage("Create Product Bundle Error", "There was an error with your entry for new Product Bundle '" + viewModel.Name.ToHtml() + "' for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]. Please correct it below and save.", UserMessageType.Danger);
+
+			}
+
+			if (Request.HasFiles())
+			{
+				AddUserMessage("Files not uploaded", "You must correct the form values below and re-upload your files", UserMessageType.Danger);
 			}
 
 			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
 
-			viewModel.IsSimpleCreatePage = true;
+			viewModel.IsCreatePage = true;
 			ViewData.Add("ReturnToFrontEnd", viewModel.ReturnToFrontEnd);
 			return View("CreateOrEdit", viewModel);
 		}
@@ -251,6 +257,12 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				}
 				return RedirectToAction("Index", "CatalogAdmin");
 			}
+
+			if (Request.HasFiles())
+			{
+				AddUserMessage("Files not uploaded", "You must correct the form values below and re-upload your files", UserMessageType.Danger);
+			}
+
 			viewModel.UpdateProductBundle(productBundle);
 			ViewData.Add("ReturnToFrontEnd", viewModel.ReturnToFrontEnd);
 			return View("CreateOrEdit", viewModel);

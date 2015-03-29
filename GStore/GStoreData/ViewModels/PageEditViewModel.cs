@@ -8,12 +8,36 @@ using GStoreData.Models;
 
 namespace GStoreData.ViewModels
 {
+	public struct PageVariableData
+	{
+		public PageVariableData(PageTemplateSection pageTemplateSection, PageSection pageSectionOrNull)
+		{
+			if (pageTemplateSection == null)
+			{
+				throw new ArgumentNullException("pageTemplateSection");
+			}
+
+			this.PageTemplateSection = pageTemplateSection;
+			this.PageSection = pageSectionOrNull;
+		}
+
+		/// <summary>
+		/// Page Template section for variable field data
+		/// </summary>
+		public PageTemplateSection PageTemplateSection;
+
+		/// <summary>
+		/// Page section for variable value data. May be null if no value exists
+		/// </summary>
+		public PageSection PageSection;
+	}
+
 	public class PageEditViewModel : IValidatableObject
 	{
 		public PageEditViewModel()
 		{
 			//model binder will use this option
-			SetDefaults(null);
+			LoadValues(null);
 		}
 
 		public PageEditViewModel(Page page, bool isStoreAdminEdit = false, bool isReadOnly = false, bool isDeletePage = false, bool isCreatePage = false, string activeTab = "")
@@ -28,10 +52,10 @@ namespace GStoreData.ViewModels
 			this.IsCreatePage = isCreatePage;
 			this.ActiveTab = activeTab;
 			this.CreateMenuItemWithPage = isCreatePage;
-			SetDefaults(page);
+			LoadValues(page);
 		}
 
-		protected void SetDefaults(Page page)
+		protected void LoadValues(Page page)
 		{
 			if (page == null)
 			{
@@ -85,6 +109,12 @@ namespace GStoreData.ViewModels
 			this.WebFormSelectList = page.Client.WebForms.AsQueryable().ToSelectListWithNull(page.WebFormId).ToList();
 			this.WebFormSuccessPageSelectList = page.StoreFront.Pages.AsQueryable().ToSelectListWithNull(page.WebFormSuccessPageId).ToList();
 
+			if (page.PageTemplate != null)
+			{
+				List<PageTemplateSection> variableTemplateSections = page.PageTemplate.Sections.Where(pts => pts.IsVariable).AsQueryable().ApplyDefaultSort().ToList();
+				this.Variables = variableTemplateSections.Select(pts => new PageVariableEditViewModel(page.PageId, pts, pts.PageSections.AsQueryable().WhereIsActive().FirstOrDefault(ps => ps.PageId == page.PageId))).ToList();
+			}
+
 			this.IsActiveBubble = page.IsActiveBubble();
 			this.IsActiveDirect = page.IsActiveDirect();
 		}
@@ -120,11 +150,11 @@ namespace GStoreData.ViewModels
 
 		[Display(Name = "Is Read Only")]
 		[Editable(false)]
-		public bool IsReadOnly { get; set; }
+		public bool IsReadOnly { get; protected set; }
 
 		[Display(Name = "Is Delete Page")]
 		[Editable(false)]
-		public bool IsDeletePage { get; set; }
+		public bool IsDeletePage { get; protected set; }
 
 		[Display(Name = "Is Create Page")]
 		[Editable(false)]
@@ -132,11 +162,11 @@ namespace GStoreData.ViewModels
 
 		[Display(Name = "Page Is Active (including store front)")]
 		[Editable(false)]
-		public bool IsActiveBubble { get; set; }
+		public bool IsActiveBubble { get; protected set; }
 
 		[Display(Name = "Page Is Active")]
 		[Editable(false)]
-		public bool IsActiveDirect { get; set; }
+		public bool IsActiveDirect { get; protected set; }
 
 		[Display(Name = "Active Tab")]
 		[Editable(false)]
@@ -144,64 +174,6 @@ namespace GStoreData.ViewModels
 
 		[Display(Name = "Add to Site Menu", Description="Check this box to add this page to the site menu.")]
 		public bool CreateMenuItemWithPage { get; set; }
-
-
-		[Editable(false)]
-		public List<SelectListItem> PageTemplateSelectList
-		{
-			get
-			{
-				return _pageTemplateSelectList;
-			}
-			set
-			{
-				_pageTemplateSelectList = value;
-			}
-		}
-		protected List<SelectListItem> _pageTemplateSelectList = null;
-
-		[Editable(false)]
-		public List<SelectListItem> ThemeSelectList
-		{
-			get
-			{
-				return _themeSelectList;
-			}
-			set
-			{
-				_themeSelectList = value;
-			}
-		}
-		protected List<SelectListItem> _themeSelectList = null;
-
-		[Editable(false)]
-		public List<SelectListItem> WebFormSelectList
-		{
-			get
-			{
-				return _webFormSelectList;
-			}
-			set
-			{
-				_webFormSelectList = value;
-			}
-		}
-		protected List<SelectListItem> _webFormSelectList = null;
-
-		[Editable(false)]
-		public List<SelectListItem> WebFormSuccessPageSelectList
-		{
-			get
-			{
-				return _webFormSuccessPageSelectList;
-			}
-			set
-			{
-				_webFormSuccessPageSelectList = value;
-			}
-		}
-		protected List<SelectListItem> _webFormSuccessPageSelectList = null;
-
 
 		[Editable(false)]
 		[Display(Name = "Store Front")]
@@ -350,7 +322,76 @@ namespace GStoreData.ViewModels
 		[Editable(false)]
 		[Display(Name = "Updated By")]
 		public UserProfile UpdatedBy { get; set; }
-	
+
+		[Editable(false)]
+		public List<SelectListItem> PageTemplateSelectList
+		{
+			get
+			{
+				return _pageTemplateSelectList;
+			}
+			protected set
+			{
+				_pageTemplateSelectList = value;
+			}
+		}
+		protected List<SelectListItem> _pageTemplateSelectList = null;
+
+		[Editable(false)]
+		public List<SelectListItem> ThemeSelectList
+		{
+			get
+			{
+				return _themeSelectList;
+			}
+			protected set
+			{
+				_themeSelectList = value;
+			}
+		}
+		protected List<SelectListItem> _themeSelectList = null;
+
+		[Editable(false)]
+		public List<SelectListItem> WebFormSelectList
+		{
+			get
+			{
+				return _webFormSelectList;
+			}
+			protected set
+			{
+				_webFormSelectList = value;
+			}
+		}
+		protected List<SelectListItem> _webFormSelectList = null;
+
+		[Editable(false)]
+		public List<SelectListItem> WebFormSuccessPageSelectList
+		{
+			get
+			{
+				return _webFormSuccessPageSelectList;
+			}
+			protected set
+			{
+				_webFormSuccessPageSelectList = value;
+			}
+		}
+		protected List<SelectListItem> _webFormSuccessPageSelectList = null;
+
+		public List<PageVariableEditViewModel> Variables
+		{
+			get
+			{
+				return _variables;
+			}
+			set
+			{
+				_variables = value;
+			}
+		}
+		protected List<PageVariableEditViewModel> _variables = null;
+
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
 			List<ValidationResult> result = new List<ValidationResult>();

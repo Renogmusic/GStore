@@ -885,7 +885,7 @@ namespace GStoreData
 			category.SetDefaultsForNew(storeFront);
 
 			category.Name = name;
-			category.UrlName = urlName;
+			category.UrlName = urlName.FixUrlName();
 			category.Order = order;
 
 			category.HideInMenuIfEmpty = hideInMenuIfEmpty;

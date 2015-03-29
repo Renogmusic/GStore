@@ -9,8 +9,9 @@
 	int storeFrontId = Html.CurrentStoreFront(true).StoreFrontId;
 
 	var data = Html.GStoreDb().UserActionEvents
-		.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc && p.Category == UserActionCategoryEnum.Catalog && p.Action == UserActionActionEnum.Catalog_ViewProduct)
-		.GroupBy(p => p.ProductUrlName)
+		.Where(p => p.StoreFrontId == storeFrontId && p.CreateDateTimeUtc > startDateTimeUtc && p.CreateDateTimeUtc < endDateTimeUtc && p.Category == UserActionCategoryEnum.Catalog 
+			&& (p.Action == UserActionActionEnum.Catalog_ViewProduct || p.Action == UserActionActionEnum.Catalog_ViewBundle))
+		.GroupBy(p => new { ProductUrlName = p.ProductUrlName, ProductBundleUrlName = p.ProductBundleUrlName })
 		.OrderByDescending(p => p.Count())
 		.Take(10);
 }
@@ -21,9 +22,21 @@
 		@foreach (var cat in data)
 		{
 			counter++;
-			Product product = Html.ProductFromUrlName(cat.First().ProductUrlName);
-			@(counter + ". ") @(product.Name) @: - @(cat.Count())<br />
+			Product product = Html.ProductFromUrlNameOrNull(cat.First().ProductUrlName);
+			ProductBundle productBundle = Html.ProductBundleFromUrlNameOrNull(cat.First().ProductBundleUrlName);
+			if (product != null)
+			{
+				@(counter + ". ") @(product.Name) @: - @(cat.Count())<br />
 			}
+			else if (productBundle != null)
+			{
+				@(counter + ". ") @(productBundle.Name) @: [bundle] - @(cat.Count())<br />
+			}
+			else
+			{
+				@(counter + ". ") @:Unknown product - @(cat.Count())<br />
+			}
+		}
 		@{
 			if (counter < 10)
 			{

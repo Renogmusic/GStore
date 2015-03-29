@@ -66,6 +66,7 @@ namespace GStoreData.ViewModels
 			this.CartOrderDiscountShow = storeFrontConfig.CartOrderDiscountShow;
 			this.CartOrderDiscountLabel = storeFrontConfig.CartOrderDiscountLabel;
 			this.CartOrderTotalLabel = storeFrontConfig.CartOrderTotalLabel;
+			this.CheckoutOrderMinimum = storeFrontConfig.CheckoutOrderMinimum;
 		}
 
 		public bool IsEditPage { get; protected set; }
@@ -88,6 +89,9 @@ namespace GStoreData.ViewModels
 
 		[Display(Name = "Store Front Name", Description = "Store Front Name")]
 		public string StoreFrontName { get; protected set; }
+
+		[Display(Name = "Order Minimum", Description = "Order minimum")]
+		public decimal CheckoutOrderMinimum { get; protected set; }
 
 		[Display(Name = "Use Shopping Cart", Description = "Check this box to use the built-in shopping cart. If unchecked, items can be ordered one at a time.\nDefault: checked.")]
 		public bool UseShoppingCart { get; set; }
