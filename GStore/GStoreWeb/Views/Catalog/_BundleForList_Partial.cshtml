@@ -12,6 +12,7 @@
 	decimal? unitPrice = bundle.UnitPrice(1);
 	decimal? listPrice = bundle.ListPrice(1);
 	bool showListPrice = config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
+	bool newThisWeek = DateTime.UtcNow.Subtract(bundle.CreateDateTimeUtc).Days <= 7;
 
 	<div class="ProductBundleListItemBox boxshadowjs">
 		@if (imageUrl != null)
@@ -49,6 +50,10 @@
 				</span>
 				<span class="BundleListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span>
 			</div>
+		}
+		@if (newThisWeek)
+		{
+			<br/><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
 		}
 	</div>
 }

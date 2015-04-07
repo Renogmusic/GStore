@@ -164,7 +164,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Bundles_Edit)]
-		public ActionResult Edit(int? id, ProductBundleEditAdminViewModel viewModel, List<ProductBundleItemEditAdminViewModel> bundleItems, string saveAndView, string addProductId, int?removeItemId)
+		public ActionResult Edit(int? id, ProductBundleEditAdminViewModel viewModel, List<ProductBundleItemEditAdminViewModel> bundleItems, string saveAndView, string addProductId, int? removeItemId, int? removeAltCategoryId)
 		{
 			if (viewModel == null || viewModel.ProductBundleId == 0)
 			{
@@ -175,7 +175,8 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				return HttpBadRequest("Product Bundle Id mismatch Request id: " + (id.HasValue ? id.Value.ToString() : "(null)") + " viewModel.ProductBundleId: " + viewModel.ProductBundleId);
 			}
 
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
+			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
+			StoreFront storeFront = config.StoreFront;
 
 			bool nameIsValid = GStoreDb.ValidateProductBundleUrlName(this, viewModel.UrlName, storeFront.StoreFrontId, storeFront.ClientId, viewModel.ProductBundleId);
 
@@ -239,6 +240,26 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 					RemoveItem(productBundle, removeItemId.Value);
 				}
 
+				if (removeAltCategoryId.HasValue && removeAltCategoryId.Value != 0)
+				{
+					ProductCategoryAltProductBundle removeAltProductBundle = productBundle.CategoryAltBundles.SingleOrDefault(p => p.ProductCategoryId == removeAltCategoryId.Value);
+					if (removeAltProductBundle == null)
+					{
+						AddUserMessage("Error removing cross-sell Category", "Category Id [" + removeAltCategoryId.Value + "] could not be found in bundle alt categories.", UserMessageType.Danger);
+					}
+					else
+					{
+						string oldName = removeAltProductBundle.Category.Name;
+						GStoreDb.ProductCategoryAltProductBundles.Delete(removeAltProductBundle);
+						GStoreDb.SaveChanges();
+						AddUserMessage("Removed cross-sell Catergory", oldName.ToHtml() + " was removed.", UserMessageType.Info);
+					}
+				}
+
+				if (removeAltCategoryId.HasValue)
+				{
+					return RedirectToAction("Edit", new { id = productBundle.ProductBundleId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
+				}
 				if (!string.IsNullOrEmpty(addProductId) || removedItem)
 				{
 					return RedirectToAction("Edit", new { id = productBundle.ProductBundleId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });

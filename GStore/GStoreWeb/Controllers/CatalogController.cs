@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 using GStoreData;
 using GStoreData.AppHtmlHelpers;
 using GStoreData.Models;
@@ -89,6 +90,142 @@ namespace GStoreWeb.Controllers
 
 			return ViewBundle(bundle);
 		}
+
+		[HttpGet]
+		public ActionResult ShareByEmail()
+		{
+			return RedirectToAction("Index");
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult ShareByEmail(string product, string bundle, string category, bool? TopOfCatalog, string emailToAddress, string emailToName, string emailFromAddress, string emailFromName, string subject, string message)
+		{
+			if (string.IsNullOrEmpty(emailToAddress))
+			{
+				return HttpBadRequest("emailToAddress cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailToName))
+			{
+				return HttpBadRequest("emailToName cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailFromAddress))
+			{
+				return HttpBadRequest("emailFromAddress cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailFromName))
+			{
+				return HttpBadRequest("emailFromName cannot be blank");
+			}
+			if (string.IsNullOrEmpty(product) && string.IsNullOrEmpty(bundle) && string.IsNullOrEmpty(category) && !(TopOfCatalog ?? false))
+			{
+				return HttpBadRequest("product, bundle, category, or TopOfCatalog must be specified");
+			}
+
+			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
+
+			RedirectToRouteResult redirectTarget = null;
+			string textDetails = null;
+			string htmlDetails = null;
+
+			if (!string.IsNullOrEmpty(product))
+			{
+				Product emailProduct = CurrentStoreFrontOrThrow.Products.AsQueryable().WhereIsActive().WhereRegisteredAnonymousCheck(this.User.IsRegistered()).SingleOrDefault(p => p.UrlName.ToLower() == product.Trim().ToLower());
+				if (emailProduct == null)
+				{
+					AddUserMessage("Product not found", "Sorry, the product '" + product.ToHtml() + "' could not be found. Please select a current product to share by email.", UserMessageType.Danger);
+					return RedirectToAction("Index", "Catalog");
+				}
+
+				RouteValueDictionary routeData = new RouteValueDictionary(new { urlName = emailProduct.UrlName });
+				string url = Url.Action("ViewProductByName", "Catalog", routeData, Request.Url.Scheme, Request.Url.Host);
+
+				textDetails = "\r\n\r\n" + emailProduct.Category.ProductTypeSingleOrSystemDefault(config) + ": " + emailProduct.Name + "\r\nat " + config.Name + "\r\n" + url + "\r\n";
+
+				htmlDetails = "\r\n\r\n<br/><br/>" + emailProduct.Category.ProductTypeSingleOrSystemDefault(config).ToHtml() + ": " + emailProduct.Name.ToHtml() + "\r\n<br/>at " + config.Name.ToHtml() + "\r\n<br/><a href=\"" + url + "\">View at " + Request.Url.Host.ToHtml() + "</a>\r\n<br/>";
+
+				redirectTarget = RedirectToAction("ViewProductByName", routeData);
+
+			}
+
+			if (!string.IsNullOrEmpty(bundle))
+			{
+				ProductBundle emailBundle = CurrentStoreFrontOrThrow.ProductBundles.AsQueryable().WhereIsActive().WhereRegisteredAnonymousCheck(this.User.IsRegistered()).SingleOrDefault(p => p.UrlName.ToLower() == bundle.Trim().ToLower());
+				if (emailBundle == null)
+				{
+					AddUserMessage("Bundle not found", "Sorry, the bundle '" + bundle.ToHtml() + "' could not be found. Please select a current bundle to share by email.", UserMessageType.Danger);
+					return RedirectToAction("Index", "Catalog");
+				}
+				RouteValueDictionary routeData = new RouteValueDictionary(new { urlName = emailBundle.UrlName });
+				string url = Url.Action("ViewBundleByName", "Catalog", routeData, Request.Url.Scheme, Request.Url.Host);
+
+				textDetails = "\r\n\r\n" + emailBundle.Category.BundleTypeSingleOrSystemDefault(config) + ": " + emailBundle.Name + "\r\nat " + config.Name + "\r\n" + url + "\r\n";
+
+				htmlDetails = "\r\n\r\n<br/><br/>" + emailBundle.Category.BundleTypeSingleOrSystemDefault(config).ToHtml() + ": " + emailBundle.Name.ToHtml() + "\r\n<br/>at " + config.Name.ToHtml() + "\r\n<br/><a href=\"" + url + "\">View at " + Request.Url.Host.ToHtml() + "</a>\r\n<br/>";
+
+				redirectTarget = RedirectToAction("ViewBundleByName", routeData);
+			}
+
+			if (!string.IsNullOrEmpty(category))
+			{
+				ProductCategory emailCategory = null;
+				emailCategory = CurrentStoreFrontOrThrow.ProductCategories.AsQueryable().WhereIsActive().WhereRegisteredAnonymousCheck(this.User.IsRegistered()).SingleOrDefault(p => p.UrlName.ToLower() == category.Trim().ToLower());
+				if (emailCategory == null)
+				{
+					AddUserMessage("Category not found", "Sorry, the category '" + category.ToHtml() + "' could not be found. Please select a current category to share by email.", UserMessageType.Danger);
+					return RedirectToAction("Index", "Catalog");
+				}
+
+				RouteValueDictionary routeData = new RouteValueDictionary(new { urlName = emailCategory.UrlName });
+				string url = Url.Action("ViewCategoryByName", "Catalog", routeData, Request.Url.Scheme, Request.Url.Host);
+
+				textDetails = "\r\n\r\nCategory: " + emailCategory.Name + "\r\nat " + config.Name + "\r\n" + url + "\r\n";
+
+				htmlDetails = "\r\n\r\n<br/><br/>Category: " + emailCategory.Name.ToHtml() + "\r\n<br/>at " + config.Name.ToHtml() + "\r\n<br/><a href=\"" + url + "\">View at " + Request.Url.Host.ToHtml() + "</a>\r\n<br/>";
+
+				redirectTarget = RedirectToAction("ViewCategoryByName", routeData);
+			}
+
+			if (TopOfCatalog ?? false)
+			{
+				string url = Url.Action("Index", "Catalog", null, Request.Url.Scheme, Request.Url.Host);
+
+				textDetails = "\r\n\r\n" + config.CatalogTitle + "\r\nat " + config.Name + "\r\n" + url + "\r\n";
+
+				htmlDetails = "\r\n\r\n<br/><br/>" + config.CatalogTitle.ToHtml() + "\r\n<br/>at " + config.Name.ToHtml() + "\r\n<br/><a href=\"" + url + "\">View at " + Request.Url.Host.ToHtml() + "</a>\r\n<br/>";
+
+				redirectTarget = RedirectToAction("Index");
+			}
+
+			subject += " from " + emailFromName + " - " + emailFromAddress + " via " + Request.Url.Host;
+			string fromLine = "\r\nSent to you from " + emailFromName + " - " + emailFromAddress;
+			string textBody = message + textDetails + fromLine;
+			string htmlBody = message.ToHtml() + htmlDetails + fromLine.ToHtmlLines();
+
+			bool result = this.SendEmail(emailToAddress, emailToName, subject, textBody, htmlBody);
+			if (result)
+			{
+				AddUserMessage("Email Sent!", "We have sent your message to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Success);
+			}
+			else
+			{
+				if (!Settings.AppEnableEmail)
+				{
+					AddUserMessage("Email Error", "Sorry, this server does not have email configured to send email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+				else if (!config.Client.UseSendGridEmail)
+				{
+					AddUserMessage("Email Error", "Sorry, this site does not have email configured to send email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+				else
+				{
+					AddUserMessage("Email Error", "Sorry, there was an unknown error sending your email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+			}
+
+			return redirectTarget;
+		}
+
 
 		protected override string ThemeFolderName
 		{

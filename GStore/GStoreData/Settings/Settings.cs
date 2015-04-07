@@ -90,6 +90,14 @@
             }
         }
 
+		public static bool AppEnableChat
+		{
+			get
+			{
+				return EnvironmentOrAppSettingBool("AppEnableChat") ?? _projectSettings.AppEnableChat;
+			}
+		}
+
 		public static string AppDefaultLayoutName
 		{
 			get

@@ -20,17 +20,6 @@
 
 }
 
-@if (fields.Count() > 0)
-{
-	<script type="text/javascript">
-		$(document).ready(function () {
-			if ($('input:text:first'))
-			{
-				$('input:text:first').focus();
-			}
-		})
-	</script>
-}
 @using (Html.BeginForm("SubmitForm", "Page"))
 {
 	@Html.AntiForgeryToken()

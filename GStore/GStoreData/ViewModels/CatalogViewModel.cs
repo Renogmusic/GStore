@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GStoreData.Models;
 
@@ -79,13 +80,20 @@ namespace GStoreData.ViewModels
 			{
 				return null;
 			}
-			if (profile == null)
+
+			if (CurrentCategoryOrNull.CategoryAltProducts.Count == 0)
 			{
-				_products = CurrentCategoryOrNull.Products.AsQueryable().WhereIsActive().Where(p => !p.ForRegisteredOnly).ApplyDefaultSort().ToList();
+				//no cross-sell
+				_products = CurrentCategoryOrNull.Products.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ApplyDefaultSort().ToList();
 			}
 			else
 			{
-				_products = CurrentCategoryOrNull.Products.AsQueryable().WhereIsActive().Where(p => !p.ForAnonymousOnly).ApplyDefaultSort().ToList();
+				//merge cross-sell items
+				List<Tuple<int, Product>> products = CurrentCategoryOrNull.Products.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ToList().Select(p => Tuple.Create(p.Order, p)).ToList();
+				List<Tuple<int, Product>> crossSellProducts = CurrentCategoryOrNull.CategoryAltProducts.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().Select(alt => Tuple.Create(alt.Order, alt.Product)).ToList();
+
+				products.AddRange(crossSellProducts);
+				_products = products.OrderBy(t => t.Item1).ThenBy(t => t.Item2.Order).Select(t => t.Item2).ToList();
 			}
 			return _products;
 		}
@@ -101,7 +109,20 @@ namespace GStoreData.ViewModels
 			{
 				return null;
 			}
-			_bundles = CurrentCategoryOrNull.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ApplyDefaultSort().ToList();
+
+			if (CurrentCategoryOrNull.CategoryAltProductBundles.Count == 0)
+			{
+				List<ProductBundle> bundles = CurrentCategoryOrNull.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ApplyDefaultSort().ToList();
+			}
+			else
+			{
+				//merge cross-sell items
+				List<Tuple<int, ProductBundle>> bundles = CurrentCategoryOrNull.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ToList().Select(p => Tuple.Create(p.Order, p)).ToList();
+				List<Tuple<int, ProductBundle>> crossSellBundles = CurrentCategoryOrNull.CategoryAltProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().Select(alt => Tuple.Create(alt.Order, alt.ProductBundle)).ToList();
+
+				bundles.AddRange(crossSellBundles);
+				_bundles = bundles.OrderBy(t => t.Item1).ThenBy(t => t.Item2.Order).Select(t => t.Item2).ToList();
+			}
 			return _bundles;
 		}
 		protected List<ProductBundle> _bundles = null;

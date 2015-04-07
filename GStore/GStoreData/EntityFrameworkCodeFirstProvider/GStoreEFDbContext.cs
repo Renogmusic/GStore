@@ -102,6 +102,9 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 		public virtual DbSet<Product> ProductsTable { get; set; }
 		public IGStoreRepository<Models.Product> Products { get { return new GenericGStoreEFEntity<Models.Product>(this); } }
 
+		public virtual DbSet<ProductImage> ProductImagesTable { get; set; }
+		public IGStoreRepository<Models.ProductImage> ProductImages { get { return new GenericGStoreEFEntity<Models.ProductImage>(this); } }
+
 		public virtual DbSet<ProductBundle> ProductBundlesTable { get; set; }
 		public IGStoreRepository<Models.ProductBundle> ProductBundles { get { return new GenericGStoreEFEntity<Models.ProductBundle>(this); } }
 
@@ -110,6 +113,15 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 
 		public virtual DbSet<ProductCategory> ProductCategoriesTable { get; set; }
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreEFEntity<Models.ProductCategory>(this); } }
+
+		public virtual DbSet<ProductCategoryImage> ProductCategoryImagesTable { get; set; }
+		public IGStoreRepository<Models.ProductCategoryImage> ProductCategoryImages { get { return new GenericGStoreEFEntity<Models.ProductCategoryImage>(this); } }
+
+		public virtual DbSet<ProductCategoryAltProduct> ProductCategoryAltProductTable { get; set; }
+		public IGStoreRepository<Models.ProductCategoryAltProduct> ProductCategoryAltProducts { get { return new GenericGStoreEFEntity<Models.ProductCategoryAltProduct>(this); } }
+
+		public virtual DbSet<ProductCategoryAltProductBundle> ProductCategoryAltProductBundleTable { get; set; }
+		public IGStoreRepository<Models.ProductCategoryAltProductBundle> ProductCategoryAltProductBundles { get { return new GenericGStoreEFEntity<Models.ProductCategoryAltProductBundle>(this); } }
 
 		public virtual DbSet<SecurityEvent> SecurityEventsTable { get; set; }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreEFEntity<Models.SecurityEvent>(this); } }

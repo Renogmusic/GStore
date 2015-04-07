@@ -388,12 +388,22 @@ namespace GStoreData.AppHtmlHelpers
 		public static MvcHtmlString LabelWithRequiredForModel(this HtmlHelper htmlHelper, object htmlAttributes)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			string label = htmlHelper.ViewData.LabelText() ?? metaData.DisplayName ?? metaData.PropertyName;
+			string labelText = htmlHelper.ViewData.LabelText() ?? metaData.DisplayName ?? metaData.PropertyName;
+			if (string.IsNullOrEmpty(labelText))
+			{
+				labelText = htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix;
+			}
+			if (string.IsNullOrEmpty(labelText))
+			{
+				throw new ApplicationException("Could not find label text in ViewData['LabelText'], MetaData.DisplayName, MetaData.PropertyName or HTML.ViewData.TemplateInfo");
+			}
+
+
 			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 
-			if (metaData.IsRequired)
+			if (metaData.IsRequired || htmlHelper.ViewData.Required())
 			{
-				label += " *";
+				labelText += " *";
 				if (htmlAttribs.ContainsKey("class"))
 				{
 					htmlAttribs["class"] = "text-required " + htmlAttribs["class"];
@@ -403,13 +413,14 @@ namespace GStoreData.AppHtmlHelpers
 					htmlAttribs["class"] = "text-required";
 				}
 			}
-			return htmlHelper.LabelForModel(label, htmlAttribs);
+
+			return htmlHelper.LabelForModel(labelText, htmlAttribs);
 		}
 
 		public static MvcHtmlString RequiredForModel(this HtmlHelper htmlHelper)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
-			if (metaData.IsRequired)
+			if (metaData.IsRequired || htmlHelper.ViewData.Required())
 			{
 				return new MvcHtmlString("<span class=\"text-required\">(*)</span>");
 			}
@@ -468,13 +479,23 @@ namespace GStoreData.AppHtmlHelpers
 		/// </summary>
 		/// <param name="htmlHelper"></param>
 		/// <returns></returns>
-		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false, bool mergeHtmlAttributesFromViewData = true)
+		public static MvcHtmlString TextBoxWithWatermarkForModel(this HtmlHelper htmlHelper, object htmlAttributes, bool setSizeToMaxLength = true, bool removeHtmlFieldPrefix = true, bool doNotAddFormControlClass = false, bool mergeHtmlAttributesFromViewData = true, bool useRequiredAttrib = true)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
 			string fieldName = metaData.PropertyName;
-			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
+			string displayName = htmlHelper.ViewData.DisplayName();
+			if (string.IsNullOrEmpty(displayName))
+			{
+				displayName = htmlHelper.ViewData.LabelText();
+			}
+			if (string.IsNullOrEmpty(displayName))
+			{
+				displayName = string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName;
+			}
 
-			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName) + (metaData.IsRequired ? " (Required)" : ""));
+			bool isRequired = metaData.IsRequired || htmlHelper.ViewData.Required();
+
+			string watermark = metaData.Watermark ?? ("Enter " + (displayName) + (isRequired ? " (Required)" : ""));
 			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 
 			if (mergeHtmlAttributesFromViewData)
@@ -510,6 +531,12 @@ namespace GStoreData.AppHtmlHelpers
 					htmlAttribs["size"] = viewDataMaxLength ?? maxLengthForModel;
 				}
 			}
+
+			if (isRequired && useRequiredAttrib)
+			{
+				htmlAttribs["Required"] = "required";
+			}
+
 			if (mergeHtmlAttributesFromViewData)
 			{
 				htmlAttribs.Merge(htmlHelper.ViewData["htmlAttributes"]);
@@ -541,7 +568,7 @@ namespace GStoreData.AppHtmlHelpers
 			string fieldName = metaData.PropertyName;
 			string displayName = (string.IsNullOrEmpty(metaData.DisplayName) ? metaData.PropertyName : metaData.DisplayName);
 
-			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName) + (metaData.IsRequired ? " (Required)" : ""));
+			string watermark = metaData.Watermark ?? ("Enter " + (metaData.DisplayName ?? metaData.PropertyName) + ((metaData.IsRequired || htmlHelper.ViewData.Required()) ? " (Required)" : ""));
 			RouteValueDictionary htmlAttribs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 
 			if (!htmlAttribs.ContainsKey("placeholder"))
@@ -641,12 +668,12 @@ namespace GStoreData.AppHtmlHelpers
 			return new MvcHtmlString(htmlHelper.ViewData.ModelMetadata.PropertyName);
 		}
 
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false, bool mergeHtmlAttributesFromViewData = true)
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false, bool mergeHtmlAttributesFromViewData = true, bool addUnselectedZero = false)
 		{
-			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, doNotAddFormControlClass, addIdToPropertyName, removeHtmlFieldPrefix, mergeHtmlAttributesFromViewData);
+			return htmlHelper.DropDownListForModel(selectList, null, optionLabel, allowNull, doNotAddFormControlClass, addIdToPropertyName, removeHtmlFieldPrefix, mergeHtmlAttributesFromViewData, addUnselectedZero);
 		}
 
-		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, object htmlAttributes, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false, bool mergeHtmlAttributesFromViewData = true)
+		public static MvcHtmlString DropDownListForModel(this HtmlHelper htmlHelper, IEnumerable<SelectListItem> selectList, object htmlAttributes, string optionLabel = null, bool allowNull = false, bool doNotAddFormControlClass = false, bool addIdToPropertyName = true, bool removeHtmlFieldPrefix = false, bool mergeHtmlAttributesFromViewData = true, bool addUnselectedZero = false)
 		{
 			ModelMetadata metaData = htmlHelper.ViewData.ModelMetadata;
 			string fieldName = metaData.PropertyName ?? "";
@@ -686,7 +713,10 @@ namespace GStoreData.AppHtmlHelpers
 				List<SelectListItem> newSelectList = new List<SelectListItem>();
 				if (htmlHelper.ViewData.Model != null)
 				{
-					newSelectList.Add(new SelectListItem() { Selected=true, Text = "[selected] Unknown value '" + htmlHelper.ViewData.Model.ToString() + "'", Value = htmlHelper.ViewData.Model.ToString()});
+					if (htmlHelper.ViewData.Model.ToString() != "0" || addUnselectedZero)
+					{
+						newSelectList.Add(new SelectListItem() { Selected = true, Text = "[selected] Unknown value '" + htmlHelper.ViewData.Model.ToString() + "'", Value = htmlHelper.ViewData.Model.ToString() });
+					}
 				}
 				selectList = newSelectList;
 			}
@@ -694,10 +724,13 @@ namespace GStoreData.AppHtmlHelpers
 			{
 				if ((htmlHelper.ViewData.Model != null) && (!selectList.Any(s => s.Selected)))
 				{
-					List<SelectListItem> newSelectList = new List<SelectListItem>();
-					newSelectList.Add(new SelectListItem() { Selected = true, Text = "[selected] Unknown value '" + htmlHelper.ViewData.Model.ToString() + "'", Value = htmlHelper.ViewData.Model.ToString() });
-					newSelectList.AddRange(selectList);
-					selectList = newSelectList;	
+					if (htmlHelper.ViewData.Model.ToString() != "0" || addUnselectedZero)
+					{
+						List<SelectListItem> newSelectList = new List<SelectListItem>();
+						newSelectList.Add(new SelectListItem() { Selected = true, Text = "[selected] Unknown value '" + htmlHelper.ViewData.Model.ToString() + "'", Value = htmlHelper.ViewData.Model.ToString() });
+						newSelectList.AddRange(selectList);
+						selectList = newSelectList;	
+					}
 				}
 			}
 
@@ -1562,6 +1595,24 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			return false;
+		}
+
+		public static string ErrorDetails(this ModelStateDictionary modelState)
+		{
+			StringBuilder errors = new StringBuilder();
+			foreach (string key in modelState.Keys)
+			{
+				ModelState stateValue = null;
+				if (modelState.TryGetValue(key, out stateValue))
+				{
+					foreach (ModelError error in stateValue.Errors)
+					{
+						errors.AppendLine(key + ": " + error.ErrorMessage + (error.Exception == null ? "" : error.Exception.ToString()));
+					}
+				}
+			}
+
+			return errors.ToString();
 		}
 	}
 }

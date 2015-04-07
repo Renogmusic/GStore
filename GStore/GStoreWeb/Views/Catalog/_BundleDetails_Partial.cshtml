@@ -28,7 +28,10 @@
 	ViewBag.Title = productBundle.Name + " - " + productBundle.Category.Name;
 
 	string imageUrl = productBundle.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+	bool newThisWeek = DateTime.UtcNow.Subtract(productBundle.CreateDateTimeUtc).Days <= 7;
 
+	bool shareByEmailEnabled = Settings.AppEnableEmail && storeFrontConfig.Client.UseSendGridEmail;
+	
 	<div class="row">
 		<div class="col-md-offset-3 col-md-6 ProductBundleListItemBox">
 			<center>
@@ -38,6 +41,14 @@
 					<br />
 				}
 				<h2>@Html.DisplayFor(model => productBundle.Name)</h2>
+				@if (newThisWeek)
+				{
+					<br/><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
+				}
+				@if (shareByEmailEnabled)
+				{
+					Html.RenderPartial("_ShareByEmail_Partial", productBundle);
+				}
 			</center>
 		</div>
 		<div class="col-md-2">
@@ -76,7 +87,7 @@
 <hr/>
 @if (!string.IsNullOrWhiteSpace(productBundle.SummaryHtml))
 {
-	string summaryCaption = productBundle.SummaryCaptionOrDefault();
+	string summaryCaption = productBundle.SummaryCaptionOrSystemDefault(storeFrontConfig);
 	<div class="btn btn-info NoClick">
 		@summaryCaption
 	</div>
@@ -103,7 +114,7 @@
 {
 	<div class="row">
 		<div class="btn btn-info NoClick">
-			@productBundle.TopDescriptionCaptionOrDefault()
+			@productBundle.TopDescriptionCaptionOrSystemDefault(storeFrontConfig)
 		</div>
 	</div>
 	<div class="row">
@@ -117,7 +128,7 @@
 <br /><br />
 @if (!string.IsNullOrWhiteSpace(productBundle.BottomDescriptionHtml))
 {
-	string bottomDescriptionCaption = productBundle.BottomDescriptionCaptionOrDefault();
+	string bottomDescriptionCaption = productBundle.BottomDescriptionCaptionOrSystemDefault(storeFrontConfig);
 	<div class="row">
 		<div class="btn btn-info NoClick">
 			@bottomDescriptionCaption

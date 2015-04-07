@@ -1,0 +1,7 @@
+﻿<form method="post">
+	@Html.ValidationSummary(false, "", htmlAttributes: new { @class="text-warning" })
+	Your Name:
+	<input class="form-control" type="text" length="30" maxlength="20" name="Name" required="required" />
+	<br/>
+	<button type="submit" class="btn btn-info">Start Chat!</button>
+</form>

@@ -6,24 +6,35 @@
 }
 @using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { enctype = "multipart/form-data" }))
 {
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(model => model.ReturnToFrontEnd)
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.ReturnToFrontEnd)
 	<div class="row">
 		@if (Model.IsCreatePage)
 		{
-			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 				<span class="text-info">Create a New Product</span>
 			</h1>
 		}
 		else
 		{
-			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 				<span class="text-warning">Edit Product</span>
-				<br/>
+				<br />
 				<small>@Html.DisplayFor(model => model.Product)</small>
 			</h1>
 		}
 	</div>
+
+	if (!Model.IsCreatePage)
+	{
+		<div class="row">
+			<div class="col-md-offset-1 col-md-8">
+				@Html.DisplayFor(model => model.Category, "CategoryPath")
+				@Html.DisplayFor(model => model.Category, "ChildCategoryDropdownLinks")
+				<br /><br />
+			</div>
+		</div>
+	}
 
 	<div class="row">
 		<div class="form-actions">
@@ -59,9 +70,9 @@
 							@Html.ActionLink("OK / Cancel", "Manager", new { ProductCategoryId = Model.ProductCategoryId }, new { @class = "btn btn-default" })
 						}
 						@:&nbsp;&nbsp;|&nbsp;&nbsp;
-						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab=Model.ActiveTab }, new { id="DetailsTop", @class = "btn btn-warning" })
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DetailsTop", @class = "btn btn-warning" })
 						@:&nbsp;&nbsp;|&nbsp;&nbsp;
-						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DeleteTop", @class = "btn btn-danger" })
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DeleteTop", @class = "btn btn-danger" })
 					}
 				</center>
 			</div>
@@ -69,7 +80,7 @@
 	</div>
 
 	Html.RenderPartial("_EditPartial");
-	
+
 	<div class="row">
 		<div class="form-actions">
 			<div class="col-md-offset-1 col-md-8">
@@ -104,9 +115,9 @@
 							@Html.ActionLink("OK / Cancel", "Manager", new { ProductCategoryId = Model.ProductCategoryId }, new { @class = "btn btn-default" })
 						}
 						@:&nbsp;&nbsp;|&nbsp;&nbsp;
-						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DetailsBottom", @class = "btn btn-warning" })
+						@Html.ActionLink("Details", "Details", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DetailsBottom", @class = "btn btn-warning" })
 						@:&nbsp;&nbsp;|&nbsp;&nbsp;
-						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DeleteBottom", @class = "btn btn-danger" })
+						@Html.ActionLink("Delete", "Delete", new { id = Model.ProductId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DeleteBottom", @class = "btn btn-danger" })
 					}
 				</center>
 			</div>
@@ -115,6 +126,6 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+	@Html.ActionLink("Back to List", "Index")
 </div>
 

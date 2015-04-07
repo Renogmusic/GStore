@@ -34,22 +34,18 @@ namespace GStoreData.Models
 		[Display(Name = "Product Category")]
 		public virtual ProductCategory ParentCategory { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Product Type Single", Description = "Singular Name used when showing a Product for this category. \nExample: Product, Item, Song, Toy.\nDefault: Item")]
 		public string ProductTypeSingle { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Product Type Plural", Description = "Singular Name used when showing a list of Products for this category. \nExample: Products, Items, Songs, Toys.\nDefault: Items")]
 		public string ProductTypePlural { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Bundle Type Single", Description="Singular Name used when showing a bundle for this category. \nExample: Bundle, Package, Album, Collection.\nDefault: Bundle")]
 		public string BundleTypeSingle { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Bundle Type Plural", Description = "Plural Name used when showing a list of bundles for this category. \nExample: Bundles, Packages, Albums, Collections.\nDefault: Bundles")]
 		public string BundleTypePlural { get; set; }
@@ -194,11 +190,16 @@ namespace GStoreData.Models
 		[Display(Name = "Meta Tag Keywords", Description = "META Keywords tags for search engines. Keywords separated by a space for search engines.\nLeave this blank to use the Store Front Keywords Meta Tag. \nThis is also used for products that do not have a Keywords Meta Tag defined.")]
 		public string MetaKeywords { get; set; }
 
+
+		public virtual ICollection<ProductCategoryImage> Images { get; set; }
+
 		public virtual ICollection<Product> Products { get; set; }
 
 		public virtual ICollection<ProductBundle> ProductBundles { get; set; }
 
+		public virtual ICollection<ProductCategoryAltProduct> CategoryAltProducts { get; set; }
 
+		public virtual ICollection<ProductCategoryAltProductBundle> CategoryAltProductBundles { get; set; }
 	}
 
 
@@ -208,7 +209,7 @@ namespace GStoreData.Models
 	public enum CategoryListTemplateEnum : int
 	{
 		Default = 0,
-		Music = 100
+		//Music = 100
 	}
 
 	/// <summary>
@@ -217,7 +218,7 @@ namespace GStoreData.Models
 	public enum ProductListTemplateEnum : int
 	{
 		Default = 0,
-		Music = 100
+		//Music = 100
 	}
 
 	/// <summary>
@@ -226,10 +227,8 @@ namespace GStoreData.Models
 	public enum ProductBundleListTemplateEnum : int
 	{
 		Default = 0,
-		Music = 100
+		//Music = 100
 	}
-
-
 
 	/// <summary>
 	/// Product detail template for products in a category
@@ -237,7 +236,7 @@ namespace GStoreData.Models
 	public enum ProductDetailTemplateEnum: int
 	{
 		Default = 0,
-		Music = 100
+		//Music = 100
 	}
 
 	/// <summary>
@@ -246,7 +245,7 @@ namespace GStoreData.Models
 	public enum ProductBundleDetailTemplateEnum : int
 	{
 		Default = 0,
-		Music = 100
+		//Music = 100
 	}
 
 

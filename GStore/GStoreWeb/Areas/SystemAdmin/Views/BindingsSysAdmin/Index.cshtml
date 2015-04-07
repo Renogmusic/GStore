@@ -71,6 +71,12 @@ else
 					@Html.ActionSortLink("Store Front Status", "Index", "StoreFrontStatus")
 				</th>
 				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StoreFrontConfigurationId, "Index")
+				</th>
+				<th class="small">
+					@Html.ActionSortLinkFor(model => model.StoreFrontConfiguration, "Index")
+				</th>
+				<th class="small">
 					@Html.ActionSortLinkFor(model => model.HostName, "Index")
 				</th>
 				<th class="small">
@@ -151,7 +157,7 @@ else
 						@Html.DisplayFor(modelItem => item.StoreFrontId)
 					</td>
 					<td class="small">
-						@Html.DisplayFor(modelItem => item.StoreFront.CurrentConfigOrAny().Name)
+						@Html.DisplayFor(modelItem => item.StoreFrontConfiguration.Name)
 					</td>
 					<td>
 						@if (storeFrontIsActive)
@@ -164,6 +170,12 @@ else
 							<br />
 							@Html.ActionLink("Activate StoreFront", "Activate", "StoreFrontSysAdmin", new { id = item.StoreFrontId }, new { @class = "btn btn-sm btn-warning" });
 					}
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.StoreFrontConfigurationId)
+					</td>
+					<td class="small">
+						@Html.DisplayFor(modelItem => item.StoreFrontConfiguration)
 					</td>
 					<td class="small">
 						@Html.DisplayFor(modelItem => item.HostName)

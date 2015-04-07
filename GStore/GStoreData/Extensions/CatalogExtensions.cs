@@ -157,7 +157,7 @@ namespace GStoreData
 		/// </summary>
 		/// <param name="category"></param>
 		/// <returns></returns>
-		public static string CategoryPath(this ProductCategory category, string delimiter = " -> ", int maxLevels = 10)
+		public static string CategoryPath(this ProductCategory category, string delimiter = " -> ", int maxLevels = 20)
 		{
 			if (category == null)
 			{
@@ -166,7 +166,7 @@ namespace GStoreData
 			return category.CategoryPathRecurse(delimiter, maxLevels);
 		}
 
-		private static string CategoryPathRecurse(this ProductCategory category, string delimiter = " -> ", int maxLevels = 10, int currentLevel = 1)
+		private static string CategoryPathRecurse(this ProductCategory category, string delimiter = " -> ", int maxLevels = 20, int currentLevel = 1)
 		{
 			if (category == null)
 			{
@@ -219,158 +219,280 @@ namespace GStoreData
 			return category.StoreFront.ProductCategoryCatalogFilePath(applicationPath, routeData, server, category.ImageName);
 		}
 
-		public static string DefaultSummaryCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultSummaryCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSummaryCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultSummaryCaption + "')";
 				}
 				return category.DefaultSummaryCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Summary')";
+				return category.ParentCategory.DefaultSummaryCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Summary";
+
+			return storeFrontConfig.CatalogDefaultSummaryCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static string DefaultTopDescriptionCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultTopDescriptionCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultTopDescriptionCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultTopDescriptionCaption + "')";
 				}
 				return category.DefaultTopDescriptionCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Description for " + productName + "')";
+				return category.ParentCategory.DefaultTopDescriptionCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Description for " + productName;
+
+			return storeFrontConfig.CatalogDefaultTopDescriptionCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static string DefaultBottomDescriptionCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultBottomDescriptionCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultBottomDescriptionCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultBottomDescriptionCaption + "')";
 				}
 				return category.DefaultBottomDescriptionCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Details for " + productName + "')";
+				return category.ParentCategory.DefaultBottomDescriptionCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Details for " + productName;
+
+			return storeFrontConfig.CatalogDefaultBottomDescriptionCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static string DefaultSampleImageCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultSampleImageCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleImageCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultSampleImageCaption + "')";
 				}
 				return category.DefaultSampleImageCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Sample Image for " + productName + "')";
+				return category.ParentCategory.DefaultSampleImageCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Sample Image for " + productName;
+
+			return storeFrontConfig.CatalogDefaultSampleImageCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static string DefaultSampleDownloadCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultSampleDownloadCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleDownloadCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultSampleDownloadCaption + "')";
 				}
 				return category.DefaultSampleDownloadCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Sample Download for " + productName + "')";
+				return category.ParentCategory.DefaultSampleDownloadCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Sample Download for " + productName;
+
+			return storeFrontConfig.CatalogDefaultSampleDownloadCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static string DefaultSampleAudioCaptionOrSystemDefault(this ProductCategory category, string productName, bool wrapForAdmin = false)
+		public static string DefaultSampleAudioCaptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, string productName, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if ((category != null) && (!string.IsNullOrEmpty(category.DefaultSampleAudioCaption)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return "(Category Default: '" + category.DefaultSampleAudioCaption + "')";
 				}
 				return category.DefaultSampleAudioCaption;
 			}
-			if (wrapForAdmin)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return "(System Default: 'Sample Audio for " + productName + "')";
+				return category.ParentCategory.DefaultSampleAudioCaptionOrSystemDefault(storeFrontConfig, productName, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return "Sample Audio for " + productName;
+
+			return storeFrontConfig.CatalogDefaultSampleAudioCaptionOrSystemDefault(productName, wrapForAdmin);
 		}
 
-		public static MvcHtmlString NoProductsMessageHtmlOrSystemDefault(this ProductCategory category, bool wrapForAdmin = false)
+		public static MvcHtmlString NoProductsMessageHtmlOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1, string productTypePluralOrSystemDefault = "")
 		{
+			if ((category != null) && string.IsNullOrEmpty(productTypePluralOrSystemDefault))
+			{
+				productTypePluralOrSystemDefault = category.ProductTypeSingleOrSystemDefault(storeFrontConfig);
+			}
+
 			if ((category != null) && (!string.IsNullOrEmpty(category.NoProductsMessageHtml)))
 			{
-				if (wrapForAdmin)
+				if (wrapForAdmin && currentLevel != 1)
 				{
 					return new MvcHtmlString("(Category Default: '" + category.NoProductsMessageHtml + "')");
 				}
 				return new MvcHtmlString(category.NoProductsMessageHtml);
 			}
-			if (category != null)
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				if (wrapForAdmin)
+				return category.ParentCategory.NoProductsMessageHtmlOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1, productTypePluralOrSystemDefault);
+			}
+
+			return storeFrontConfig.CatalogNoProductsMessageOrSystemDefault(productTypePluralOrSystemDefault, wrapForAdmin);
+		}
+
+		public static string MetaDescriptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
+		{
+			if (category != null && (!string.IsNullOrEmpty(category.MetaDescription)))
+			{
+				if (wrapForAdmin && currentLevel != 1)
 				{
-					return new MvcHtmlString("(System Default: <h2>There are no current " + category.ProductTypePlural.ToHtml() + " in this Category</h2>");
+					return "(Category Default: " + category.MetaDescription + ")";
 				}
-				return new MvcHtmlString("<h2>There are no current " + category.ProductTypePlural.ToHtml() + " in this Category</h2>");
+				return category.MetaDescription;
+			}
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+				return category.ParentCategory.MetaDescriptionOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
 
 			if (wrapForAdmin)
 			{
-				return new MvcHtmlString("(System Default: <h2>There are no current products in this Category</h2>");
+				return "(Store Front Default: " + storeFrontConfig.MetaDescriptionOrSystemDefault(wrapForAdmin) + ")";
 			}
-			return new MvcHtmlString("<h2>There are no current products in this Category</h2>");
+			return storeFrontConfig.MetaDescriptionOrSystemDefault(wrapForAdmin);
 		}
 
-		public static string MetaDescriptionOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig)
-		{
-			if (category != null && (!string.IsNullOrEmpty(category.MetaDescription)))
-			{
-				return category.MetaDescription;
-			}
-			if (storeFrontConfig != null && (!string.IsNullOrEmpty(storeFrontConfig.MetaDescription)))
-			{
-				return storeFrontConfig.MetaDescription;
-			}
-			return BaseController.DefaultMetaDescription;
-		}
-
-		public static string MetaKeywordsOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig)
+		public static string MetaKeywordsOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
 		{
 			if (category != null && (!string.IsNullOrEmpty(category.MetaKeywords)))
 			{
+				if (wrapForAdmin && currentLevel != 1)
+				{
+					return "(Category Default: " + category.MetaKeywords + ")";
+				}
 				return category.MetaKeywords;
 			}
-			if (storeFrontConfig != null && (!string.IsNullOrEmpty(storeFrontConfig.MetaKeywords)))
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
 			{
-				return storeFrontConfig.MetaKeywords;
+				return category.ParentCategory.MetaKeywordsOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
 			}
-			return BaseController.DefaultMetaKeywords;
+
+			if (wrapForAdmin)
+			{
+				return "(Store Front Default: " + storeFrontConfig.MetaKeywordsOrSystemDefault(wrapForAdmin) + ")";
+			}
+			return storeFrontConfig.MetaKeywordsOrSystemDefault(wrapForAdmin);
+		}
+
+		public static string ProductTypeSingleOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
+		{
+			if (category != null && (!string.IsNullOrEmpty(category.ProductTypeSingle)))
+			{
+				if (wrapForAdmin && currentLevel != 1)
+				{
+					return "(Category Default: " + category.ProductTypeSingle + ")";
+				}
+				return category.ProductTypeSingle;
+			}
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+
+				return category.ParentCategory.ProductTypeSingleOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
+			}
+			if (wrapForAdmin)
+			{
+				return "(Store Front Default: " + storeFrontConfig.CatalogDefaultProductTypeSingleOrSystemDefault(wrapForAdmin) + ")";
+			}
+			return storeFrontConfig.CatalogDefaultProductTypeSingleOrSystemDefault(wrapForAdmin);
+		}
+
+		public static string ProductTypePluralOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
+		{
+			if (category != null && (!string.IsNullOrEmpty(category.ProductTypePlural)))
+			{
+				if (wrapForAdmin && currentLevel != 1)
+				{
+					return "(Category Default: " + category.ProductTypePlural + ")";
+				}
+				return category.ProductTypePlural;
+			}
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+				return category.ParentCategory.ProductTypePluralOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(Store Front Default: " + storeFrontConfig.CatalogDefaultProductTypePluralOrSystemDefault(wrapForAdmin) + ")";
+			}
+			return storeFrontConfig.CatalogDefaultProductTypePluralOrSystemDefault(wrapForAdmin);
+		}
+
+		public static string BundleTypeSingleOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
+		{
+			if (category != null && (!string.IsNullOrEmpty(category.BundleTypeSingle)))
+			{
+				if (wrapForAdmin && currentLevel != 1)
+				{
+					return "(Category Default: " + category.BundleTypeSingle + ")";
+				}
+				return category.BundleTypeSingle;
+			}
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+				return category.ParentCategory.BundleTypeSingleOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(Store Front Default: " + storeFrontConfig.CatalogDefaultProductBundleTypeSingleOrSystemDefault(wrapForAdmin) + ")";
+			}
+			return storeFrontConfig.CatalogDefaultProductBundleTypeSingleOrSystemDefault(wrapForAdmin);
+		}
+
+		public static string BundleTypePluralOrSystemDefault(this ProductCategory category, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false, int maxLevels = 20, int currentLevel = 1)
+		{
+			if (category != null && (!string.IsNullOrEmpty(category.BundleTypePlural)))
+			{
+				if (wrapForAdmin && currentLevel != 1)
+				{
+					return "(Category Default: " + category.BundleTypePlural + ")";
+				}
+				return category.BundleTypePlural;
+			}
+			//check parent categories
+			if ((category != null) && category.ParentCategoryId.HasValue && (currentLevel < maxLevels))
+			{
+				return category.ParentCategory.BundleTypePluralOrSystemDefault(storeFrontConfig, wrapForAdmin, maxLevels, currentLevel + 1);
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(Store Front Default: " + storeFrontConfig.CatalogDefaultProductBundleTypePluralOrSystemDefault(wrapForAdmin) + ")";
+			}
+			return storeFrontConfig.CatalogDefaultProductBundleTypePluralOrSystemDefault(wrapForAdmin);
 		}
 
 		public static void CloneFromParentForNew(this ProductCategory productCategory, ProductCategory parentProductCategory)
@@ -424,6 +546,191 @@ namespace GStoreData
 
 		#endregion
 
+		#region StoreFront Config Defaults
+
+		public static MvcHtmlString CatalogNoProductsMessageOrSystemDefault(this StoreFrontConfiguration storeFrontConfig, string productTypePluralOrSystemDefault, bool wrapForAdmin = false)
+		{
+			if (storeFrontConfig != null && (!string.IsNullOrEmpty(storeFrontConfig.CatalogDefaultNoProductsMessageHtml)))
+			{
+				return new MvcHtmlString(storeFrontConfig.CatalogDefaultNoProductsMessageHtml);
+			}
+
+			if (!string.IsNullOrEmpty(productTypePluralOrSystemDefault))
+			{
+				if (wrapForAdmin)
+				{
+					return new MvcHtmlString("(System Default: <h2>There are no current " + productTypePluralOrSystemDefault.ToHtml() + " in this Category</h2>");
+				}
+				return new MvcHtmlString("<h2>There are no current " + productTypePluralOrSystemDefault.ToHtml() + " in this Category</h2>");
+			}
+
+			productTypePluralOrSystemDefault = storeFrontConfig.CatalogDefaultProductTypePluralOrSystemDefault();
+			if (wrapForAdmin)
+			{
+				return new MvcHtmlString("(System Default: <h2>There are no current " + productTypePluralOrSystemDefault.ToHtml() + " in this Category</h2>");
+			}
+			return new MvcHtmlString("<h2>There are no current " + productTypePluralOrSystemDefault.ToHtml() + " in this Category</h2>");
+		}
+
+
+		public static string CatalogDefaultSummaryCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultSummaryCaption)))
+			{
+				return config.CatalogDefaultSummaryCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Summary for " + productName + "')";
+			}
+			return "Summary for " + productName;
+		}
+
+		public static string CatalogDefaultTopDescriptionCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultTopDescriptionCaption)))
+			{
+				return config.CatalogDefaultTopDescriptionCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Description for " + productName + "')";
+			}
+			return "Description for " + productName;
+		}
+
+		public static string CatalogDefaultBottomDescriptionCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultBottomDescriptionCaption)))
+			{
+				return config.CatalogDefaultBottomDescriptionCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Details for " + productName + "')";
+			}
+			return "Details for " + productName;
+		}
+
+		public static string CatalogDefaultSampleImageCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultSampleImageCaption)))
+			{
+				return config.CatalogDefaultSampleImageCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Image for " + productName + "')";
+			}
+			return "Sample Image for " + productName;
+		}
+
+		public static string CatalogDefaultSampleDownloadCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultSampleDownloadCaption)))
+			{
+				return config.CatalogDefaultSampleDownloadCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Download for " + productName + "')";
+			}
+			return "Sample Download for " + productName;
+		}
+
+		public static string CatalogDefaultSampleAudioCaptionOrSystemDefault(this StoreFrontConfiguration config, string productName, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultSampleAudioCaption)))
+			{
+				return config.CatalogDefaultSampleAudioCaption;
+			}
+
+			if (wrapForAdmin)
+			{
+				return "(System Default: 'Sample Audio for " + productName + "')";
+			}
+			return "Sample Audio for " + productName;
+		}
+
+		public static string MetaDescriptionOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.MetaDescription)))
+			{
+				return config.MetaDescription;
+			}
+
+			return BaseController.DefaultMetaDescription;
+		}
+
+		public static string MetaKeywordsOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.MetaKeywords)))
+			{
+				return config.MetaKeywords;
+			}
+
+			return BaseController.DefaultMetaKeywords;
+		}
+
+		public static string CatalogDefaultProductTypeSingleOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultProductTypeSingle)))
+			{
+				return config.CatalogDefaultProductTypeSingle;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: Item)";
+			}
+			return "Item";
+		}
+
+		public static string CatalogDefaultProductTypePluralOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultProductTypePlural)))
+			{
+				return config.CatalogDefaultProductTypePlural;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: Items)";
+			}
+			return "Items";
+		}
+
+		public static string CatalogDefaultProductBundleTypeSingleOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultProductBundleTypeSingle)))
+			{
+				return config.CatalogDefaultProductBundleTypeSingle;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: Bundle)";
+			}
+			return "Bundle";
+		}
+
+		public static string CatalogDefaultProductBundleTypePluralOrSystemDefault(this StoreFrontConfiguration config, bool wrapForAdmin = false)
+		{
+			if (config != null && (!string.IsNullOrEmpty(config.CatalogDefaultProductBundleTypePlural)))
+			{
+				return config.CatalogDefaultProductBundleTypePlural;
+			}
+			if (wrapForAdmin)
+			{
+				return "(System Default: Bundles)";
+			}
+			return "Bundles";
+		}
+
+		#endregion
+
 		#region Bundle
 
 		/// <summary>
@@ -445,7 +752,7 @@ namespace GStoreData
 			return bundle.StoreFront.ProductBundleCatalogFileUrl(applicationPath, routeData, bundle.ImageName);
 		}
 
-		public static string SummaryCaptionOrDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		public static string SummaryCaptionOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (bundle == null)
 			{
@@ -455,10 +762,11 @@ namespace GStoreData
 			{
 				return bundle.SummaryCaption;
 			}
-			return bundle.Category.DefaultSummaryCaptionOrSystemDefault(bundle.Name);
+			//check parent categories
+			return bundle.Category.DefaultSummaryCaptionOrSystemDefault(storeFrontConfig, bundle.Name);
 		}
 
-		public static string TopDescriptionCaptionOrDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		public static string TopDescriptionCaptionOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (bundle == null)
 			{
@@ -468,10 +776,11 @@ namespace GStoreData
 			{
 				return bundle.TopDescriptionCaption;
 			}
-			return bundle.Category.DefaultTopDescriptionCaptionOrSystemDefault(bundle.Name);
+			//check parent categories
+			return bundle.Category.DefaultTopDescriptionCaptionOrSystemDefault(storeFrontConfig, bundle.Name);
 		}
 
-		public static string BottomDescriptionCaptionOrDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		public static string BottomDescriptionCaptionOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (bundle == null)
 			{
@@ -481,10 +790,11 @@ namespace GStoreData
 			{
 				return bundle.BottomDescriptionCaption;
 			}
-			return bundle.Category.DefaultBottomDescriptionCaptionOrSystemDefault(bundle.Name);
+			//check parent categories
+			return bundle.Category.DefaultBottomDescriptionCaptionOrSystemDefault(storeFrontConfig, bundle.Name);
 		}
 
-		public static string ProductTypeSingleOrSystemDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		public static string ProductTypeSingleOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (bundle == null)
 			{
@@ -494,10 +804,11 @@ namespace GStoreData
 			{
 				return bundle.ProductTypeSingle;
 			}
-			return bundle.Category.ProductTypeSingle.OrDefault("Item");
+			//check parent categories
+			return bundle.Category.ProductTypeSingleOrSystemDefault(storeFrontConfig);
 		}
 
-		public static string ProductTypePluralOrSystemDefault(this ProductBundle bundle, bool wrapForAdmin = false)
+		public static string ProductTypePluralOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (bundle == null)
 			{
@@ -507,7 +818,8 @@ namespace GStoreData
 			{
 				return bundle.ProductTypePlural;
 			}
-			return bundle.Category.ProductTypePlural.OrDefault("Items");
+			//check parent categories
+			return bundle.Category.ProductTypePluralOrSystemDefault(storeFrontConfig);
 		}
 
 		public static string MetaDescriptionOrSystemDefault(this ProductBundle bundle, StoreFrontConfiguration storeFrontConfig)
@@ -696,7 +1008,7 @@ namespace GStoreData
 			return product.StoreFront.ProductCatalogFilePath(applicationPath, routeData, server, product.SampleImageFileName);
 		}
 
-		public static string SummaryCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string SummaryCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -706,10 +1018,10 @@ namespace GStoreData
 			{
 				return product.SummaryCaption;
 			}
-			return product.Category.DefaultSummaryCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultSummaryCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
-		public static string TopDescriptionCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string TopDescriptionCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -719,10 +1031,10 @@ namespace GStoreData
 			{
 				return product.TopDescriptionCaption;
 			}
-			return product.Category.DefaultTopDescriptionCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultTopDescriptionCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
-		public static string BottomDescriptionCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string BottomDescriptionCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -732,10 +1044,10 @@ namespace GStoreData
 			{
 				return product.BottomDescriptionCaption;
 			}
-			return product.Category.DefaultBottomDescriptionCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultBottomDescriptionCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
-		public static string SampleImageCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string SampleImageCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -745,10 +1057,10 @@ namespace GStoreData
 			{
 				return product.SampleImageCaption;
 			}
-			return product.Category.DefaultSampleImageCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultSampleImageCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
-		public static string SampleDownloadCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string SampleDownloadCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -758,10 +1070,10 @@ namespace GStoreData
 			{
 				return product.SampleDownloadCaption;
 			}
-			return product.Category.DefaultSampleDownloadCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultSampleDownloadCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
-		public static string SampleAudioCaptionOrDefault(this Product product, bool wrapForAdmin = false)
+		public static string SampleAudioCaptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig, bool wrapForAdmin = false)
 		{
 			if (product == null)
 			{
@@ -771,7 +1083,7 @@ namespace GStoreData
 			{
 				return product.SampleAudioCaption;
 			}
-			return product.Category.DefaultSampleAudioCaptionOrSystemDefault(product.Name);
+			return product.Category.DefaultSampleAudioCaptionOrSystemDefault(storeFrontConfig, product.Name);
 		}
 
 		public static string MetaDescriptionOrSystemDefault(this Product product, StoreFrontConfiguration storeFrontConfig)
@@ -1395,6 +1707,93 @@ namespace GStoreData
 
 		}
 
+		public static ProductCategoryAltProduct CreateProductCategoryAltProductFastAdd(this IGstoreDb db, ProductCategory category, Product product, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (category == null)
+			{
+				throw new ArgumentNullException("category");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+
+			ProductCategoryAltProduct record = db.ProductCategoryAltProducts.Create();
+
+			record.ClientId = category.ClientId;
+			record.Client = category.Client;
+			record.StoreFrontId = category.StoreFrontId;
+			record.StoreFront = category.StoreFront;
+
+			record.Category = category;
+			record.ProductCategoryId = category.ProductCategoryId;
+
+			record.ProductId = product.ProductId;
+			record.Product = product;
+
+			record.Order = product.Order;
+			record.IsPending = false;
+			record.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			record.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			record = db.ProductCategoryAltProducts.Add(record);
+			db.SaveChanges();
+
+			return record;
+		}
+
+		public static ProductCategoryAltProductBundle CreateProductCategoryAltProductBundleFastAdd(this IGstoreDb db, ProductCategory category, ProductBundle bundle, StoreFront storeFront, UserProfile userProfile)
+		{
+			if (category == null)
+			{
+				throw new ArgumentNullException("category");
+			}
+			if (storeFront == null)
+			{
+				throw new ArgumentNullException("storeFront");
+			}
+			if (userProfile == null)
+			{
+				throw new ArgumentNullException("userProfile");
+			}
+			if (bundle == null)
+			{
+				throw new ArgumentNullException("bundle");
+			}
+
+			ProductCategoryAltProductBundle record = db.ProductCategoryAltProductBundles.Create();
+
+			record.ClientId = category.ClientId;
+			record.Client = category.Client;
+			record.StoreFrontId = category.StoreFrontId;
+			record.StoreFront = category.StoreFront;
+
+			record.Category = category;
+			record.ProductCategoryId = category.ProductCategoryId;
+
+			record.ProductBundleId = bundle.ProductBundleId;
+			record.ProductBundle = bundle;
+
+			record.Order = bundle.Order;
+			record.IsPending = false;
+			record.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			record.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+			record = db.ProductCategoryAltProductBundles.Add(record);
+			db.SaveChanges();
+
+			return record;
+		}
+
+
 		public static void SetDefaultsForNew(this ProductBundleItem item, ProductBundle bundle)
 		{
 			item.Client = bundle.Client;
@@ -1509,12 +1908,54 @@ namespace GStoreData
 		/// <param name="query"></param>
 		/// <param name="isRegistered"></param>
 		/// <returns></returns>
+		public static IQueryable<Product> WhereRegisteredAnonymousCheck(this IQueryable<Product> query, bool isRegistered)
+		{
+			return query.Where(pc =>
+					(isRegistered || !pc.ForRegisteredOnly)
+					&&
+					(!isRegistered || !pc.ForAnonymousOnly));
+		}
+
+		/// <summary>
+		/// Returns a queryable filter to check ForanonymousOnly and ForRegisteredOnly against the current user
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="isRegistered"></param>
+		/// <returns></returns>
 		public static IQueryable<ProductBundle> WhereRegisteredAnonymousCheck(this IQueryable<ProductBundle> query, bool isRegistered)
 		{
 			return query.Where(pc =>
 					(isRegistered || !pc.ForRegisteredOnly)
 					&&
 					(!isRegistered || !pc.ForAnonymousOnly));
+		}
+
+		/// <summary>
+		/// Returns a queryable filter to check ForanonymousOnly and ForRegisteredOnly against the current user
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="isRegistered"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategoryAltProductBundle> WhereRegisteredAnonymousCheck(this IQueryable<ProductCategoryAltProductBundle> query, bool isRegistered)
+		{
+			return query.Where(alt =>
+					(isRegistered || !alt.ProductBundle.ForRegisteredOnly)
+					&&
+					(!isRegistered || !alt.ProductBundle.ForAnonymousOnly));
+		}
+
+		/// <summary>
+		/// Returns a queryable filter to check ForanonymousOnly and ForRegisteredOnly against the current user
+		/// </summary>
+		/// <param name="query"></param>
+		/// <param name="isRegistered"></param>
+		/// <returns></returns>
+		public static IQueryable<ProductCategoryAltProduct> WhereRegisteredAnonymousCheck(this IQueryable<ProductCategoryAltProduct> query, bool isRegistered)
+		{
+			return query.Where(alt =>
+					(isRegistered || !alt.Product.ForRegisteredOnly)
+					&&
+					(!isRegistered || !alt.Product.ForAnonymousOnly));
 		}
 
 		public static string SyncCatalogFile(this Product product, Expression<Func<Product, String>> expression, string defaultFileName, bool eraseFileNameIfNotFound, bool searchForFileIfBlank, bool preview, bool verbose, string applicationPath, RouteData routeData, HttpServerUtilityBase server, out bool hasDbChanges)
@@ -1765,6 +2206,8 @@ namespace GStoreData
 			}
 			return results.ToString();
 		}
+
+
 
 	}
 }

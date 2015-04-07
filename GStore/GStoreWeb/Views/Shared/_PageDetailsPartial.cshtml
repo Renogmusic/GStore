@@ -109,21 +109,59 @@
 			document.getElementById('ActiveTab').value = tabName;
 		}
 	}
+	function ShowPageSections()
+	{
+		if (document.getElementById('PageContent'))
+		{
+			document.getElementById('PageContent').hidden = false;
+		}
+	}
+	function HidePageSections()
+	{
+		if (document.getElementById('PageContent'))
+		{
+			document.getElementById('PageContent').hidden = true;
+		}
+	}
+
+	function HideFormPreview()
+	{
+		if (document.getElementById('PageForm'))
+		{
+			document.getElementById('PageForm').hidden = true;
+		}
+	}
+	function ShowFormPreview()
+	{
+		if (document.getElementById('PageForm'))
+		{
+			document.getElementById('PageForm').hidden = false;
+		}
+	}
+
+	@if (Model.ActiveTab.ToLower() == "content")
+	{
+		@:$(document).ready(function () { ShowPageSections(); ShowFormPreview(); })
+	}
+	else
+	{
+		@:$(document).ready(function () { HidePageSections(); HideFormPreview(); })
+	}
 </script>
 <ul class="nav nav-tabs row col-md-offset-2 col-md-10" style="width:100%">
-	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="SetActiveTab('Page');">Page</a></li>
-	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="SetActiveTab('Theme');">Theme</a></li>
-	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="SetActiveTab('Meta');">Meta</a></li>
-	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="SetActiveTab('Form');">Form</a></li>
-	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
+	<li class="@(sectionPageActive)"><a data-toggle="tab" href="#sectionPage" onclick="SetActiveTab('Page'); HidePageSections(); HideFormPreview();">Page</a></li>
+	<li class="@(sectionThemeActive)"><a data-toggle="tab" href="#sectionTheme" onclick="SetActiveTab('Theme'); HidePageSections(); HideFormPreview();">Theme</a></li>
+	<li class="@(sectionMetaActive)"><a data-toggle="tab" href="#sectionMeta" onclick="SetActiveTab('Meta'); HidePageSections(); HideFormPreview();">Meta</a></li>
+	<li class="@(sectionFormActive)"><a data-toggle="tab" href="#sectionForm" onclick="SetActiveTab('Form'); HidePageSections(); HideFormPreview();">Form</a></li>
+	<li class="@(sectionActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation'); HidePageSections(); HideFormPreview();">Activation</a></li>
 	@{
 		if (showContentTab)
 		{
-			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content');">Content</a></li>
+			<li class="@(sectionContentActive)"><a data-toggle="tab" href="#sectionContent" onclick="SetActiveTab('Content'); ShowPageSections(); ShowFormPreview();">Content</a></li>
 		}
 		if (showVariables)
 		{
-			<li class="@(sectionVariablesActive)"><a data-toggle="tab" href="#sectionVariables" onclick="SetActiveTab('Variables');">Variables</a></li>
+			<li class="@(sectionVariablesActive)"><a data-toggle="tab" href="#sectionVariables" onclick="SetActiveTab('Variables'); HidePageSections(); HideFormPreview();">Variables</a></li>
 		}
 }
 	@{

@@ -50,9 +50,6 @@ namespace GStoreData.Models
 		[Display(Name = "Product Categories")]
 		public virtual ICollection<ProductCategory> ProductCategories { get; set; }
 
-		[Display(Name = "Store Bindings")]
-		public virtual ICollection<StoreBinding> StoreBindings { get; set; }
-
 		[Display(Name = "User Profiles")]
 		public virtual ICollection<UserProfile> UserProfiles { get; set; }
 

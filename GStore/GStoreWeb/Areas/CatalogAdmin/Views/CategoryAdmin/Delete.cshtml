@@ -1,7 +1,7 @@
 ﻿@model CategoryEditAdminViewModel
 
 <div class="row">
-	<div class="jumbotron CatalogAdminDeletePageTitle col-md-offset-2 col-md-8 NoBottomMarginOrPad">
+	<div class="jumbotron CatalogAdminDeletePageTitle col-md-offset-2 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 		<h2 class="text-danger">Confirm Category Delete</h2>
 	</div>
 </div>
@@ -9,6 +9,14 @@
 <div class="row">
 	<h3 class="text-danger">Are you sure you want to delete this Category?</h3>
 	<h4>@Html.DisplayFor(model => model.ProductCategory, "ProductCategoryWithProductsLink")</h4>
+</div>
+
+<div class="row">
+	<div class="col-md-offset-1 col-md-8">
+		@Html.DisplayFor(model => model.ProductCategory, "CategoryPath")
+		@Html.DisplayFor(model => model.ProductCategory, "ChildCategoryDropdownLinks")
+		<br /><br />
+	</div>
 </div>
 
 @using (Html.BeginForm())
@@ -30,9 +38,9 @@
 					@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
 				}
 				&nbsp;&nbsp;|&nbsp;&nbsp;
-				@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DetailsTop", @class = "btn btn-success" })
+				@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DetailsTop", @class = "btn btn-success" })
 				&nbsp;&nbsp;|&nbsp;&nbsp;
-				@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="EditTop", @class = "btn btn-warning" })
+				@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "EditTop", @class = "btn btn-warning" })
 			</center>
 		</div>
 	</div>
@@ -58,9 +66,9 @@
 					@Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
 				}
 				&nbsp;&nbsp;|&nbsp;&nbsp;
-				@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="DetailsBottom", @class = "btn btn-success" })
+				@Html.ActionLink("Details", "Details", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DetailsBottom", @class = "btn btn-success" })
 				&nbsp;&nbsp;|&nbsp;&nbsp;
-				@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id="EditBottom", @class = "btn btn-warning" })
+				@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "EditBottom", @class = "btn btn-warning" })
 			</center>
 		</div>
 	</div>

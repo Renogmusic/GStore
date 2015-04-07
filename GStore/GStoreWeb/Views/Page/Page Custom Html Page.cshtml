@@ -1,5 +1,8 @@
 ﻿@model PageViewModel
-@{ ViewData["PageTemplateAutoSync"] = false;}
+@{
+	ViewData["PageTemplateAutoSync"] = false;
+	bool shareByEmailEnabled = Settings.AppEnableEmail && Html.CurrentClient(true).UseSendGridEmail;
+}
 @* this file is used as a dynamic database-driven HTML page where the user can dump in HTML in a single section *@
 @if (Model.ViewMode)
 {
@@ -15,6 +18,10 @@ else if (Model.EditMode)
 }
 <div id="PageContent">
 	@Html.DisplayPageSection("Body", 1, "Body", "<h1>:::page.title:::</h1>", "<h1>", "</h1>", "", false, false)
+	@if (shareByEmailEnabled)
+	{
+		Html.RenderPartial("_ShareByEmail_Partial", Model.Page);
+	}
 </div>
 <div id="PageForm" class="PageForm">
 	@Html.DisplayPageForm()

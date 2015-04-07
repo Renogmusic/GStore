@@ -35,9 +35,13 @@ namespace GStoreData.ListProvider
 		public IGStoreRepository<Models.PageViewEvent> PageViewEvents { get { return new GenericGStoreListSourceRepository<Models.PageViewEvent>(); } }
 		public IGStoreRepository<Models.Payment> Payments { get { return new GenericGStoreListSourceRepository<Models.Payment>(); } }
 		public IGStoreRepository<Models.Product> Products { get { return new GenericGStoreListSourceRepository<Models.Product>(); } }
+		public IGStoreRepository<Models.ProductImage> ProductImages { get { return new GenericGStoreListSourceRepository<Models.ProductImage>(); } }
 		public IGStoreRepository<Models.ProductBundle> ProductBundles { get { return new GenericGStoreListSourceRepository<Models.ProductBundle>(); } }
 		public IGStoreRepository<Models.ProductBundleItem> ProductBundleItems { get { return new GenericGStoreListSourceRepository<Models.ProductBundleItem>(); } }
 		public IGStoreRepository<Models.ProductCategory> ProductCategories { get { return new GenericGStoreListSourceRepository<Models.ProductCategory>(); } }
+		public IGStoreRepository<Models.ProductCategoryImage> ProductCategoryImages { get { return new GenericGStoreListSourceRepository<Models.ProductCategoryImage>(); } }
+		public IGStoreRepository<Models.ProductCategoryAltProduct> ProductCategoryAltProducts { get { return new GenericGStoreListSourceRepository<Models.ProductCategoryAltProduct>(); } }
+		public IGStoreRepository<Models.ProductCategoryAltProductBundle> ProductCategoryAltProductBundles { get { return new GenericGStoreListSourceRepository<Models.ProductCategoryAltProductBundle>(); } }
 		public IGStoreRepository<Models.SecurityEvent> SecurityEvents { get { return new GenericGStoreListSourceRepository<Models.SecurityEvent>(); } }
 		public IGStoreRepository<Models.SmsSent> SmssSent { get { return new GenericGStoreListSourceRepository<Models.SmsSent>(); } }
 		public IGStoreRepository<Models.StoreFront> StoreFronts { get { return new GenericGStoreListSourceRepository<Models.StoreFront>(); } }

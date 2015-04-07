@@ -136,9 +136,10 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Categories_Edit)]
-		public ActionResult Edit(CategoryEditAdminViewModel viewModel, string Tab, string saveAndView)
+		public ActionResult Edit(CategoryEditAdminViewModel viewModel, string Tab, string saveAndView, int? addCrossSellProductId, int? addCrossSellBundleId, int? removeAltProductId, int? removeAltBundleId)
 		{
-			StoreFront storeFront = CurrentStoreFrontOrThrow;
+			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
+			StoreFront storeFront = config.StoreFront;
 
 			bool nameIsValid = GStoreDb.ValidateProductCategoryUrlName(this, viewModel.UrlName, storeFront.StoreFrontId, storeFront.ClientId, viewModel.ProductCategoryId);
 
@@ -159,6 +160,75 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				productCategory = GStoreDb.UpdateProductCategory(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Category updated successfully!", "Category updated successfully. Category '" + productCategory.Name.ToHtml() + "' [" + productCategory.ProductCategoryId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
 
+				if (addCrossSellProductId.HasValue && addCrossSellProductId.Value != 0)
+				{
+					if (!productCategory.CategoryAltProducts.Any(p => p.ProductId == addCrossSellProductId.Value))
+					{
+						Product crossSellProduct = storeFront.Products.SingleOrDefault(p => p.ProductId == addCrossSellProductId.Value);
+						if (crossSellProduct == null) 
+						{
+							AddUserMessage("Error adding cross-sell " + productCategory.ProductTypeSingleOrSystemDefault(config).ToHtml(), "Product Id [" + addCrossSellProductId.Value + "] could not be found in products.", UserMessageType.Danger);
+						}
+						else
+						{
+							ProductCategoryAltProduct newAltProduct = GStoreDb.CreateProductCategoryAltProductFastAdd(productCategory, crossSellProduct, storeFront, CurrentUserProfileOrThrow);
+							AddUserMessage("Added cross-sell " + productCategory.ProductTypeSingleOrSystemDefault(config).ToHtml(), newAltProduct.Product.Name.ToHtml() + " added", UserMessageType.Info);
+						}
+					}
+				}
+				if (addCrossSellBundleId.HasValue && addCrossSellBundleId.Value != 0)
+				{
+					if (!productCategory.CategoryAltProductBundles.Any(b => b.ProductBundleId == addCrossSellBundleId.Value))
+					{
+						ProductBundle crossSellProductBundle = storeFront.ProductBundles.SingleOrDefault(p => p.ProductBundleId == addCrossSellBundleId.Value);
+						if (crossSellProductBundle == null)
+						{
+							AddUserMessage("Error adding cross-sell " + productCategory.BundleTypeSingleOrSystemDefault(config).ToHtml(), "Product Bundle Id [" + addCrossSellBundleId.Value + "] could not be found in product bundles.", UserMessageType.Danger);
+						}
+						else
+						{
+							ProductCategoryAltProductBundle newAltProductBundle = GStoreDb.CreateProductCategoryAltProductBundleFastAdd(productCategory, crossSellProductBundle, storeFront, CurrentUserProfileOrThrow);
+							AddUserMessage("Added cross-sell " + productCategory.BundleTypeSingleOrSystemDefault(config).ToHtml(), newAltProductBundle.ProductBundle.Name.ToHtml() + " added", UserMessageType.Info);
+						}
+					}
+				}
+
+				if (removeAltProductId.HasValue && removeAltProductId.Value != 0)
+				{
+					ProductCategoryAltProduct removeAltProduct = productCategory.CategoryAltProducts.SingleOrDefault(p => p.ProductId == removeAltProductId.Value);
+					if (removeAltProduct == null)
+					{
+						AddUserMessage("Error removing cross-sell " + productCategory.ProductTypeSingleOrSystemDefault(config).ToHtml(), "Product Id [" + removeAltProductId.Value + "] could not be found in category alt products.", UserMessageType.Danger);
+					}
+					else
+					{
+						string oldName = removeAltProduct.Product.Name;
+						GStoreDb.ProductCategoryAltProducts.Delete(removeAltProduct);
+						GStoreDb.SaveChanges();
+						AddUserMessage("Removed cross-sell " + productCategory.ProductTypeSingleOrSystemDefault(config).ToHtml(), oldName.ToHtml() + " was removed.", UserMessageType.Info);
+					}
+				}
+
+				if (removeAltBundleId.HasValue && removeAltBundleId.Value != 0)
+				{
+					ProductCategoryAltProductBundle removeAltBundle = productCategory.CategoryAltProductBundles.SingleOrDefault(p => p.ProductBundleId == removeAltBundleId.Value);
+					if (removeAltBundle == null)
+					{
+						AddUserMessage("Error removing cross-sell " + productCategory.BundleTypeSingleOrSystemDefault(config).ToHtml(), "Product Bundle Id [" + removeAltBundleId.Value + "] could not be found in category alt product bundles.", UserMessageType.Danger);
+					}
+					else
+					{
+						string oldName = removeAltBundle.ProductBundle.Name;
+						GStoreDb.ProductCategoryAltProductBundles.Delete(removeAltBundle);
+						GStoreDb.SaveChanges();
+						AddUserMessage("Removed cross-sell " + productCategory.BundleTypeSingleOrSystemDefault(config).ToHtml(), oldName.ToHtml() + " was removed.", UserMessageType.Info);
+					}
+				}
+
+				if (addCrossSellProductId.HasValue || addCrossSellBundleId.HasValue || removeAltProductId.HasValue || removeAltBundleId.HasValue)
+				{
+					return RedirectToAction("Edit", new { id = productCategory.ProductCategoryId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
+				}
 				if (!string.IsNullOrWhiteSpace(saveAndView))
 				{
 					return RedirectToAction("Details", new { id = productCategory.ProductCategoryId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
@@ -179,7 +249,9 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				AddUserMessage("Files not uploaded", "You must correct the form values below and re-upload your files", UserMessageType.Danger);
 			}
 
+			viewModel.FillListsIfEmpty(storeFront.Client, storeFront);
 			viewModel.UpdateProductCategoryAndParent(productCategory);
+
 			return View("CreateOrEdit", viewModel);
 		}
 

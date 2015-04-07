@@ -1,5 +1,8 @@
 ﻿@model PageViewModel
-@{ ViewData["PageTemplateAutoSync"] = false;}
+@{
+	ViewData["PageTemplateAutoSync"] = false;
+	bool shareByEmailEnabled = Settings.AppEnableEmail && Html.CurrentClient(true).UseSendGridEmail;
+}
 @if (Model.ViewMode)
 {
 	Html.RenderPartial("_ViewModeTopPartial", Model);
@@ -18,6 +21,10 @@ else if (Model.EditMode)
 	@Html.DisplayPageSection("Headline3", 3, "Headline 3", "<h3>This is a new GStore site.</h3>", "<h3>", "</h3>", "", false, false)
 	@Html.DisplayPageSection("BodyText", 4, "Body Text", "<h4>Please click the sign-up link and register your Email address to be notified when we update this site.</h4>", "<h4>", "</h4>", "", false, false)
 	@Html.DisplayPageSection("BodyLink", 5, "Body Link", "<p>&nbsp;</p>", "<p>", "</p>", "", false, false)
+	@if (shareByEmailEnabled)
+	{
+		Html.RenderPartial("_ShareByEmail_Partial", Model.Page);
+	}
 </div>
 <div id="PageForm" class="PageForm">
 	@Html.DisplayPageForm()

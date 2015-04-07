@@ -70,6 +70,9 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.CatalogProductBundleItemColMd = storeFrontConfig.CatalogProductBundleItemColMd;
 			this.CatalogProductBundleItemColSm = storeFrontConfig.CatalogProductBundleItemColSm;
 
+			this.ChatEnabled = storeFrontConfig.ChatEnabled;
+			this.ChatRequireLogin = storeFrontConfig.ChatRequireLogin;
+
 			this.CatalogAdminThemeId = storeFrontConfig.CatalogAdminThemeId;
 			this.CatalogAdminTheme = storeFrontConfig.CatalogAdminTheme;
 			this.DefaultNewPageTheme = storeFrontConfig.DefaultNewPageTheme;
@@ -100,6 +103,18 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.CatalogRootListTemplate = storeFrontConfig.CatalogRootListTemplate;
 			this.CatalogRootHeaderHtml = storeFrontConfig.CatalogRootHeaderHtml;
 			this.CatalogRootFooterHtml = storeFrontConfig.CatalogRootFooterHtml;
+
+			this.CatalogDefaultBottomDescriptionCaption = storeFrontConfig.CatalogDefaultBottomDescriptionCaption;
+			this.CatalogDefaultNoProductsMessageHtml = storeFrontConfig.CatalogDefaultNoProductsMessageHtml;
+			this.CatalogDefaultProductBundleTypePlural = storeFrontConfig.CatalogDefaultProductBundleTypePlural;
+			this.CatalogDefaultProductBundleTypeSingle = storeFrontConfig.CatalogDefaultProductBundleTypeSingle;
+			this.CatalogDefaultProductTypePlural = storeFrontConfig.CatalogDefaultProductTypePlural;
+			this.CatalogDefaultProductTypeSingle = storeFrontConfig.CatalogDefaultProductTypeSingle;
+			this.CatalogDefaultSampleAudioCaption = storeFrontConfig.CatalogDefaultSampleAudioCaption;
+			this.CatalogDefaultSampleDownloadCaption = storeFrontConfig.CatalogDefaultSampleDownloadCaption;
+			this.CatalogDefaultSampleImageCaption = storeFrontConfig.CatalogDefaultSampleImageCaption;
+			this.CatalogDefaultSummaryCaption = storeFrontConfig.CatalogDefaultSummaryCaption;
+			this.CatalogDefaultTopDescriptionCaption = storeFrontConfig.CatalogDefaultTopDescriptionCaption;
 
 			this.NavBarCatalogMaxLevels = storeFrontConfig.NavBarCatalogMaxLevels;
 			this.NavBarItemsMaxLevels = storeFrontConfig.NavBarItemsMaxLevels;
@@ -433,6 +448,47 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Catalog Home Footer Html", Description = "Catalog Footer shown on the Home (root) catalog page.")]
 		public string CatalogRootFooterHtml { get; set; }
 
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Bottom Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Details for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string CatalogDefaultBottomDescriptionCaption { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog No Products Message Html", Description = "Message shown when there are no products in a category.\nLeave blank for the system default 'There are no products in this category.'")]
+		public string CatalogDefaultNoProductsMessageHtml { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Audio Caption", Description = "Default Sample Audio caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Audio for [product name]'.\nExample: 'Sample Sound' or 'Music'")]
+		public string CatalogDefaultSampleAudioCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Download File Caption", Description = "Default Sample Download File caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Download for [product name]'.\nExample: 'Sample File' or 'Demo File'")]
+		public string CatalogDefaultSampleDownloadCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Image Caption", Description = "Default Sample Image caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Image for [product name]'.\nExample: 'Sample Image' or 'Photo'")]
+		public string CatalogDefaultSampleImageCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Summary Caption", Description = "Default Summary caption for products that do not have one defined.\nLeave this blank to use the system default 'Summary'\nExample: 'Summary' or 'Overview'")]
+		public string CatalogDefaultSummaryCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Top Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Description for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string CatalogDefaultTopDescriptionCaption { get; set; }
+
+		[Display(Name = "Catalog Default Product Type Single", Description = "Default Catalog name for Products (single)\nDefault: Item")]
+		public string CatalogDefaultProductTypeSingle { get; set; }
+
+		[Display(Name = "Catalog Default Product Type Plural", Description = "Default Catalog name for Products (plural)\nDefault: Items")]
+		public string CatalogDefaultProductTypePlural { get; set; }
+
+		[Display(Name = "Catalog Default Product Bundle Type Single", Description = "Default Catalog name for Product Bundles (single)\nDefault: Bundle")]
+		public string CatalogDefaultProductBundleTypeSingle { get; set; }
+
+		[Display(Name = "Catalog Default Product Bundle Type Plural", Description = "Default Catalog name for Product Bundles (plural)\nDefault: Bundles")]
+		public string CatalogDefaultProductBundleTypePlural { get; set; }
+
 
 		[Required]
 		[Range(0, 6)]
@@ -551,6 +607,15 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Payment Method - PayPal API - Client_Secret", Description = "Enter your PayPal API key labeled 'client_secret' \nExample: AbCDE1fGHIjkLMno_pqrStuVL1ZYaPFHJ23BD126512651211111y0fztLABCDEFGHIJKLMNabc1P-SN")]
 		public string PaymentMethod_PayPal_Client_Secret { get; set; }
 
+		[Display(Name = "Enable Chat", Description = "Enable the Chat feature of the site for general chat on your web site.")]
+		public bool ChatEnabled { get; set; }
+
+		[Display(Name = "Chat - Login Required", Description = "Check this box to require users to log in to use the Chat feature of the site.")]
+		public bool ChatRequireLogin { get; set; }
+
+		[Display(Name = "Inactive", Description = "Check this box to Inactivate this configuration immediately. \nIf checked, make sure you have another active configuration. or your site will be inactive and you can only access the store admin section.")]
+		public bool IsPending { get; set; }
+
 		[Required]
 		[Display(Name = "Start Date and Time in UTC", Description = "Enter the date and time in UTC time you want this configuration to go ACTIVE on. \nIf this date is in the future, your configuration will be inactive until the start date.\nExample: 1/1/2000 12:00 AM")]
 		public DateTime StartDateTimeUtc { get; set; }
@@ -558,11 +623,6 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Required]
 		[Display(Name = "End Date and Time in UTC", Description = "Enter the date and time in UTC time you want this configuration to go INACTIVE on. \nIf this date is in the past, your configuration will be inactive immediately.\nExample: 12/31/2199 11:59 PM")]
 		public DateTime EndDateTimeUtc { get; set; }
-
-		[Display(Name = "Inactive", Description = "Check this box to Inactivate this configuration immediately. \nIf checked, make sure you have another active configuration. or your site will be inactive and you can only access the store admin section.")]
-		public bool IsPending { get; set; }
-
-
 
 		#region IValidatableObject Members
 
@@ -589,6 +649,7 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		}
 
 		#endregion
+
 
 
 	}

@@ -36,6 +36,25 @@ $(document).ready
 	ga('send', 'pageview');
 });
 
+
+function SetFocusToFieldId(fieldId)
+{
+	$(document).ready(function ()
+	{
+		$('#' + fieldId).focus();
+	})
+}
+
+function SetFocusToFirstInput()
+{
+	$(document).ready(function () {
+		var firstInput = $('input[type=text],input[type=email],input[type=password],input[type=radio],input[type=checkbox],textarea,select').filter(':visible:first');
+		if (firstInput != null) {
+			firstInput.focus();
+		}
+	})
+}
+
 function GaEvent(category, action, label) {
 	{
 		if (googleAnalyticsWebPropertyId == null)
@@ -197,13 +216,6 @@ $(document).ready(function () {
 	};
 
 	$.connection.hub.start().done(function () {
-		//server send message function to send a message to the server
-		$('#SendMessage').click(function () {
-			var message = $('#Message').val();
-			notifyHub.server.sendMessage(message);
-			$('#Message').val("");
-		}
-		);
 		ProcessAnnouncements(notifyHub);
 		UpdateActiveUsers(notifyHub);
 	})

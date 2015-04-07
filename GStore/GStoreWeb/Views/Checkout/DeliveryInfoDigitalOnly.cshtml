@@ -8,11 +8,8 @@
 	{
 		oldWebFormResponse = Model.Cart.DeliveryInfoDigital.WebFormResponse;
 	}
-
+	ViewData.FocusId("EmailAddress");
 }
-<script>
-	$(document).ready(function () { $('#EmailAddress').focus(); });
-</script>
 <h1 style="display: inline">Digital Delivery Information</h1>
 @if (Model.Config.PaymentMethod_PayPal_Enabled)
 {

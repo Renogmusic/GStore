@@ -1,6 +1,7 @@
 ﻿@model CatalogViewModel
 <!-- Bundle Item List Start -->
 @{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true); 
 	ProductBundle bundle = Model.CurrentProductBundleOrNull;
 	List<ProductBundleItem> bundleItems = Model.CurrentProductBundleItemsListOrNull();
 
@@ -37,17 +38,19 @@
 
 		<div class="row">
 			<div class="col-xs-12">
-				<h2>Includes the following @(bundleItems.Count == 1 ? bundle.ProductTypeSingleOrSystemDefault() : bundle.ProductTypePluralOrSystemDefault() )</h2>
+				<h2>Includes the following @(bundleItems.Count == 1 ? bundle.ProductTypeSingleOrSystemDefault(storeFrontConfig) : bundle.ProductTypePluralOrSystemDefault(storeFrontConfig))</h2>
 			</div>
 		</div>
 		@:<div class="BundleItemListContainer">
+		@:<div class="row BundleItemListRow">
 		foreach (ProductBundleItem bundleItem in bundleItems)
 		{
-			@:<div class="BundleItemListRow col-sm-@(Model.StoreFrontConfig.CatalogProductBundleItemColSm) col-md-@(Model.StoreFrontConfig.CatalogProductBundleItemColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductBundleItemColLg)@(offsets)">
+			@:<div class="BundleItemCol col-sm-@(Model.StoreFrontConfig.CatalogProductBundleItemColSm) col-md-@(Model.StoreFrontConfig.CatalogProductBundleItemColMd) col-lg-@(Model.StoreFrontConfig.CatalogProductBundleItemColLg)@(offsets)">
 			Html.RenderCatalogBundleItemForListPartial(bundleItem);
 			@:</div>
 			offsets = "";
 		}
+		@:</div>
 		@:</div>
 	}
 }

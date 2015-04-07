@@ -6,6 +6,8 @@
 	string tabMenusActive = string.Empty;
 	string tabMetaTagsActive = string.Empty;
 	string tabProductTemplateActive = string.Empty;
+	string tabCrossSellProductsActive = string.Empty;
+	string tabCrossSellBundlesActive = string.Empty;
 	string tabActivationActive = string.Empty;
 
 	switch ((Model.ActiveTab ?? string.Empty).ToLower())
@@ -26,12 +28,27 @@
 		case "producttemplate":
 			tabProductTemplateActive = "active";
 			break;
+		case "crosssellproducts":
+			tabCrossSellProductsActive = "active";
+			break;
+		case "crosssellbundles":
+			tabCrossSellBundlesActive = "active";
+			break;
 		case "activation":
 			tabActivationActive = "active";
 			break;
 		default:
 			goto case "";
 	}
+
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
+	List<ProductCategoryAltProduct> categoryAltProducts = Model.ProductCategory.CategoryAltProducts.AsQueryable().ApplyDefaultSort().ToList();
+	List<ProductCategoryAltProductBundle> categoryAltBundles = Model.ProductCategory.CategoryAltProductBundles.AsQueryable().ApplyDefaultSort().ToList();
+	int crossSellProductActiveCount = categoryAltProducts.AsQueryable().WhereIsActive().Count();
+	int crossSellProductTotalCount = categoryAltProducts.Count();
+	int crossSellBundleActiveCount = categoryAltBundles.AsQueryable().WhereIsActive().Count();
+	int crossSellBundleTotalCount = categoryAltBundles.Count();
+	
 }
 <script>
 	function GetActiveTab()
@@ -95,7 +112,6 @@
 	}
 </script>
 @Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
-
 <hr />
 <div class="form-horizontal">
 	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
@@ -104,6 +120,8 @@
 		<li class="@(tabMenusActive)"><a data-toggle="tab" href="#sectionMenus" onclick="SetActiveTab('Menus');">Menus</a></li>
 		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
 		<li class="@(tabProductTemplateActive)"><a data-toggle="tab" href="#sectionProductTemplate" onclick="SetActiveTab('ProductTemplate');">Product Template</a></li>
+		<li class="@(tabCrossSellProductsActive)"><a data-toggle="tab" href="#sectionCrossSellProducts" onclick="SetActiveTab('CrossSellProducts');">Cross-Sell @(Model.ProductCategory.ProductTypePluralOrSystemDefault(storeFrontConfig)) @(crossSellProductActiveCount.ToString("N0")) / @(crossSellProductTotalCount.ToString("N0"))</a></li>
+		<li class="@(tabCrossSellBundlesActive)"><a data-toggle="tab" href="#sectionCrossSellBundles" onclick="SetActiveTab('CrossSellBundles');">Cross-Sell @(Model.ProductCategory.BundleTypePluralOrSystemDefault(storeFrontConfig)) @(crossSellBundleActiveCount.ToString("N0")) / @(crossSellBundleTotalCount.ToString("N0"))</a></li>
 		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 	</ul>
 
@@ -172,6 +190,14 @@
 				</dd>
 
 				<dt>
+					Default @Html.DisplayNameFor(model => model.ProductTypeSingle)
+				</dt>
+
+				<dd>
+					@Model.ProductCategory.ProductTypeSingleOrSystemDefault(storeFrontConfig, true)
+				</dd>
+
+				<dt>
 					@Html.DisplayNameFor(model => model.ProductTypeSingle)
 					@Html.HelpLabelPopoverFor(model => model.ProductTypeSingle, placement: PopoverPlacementEnum.top)
 				</dt>
@@ -179,6 +205,14 @@
 				<dd>
 					@Html.DisplayFor(model => model.ProductTypeSingle)
 					<br />@Html.HelpLabelFor(model => model.ProductTypeSingle)
+				</dd>
+
+				<dt>
+					Default @Html.DisplayNameFor(model => model.ProductTypePlural)
+				</dt>
+
+				<dd>
+					@Model.ProductCategory.ProductTypePluralOrSystemDefault(storeFrontConfig, true)
 				</dd>
 
 				<dt>
@@ -192,6 +226,14 @@
 				</dd>
 
 				<dt>
+					Default @Html.DisplayNameFor(model => model.BundleTypeSingle)
+				</dt>
+
+				<dd>
+					@Model.ProductCategory.BundleTypeSingleOrSystemDefault(storeFrontConfig, true)
+				</dd>
+
+				<dt>
 					@Html.DisplayNameFor(model => model.BundleTypeSingle)
 					@Html.HelpLabelPopoverFor(model => model.BundleTypeSingle, placement: PopoverPlacementEnum.top)
 				</dt>
@@ -199,6 +241,14 @@
 				<dd>
 					@Html.DisplayFor(model => model.BundleTypeSingle)
 					<br />@Html.HelpLabelFor(model => model.BundleTypeSingle)
+				</dd>
+
+				<dt>
+					Default @Html.DisplayNameFor(model => model.BundleTypePlural)
+				</dt>
+
+				<dd>
+					@Model.ProductCategory.BundleTypePluralOrSystemDefault(storeFrontConfig, true)
 				</dd>
 
 				<dt>
@@ -212,6 +262,9 @@
 				</dd>
 
 			</dl>
+
+
+
 		</div>
 		<div id="sectionDisplay" class="tab-pane fade in @(tabDisplayActive)">
 			<div class="row">
@@ -407,7 +460,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.NoProductsMessageHtml)
+					@Model.ProductCategory.NoProductsMessageHtmlOrSystemDefault(storeFrontConfig, true)
 					<br />@Html.HelpLabelFor(model => model.NoProductsMessageHtml)
 				</dd>
 
@@ -417,7 +470,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultSummaryCaption)
+					@Model.ProductCategory.DefaultSummaryCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultSummaryCaption)
 				</dd>
 
@@ -427,7 +480,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultTopDescriptionCaption)
+					@Model.ProductCategory.DefaultTopDescriptionCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultTopDescriptionCaption)
 				</dd>
 
@@ -437,7 +490,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultBottomDescriptionCaption)
+					@Model.ProductCategory.DefaultBottomDescriptionCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultBottomDescriptionCaption)
 				</dd>
 
@@ -447,7 +500,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultSampleImageCaption)
+					@Model.ProductCategory.DefaultSampleImageCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultSampleImageCaption)
 				</dd>
 
@@ -457,7 +510,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultSampleAudioCaption)
+					@Model.ProductCategory.DefaultSampleAudioCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultSampleAudioCaption)
 				</dd>
 
@@ -467,7 +520,7 @@
 				</dt>
 
 				<dd>
-					@Html.DisplayFor(model => model.DefaultSampleDownloadCaption)
+					@Model.ProductCategory.DefaultSampleDownloadCaptionOrSystemDefault(storeFrontConfig, "[product name]", true)
 					<br />@Html.HelpLabelFor(model => model.DefaultSampleDownloadCaption)
 				</dd>
 
@@ -510,6 +563,42 @@
 					@Html.DisplayFor(model => model.ProductFooterHtml)
 					<br />@Html.HelpLabelFor(model => model.ProductFooterHtml)
 				</dd>
+			</dl>
+		</div>
+
+		<div id="sectionCrossSellProducts" class="tab-pane fade in @(tabCrossSellProductsActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Cross-Sell @(Model.ProductCategory.ProductTypePluralOrSystemDefault(storeFrontConfig))</h3>
+			</div>
+			<dl class="dl-horizontal">
+				@foreach (var altProduct in categoryAltProducts)
+				{
+					<dt style="margin-top: 1em; margin-bottom: 1em;">
+						@(altProduct.Product.Name) [@(altProduct.ProductId)]
+					</dt>
+					<dd style="margin-top: 1em; margin-bottom: 1em;">
+						@Html.DisplayNameFor(model => altProduct.Order): @(altProduct.Order)
+						- @Html.ActionLink("View " + Model.ProductCategory.ProductTypeSingleOrSystemDefault(storeFrontConfig) + " (new window)", "Details", "ProductAdmin", new { id = altProduct.ProductId }, new { @class = "btn btn-xs btn-info", target = "_blank" })
+					</dd>
+				}
+			</dl>
+		</div>
+
+		<div id="sectionCrossSellBundles" class="tab-pane fade in @(tabCrossSellBundlesActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Cross-Sell @(Model.ProductCategory.BundleTypePluralOrSystemDefault(storeFrontConfig))</h3>
+			</div>
+			<dl class="dl-horizontal">
+				@foreach (var altBundle in categoryAltBundles)
+				{
+					<dt style="margin-top: 1em; margin-bottom: 1em;">
+						@(altBundle.ProductBundle.Name) [@(altBundle.ProductBundleId)]
+					</dt>
+					<dd style="margin-top: 1em; margin-bottom: 1em;">
+						@Html.DisplayNameFor(model => altBundle.Order): @(altBundle.Order)
+						- @Html.ActionLink("View " + Model.ProductCategory.BundleTypeSingleOrSystemDefault(storeFrontConfig) + " (new window)", "Details", "BundleAdmin", new { id = altBundle.ProductBundleId }, new { @class = "btn btn-xs btn-info", target = "_blank"})
+					</dd>
+				}
 			</dl>
 		</div>
 

@@ -1,10 +1,18 @@
 ﻿@model ProductEditAdminViewModel
 
 <div class="row">
-	<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+	<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 		<span class="text-warning">Product Details</span>
-		<br/><small>@Html.DisplayFor(model => model.Product)</small>
+		<br /><small>@Html.DisplayFor(model => model.Product)</small>
 	</h1>
+</div>
+
+<div class="row">
+	<div class="col-md-offset-1 col-md-8">
+		@Html.DisplayFor(model => model.Category, "CategoryPath")
+		@Html.DisplayFor(model => model.Category, "ChildCategoryDropdownLinks")
+		<br /><br />
+	</div>
 </div>
 
 <div class="row">
@@ -12,7 +20,7 @@
 		<center>
 			@if (Model.ReturnToFrontEnd)
 			{
-				@Html.ActionLink("OK / Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName } , new { @class = "btn btn-default" })
+				@Html.ActionLink("OK / Cancel", "ViewProductByName", "Catalog", new { area = "", urlName = Model.UrlName }, new { @class = "btn btn-default" })
 			}
 			else
 			{

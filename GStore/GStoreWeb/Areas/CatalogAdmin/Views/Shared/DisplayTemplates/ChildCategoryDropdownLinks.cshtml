@@ -1,0 +1,26 @@
+﻿@model ProductCategory
+@{
+	if (Model == null)
+	{
+		@:Category: (null)
+	}
+	else
+	{
+		
+		IEnumerable<SelectListItem> childCategories = Html.ChildProductCategoryList();
+		if (childCategories.Any())
+		{
+			string oldHtmlPrefix = ViewData.TemplateInfo.HtmlFieldPrefix = string.Empty;
+			<br/>
+			@Html.DropDownList("ChildCategoryId", Html.ChildProductCategoryList(), optionLabel: "--Child Categories--", htmlAttributes: new { @class="form-control", name = "ChildCategoryId", id = "ChildCategoryId", onchange = "GoToChildCategory(this);" })
+			<script>
+			function GoToChildCategory(element)
+			{
+				var url = @(Url.Action("Details", "CategoryAdmin", new { id = "XXX"}).ToJavaScriptMvcString(true));
+				url = url.replace("XXX", element.options[element.selectedIndex].value);
+				window.location.href = url;
+			}
+			</script>
+		}
+	}
+}

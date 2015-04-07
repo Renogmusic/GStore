@@ -12,6 +12,15 @@ namespace GStoreData.Models
 		public int StoreBindingId { get; set; }
 
 		[Required]
+		[Index("UniqueRecord", IsUnique = true, Order = 4)]
+		[Display(Name = "Store Front Configuration Id", Description = "Store Front Configuration Id number")]
+		public int StoreFrontConfigurationId { get; set; }
+
+		[ForeignKey("StoreFrontConfigurationId")]
+		public virtual StoreFrontConfiguration StoreFrontConfiguration { get; set;}
+
+
+		[Required]
 		[MaxLength(250)]
 		[Display(Name = "Host Name", Description = "Host Name or * for all. Default: *\nExample: gstore.renog.info (also covers www.[hostname])")]
 		public string HostName { get; set; }
@@ -32,5 +41,7 @@ namespace GStoreData.Models
 
 		[Display(Name = "Index", ShortName = "Index", Description = "Order index for this binding. Lower numbers are higher priority.\nDefault: 100")]
 		public int Order { get; set; }
+
+		
 	}
 }

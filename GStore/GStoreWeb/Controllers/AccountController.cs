@@ -761,16 +761,16 @@ namespace GStoreWeb.Controllers
 			}
 
 			//storefront is null. Inactive StoreFront record (nobody but sys admin can log in) or Config inactive (only storeadmins can log in)
-			StoreFront testSF = null;
+			StoreFrontConfiguration testSFConfig = null;
 			try
 			{
-				testSF = GStoreDb.GetCurrentStoreFront(Request, false, true, true);
+				testSFConfig = GStoreDb.GetCurrentStoreFrontConfig(Request, false, true);
 			}
 			catch (Exception)
 			{
 			}
 
-			if (testSF == null)
+			if (testSFConfig == null)
 			{
 				//store front not found (no matching bindings or other reason)
 				AuthenticationManager.SignOut();
@@ -779,25 +779,23 @@ namespace GStoreWeb.Controllers
 				return false;
 			}
 
-			int storeFrontId = testSF.StoreFrontId;
+			int storeFrontId = testSFConfig.StoreFrontId;
 
 
-			if (!testSF.IsActiveBubble())
+			if (!testSFConfig.IsActiveBubble())
 			{
 				//store front inactive (no matching bindings or other reason)
 				AuthenticationManager.SignOut();
-				string inactiveStoreFrontName = testSF.CurrentConfigOrAny() == null ? "(unknown)" : testSF.CurrentConfigOrAny().Name;
+				string inactiveStoreFrontName = testSFConfig.Name;
 				GStoreDb.LogSecurityEvent_LoginFailedStoreFrontInactive(this.HttpContext, this.RouteData, inactiveStoreFrontName, storeFrontId, profile, this);
 				AddUserMessage("Login Error", "This Store Front is inactive. Login is limited to System Admins only.", UserMessageType.Danger);
 				return false;
 			}
 
-			StoreFrontConfiguration testConfig = testSF.CurrentConfigOrAny();
-
-			if (testConfig == null)
+			if (testSFConfig == null)
 			{
 				//no config found; only users with store admin access can log in
-				if (testSF.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
+				if (testSFConfig.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
 				{
 					return true;
 				}
@@ -807,19 +805,19 @@ namespace GStoreWeb.Controllers
 				return false;
 			}
 
-			if (!testConfig.IsActiveBubble())
+			if (!testSFConfig.IsActiveBubble())
 			{
 				//all configs are inactive
 				//no config found; only users with store admin access can log in
-				if (testSF.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
+				if (testSFConfig.StoreFront.Authorization_IsAuthorized(profile, GStoreAction.Admin_StoreAdminArea))
 				{
 					return true;
 				}
 				AuthenticationManager.SignOut();
 
-				string storeFrontName = testConfig.Name;
-				string configName = testConfig.ConfigurationName;
-				int configurationId = testConfig.StoreFrontConfigurationId;
+				string storeFrontName = testSFConfig.Name;
+				string configName = testSFConfig.ConfigurationName;
+				int configurationId = testSFConfig.StoreFrontConfigurationId;
 
 				GStoreDb.LogSecurityEvent_LoginFailedStoreFrontConfigInactive(this.HttpContext, this.RouteData, storeFrontName, storeFrontId, configName, configurationId, profile, this);
 				AddUserMessage("Login Error", "This Store Front Configuration is inactive. Login is limited to Site Administrators only.", UserMessageType.Danger);

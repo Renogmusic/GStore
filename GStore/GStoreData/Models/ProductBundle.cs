@@ -137,5 +137,7 @@ namespace GStoreData.Models
 
 		public virtual ICollection<ProductBundleItem> ProductBundleItems { get; set; }
 
+		public virtual ICollection<ProductCategoryAltProductBundle> CategoryAltBundles { get; set; }
+
 	}
 }

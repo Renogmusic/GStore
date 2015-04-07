@@ -1,7 +1,7 @@
 ﻿@model CatalogViewModel
 <!-- Product List Start -->
 @{
-	
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true);
 	List<Product> products = Model.CurrentProductsListOrNull(Html.CurrentUserProfile(false));
 	if (products == null || products.Count == 0)
 	{
@@ -11,7 +11,7 @@
 		}
 		else
 		{
-			@Html.Raw(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault())
+			@Html.Raw(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault(storeFrontConfig))
 		}
 	}
 	else

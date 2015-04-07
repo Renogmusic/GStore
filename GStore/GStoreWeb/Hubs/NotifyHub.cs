@@ -35,8 +35,9 @@ namespace GStoreWeb.Hubs
 		private static Int64 _activeUsers = 0;
 		private static object _lockObject = new object();
 
+
 		[Authorize(Roles = "SystemAdmin")]
-		public void SendMessage(string message)
+		public void SendMessageToAll(string message)
 		{
 			string title = "Message from " + UserName();
 			Clients.All.addNewMessageToPage(title, message);

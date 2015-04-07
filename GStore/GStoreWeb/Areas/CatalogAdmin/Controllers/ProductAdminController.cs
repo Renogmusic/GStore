@@ -161,7 +161,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Products_Edit)]
-		public ActionResult Edit(ProductEditAdminViewModel viewModel, string saveAndView, int? addToBundleId, string addTobundle, int? addToBundleQty)
+		public ActionResult Edit(ProductEditAdminViewModel viewModel, string saveAndView, int? addToBundleId, string addTobundle, int? addToBundleQty, int? removeAltCategoryId)
 		{
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 
@@ -194,6 +194,27 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 
 				product = GStoreDb.UpdateProduct(viewModel, storeFront, CurrentUserProfileOrThrow);
 				AddUserMessage("Product updated successfully!", "Product updated successfully. Product '" + product.Name.ToHtml() + "' [" + product.ProductId + "] for Store Front '" + storeFront.CurrentConfig().Name.ToHtml() + "' [" + storeFront.StoreFrontId + "]", UserMessageType.Success);
+
+				if (removeAltCategoryId.HasValue && removeAltCategoryId.Value != 0)
+				{
+					ProductCategoryAltProduct removeAltProduct = product.CategoryAltProducts.SingleOrDefault(p => p.ProductCategoryId == removeAltCategoryId.Value);
+					if (removeAltProduct == null)
+					{
+						AddUserMessage("Error removing cross-sell Category", "Category Id [" + removeAltCategoryId.Value + "] could not be found in product alt categories.", UserMessageType.Danger);
+					}
+					else
+					{
+						string oldName = removeAltProduct.Category.Name;
+						GStoreDb.ProductCategoryAltProducts.Delete(removeAltProduct);
+						GStoreDb.SaveChanges();
+						AddUserMessage("Removed cross-sell Catergory", oldName.ToHtml() + " was removed.", UserMessageType.Info);
+					}
+				}
+
+				if (removeAltCategoryId.HasValue)
+				{
+					return RedirectToAction("Edit", new { id = product.ProductId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });
+				}
 				if (!string.IsNullOrWhiteSpace(saveAndView) || addedToBundle)
 				{
 					return RedirectToAction("Details", new { id = product.ProductId, returnToFrontEnd = viewModel.ReturnToFrontEnd, Tab = viewModel.ActiveTab });

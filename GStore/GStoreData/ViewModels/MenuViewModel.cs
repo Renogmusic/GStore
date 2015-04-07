@@ -11,6 +11,7 @@ namespace GStoreData.ViewModels
 		public List<TreeNode<NavBarItem>> NavBarItemTree { get; protected set; }
 		public UserProfile UserProfile { get; protected set; }
 		public bool ShowCart { get; protected set; }
+		public bool ShowChat { get; protected set;}
 		public Cart Cart { get; protected set; }
 
 		/// <summary>
@@ -32,6 +33,12 @@ namespace GStoreData.ViewModels
 			this.CategoryTree = this.StoreFront.CategoryTreeWhereActiveForNavBar(isRegistered);
 			this.NavBarItemTree = this.StoreFront.NavBarTreeWhereActive(isRegistered);
 			this.UserProfile = userProfile;
+
+			this.ShowChat = false;
+			if (Settings.AppEnableChat && (storeFrontConfig != null) && (storeFrontConfig.ChatEnabled))
+			{
+				ShowChat = true;
+			}
 
 			this.ShowCart = false;
 			if ((storeFrontConfig != null) && (storeFrontConfig.UseShoppingCart))

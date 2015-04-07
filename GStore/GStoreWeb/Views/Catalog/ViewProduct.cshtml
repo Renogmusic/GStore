@@ -41,9 +41,28 @@
 
 @if (userCanEditProduct)
 {
+	StoreFrontConfiguration config = Model.StoreFrontConfig;
+	ProductCategory category = product.Category;
+	string productSingle = category.ProductTypeSingleOrSystemDefault(config);
+	string productsPlural = category.ProductTypePluralOrSystemDefault(config);
+	string bundleSingle = category.BundleTypeSingleOrSystemDefault(config);
+	string bundlesPlural = category.BundleTypePluralOrSystemDefault(config);
 	<hr />
-	@Html.ActionLink("Edit Product", "Edit", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
-	<br /><br/>
-	@Html.ActionLink("New Product in this category", "Create", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@Html.ActionLink("View " + productSingle, "Details", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit " + productSingle, "Edit", "ProductAdmin", new { area = "CatalogAdmin", id = product.ProductId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category", "Details", "CategoryAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category " + productsPlural, "Manager", "ProductAdmin", new { area = "CatalogAdmin", productCategoryId = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category " + bundlesPlural, "Manager", "BundleAdmin", new { area = "CatalogAdmin", productCategoryId = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Category " + productSingle, "Create", "ProductAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Category " + bundleSingle, "Create", "BundleAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+
 }
 <!-- View Product End -->

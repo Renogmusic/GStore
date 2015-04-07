@@ -42,6 +42,22 @@
     <Compile Include="AppHtmlHelpers\CatalogHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\EnumHelper.cs" />
     <Compile Include="AppHtmlHelpers\GaEvent.cs" />
+    <Compile Include="Migrations\201503310056263_Release7.cs" />
+    <Compile Include="Migrations\201503310056263_Release7.Designer.cs">
+      <DependentUpon>201503310056263_Release7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504032308415_Release8.cs" />
+    <Compile Include="Migrations\201504032308415_Release8.Designer.cs">
+      <DependentUpon>201504032308415_Release8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504070353162_Release9.cs" />
+    <Compile Include="Migrations\201504070353162_Release9.Designer.cs">
+      <DependentUpon>201504070353162_Release9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ProductCategoryImage.cs" />
+    <Compile Include="Models\ProductImage.cs" />
+    <Compile Include="Models\ProductCategoryAltProduct.cs" />
+    <Compile Include="Models\ProductCategoryAltProductBundle.cs" />
     <Compile Include="ViewModels\PageVariableEditViewModel.cs" />
     <Compile Include="AppHtmlHelpers\StoreAdminHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\UserMessage.cs" />
@@ -342,6 +358,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201503281132464_Release6.resx">
       <DependentUpon>201503281132464_Release6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503310056263_Release7.resx">
+      <DependentUpon>201503310056263_Release7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504032308415_Release8.resx">
+      <DependentUpon>201504032308415_Release8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504070353162_Release9.resx">
+      <DependentUpon>201504070353162_Release9.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

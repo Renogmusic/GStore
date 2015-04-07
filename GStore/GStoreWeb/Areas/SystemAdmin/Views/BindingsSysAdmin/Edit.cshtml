@@ -26,8 +26,9 @@
 
 	<div class="form-horizontal">
 		@Html.EditorFor(model => model.StoreBindingId, "FieldKey")
-		@Html.EditorFor(model => model.ClientId, "FieldClientIdWithPostback")
-		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontId")
+		@Html.EditorFor(model => model.ClientId, "FieldClientIdWithPostback", new { clientId = Model.ClientId })
+		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontIdWithPostback", new { clientId = Model.ClientId, storeFrontId = Model.StoreFrontId })
+		@Html.EditorFor(model => model.StoreFrontConfigurationId, "FieldStoreFrontConfigurationId", new { clientId = Model.ClientId, storeFrontId = Model.StoreFrontId })
 		@Html.EditorFor(model => model.HostName, "FieldText")
 		@Html.EditorFor(model => model.Port, "FieldInt")
 		@Html.EditorFor(model => model.RootPath, "FieldText")

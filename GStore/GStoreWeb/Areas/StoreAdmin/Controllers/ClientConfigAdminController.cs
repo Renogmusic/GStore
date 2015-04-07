@@ -306,6 +306,9 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColMd = model.CatalogProductBundleItemColMd;
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
+				config.ChatEnabled = model.ChatEnabled;
+				config.ChatRequireLogin = model.ChatRequireLogin;
+
 				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
@@ -325,6 +328,18 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogRootListTemplate = model.CatalogRootListTemplate;
 				config.CatalogRootHeaderHtml = model.CatalogRootHeaderHtml;
 				config.CatalogRootFooterHtml = model.CatalogRootFooterHtml;
+
+				config.CatalogDefaultBottomDescriptionCaption = model.CatalogDefaultBottomDescriptionCaption;
+				config.CatalogDefaultNoProductsMessageHtml = model.CatalogDefaultNoProductsMessageHtml;
+				config.CatalogDefaultProductBundleTypePlural = model.CatalogDefaultProductBundleTypePlural;
+				config.CatalogDefaultProductBundleTypeSingle = model.CatalogDefaultProductBundleTypeSingle;
+				config.CatalogDefaultProductTypePlural = model.CatalogDefaultProductTypePlural;
+				config.CatalogDefaultProductTypeSingle = model.CatalogDefaultProductTypeSingle;
+				config.CatalogDefaultSampleAudioCaption = model.CatalogDefaultSampleAudioCaption;
+				config.CatalogDefaultSampleDownloadCaption = model.CatalogDefaultSampleDownloadCaption;
+				config.CatalogDefaultSampleImageCaption = model.CatalogDefaultSampleImageCaption;
+				config.CatalogDefaultSummaryCaption = model.CatalogDefaultSummaryCaption;
+				config.CatalogDefaultTopDescriptionCaption = model.CatalogDefaultTopDescriptionCaption;
 
 				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
 				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;
@@ -546,6 +561,9 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColMd = model.CatalogProductBundleItemColMd;
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
+				config.ChatEnabled = model.ChatEnabled;
+				config.ChatRequireLogin = model.ChatRequireLogin;
+
 				config.CatalogAdminThemeId = model.CatalogAdminThemeId;
 				config.DefaultNewPageThemeId = model.DefaultNewPageThemeId;
 				config.EnableGoogleAnalytics = model.EnableGoogleAnalytics;
@@ -567,6 +585,18 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogRootListTemplate = model.CatalogRootListTemplate;
 				config.CatalogRootHeaderHtml = model.CatalogRootHeaderHtml;
 				config.CatalogRootFooterHtml = model.CatalogRootFooterHtml;
+
+				config.CatalogDefaultBottomDescriptionCaption = model.CatalogDefaultBottomDescriptionCaption;
+				config.CatalogDefaultNoProductsMessageHtml = model.CatalogDefaultNoProductsMessageHtml;
+				config.CatalogDefaultProductBundleTypePlural = model.CatalogDefaultProductBundleTypePlural;
+				config.CatalogDefaultProductBundleTypeSingle = model.CatalogDefaultProductBundleTypeSingle;
+				config.CatalogDefaultProductTypePlural = model.CatalogDefaultProductTypePlural;
+				config.CatalogDefaultProductTypeSingle = model.CatalogDefaultProductTypeSingle;
+				config.CatalogDefaultSampleAudioCaption = model.CatalogDefaultSampleAudioCaption;
+				config.CatalogDefaultSampleDownloadCaption = model.CatalogDefaultSampleDownloadCaption;
+				config.CatalogDefaultSampleImageCaption = model.CatalogDefaultSampleImageCaption;
+				config.CatalogDefaultSummaryCaption = model.CatalogDefaultSummaryCaption;
+				config.CatalogDefaultTopDescriptionCaption = model.CatalogDefaultTopDescriptionCaption;
 
 				config.NavBarCatalogMaxLevels = model.NavBarCatalogMaxLevels;
 				config.NavBarItemsMaxLevels = model.NavBarItemsMaxLevels;

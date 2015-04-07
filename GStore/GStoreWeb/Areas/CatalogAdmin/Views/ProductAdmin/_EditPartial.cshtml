@@ -6,8 +6,9 @@
 	string tabDisplayActive = string.Empty;
 	string tabResourcesActive = string.Empty;
 	string tabMetaTagsActive = string.Empty;
-	string tabActivationActive = string.Empty;
 	string tabBundlesActive = string.Empty;
+	string tabCrossSellCategoriesActive = string.Empty;
+	string tabActivationActive = string.Empty;
 
 	switch ((Model.ActiveTab ?? string.Empty).ToLower())
 	{
@@ -30,17 +31,41 @@
 		case "metatags":
 			tabMetaTagsActive = "active";
 			break;
-		case "activation":
-			tabActivationActive = "active";
-			break;
 		case "bundles":
 			tabBundlesActive = "active";
+			break;
+		case "crosssellcategories":
+			tabCrossSellCategoriesActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
 			break;
 		default:
 			goto case "";
 	}
 
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
 	bool userCanViewBundles = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Bundles_View);
+	bool userCanViewCrossSellCategories = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Categories_View);
+
+	List<ProductBundleItem> bundleItems = null;
+	int countBundlesActive = 0;
+	int countBundlesTotal = 0;
+
+	List<ProductCategoryAltProduct> crossSellCategories = null;
+	int crossSellCategoryActiveCount = 0;
+	int crossSellCategoryTotalCount = 0;
+	
+	if (!Model.IsCreatePage)
+	{
+		bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
+		countBundlesActive = bundleItems.AsQueryable().WhereIsActive().Count();
+		countBundlesTotal = bundleItems.Count;
+
+		crossSellCategories = Model.Product.CategoryAltProducts.AsQueryable().ApplyDefaultSort().ToList();
+		crossSellCategoryActiveCount = crossSellCategories.AsQueryable().WhereIsActive().Count();
+		crossSellCategoryTotalCount = crossSellCategories.Count;
+	}
 }
 <script>
 	function GetActiveTab()
@@ -102,9 +127,16 @@
 			document.getElementById('EndDateTimeUtc').value = '@(Html.Raw(DateTime.UtcNow.AddYears(100).ToString().ToJavaScriptString()))';
 		}
 	}
+
+	function RemoveAltCategory(categoryId)
+	{
+		$('#RemoveAltCategoryId').val(categoryId);
+		$('#EditForm').submit();
+	}
 </script>
 @Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
 @Html.HiddenFor(model => model.ProductId)
+@Html.Hidden("RemoveAltCategoryId", "", new { id = "RemoveAltCategoryId" })
 @{
 	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
 	DigitalDownloadFileInfo digitalDownloadInfo = new DigitalDownloadFileInfo(Model.DigitalDownloadFileName, Model.ProductId);
@@ -129,11 +161,15 @@
 		<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display and Template</a></li>
 		<li class="@(tabResourcesActive)"><a data-toggle="tab" href="#sectionResources" onclick="SetActiveTab('Resources');">Resources</a></li>
 		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
-		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 		@if (!Model.IsCreatePage && userCanViewBundles)
 		{
-			<li class="@(tabBundlesActive)"><a data-toggle="tab" href="#sectionBundles" onclick="SetActiveTab('Bundles');">Bundles</a></li>
+			<li class="@(tabBundlesActive)"><a data-toggle="tab" href="#sectionBundles" onclick="SetActiveTab('Bundles');">Bundles @(countBundlesActive) / @(countBundlesTotal)</a></li>
 		}
+		@if (!Model.IsCreatePage && userCanViewCrossSellCategories)
+		{
+			<li class="@(tabCrossSellCategoriesActive)"><a data-toggle="tab" href="#sectionCrossSellCategories" onclick="SetActiveTab('CrossSellCategories');">Cross-Sell Categories @(crossSellCategoryActiveCount.ToString("N0")) / @(crossSellCategoryTotalCount.ToString("N0"))</a></li>
+		}
+		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 	</ul>
 
 
@@ -156,7 +192,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Summary Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultSummaryCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultSummaryCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.SummaryCaption, "FieldText")
@@ -165,7 +201,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Top Description Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 
@@ -178,7 +214,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Bottom Description Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.BottomDescriptionCaption, "FieldText")
@@ -244,7 +280,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Audio Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultSampleAudioCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultSampleAudioCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.SampleAudioCaption, "FieldText")
@@ -259,7 +295,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Download Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultSampleDownloadCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultSampleDownloadCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.SampleDownloadCaption, "FieldText")
@@ -274,7 +310,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Sample Image Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultSampleImageCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultSampleImageCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.SampleImageCaption, "FieldText")
@@ -309,6 +345,40 @@
 			@Html.EditorFor(model => model.MetaKeywords, "FieldTextArea")
 		</div>
 
+		@if (!Model.IsCreatePage && userCanViewBundles && Model.Product != null && Model.Product.ProductBundleItems != null)
+		{
+			<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Bundles (@(bundleItems.Count.ToString("N0")))</h3>
+				</div>
+
+				@Html.DisplayFor(model => bundleItems, "Bundles", new { target = "_blank" })
+
+				@Html.EditorForModel("ProductAddToBundle")
+			</div>
+		}
+		
+		@if (!Model.IsCreatePage && userCanViewCrossSellCategories)
+		{
+			<div id="sectionCrossSellCategories" class="tab-pane fade in @(tabCrossSellCategoriesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-success title-align">Cross-Sell Categories</h3>
+				</div>
+				@foreach (ProductCategoryAltProduct altCategory in crossSellCategories)
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-7 text-left">
+							<input type="button" value="Remove" class="btn btn-xs btn-danger" onclick="RemoveAltCategory(@(altCategory.ProductCategoryId));" style="margin-top: 1em; margin-bottom: 1em;" />
+							@Html.DisplayNameFor(model => altCategory.Category):
+							@Html.DisplayFor(model => altCategory.Category.Name) [@(altCategory.ProductCategoryId)]
+							 - @Html.ActionLink("View Category (new window)", "Details", "CategoryAdmin", new { id = altCategory.ProductCategoryId }, new { @class = "btn btn-xs btn-info", target = "_blank" })
+						</div>
+					</div>
+				}
+				<hr />
+			</div>
+		}
+		
 		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
 			<div class="row">
 				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Activation</h3>
@@ -339,19 +409,6 @@
 			@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 		</div>
 
-		@if (!Model.IsCreatePage && userCanViewBundles && Model.Product != null && Model.Product.ProductBundleItems != null)
-		{
-			List<ProductBundleItem> bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
-			<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">
-				<div class="row">
-					<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Bundles (@(bundleItems.Count.ToString("N0")))</h3>
-				</div>
-
-				@Html.DisplayFor(model => bundleItems, "Bundles", new { target="_blank"})
-
-				@Html.EditorForModel("ProductAddToBundle")
-			</div>
-		}
 
 	</div>
 </div>

@@ -4,15 +4,22 @@
 	bool hasChildCategories = false;
 	
 	//root display
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
 	hasChildCategories = Model.CategoryTree.Count != 0;
-	ViewBag.Title = Model.StoreFrontConfig.CatalogTitle;
+	ViewBag.Title = config.CatalogTitle;
 	UserProfile profile = Html.CurrentUserProfile(false);
+	bool shareByEmailEnabled = Settings.AppEnableEmail && config.Client.UseSendGridEmail;
 }	
 
 @Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogRootHeaderHtml))
 
 @{ Html.RenderCatalogTopCategoryListPartial(); }
-	
+
+@if (shareByEmailEnabled)
+{
+	Html.RenderPartial("_ShareByEmail_Partial", config);
+}
+
 @Html.Raw(Html.ReplaceVariables(Model.StoreFrontConfig.CatalogRootFooterHtml))
 
 <!-- Top Catalog End -->

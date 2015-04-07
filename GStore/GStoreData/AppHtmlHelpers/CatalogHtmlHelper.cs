@@ -254,7 +254,7 @@ namespace GStoreData.AppHtmlHelpers
 			htmlHelper.RenderCatalogPartialHelper(view, null);
 		}
 
-		private static void RenderCatalogPartialHelper(this HtmlHelper<CatalogViewModel> htmlHelper, string view, ViewDataDictionary<CatalogViewModel> newViewDataOrNull)
+		private static void RenderCatalogPartialHelper(this HtmlHelper<CatalogViewModel> htmlHelper, string view, ViewDataDictionary<CatalogViewModel> newViewDataOrNull, bool addLayoutFolder = false)
 		{
 			if (htmlHelper.ViewData.Model == null)
 			{
@@ -267,7 +267,12 @@ namespace GStoreData.AppHtmlHelpers
 				throw new ArgumentNullException("htmlHelper.CurrentStoreFrontConfig");
 			}
 
-			string partialViewPath = config.CatalogLayout.ToString() + "/" + view;
+			string partialViewPath = view;
+			if (addLayoutFolder)
+			{
+				partialViewPath = config.CatalogLayout.ToString() + "/" + view;
+			}
+
 			if (config == null)
 			{
 				throw new ApplicationException("Current store front config not find to display catalog view '" + view + "'");

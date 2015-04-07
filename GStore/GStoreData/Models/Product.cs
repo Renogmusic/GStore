@@ -170,7 +170,14 @@ namespace GStoreData.Models
 		//silentoutofstock
 		//discontinued
 
+		public virtual ICollection<ProductImage> Images { get; set; }
+
 		public virtual ICollection<ProductBundleItem> ProductBundleItems { get; set; }
+
+		public virtual ICollection<ProductCategoryAltProduct> CategoryAltProducts { get; set; }
+
+		public virtual ICollection<CartItem> CartItems { get; set; }
+
 
 		public decimal? UnitPrice(int quantity)
 		{

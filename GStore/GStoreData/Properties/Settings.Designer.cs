@@ -483,5 +483,14 @@ namespace GStoreData.Properties {
                 return ((string)(this["AppGoogleMapsApiKey"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AppEnableChat {
+            get {
+                return ((bool)(this["AppEnableChat"]));
+            }
+        }
     }
 }

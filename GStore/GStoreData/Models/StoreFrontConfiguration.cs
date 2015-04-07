@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Web.Mvc;
 
@@ -456,6 +457,48 @@ namespace GStoreData.Models
 		public string CatalogRootFooterHtml { get; set; }
 
 
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Summary Caption", Description = "Default Summary caption for products that do not have one defined.\nLeave this blank to use the system default 'Summary'\nExample: 'Summary' or 'Overview'")]
+		public string CatalogDefaultSummaryCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Top Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Description for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string CatalogDefaultTopDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Image Caption", Description = "Default Sample Image caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Image for [product name]'.\nExample: 'Sample Image' or 'Photo'")]
+		public string CatalogDefaultSampleImageCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Bottom Description Caption", Description = "Default Top Description caption for products that do not have one defined.\nLeave this field blank to use the system default 'Details for [product name]'.\nExample: 'Description' or 'Details'")]
+		public string CatalogDefaultBottomDescriptionCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Download File Caption", Description = "Default Sample Download File caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Download for [product name]'.\nExample: 'Sample File' or 'Demo File'")]
+		public string CatalogDefaultSampleDownloadCaption { get; set; }
+
+		[DataType(DataType.Text)]
+		[Display(Name = "Default Sample Audio Caption", Description = "Default Sample Audio caption for products that do not have one defined.\nLeave this field blank to use the system default 'Sample Audio for [product name]'.\nExample: 'Sample Sound' or 'Music'")]
+		public string CatalogDefaultSampleAudioCaption { get; set; }
+
+		[AllowHtml]
+		[DataType(DataType.Html)]
+		[Display(Name = "Catalog No Products Message Html", Description = "Message shown when there are no products in a category.\nLeave blank for the system default 'There are no products in this category.'")]
+		public string CatalogDefaultNoProductsMessageHtml { get; set; }
+
+		[Display(Name = "Catalog Product Type Single")]
+		public string CatalogDefaultProductTypeSingle { get; set; }
+
+		[Display(Name = "Catalog Product Type Plural")]
+		public string CatalogDefaultProductTypePlural { get; set; }
+
+		[Display(Name = "Catalog Product Bundle Type Single")]
+		public string CatalogDefaultProductBundleTypeSingle { get; set; }
+
+		[Display(Name = "Catalog Product Bundle Type Plural")]
+		public string CatalogDefaultProductBundleTypePlural { get; set; }
+
+
 		[Range(0, 6)]
 		[Display(Name = "Nav Bar Catalog Max Levels")]
 		public int NavBarCatalogMaxLevels { get; set; }
@@ -525,7 +568,13 @@ namespace GStoreData.Models
 		public int CatalogProductBundleItemColSm { get; set; }
 
 		#endregion
-		
+
+		[Display(Name = "Enable Chat", Description = "Enable the Chat feature of the site for general chat on your web site.")]
+		public bool ChatEnabled { get; set; }
+
+		[Display(Name = "Chat - Login Required", Description = "Check this box to require users to log in to use the Chat feature of the site.")]
+		public bool ChatRequireLogin { get; set; }
+
 		#region Error Pages
 
 		[Display(Name = "Not Found Error Page Id")]
@@ -598,18 +647,21 @@ namespace GStoreData.Models
 
 		#endregion
 
+		public virtual ICollection<StoreBinding> StoreBindings { get; set; }
+
+
 	}
 
 	public enum CatalogLayoutEnum : int
 	{
-		[Display(Name="Simple Blocked", Description="Blocks for products categories, products, with single photo")]
+		[Display(Name="Simple Blocked", Description="Blocks for products categories, products, with single photo or audio shown")]
 		SimpleBlocked = 0,
 
-		[Display(Name = "eCommerce 4 column Flat", Description = "Typical eCommerce layout with categories on the left side and 4 products per row. No rotator for images/audio")]
-		eCommerce4ByFlat = 100,
+		[Display(Name = "4 column eCommerce no filters", Description = "Typical eCommerce layout with categories on the top and 4 products per row. No filters on the left side.")]
+		eCommerce4ColumnNoSide = 100,
 
-		[Display(Name = "eCommerce 4 column with rotator", Description = "eCommerce layout with rotatable images of multiple images per product. Categories on the left side and 4 products per row")]
-		eCommerce4ByWithRotator = 200,
+		[Display(Name = "4 column eCommerce with Side filters", Description = "eCommerce layout with rotatable images of multiple images per product. Categories on the left side and 4 products per row.")]
+		eCommerce4ColumnSideFilters = 200,
 
 	}
 

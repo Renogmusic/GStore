@@ -9,7 +9,7 @@
 <div class="form-group">
 	@Html.LabelWithRequiredForModel(new { @class = (colOffset == 0 ? "" : "col-md-offset-" + colOffset + " ") + "col-md-" + colLabel + " title-align-right" })
 	<div class="col-md-@(colData) title-align">
-		@Html.DropDownListForModel(Html.StoreFrontList())
+		@Html.DropDownListForModel(Html.StoreFrontList(null))
 		@if (useHelpLabelPopover)
 		{
 			@Html.HelpLabelPopoverForModel()

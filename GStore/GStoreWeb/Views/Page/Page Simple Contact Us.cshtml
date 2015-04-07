@@ -1,5 +1,8 @@
 ﻿@model PageViewModel
-@{ ViewData["PageTemplateAutoSync"] = false;}
+@{
+	ViewData["PageTemplateAutoSync"] = false;
+	bool shareByEmailEnabled = Settings.AppEnableEmail && Html.CurrentClient(true).UseSendGridEmail;
+}
 @{
 	ViewData.SetColDisplay(1, 3, 7);
 }
@@ -21,6 +24,10 @@ else if (Model.EditMode)
 	@Html.DisplayPageSection("Headline3", 3, "Headline 3", "<h3>Please fill in the form below and we will respond as soon as possible.</h3>", "<h3>", "</h3>", "", false, false)
 	@Html.DisplayPageSection("BodyText", 4, "Body Text", string.Empty, "<h4>", "</h4>", "", false, false)
 	@Html.DisplayPageSection("BodyLink", 5, "Body Link", "<p>&nbsp;</p>", "<p>", "</p>", "", false, false)
+	@if (shareByEmailEnabled)
+	{
+		Html.RenderPartial("_ShareByEmail_Partial", Model.Page);
+	}
 </div>
 <div id="PageForm" class="PageForm">
 	@Html.DisplayPageForm()

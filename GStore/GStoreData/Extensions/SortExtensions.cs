@@ -4084,6 +4084,15 @@ namespace GStoreData
 			return query.OrderBy(pts => pts.Order).ThenBy(pts => pts.PageTemplateSectionId);
 		}
 
+		public static IOrderedQueryable<ProductCategoryAltProduct> ApplyDefaultSort(this IQueryable<ProductCategoryAltProduct> query)
+		{
+			return query.OrderBy(alt => alt.Order).ThenBy(alt => alt.Product.Order);
+		}
+
+		public static IOrderedQueryable<ProductCategoryAltProductBundle> ApplyDefaultSort(this IQueryable<ProductCategoryAltProductBundle> query)
+		{
+			return query.OrderBy(alt => alt.Order).ThenBy(alt => alt.ProductBundle.Order);
+		}
 
 
 	}

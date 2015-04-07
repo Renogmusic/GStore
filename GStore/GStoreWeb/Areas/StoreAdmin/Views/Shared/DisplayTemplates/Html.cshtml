@@ -1,0 +1,9 @@
+﻿@model string
+@if (string.IsNullOrEmpty(Model))
+{
+	@:(blank)
+}
+else
+{
+	@Html.Raw(Model)
+}

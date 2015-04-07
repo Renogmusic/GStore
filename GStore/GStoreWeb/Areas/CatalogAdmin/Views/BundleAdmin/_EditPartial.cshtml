@@ -7,6 +7,7 @@
 	string tabDisplayActive = string.Empty;
 	string tabResourcesActive = string.Empty;
 	string tabMetaTagsActive = string.Empty;
+	string tabCrossSellCategoriesActive = string.Empty;
 	string tabActivationActive = string.Empty;
 
 	switch ((Model.ActiveTab ?? string.Empty).ToLower())
@@ -33,17 +34,28 @@
 		case "metatags":
 			tabMetaTagsActive = "active";
 			break;
+		case "crosssellcategories":
+			tabCrossSellCategoriesActive = "active";
+			break;
 		case "activation":
 			tabActivationActive = "active";
 			break;
 		default:
 			goto case "";
 	}
+	
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	bool userCanViewProducts = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Products_View);
+	bool userCanViewCrossSellCategories = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Categories_View);
 
 	List<ProductBundleItem> bundleItems = null;
 	List<SelectListItem> addProductList = null;
 	decimal? unitPrice = null;
 	decimal? listPrice = null;
+
+	List<ProductCategoryAltProductBundle> crossSellCategories = null;
+	int crossSellCategoryActiveCount = 0;
+	int crossSellCategoryTotalCount = 0;
 
 	if (!Model.IsCreatePage)
 	{
@@ -60,10 +72,13 @@
 
 		unitPrice = Model.ProductBundle.UnitPrice(1);
 		listPrice = Model.ProductBundle.ListPrice(1);
+
+		crossSellCategories = Model.ProductBundle.CategoryAltBundles.AsQueryable().ApplyDefaultSort().ToList();
+		crossSellCategoryActiveCount = crossSellCategories.AsQueryable().WhereIsActive().Count();
+		crossSellCategoryTotalCount = crossSellCategories.Count;
 	}
 
 
-	bool userCanViewProducts = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Products_View);
 
 }
 <script>
@@ -148,10 +163,17 @@
 		$('#RemoveItemId').val(productId);
 		$('#EditForm').submit();
 	}
+
+	function RemoveAltCategory(categoryId)
+	{
+		$('#RemoveAltCategoryId').val(categoryId);
+		$('#EditForm').submit();
+	}
 </script>
 @Html.HiddenFor(model => model.ActiveTab, new { id = "ActiveTab" })
 @Html.HiddenFor(model => model.ProductBundleId)
 @Html.Hidden("RemoveItemId", "", new  { id = "RemoveItemId" })
+@Html.Hidden("RemoveAltCategoryId", "", new { id = "RemoveAltCategoryId" })
 @{
 	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFront(true).CurrentConfigOrAny();
 	string defaultTheme = "";
@@ -170,15 +192,21 @@
 <div class="form-horizontal">
 	<ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
 		<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
-		@if (!Model.IsCreatePage)
+		@if (!Model.IsCreatePage && userCanViewProducts)
 		{
-			<li class="@(tabItemsActive)"><a data-toggle="tab" href="#sectionItems" onclick="SetActiveTab('Items');">Items</a></li>
+			int bundleItemsActive = bundleItems.AsQueryable().WhereIsActive().Count();
+			int bundleItemsTotal = bundleItems.Count;
+			<li class="@(tabItemsActive)"><a data-toggle="tab" href="#sectionItems" onclick="SetActiveTab('Items');">Items @(bundleItemsActive) / @(bundleItemsTotal)</a></li>
 		}
 		<li class="@(tabDescriptionActive)"><a data-toggle="tab" href="#sectionDescription" onclick="SetActiveTab('Description');">Description</a></li>
 		<li class="@(tabAvailabilityActive)"><a data-toggle="tab" href="#sectionAvailability" onclick="SetActiveTab('Availability');">Availability</a></li>
 		<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display and Template</a></li>
 		<li class="@(tabResourcesActive)"><a data-toggle="tab" href="#sectionResources" onclick="SetActiveTab('Resources');">Resources</a></li>
 		<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+		@if (!Model.IsCreatePage && userCanViewCrossSellCategories)
+		{
+			<li class="@(tabCrossSellCategoriesActive)"><a data-toggle="tab" href="#sectionCrossSellCategories" onclick="SetActiveTab('CrossSellCategories');">Cross-Sell Categories @(crossSellCategoryActiveCount.ToString("N0")) / @(crossSellCategoryTotalCount.ToString("N0"))</a></li>
+		}
 		<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 	</ul>
 
@@ -336,7 +364,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Summary Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultSummaryCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultSummaryCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.SummaryCaption, "FieldText")
@@ -345,7 +373,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Top Description Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultTopDescriptionCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 
@@ -358,7 +386,7 @@
 			<div class="form-group">
 				<label class="col-md-offset-1 col-md-3 title-align-right">Category Default Bottom Description Caption</label>
 				<div class="col-md-7 title-align">
-					@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(Model.Name)
+					@Model.Category.DefaultBottomDescriptionCaptionOrSystemDefault(config, Model.Name)
 				</div>
 			</div>
 			@Html.EditorFor(model => model.BottomDescriptionCaption, "FieldText")
@@ -453,6 +481,27 @@
 			@Html.EditorFor(model => model.MetaKeywords, "FieldText")
 		</div>
 
+		@if (!Model.IsCreatePage && userCanViewCrossSellCategories)
+		{
+			<div id="sectionCrossSellCategories" class="tab-pane fade in @(tabCrossSellCategoriesActive)">
+				<div class="row">
+					<h3 class="col-md-offset-3 col-md-7 bg-success title-align">Cross-Sell Categories</h3>
+				</div>
+				@foreach (ProductCategoryAltProductBundle altCategory in crossSellCategories)
+				{
+					<div class="row">
+						<div class="col-md-offset-3 col-md-7 text-left">
+							<input type="button" value="Remove" class="btn btn-xs btn-danger" onclick="RemoveAltCategory(@(altCategory.ProductCategoryId));" style="margin-top: 1em; margin-bottom: 1em;"/>
+							@Html.DisplayNameFor(model => altCategory.Category):
+							@Html.DisplayFor(model => altCategory.Category.Name)  [@(altCategory.ProductCategoryId)]
+							 - @Html.ActionLink("View Category (new window)", "Details", "CategoryAdmin", new { id = altCategory.ProductCategoryId }, new { @class="btn btn-xs btn-info", target="_blank" })
+						</div>
+					</div>
+				}
+				<hr/>
+			</div>
+		}
+		
 		<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
 			<div class="row">
 				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Activation</h3>

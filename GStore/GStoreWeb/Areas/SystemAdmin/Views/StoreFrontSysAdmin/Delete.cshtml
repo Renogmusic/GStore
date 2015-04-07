@@ -42,7 +42,7 @@
 			<a href="@(Url.Action("Index", "BindingsSysAdmin", new { clientId = Model.ClientId, storeFrontId = Model.StoreFrontId }))" class="btn btn-lg btn-info">
 				View Bindings
 				<hr />
-				Active: @Model.StoreBindings.AsQueryable().WhereIsActive().Count() / Total @Model.StoreBindings.Count()
+				Active: @Model.StoreFrontConfigurations.Sum(sfc => sfc.StoreBindings.AsQueryable().WhereIsActive().Count()).ToString("N0") / Total @Model.StoreFrontConfigurations.Sum(sfc => sfc.StoreBindings.Count()).ToString("N0")
 			</a>
 		</dd>
 

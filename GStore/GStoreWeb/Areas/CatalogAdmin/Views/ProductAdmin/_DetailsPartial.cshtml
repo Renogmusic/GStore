@@ -6,9 +6,10 @@
 	string tabDisplayActive = string.Empty;
 	string tabResourcesActive = string.Empty;
 	string tabMetaTagsActive = string.Empty;
-	string tabActivationActive = string.Empty;
 	string tabBundlesActive = string.Empty;
-	
+	string tabCrossSellCategoriesActive = string.Empty;
+	string tabActivationActive = string.Empty;
+
 	switch ((Model.ActiveTab ?? string.Empty).ToLower())
 	{
 		case "":
@@ -30,17 +31,31 @@
 		case "metatags":
 			tabMetaTagsActive = "active";
 			break;
-		case "activation":
-			tabActivationActive = "active";
-			break;
 		case "bundles":
 			tabBundlesActive = "active";
+			break;
+		case "crosssellcategories":
+			tabCrossSellCategoriesActive = "active";
+			break;
+		case "activation":
+			tabActivationActive = "active";
 			break;
 		default:
 			goto case "";
 	}
 
-	bool userCanViewBundles = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Bundles_View);
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	bool userCanViewBundles = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Bundles_View);
+	bool userCanViewCrossSellCategories = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Categories_View);
+
+	List<ProductBundleItem> bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
+	int countBundlesActive = bundleItems.AsQueryable().WhereIsActive().Count();
+	int countBundlesTotal = bundleItems.Count;
+
+	List<ProductCategoryAltProduct> crossSellCategories = Model.Product.CategoryAltProducts.AsQueryable().ApplyDefaultSort().ToList();
+	int crossSellCategoryActiveCount = crossSellCategories.AsQueryable().WhereIsActive().Count();
+	int crossSellCategoryTotalCount = crossSellCategories.Count;
+
 }
 <script>
 	function GetActiveTab()
@@ -115,11 +130,15 @@
 	<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display and Template</a></li>
 	<li class="@(tabResourcesActive)"><a data-toggle="tab" href="#sectionResources" onclick="SetActiveTab('Resources');">Resources</a></li>
 	<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
-	<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 	@if (userCanViewBundles)
 	{
-		<li class="@(tabBundlesActive)"><a data-toggle="tab" href="#sectionBundles" onclick="SetActiveTab('Bundles');">Bundles</a></li>
+		<li class="@(tabBundlesActive)"><a data-toggle="tab" href="#sectionBundles" onclick="SetActiveTab('Bundles');">Bundles @(countBundlesActive) / @(countBundlesTotal)</a></li>
 	}
+	@if (userCanViewCrossSellCategories)
+	{
+		<li class="@(tabCrossSellCategoriesActive)"><a data-toggle="tab" href="#sectionCrossSellCategories" onclick="SetActiveTab('CrossSellCategories');">Cross-Sell Categories @(crossSellCategoryActiveCount.ToString("N0")) / @(crossSellCategoryTotalCount.ToString("N0"))</a></li>
+	}
+	<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 </ul>
 
 <div class="tab-content">
@@ -180,7 +199,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.SummaryCaptionOrDefault(true)
+				@Model.Product.SummaryCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.SummaryCaption)
 			</dd>
 
@@ -200,7 +219,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.TopDescriptionCaptionOrDefault(true)
+				@Model.Product.TopDescriptionCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.TopDescriptionCaption)
 			</dd>
 
@@ -240,7 +259,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.BottomDescriptionCaptionOrDefault(true)
+				@Model.Product.BottomDescriptionCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.BottomDescriptionCaption)
 			</dd>
 
@@ -478,7 +497,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.SampleAudioCaptionOrDefault(true)
+				@Model.Product.SampleAudioCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.SampleAudioCaption)
 			</dd>
 
@@ -506,7 +525,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.SampleDownloadCaptionOrDefault(true)
+				@Model.Product.SampleDownloadCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.SampleDownloadCaption)
 			</dd>
 
@@ -534,7 +553,7 @@
 			</dt>
 
 			<dd>
-				@Model.Product.SampleImageCaptionOrDefault(true)
+				@Model.Product.SampleImageCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.SampleImageCaption)
 			</dd>
 		</dl>
@@ -565,6 +584,38 @@
 			</dd>
 		</dl>
 	</div>
+
+	@if (userCanViewBundles)
+	{
+		<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Bundles (@(bundleItems.Count.ToString("N0")))</h3>
+			</div>
+			@Html.DisplayFor(model => bundleItems, "Bundles")
+		</div>
+	}
+
+	@if (userCanViewCrossSellCategories)
+	{
+		<div id="sectionCrossSellCategories" class="tab-pane fade in @(tabCrossSellCategoriesActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-success title-align">Cross-Sell Categories</h3>
+			</div>
+			<dl class="dl-horizontal">
+				@foreach (ProductCategoryAltProduct altCategory in crossSellCategories)
+				{
+					<dt>
+						@Html.DisplayNameFor(model => altCategory.Category)
+					</dt>
+
+					<dd>
+						@Html.DisplayFor(model => altCategory.Category.Name) [@(altCategory.ProductCategoryId)]
+						- @Html.ActionLink("View Category (new window)", "Details", "CategoryAdmin", new { id = altCategory.ProductCategoryId }, new { @class = "btn btn-xs btn-info", target = "_blank" })
+					</dd>
+				}
+			</dl>
+		</div>
+	}
 
 	<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
 		<div class="row">
@@ -623,15 +674,5 @@
 		</dl>
 	</div>
 
-	@if (userCanViewBundles)
-	{
-		List<ProductBundleItem> bundleItems = Model.Product.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
-		<div id="sectionBundles" class="tab-pane fade in @(tabBundlesActive)">
-			<div class="row">
-				<h3 class="col-md-offset-3 col-md-7 bg-warning title-align">Bundles (@(bundleItems.Count.ToString("N0")))</h3>
-			</div>
-			@Html.DisplayFor(model => bundleItems, "Bundles")
-		</div>
-	}
 </div>
 <hr />

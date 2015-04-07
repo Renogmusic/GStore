@@ -15,6 +15,7 @@
 	bool showListPrice = config.CartItemListPriceColumnShow && (listPrice.HasValue && listPrice.Value > (unitPrice ?? 0M));
 	bool showImage = (imageUrl != null);
 	bool showSampleAudio = false;
+	bool newThisWeek = DateTime.UtcNow.Subtract(product.CreateDateTimeUtc).Days <= 7;
 
 	if (!string.IsNullOrEmpty(product.SampleAudioFileName))
 	{
@@ -29,9 +30,9 @@
 			if (showSampleAudio)
 			{
 				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
-				<div class="ProductMusicRow">
-					<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
-					<span class="ProductMusicLabel">@(product.SampleAudioCaptionOrDefault())</span>
+				<div class="ProductAudioRow">
+					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductAudioLabel">@(product.SampleAudioCaptionOrSystemDefault(config))</span>
 				</div>
 			}
 			if (showListPrice)
@@ -47,9 +48,9 @@
 			if (showSampleAudio)
 			{
 				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
-				<div class="ProductMusicRow">
-					<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
-					<span class="ProductMusicLabel">@(product.SampleAudioCaptionOrDefault())</span>
+				<div class="ProductAudioRow">
+					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductAudioLabel">@(product.SampleAudioCaptionOrSystemDefault(config))</span>
 				</div>
 			}
 			if (showListPrice)
@@ -57,6 +58,10 @@
 				<div class="ProductListListPriceRow"><span class="ProductListListPriceLabel">@(config.CartItemListPriceColumnLabel.OrDefault("List Price"))</span> <span class="ProductListListPrice">@(Html.DisplayFor(model => listPrice, "CurrencyOrNA"))</span></div>
 			}
 			<div class="ProductListUnitPriceRow"><span class="ProductListUnitPriceLabel">@(config.CartItemUnitPriceColumnLabel.OrDefault("Your Price"))</span> <span class="ProductListUnitPrice">@(Html.DisplayFor(model => unitPrice, "CurrencyOrCall"))</span></div>
+		}
+		@if (newThisWeek)
+		{
+			<br/><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
 		}
 	</div>
 }

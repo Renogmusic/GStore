@@ -3,19 +3,12 @@
 @{
 	List<TreeNode<ProductCategory>> categoryNodes = null;
 	string catalogTopLinkText = string.Empty;
-	TreeNode<ProductCategory> singleCategoryNode = Model.CurrentCategoryNodeOrNull;
-	if (singleCategoryNode != null)
-	{
-		categoryNodes = new List<TreeNode<ProductCategory>>();
-		categoryNodes.Add(singleCategoryNode);
-	}
-	else
-	{
-		categoryNodes = Model.CategoryTree;
-	}
-
+	categoryNodes = Model.CategoryTree;
+	
 	foreach (TreeNode<ProductCategory> categoryNode in categoryNodes)
 	{
+		bool newThisWeek = DateTime.UtcNow.Subtract(categoryNode.Entity.CreateDateTimeUtc).Days <= 7;
+
 		@:<div class="CategoryListCategoryAndChildren">
 		bool isRoot = (Model.CurrentCategoryOrNull == null);
 		string rootClass = "";
@@ -57,6 +50,10 @@
 						{
 							<h3 class="CategoryListTextNoLinkNoImage" style="margin-top: 0">@(displayName)</h3>
 						}
+					}
+					@if (newThisWeek)
+					{
+						<br/><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
 					}
 				</div>
 			</div>
@@ -100,6 +97,7 @@
 					string childDisplayName = childCategory.Entity.DisplayNameWithCount(User.IsRegistered());
 					string childUrl = Url.Action("ViewCategoryByName", "Catalog", new { urlName = childCategory.Entity.UrlName });
 					string childImageUrl = childCategory.Entity.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
+					bool childNewThisWeek = DateTime.UtcNow.Subtract(childCategory.Entity.CreateDateTimeUtc).Days <= 7;
 						
 					@:<div class="CategoryListChildItem col-sm-@(Model.StoreFrontConfig.CatalogCategoryColSm) col-md-@(Model.StoreFrontConfig.CatalogCategoryColMd) col-lg-@(Model.StoreFrontConfig.CatalogCategoryColLg)@(offsets)">
 						@:<div class="CategoryListChildItemBox boxshadowjs">
@@ -113,6 +111,11 @@
 							{
 								<a class="CategoryListChildTextLinkNoImage" href="@(childUrl)" title="@(childDisplayName)"><h3 style="margin-top: 0">@(Html.Encode(childDisplayName))</h3></a>
 							}
+							if (childNewThisWeek)
+							{
+						  		<br /><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
+							}
+
 						@:</div>
 					@:</div>
 					offsets = "";

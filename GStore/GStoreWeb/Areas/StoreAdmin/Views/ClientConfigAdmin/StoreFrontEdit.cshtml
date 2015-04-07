@@ -209,7 +209,8 @@
 				@Html.EditorFor(model => model.NavBarItemsMaxLevels, "FieldInt")
 				@Html.EditorFor(model => model.Order, "FieldInt")
 				@Html.EditorFor(model => model.Folder, "FieldText")
-
+				@Html.EditorFor(model => model.ChatEnabled, "FieldCheckbox")
+				@Html.EditorFor(model => model.ChatRequireLogin, "FieldCheckbox")
 			</div>
 
 			<div id="sectionAdmins" class="tab-pane fade in @(tabAdminsActive)">
@@ -344,6 +345,18 @@
 				@Html.EditorFor(model => model.CatalogRootListTemplate, "FieldEnum")
 				@Html.EditorFor(model => model.CatalogRootHeaderHtml, "FieldHtml")
 				@Html.EditorFor(model => model.CatalogRootFooterHtml, "FieldHtml")
+				@Html.EditorFor(model => model.CatalogDefaultNoProductsMessageHtml, "FieldHtml")
+				@Html.EditorFor(model => model.CatalogDefaultSummaryCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultTopDescriptionCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultSampleAudioCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultSampleDownloadCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultSampleImageCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultBottomDescriptionCaption, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultProductTypeSingle, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultProductTypePlural, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultProductBundleTypeSingle, "FieldText")
+				@Html.EditorFor(model => model.CatalogDefaultProductBundleTypePlural, "FieldText")
+
 				@Html.EditorFor(model => model.NavBarCatalogMaxLevels, "FieldInt")
 				@Html.EditorFor(model => model.CatalogPageInitialLevels, "FieldInt")
 				@Html.EditorFor(model => model.CatalogCategoryColLg, "FieldInt")

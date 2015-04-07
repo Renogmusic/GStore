@@ -83,6 +83,13 @@ namespace GStoreWeb
 				);
 
 				routes.MapRoute(
+					name: "Stores-Chat",
+					url: "Stores/{urlstorename}/Chat/{action}/{id}",
+					defaults: new { controller = "Chat", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStoreWeb.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-OrderStatus",
 					url: "Stores/{urlstorename}/OrderStatus/{action}/{id}",
 					defaults: new { controller = "OrderStatus", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -170,6 +177,13 @@ namespace GStoreWeb
 					name: "Stores-DynamicPageEditPostRoute",
 					url: "Stores/{urlstorename}/UpdatePageAjax/{*DynamicPageUrl}",
 					defaults: new { controller = "Page", action = "UpdatePageAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStoreWeb.Controllers" }
+				);
+
+				routes.MapRoute(
+					name: "Stores-ShareByEmailRoute",
+					url: "Stores/{urlstorename}/ShareByEmail/{*DynamicPageUrl}",
+					defaults: new { controller = "Page", action = "ShareByEmail", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 					namespaces: new[] { "GStoreWeb.Controllers" }
 				);
 
@@ -262,6 +276,13 @@ namespace GStoreWeb
 				name: "Checkout",
 				url: "Checkout/{action}/{id}",
 				defaults: new { controller = "Checkout", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStoreWeb.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "Chat",
+				url: "Chat/{action}/{id}",
+				defaults: new { controller = "Chat", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStoreWeb.Controllers" }
 			);
 
@@ -375,6 +396,13 @@ namespace GStoreWeb
 				name: "DynamicWebFormFieldEditPostRoute",
 				url: "UpdateWebFormFieldAjax/{*DynamicPageUrl}",
 				defaults: new { controller = "Page", action = "UpdateWebFormFieldAjax", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStoreWeb.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "ShareByEmailRoute",
+				url: "ShareByEmail/{*DynamicPageUrl}",
+				defaults: new { controller = "Page", action = "ShareByEmail", stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStoreWeb.Controllers" }
 			);
 

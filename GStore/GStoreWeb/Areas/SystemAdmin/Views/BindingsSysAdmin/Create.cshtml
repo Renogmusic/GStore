@@ -26,7 +26,8 @@
 	
     <div class="form-horizontal">
 		@Html.EditorFor(model => model.ClientId, "FieldClientIdWithPostback")
-		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontId")
+		@Html.EditorFor(model => model.StoreFrontId, "FieldStoreFrontIdWithPostBack")
+		@Html.EditorFor(model => model.StoreFrontConfigurationId, "FieldStoreFrontConfigurationId")
 		@Html.EditorFor(model => model.HostName, "FieldText")
 		@Html.EditorFor(model => model.Port, "FieldInt")
 		@Html.EditorFor(model => model.RootPath, "FieldText")

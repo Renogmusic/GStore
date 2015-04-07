@@ -42,8 +42,8 @@ namespace GStoreData.Areas.StoreAdmin.ControllerBase
 		{
 			try
 			{
-				StoreFront storeFront = GStoreDb.GetCurrentStoreFront(Request, true, false, true);
-				if (storeFront == null)
+				StoreFrontConfiguration storeFrontConfig = GStoreDb.GetCurrentStoreFrontConfig(Request, true, false);
+				if (storeFrontConfig == null)
 				{
 					AddUserMessage("Store Front Inactive or not found!", "Sorry, this URL does not point to an active store front. Please contact us for assistance.", AppHtmlHelpers.UserMessageType.Danger);
 					filterContext.ExceptionHandled = true;

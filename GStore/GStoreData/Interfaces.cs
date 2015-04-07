@@ -170,6 +170,9 @@ namespace GStoreData
 		[Display(Name = "Products", Description = "Sellable Products for a store front.")]
 		IGStoreRepository<Models.Product> Products { get; }
 
+		[Display(Name = "Product Images", Description = "Products Images (alternates) for a store front.")]
+		IGStoreRepository<Models.ProductImage> ProductImages { get; }
+
 		[Display(Name = "Product Bundles", Description = "Product Bundles for groups of products to be purchased for a store front.")]
 		IGStoreRepository<Models.ProductBundle> ProductBundles { get; }
 
@@ -178,6 +181,15 @@ namespace GStoreData
 
 		[Display(Name = "Product Categories", Description = "Category groups for menus and listing of Products for a store front.")]
 		IGStoreRepository<Models.ProductCategory> ProductCategories { get; }
+
+		[Display(Name = "Product Category Images", Description = "Product Category Images (alternates) for a store front.")]
+		IGStoreRepository<Models.ProductCategoryImage> ProductCategoryImages { get; }
+
+		[Display(Name = "Product Category Alt Products", Description = "Products to show in this category that are from other categories for a store front.")]
+		IGStoreRepository<Models.ProductCategoryAltProduct> ProductCategoryAltProducts { get; }
+
+		[Display(Name = "Product Category Alt Product Bundles", Description = "Product Bundles to show in this category that are from other categories for a store front.")]
+		IGStoreRepository<Models.ProductCategoryAltProductBundle> ProductCategoryAltProductBundles { get; }
 
 		[Display(Name = "Security Events", Description = "Security events like login/logoff/lockout/new user system-wide.")]
 		IGStoreRepository<Models.SecurityEvent> SecurityEvents { get; }

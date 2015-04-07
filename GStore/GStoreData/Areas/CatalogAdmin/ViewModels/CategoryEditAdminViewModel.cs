@@ -112,7 +112,10 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 
 		public void FillListsIfEmpty(Client client, StoreFront storeFront)
 		{
-
+			this.StoreFront = storeFront;
+			this.StoreFrontId = storeFront.StoreFrontId;
+			this.Client = client;
+			this.ClientId = client.ClientId;
 		}
 
 		public void UpdateProductCategoryAndParent(ProductCategory productCategory)
@@ -176,22 +179,18 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 		[Display(Name = "Parent Category Id", Description = "Parent Category Id; use this to make a category into a sub-category.")]
 		public int? ParentCategoryId { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Product Type Single", Description = "Singular Name used when showing a Product for this category. \nExample: Product, Item, Song, Toy.\nDefault: Item")]
 		public string ProductTypeSingle { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Product Type Plural", Description = "Singular Name used when showing a list of Products for this category. \nExample: Products, Items, Songs, Toys.\nDefault: Items")]
 		public string ProductTypePlural { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Bundle Type Single", Description = "Singular Name used when showing a bundle for this category. \nExample: Bundle, Package, Album, Collection.\nDefault: Bundle")]
 		public string BundleTypeSingle { get; set; }
 
-		[Required]
 		[MaxLength(100)]
 		[Display(Name = "Bundle Type Plural", Description = "Plural Name used when showing a list of bundles for this category. \nExample: Bundles, Packages, Albums, Collections.\nDefault: Bundles")]
 		public string BundleTypePlural { get; set; }

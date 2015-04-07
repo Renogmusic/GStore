@@ -91,6 +91,24 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.ChatEnabled)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ChatEnabled)
+			<br />@Html.HelpLabelFor(model => model.ChatEnabled, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ChatRequireLogin)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ChatRequireLogin)
+			<br />@Html.HelpLabelFor(model => model.ChatRequireLogin, new { @class = "help-label" })
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.NavBarShowRegisterLink)
 		</dt>
 
@@ -268,6 +286,105 @@
 		<dd>
 			@Html.DisplayFor(model => model.CatalogRootFooterHtml)
 			<br />@Html.HelpLabelFor(model => model.CatalogRootFooterHtml, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultNoProductsMessageHtml)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogNoProductsMessageOrSystemDefault(Model.StoreFrontConfig.CatalogDefaultProductTypePluralOrSystemDefault(), true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultNoProductsMessageHtml, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultSummaryCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultSummaryCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultSummaryCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultTopDescriptionCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultTopDescriptionCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultTopDescriptionCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultSampleAudioCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultSampleAudioCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultSampleAudioCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultSampleDownloadCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultSampleDownloadCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultSampleDownloadCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultSampleImageCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultSampleImageCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultSampleImageCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultBottomDescriptionCaption)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultBottomDescriptionCaptionOrSystemDefault("[product name]", true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultBottomDescriptionCaption, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultProductTypeSingle)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultProductTypeSingleOrSystemDefault(true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultProductTypeSingle, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultProductTypePlural)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultProductTypePluralOrSystemDefault(true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultProductTypePlural, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultProductBundleTypeSingle)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultProductBundleTypeSingleOrSystemDefault(true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultProductBundleTypeSingle, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.CatalogDefaultProductBundleTypePlural)
+		</dt>
+
+		<dd>
+			@Model.StoreFrontConfig.CatalogDefaultProductBundleTypePluralOrSystemDefault(true)
+			<br />@Html.HelpLabelFor(model => model.CatalogDefaultProductBundleTypePlural, new { @class = "help-label" })
 		</dd>
 
 		<dt>

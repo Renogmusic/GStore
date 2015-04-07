@@ -1,0 +1,133 @@
+﻿@model string
+<script>
+	var chatHub;
+	var myUserName = @(Model.ToJavaScriptMvcString(true))
+	$(document).ready(function ()
+	{
+		chatHub = $.connection.chatHub;
+		chatHub.client.MessageIncoming = MessageIncoming;
+		chatHub.client.UpdatedUserList = UpdatedUserList;
+		$.connection.hub.start().done(function ()
+		{
+			//nothing to do here
+		})
+	});
+
+	function MessageIncoming(message, user, isPrivate)
+	{
+		if (isPrivate)
+		{
+			$('#PrivateMessages').append("<br/><div class=\"text-right col-xs-5 col-md-3\">" + htmlEncode(user) + ":</div><div class=\"text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+		}
+		else
+		{
+			$('#PublicMessages').append("<br/><div class=\"text-right col-xs-5 col-md-3\">" + htmlEncode(user) + ":</div><div class=\"text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+		}
+	}
+
+	function SendMessage()
+	{
+		var message = $('#NewMessageText').val();
+		$('#NewMessageText').val("");
+		$('#NewMessageText').focus();
+		var target = $('#NewMessageTarget').val();
+		if (target && target != "")
+		{
+			chatHub.server.sendToUser(message, target);
+		}
+		else
+		{
+			chatHub.server.sendToAll(message);
+		}
+	}
+
+	var userList = null;
+
+	function UpdatedUserList(newUserList)
+	{
+		userList = newUserList;
+		$('#UserCount').text("Users: " + userList.length);
+		$('#NewMessageTarget').empty();
+
+		$('#NewMessageTarget')
+			.append($("<option></option>")
+			.attr("value", "")
+			.text("- All -"));
+
+		$.each(userList, function (index)
+		{
+			$('#NewMessageTarget')
+				.append($("<option></option>")
+				.attr("value", userList[index])
+				.text((userList[index] == myUserName ? "- Me - " : "") + userList[index]));
+		});
+	}
+</script>
+<style>
+	#NewMessageToAllBox{
+		background-color: lightcyan; 
+		border: 1px solid red;
+	}
+
+	#PublicMessagesHeader{
+		color: black;
+	}
+	#PublicMessagesBox{
+		background-color: white;
+		overflow: scroll; 
+		height: 300px; 
+		max-height: 400px;
+	}
+	#PublicMessages{
+		background-color: rgba(173, 216, 230, 0.2); 
+		width: 95%;
+		margin-left: auto;
+		margin-right: auto;
+		color: black;
+	}
+	#PrivateMessagesHeader{
+		color: salmon;
+	}
+	#PrivateMessagesBox{
+		background-color: white;
+		overflow: scroll; 
+		height: 300px; 
+		max-height: 400px;
+	}
+
+	#PrivateMessages{
+		background-color: rgba(255, 160, 122, 0.2); 
+		width: 95%;
+		margin-left: auto;
+		margin-right: auto;
+		color: darkred;
+	}
+</style>
+<div style="background-color: white; color: black;">
+	<div id="NewMessageToAllBox" class="row">
+		<form onsubmit="return false;">
+			<label for="NewMessageText">Message:</label>
+			<input id="NewMessageText" name="NewMessageText" type="text" size="100" maxlength="1000" />
+			<label for="NewMessageTarget">To:</label>
+			<select id="NewMessageTarget" class="form-control">
+				<option value="">All</option>
+			</select>
+			<button id="SendButton" class="btn btn-success" type="submit" onclick="SendMessage()">Send</button>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<span id="UserCount">Users: -</span>
+			&nbsp;&nbsp;&nbsp;&nbsp;@Html.ActionLink("Sign Out", "SignOut")
+		</form>
+	</div>
+	<h1 id="PublicMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad" style="margin-top: 1em;">Public Messages</h1>
+	<div id="PublicMessagesBox">
+		<div id="PublicMessages" class="row Border3Black">
+			Chat started at @(DateTime.UtcNow.ToUserDateTimeString(Html))<br />
+		</div>
+	</div>
+	<hr />
+	<h1 id="PrivateMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad">Private Messages</h1>
+	<div id="PrivateMessagesBox">
+		<div id="PrivateMessages" class="row Border3Black">
+		</div>
+	</div>
+</div>

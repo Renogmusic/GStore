@@ -1041,14 +1041,14 @@ namespace GStoreData.AppHtmlHelpers
 			return new MvcHtmlString(html);
 		}
 
-		public static string UrlResolved(this Page page, UrlHelper urlHelper)
+		public static string UrlResolved(this Page page, UrlHelper urlHelper, bool absoluteLink = false)
 		{
-			return urlHelper.GStoreLocalUrl(page.Url);
+			return urlHelper.GStoreLocalUrl(page.Url, absoluteLink);
 		}
 
-		public static string UrlResolved(this PageEditViewModel pageEditViewModel, UrlHelper urlHelper)
+		public static string UrlResolved(this PageEditViewModel pageEditViewModel, UrlHelper urlHelper, bool absoluteLink = false)
 		{
-			return urlHelper.GStoreLocalUrl(pageEditViewModel.Url);
+			return urlHelper.GStoreLocalUrl(pageEditViewModel.Url, absoluteLink);
 		}
 
 		public static string Url(this NavBarItem navBarItem, UrlHelper urlHelper)
@@ -1216,17 +1216,27 @@ namespace GStoreData.AppHtmlHelpers
 		/// <returns></returns>
 		public static string GStoreLocalUrl(this UrlHelper urlHelper, string localUrl, bool absoluteLink = false)
 		{
-			string url = localUrl.Trim('~').Trim('/');
+			string urlTrimmed = localUrl.Trim('~').Trim('/');
+			string url = urlTrimmed;
 			string currentRawUrl = urlHelper.RequestContext.HttpContext.Request.RawUrl.Trim('/').ToLower();
 			string appRoot = urlHelper.RequestContext.HttpContext.Request.ApplicationPath.Trim('/').ToLower();
+
+			bool addAppRoot = false;
+			bool addUrlStoreName = false;
+			string urlStoreName = string.Empty;
+
 			if (appRoot.Length != 0 && currentRawUrl.StartsWith(appRoot))
 			{
-				url = appRoot + "/" + url;
+				addAppRoot = true;
 			}
-			string urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
-			if (!string.IsNullOrEmpty(urlStoreName))
+
+			if (!localUrl.Trim('~').Trim('/').StartsWith("Content/"))
 			{
-				url = "Stores/" + urlStoreName + "/" + url;
+				urlStoreName = urlHelper.RequestContext.RouteData.UrlStoreName();
+				if (!string.IsNullOrEmpty(urlStoreName))
+				{
+					addUrlStoreName = true;
+				}
 			}
 
 			if (absoluteLink)
@@ -1234,7 +1244,7 @@ namespace GStoreData.AppHtmlHelpers
 				Uri currentUrl = urlHelper.RequestContext.HttpContext.Request.Url;
 				return currentUrl.Scheme + "://" + currentUrl.Host + (currentUrl.IsDefaultPort ? "" : ":" + currentUrl.Port) + "/" + url;
 			}
-			return "/" + url;
+			return "/" + (addAppRoot ? appRoot + "/" : "") + (addUrlStoreName ? "Stores/" + urlHelper.Encode(urlStoreName) + "/" : "") + url;
 		}
 
 		/// <summary>
@@ -1934,6 +1944,70 @@ namespace GStoreData.AppHtmlHelpers
 		}
 
 		/// <summary>
+		/// Gets the DisplayName setting from View Data for a field in the display templates
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="value"></param>
+		public static string DisplayName(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("DisplayName"))
+			{
+				return viewData["DisplayName"] as string;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Sets the DisplayName setting from View Data for a field in the display templates
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="value"></param>
+		public static void DisplayName(this ViewDataDictionary viewData, string value)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			viewData["DisplayName"] = value;
+		}
+
+		/// <summary>
+		/// Gets the Required setting from View Data for a field in the display templates
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="value"></param>
+		public static bool Required(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("Required"))
+			{
+				return (viewData["Required"] as bool?) ?? false;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Sets the Required setting from View Data for a field in the display templates
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="value"></param>
+		public static void Required(this ViewDataDictionary viewData, bool value)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			viewData["Required"] = value;
+		}
+
+		/// <summary>
 		/// Sets the MaxLength for a textbox template
 		/// </summary>
 		/// <param name="htmlHelper"></param>
@@ -1979,6 +2053,87 @@ namespace GStoreData.AppHtmlHelpers
 			viewData["UseHelpLabelPopover"] = value;
 		}
 
+		/// <summary>
+		/// Gets the focus field for layout to auto-focus when document loads
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="fieldId"></param>
+		public static string FocusId(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("FocusId"))
+			{
+				return viewData["FocusId"] as string;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Sets the focus field for layout to auto-focus when document loads
+		/// </summary>
+		/// <param name="viewData"></param>
+		/// <param name="fieldId"></param>
+		public static void FocusId(this ViewDataDictionary viewData, string fieldId)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			viewData["FocusId"] = fieldId;
+		}
+
+
+		/// <summary>
+		/// Gets the View data setting for SetFocusToFirstInput (default is true)
+		/// </summary>
+		/// <param name="viewData"></param>
+		public static bool SetFocusToFirstInput(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("SetFocusToFirstInput"))
+			{
+				return (viewData["SetFocusToFirstInput"] as bool?) ?? true;
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Gets the View data setting for SetFocusToFirstInput for system admin section where default is false
+		/// </summary>
+		/// <param name="viewData"></param>
+		public static bool SetFocusToFirstInputDefaultFalse(this ViewDataDictionary viewData)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			if (viewData.ContainsKey("SetFocusToFirstInput"))
+			{
+				return (viewData["SetFocusToFirstInput"] as bool?) ?? false;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Sets the View data setting for SetFocusToFirstInput (default is true)
+		/// </summary>
+		/// <param name="viewData"></param>
+		public static void SetFocusToFirstInput(this ViewDataDictionary viewData, bool value)
+		{
+			if (viewData == null)
+			{
+				throw new ArgumentNullException("viewData");
+			}
+			viewData["SetFocusToFirstInput"] = value;
+		}
+
+		
 		/// <summary>
 		/// Returns the column offset MD to use before the label for a field in the display templates
 		/// </summary>

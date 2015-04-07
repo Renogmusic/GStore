@@ -1,0 +1,137 @@
+﻿<!-- Email a Friend Start -->
+@{
+	if (Model == null)
+	{
+		throw new ArgumentNullException("model");
+	}
+	Product product = Model as Product;
+	ProductBundle productBundle = Model as ProductBundle;
+	ProductCategory productCategory = Model as ProductCategory;
+	StoreFrontConfiguration configModel = Model as StoreFrontConfiguration;
+	
+	GStoreData.Models.Page page = Model as GStoreData.Models.Page;
+	if (product == null && productBundle == null && productCategory == null && page == null && configModel == null)
+	{
+		throw new ArgumentNullException("model", "model must be Product, Category, Bundle, Page, or StoreFrontConfiguration");
+	}
+
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	
+	string emailFromName = null;
+	string emailFromAddress = null;
+	string emailToName = null;
+	string emailToAddress = null;
+	string subject = null;
+	string message = null;
+	RouteValueDictionary routeValues = null;
+	string controller = null;
+	string label = "Share this!";
+	
+	UserProfile profile = Html.CurrentUserProfile(false);
+	if (profile != null)
+	{
+		emailFromAddress = profile.Email;
+		emailFromName = profile.FullName;
+	}
+	
+	if (product != null)
+	{
+		subject = product.Name + " at " + config.Name;
+		message = "Look at this " + product.Category.ProductTypeSingleOrSystemDefault(config) + " I found at " + config.Name + "!\n\n" + product.Name + "\n\n";
+		routeValues = new RouteValueDictionary(new { product = product.UrlName });
+		controller = "Catalog";
+		label = "Share this " + product.Category.ProductTypeSingleOrSystemDefault(config) + "!";
+	}
+	else if (productBundle != null)
+	{
+		subject = productBundle.Name + " at " + config.Name;
+		message = "Look at this " + productBundle.Category.BundleTypeSingleOrSystemDefault(config) + " I found at " + config.Name + "!\n\n" + productBundle.Name + "\n\n";
+		routeValues = new RouteValueDictionary(new { bundle = productBundle.UrlName });
+		controller = "Catalog";
+		label = "Share this " + productBundle.Category.BundleTypeSingleOrSystemDefault(config) + "!";
+	}
+	else if (configModel != null)
+	{
+		subject = configModel.CatalogTitle + " at " + config.Name;
+		message = "Look at these " + configModel.CatalogDefaultProductTypePluralOrSystemDefault() + " I found at " + config.Name + "!\n\n" + configModel.Name + "\n\n";
+		routeValues = new RouteValueDictionary(new { TopOfCatalog = true });
+		controller = "Catalog";
+		label = "Share this Page!";
+	}
+	else if (productCategory != null)
+	{
+		subject = productCategory.Name + " at " + config.Name;
+		message = "Look at these " + productCategory.ProductTypePluralOrSystemDefault(config) + " I found at " + config.Name + "!\n\n" + productCategory.Name + "\n\n";
+		routeValues = new RouteValueDictionary(new { category = productCategory.UrlName });
+		controller = "Catalog";
+		label = "Share this Category!";
+	}
+	if (page != null)
+	{
+		subject = page.PageTitle + " at " + config.Name;
+		message = "Shared from a friend, " + page.PageTitle + " page at " + config.Name + "!\n\n";
+		routeValues = new RouteValueDictionary(new { DynamicPageUrl = page.Url });
+		string urlStoreName = ViewContext.RouteData.UrlStoreName();
+		if (!string.IsNullOrEmpty(urlStoreName))
+		{
+			routeValues.Add("urlStoreName", urlStoreName);
+		}
+		controller = "Page";
+		label = "Share this Page!";
+	}
+	string modalFocus = "emailFromName";
+	if (!string.IsNullOrEmpty(emailFromName))
+	{
+		modalFocus = "emailToName";
+	}
+}
+<script>
+	$(document).ready(function ()
+	{
+		$('#emailModal').on('shown.bs.modal', function ()
+		{
+			$('#@(Html.Raw(modalFocus))').focus();
+		})
+	})
+</script>
+<a href="javascript:();" data-toggle="modal" data-target="#emailModal" title="Email a friend!">@(label)<img src="@(Url.GStoreLocalUrl("/Images/Email.png"))" alt="Email a friend" title="Email a friend" /></a>
+<br /><br />
+<!-- Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">@(label)</h4>
+			</div>
+			<div class="modal-body text-center">
+				@using (Html.BeginForm("ShareByEmail", controller, routeValues, FormMethod.Post))
+				{
+					@:<div class="row text-center">
+						@Html.AntiForgeryToken()
+						@Html.EditorFor(model => emailFromName, "FieldText", new { LabelText = "Your Name", Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+						@Html.EditorFor(model => emailFromAddress, "FieldEmail", new { LabelText = "Your Email Address", Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+						@Html.EditorFor(model => emailToName, "FieldText", new { LabelText = "To Name", Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+						@Html.EditorFor(model => emailToAddress, "FieldEmail", new { LabelText = "To Email Address", Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+					
+						@Html.EditorFor(model => subject, "FieldText", new { LabelText = "Subject", Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+						@Html.EditorFor(model => message, "FieldTextArea", new { LabelText = "Message", TextRows = 7, Required = true, htmlAttributes = new { style = "margin-bottom: 1em;" } })
+					
+						<div class="form-group">
+							<div class="col-md-offset-1 col-md-10">
+								<center>
+									<button type="submit" class="btn btn-primary">Send!</button>
+									&nbsp;&nbsp;|&nbsp;&nbsp;
+									<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								</center>
+							</div>
+						</div>
+					@:</div>
+				}
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Email A Friend End -->

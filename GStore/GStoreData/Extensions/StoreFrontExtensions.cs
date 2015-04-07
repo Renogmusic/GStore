@@ -28,13 +28,14 @@ namespace GStoreData
 		/// <param name="request"></param>
 		/// <param name="throwErrorIfNotFound">If true, throws an error when storefront is not found</param>
 		/// <returns></returns>
-		public static StoreFront GetCurrentStoreFront(this IGstoreDb db, HttpRequestBase request, bool throwErrorIfNotFound, bool returnInactiveIfFound, bool ignoreStoreFrontConfigCheck)
+		public static StoreFrontConfiguration GetCurrentStoreFrontConfig(this IGstoreDb db, HttpRequestBase request, bool throwErrorIfNotFound, bool returnInactiveIfFound)
 		{
+
 			//if context has already set the current store front, return it
-			if (db.CachedStoreFront != null && db.CachedStoreFrontConfig != null)
+			if (db.CachedStoreFrontConfig != null)
 			{
 				//note: only active storefront is cached, inactives are always queried from database
-				return db.CachedStoreFront;
+				return db.CachedStoreFrontConfig;
 			}
 
 			if (db.CachedStoreFront != null && db.CachedStoreFrontConfig == null)
@@ -44,18 +45,9 @@ namespace GStoreData
 				if (storeFrontActiveCurrentConfig != null)
 				{
 					db.CachedStoreFrontConfig = storeFrontActiveCurrentConfig;
-					return db.CachedStoreFront;
-				}
-				if (ignoreStoreFrontConfigCheck)
-				{
-					StoreFrontConfiguration storeFrontInactiveConfig = db.CachedStoreFront.CurrentConfigOrAny();
-					if (storeFrontInactiveConfig != null)
-					{
-						return db.CachedStoreFront;
-					}
+					return storeFrontActiveCurrentConfig;
 				}
 			}
-
 
 			if (request == null)
 			{
@@ -95,34 +87,8 @@ namespace GStoreData
 			{
 				//active match found, update cache and return the active match
 				db.CachedStoreFront = activeStoreBinding.StoreFront;
-				StoreFrontConfiguration activeConfig = db.CachedStoreFront.CurrentConfig();
-				if (activeConfig != null)
-				{
-					db.CachedStoreFrontConfig = activeConfig;
-					return activeStoreBinding.StoreFront;
-				}
-				else
-				{
-					StoreFrontConfiguration inactiveConfig = db.CachedStoreFront.CurrentConfigOrAny();
-					if (ignoreStoreFrontConfigCheck && inactiveConfig != null)
-					{
-						return activeStoreBinding.StoreFront;
-					}
-					string noConfigErrorMessage = "No active configuration found for store front id [" + db.CachedStoreFront.StoreFrontId + "]";
-					if (inactiveConfig == null)
-					{
-						noConfigErrorMessage += "\n No configuration was found for this store front. Create One.";
-					}
-					else
-					{
-						noConfigErrorMessage += "\n Configuration '" + inactiveConfig.ConfigurationName + "' [" + inactiveConfig.StoreFrontConfigurationId + "] is inactive."
-							+ "\n IsPending: " + inactiveConfig.IsPending + (inactiveConfig.IsPending ? " <-- Potential Issue" : "")
-							+ "\n StartDateTimeUtc: " + inactiveConfig.StartDateTimeUtc.ToString() + (inactiveConfig.StartDateTimeUtc > DateTime.UtcNow ? " <-- Potential Issue" : "")
-							+ "\n EndDateTimeUtc: " + inactiveConfig.EndDateTimeUtc.ToString() + (inactiveConfig.EndDateTimeUtc < DateTime.UtcNow ? " <-- Potential Issue" : "");
-
-					}
-					throw new Exceptions.StoreFrontInactiveException(noConfigErrorMessage, request.Url, activeStoreBinding.StoreFront);
-				}
+				db.CachedStoreFrontConfig = activeStoreBinding.StoreFrontConfiguration;
+				return activeStoreBinding.StoreFrontConfiguration;
 			}
 
 			if ((throwErrorIfNotFound == false) && (returnInactiveIfFound == false))
@@ -166,7 +132,7 @@ namespace GStoreData
 			if (returnInactiveIfFound)
 			{
 				//if returnInactiveIfFound = true; return the best matching inactive record (first)
-				return inactiveBindings[0].StoreFront;
+				return inactiveBindings[0].StoreFrontConfiguration;
 			}
 
 			///build error message with details that might help find the inactive record for system admin to fix
@@ -205,16 +171,16 @@ namespace GStoreData
 				sb => ((sb.HostName == "*") || (sb.HostName.ToLower() == bindingHostName) || (sb.HostName.ToLower() == bindingHostNameNoWww))
 					&& ((sb.Port == 0) || (sb.Port == bindingPort))
 					&& ((sb.RootPath == "*") || (sb.RootPath.ToLower() == bindingRootPath))
-				).WhereIsActive().OrderBy(sb => sb.Order).ThenBy(sb => sb.StoreBindingId);
+				).WhereIsActive();
 
 			if (!string.IsNullOrEmpty(urlStoreName))
 			{
-				IQueryable<StoreBinding> queryByStoreName = queryBindings.Where(sb => sb.UseUrlStoreName && (sb.UrlStoreName.ToLower() == "*" || sb.UrlStoreName.ToLower() == urlStoreName.ToLower()));
+				IOrderedQueryable<StoreBinding> queryByStoreName = queryBindings.Where(sb => sb.UseUrlStoreName && (sb.UrlStoreName.ToLower() == "*" || sb.UrlStoreName.ToLower() == urlStoreName.ToLower())).OrderBy(sb => sb.Order).ThenBy(sb => sb.StoreBindingId);
 				StoreBinding storeBindingByUrlStoreName = queryByStoreName.FirstOrDefault();
 				return storeBindingByUrlStoreName;
 			}
 
-			IQueryable<StoreBinding> queryNoStoreName = queryBindings.Where(sb => sb.UseUrlStoreName == false);
+			IOrderedQueryable<StoreBinding> queryNoStoreName = queryBindings.Where(sb => sb.UseUrlStoreName == false).OrderBy(sb => sb.Order).ThenBy(sb => sb.StoreBindingId);
 
 			StoreBinding storeBinding = queryNoStoreName.FirstOrDefault();
 			return storeBinding; // may be null
@@ -373,6 +339,12 @@ namespace GStoreData
 			else if (page == null && urlLower.TrimStart('/').StartsWith("submitform"))
 			{
 				urlLower = "/" + urlLower.TrimStart('/').Substring(10).TrimStart('/');
+				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
+				page = query.FirstOrDefault();
+			}
+			else if (page == null && urlLower.TrimStart('/').StartsWith("sharebyemail"))
+			{
+				urlLower = "/" + urlLower.TrimStart('/').Substring(12).TrimStart('/');
 				var editQuery = storeFront.Pages.Where(p => p.Url.ToLower() == urlLower).AsQueryable().WhereIsActive().OrderBy(p => p.Order).ThenByDescending(p => p.UpdateDateTimeUtc);
 				page = query.FirstOrDefault();
 			}
@@ -573,6 +545,19 @@ namespace GStoreData
 			storeFrontConfig.CatalogRootListTemplate = CategoryListTemplateEnum.Default;
 			storeFrontConfig.CatalogRootHeaderHtml = null;
 			storeFrontConfig.CatalogRootFooterHtml = null;
+
+			storeFrontConfig.CatalogDefaultBottomDescriptionCaption = null;
+			storeFrontConfig.CatalogDefaultNoProductsMessageHtml = null;
+			storeFrontConfig.CatalogDefaultProductBundleTypePlural = null;
+			storeFrontConfig.CatalogDefaultProductBundleTypeSingle = null;
+			storeFrontConfig.CatalogDefaultProductTypePlural = null;
+			storeFrontConfig.CatalogDefaultProductTypeSingle = null;
+			storeFrontConfig.CatalogDefaultSampleAudioCaption = null;
+			storeFrontConfig.CatalogDefaultSampleDownloadCaption = null;
+			storeFrontConfig.CatalogDefaultSampleImageCaption = null;
+			storeFrontConfig.CatalogDefaultSummaryCaption = null;
+			storeFrontConfig.CatalogDefaultTopDescriptionCaption = null;
+
 			storeFrontConfig.NavBarCatalogMaxLevels = 6;
 			storeFrontConfig.NavBarItemsMaxLevels = 6;
 			storeFrontConfig.CatalogCategoryColLg = 3;
@@ -587,6 +572,9 @@ namespace GStoreData
 			storeFrontConfig.CatalogProductBundleItemColLg = 3;
 			storeFrontConfig.CatalogProductBundleItemColMd = 4;
 			storeFrontConfig.CatalogProductBundleItemColSm = 6;
+
+			storeFrontConfig.ChatEnabled = true;
+			storeFrontConfig.ChatRequireLogin = false;
 
 			storeFrontConfig.UseShoppingCart = true;
 			storeFrontConfig.CartNavShowCartToAnonymous = true;
@@ -1103,7 +1091,7 @@ namespace GStoreData
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
+			string[] blockedUrls = { "Account", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Chat", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "ShareByEmail", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{

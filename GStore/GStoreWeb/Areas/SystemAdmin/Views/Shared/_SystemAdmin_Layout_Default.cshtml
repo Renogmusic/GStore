@@ -33,6 +33,11 @@
 		if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
 		{
 			containerClasses += " modelinvalid";
+			if (Html.CurrentUserProfile(false).AspNetIdentityUserIsInRoleSystemAdmin())
+			{
+				string valErrors = ViewData.ModelState.ErrorDetails();
+				Html.BaseControllerOrThrow().AddUserMessageBottom("Validation errors", valErrors.ToHtmlLines(), UserMessageType.Danger);
+			}
 		}
 
 		bool needsCKEditor = (ViewData["CKEditor"] as bool?) ?? false;
@@ -72,6 +77,19 @@
 	<script src="~/signalr/hubs"></script>
 	@Scripts.Render("~/Content/Server/Scripts/GStoreApp.js")
 	@Scripts.Render("~/Content/Server/Scripts/Scripts.js")
+	@if (!string.IsNullOrEmpty(ViewData.FocusId()))
+	{
+		<script>
+			SetFocusToFieldId(@(ViewData.FocusId().ToJavaScriptMvcString(true)));
+		</script>
+	}
+	else if (ViewData.SetFocusToFirstInputDefaultFalse())
+	{
+		<script>
+			SetFocusToFirstInput();
+		</script>
+	}
+
 	@if (needsCKEditor)
 	{
 		<script src="~/Scripts/CKEditor/ckeditor.js"></script>

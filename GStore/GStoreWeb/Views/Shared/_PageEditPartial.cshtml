@@ -24,6 +24,11 @@
 	if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
 	{
 		containerClasses += " modelinvalid";
+		if (Html.CurrentUserProfile(false).AspNetIdentityUserIsInRoleSystemAdmin())
+		{
+			string valErrors = ViewData.ModelState.ErrorDetails();
+			Html.BaseControllerOrThrow().AddUserMessageBottom("Validation errors", valErrors.ToHtmlLines(), UserMessageType.Danger);
+		}
 	}
 
 	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())
@@ -109,21 +114,20 @@
 
 	@{
 		@:$(document).ready(function () { HideFormPreview(); });
-					if (sectionContentActive.Length == 0)
+		if (sectionContentActive.Length == 0)
 		{
-			@:$(document).ready(function () { HidePageSections(); });
-					}
+			@:$(document).ready(function () { HidePageSections(); HideFormPreview(); });
+		}
 		else
 		{
-			@:$(document).ready(function () { ShowPageSections(); });
-					}
+			@:$(document).ready(function () { ShowPageSections(); ShowFormPreview(); });
+		}
 	}
 	function ShowPageSections() {
 		if (document.getElementById('PageContent')) {
 			document.getElementById('PageContent').hidden = false;
 		}
 	}
-
 	function HidePageSections() {
 		if (document.getElementById('PageContent')) {
 			document.getElementById('PageContent').hidden = true;
@@ -132,6 +136,13 @@
 	function HideFormPreview() {
 		if (document.getElementById('PageForm')) {
 			document.getElementById('PageForm').hidden = true;
+		}
+	}
+	function ShowFormPreview()
+	{
+		if (document.getElementById('PageForm'))
+		{
+			document.getElementById('PageForm').hidden = false;
 		}
 	}
 

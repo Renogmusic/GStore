@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 using GStoreData.AppHtmlHelpers;
 using GStoreData.Identity;
 using GStoreData.Models;
@@ -104,6 +105,75 @@ namespace GStoreData.ControllerBase
 			string rawUrl = Request.RawUrl;
 			string viewName = CurrentPageOrThrow.PageTemplate.ViewName;
 			return View(viewName, new PageViewModel(CurrentPageOrThrow, false, false, true, autoPost, false, null, false, Tab));
+		}
+
+		[HttpGet]
+		public ActionResult ShareByEmail()
+		{
+			Page page = CurrentPageOrThrow;
+			return Redirect(page.UrlResolved(Url));
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult ShareByEmail(string emailToAddress, string emailToName, string emailFromAddress, string emailFromName, string subject, string message)
+		{
+			this._logActionsAsPageViews = false;
+
+			Page currentPage = CurrentPageOrThrow;
+			CheckAccessAndRedirect();
+
+			if (string.IsNullOrEmpty(emailToAddress))
+			{
+				return HttpBadRequest("emailToAddress cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailToName))
+			{
+				return HttpBadRequest("emailToName cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailFromAddress))
+			{
+				return HttpBadRequest("emailFromAddress cannot be blank");
+			}
+			if (string.IsNullOrEmpty(emailFromName))
+			{
+				return HttpBadRequest("emailFromName cannot be blank");
+			}
+
+			StoreFrontConfiguration config = CurrentStoreFrontConfigOrThrow;
+
+			string url = currentPage.UrlResolved(Url, true);
+			string textDetails = "\r\n\r\n" + currentPage.PageTitle + "\r\n" + url + "\r\n";
+			string htmlDetails = "\r\n\r\n<br/><br/>" + currentPage.PageTitle.ToHtml() + "\r\n<br/><a href=\"" + url + "\">View at " + Request.Url.Host.ToHtml() + "</a>\r\n<br/>";
+
+			subject += " from " + emailFromName + " - " + emailFromAddress + " via " + Request.Url.Host;
+			string fromLine = "\r\n\r\nSent to you from " + emailFromName + " - " + emailFromAddress;
+			string textBody = message + textDetails + fromLine;
+			string htmlBody = message.ToHtml() + htmlDetails + fromLine.ToHtmlLines();
+
+			bool result = this.SendEmail(emailToAddress, emailToName, subject, textBody, htmlBody);
+			if (result)
+			{
+				AddUserMessage("Email Sent!", "We have sent your message to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Success);
+			}
+			else
+			{
+				if (!Settings.AppEnableEmail)
+				{
+					AddUserMessage("Email Error", "Sorry, this server does not have email configured to send email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+				else if (!config.Client.UseSendGridEmail)
+				{
+					AddUserMessage("Email Error", "Sorry, this site does not have email configured to send email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+				else
+				{
+					AddUserMessage("Email Error", "Sorry, there was an unknown error sending your email to '" + emailToName.ToHtml() + "' &lt;" + emailToAddress.ToHtml() + "&gt;", UserMessageType.Danger);
+				}
+			}
+
+			return Redirect(currentPage.UrlResolved(Url));
+
 		}
 
 		/// <summary>

@@ -198,6 +198,7 @@ namespace GStoreData.Models
 		Cart = 100,
 		Catalog = 200,
 		Checkout = 300,
+		Chat = 350,
 		GStore = 400,
 		Notifications = 500,
 		Orders = 600,
@@ -264,6 +265,9 @@ namespace GStoreData.Models
 
 		[Display(Name = "", Description = "", GroupName = "Checkout")]
 		Checkout_PlacedOrder = 30060,
+
+		[Display(Name = "", Description = "", GroupName = "Chat")]
+		Chat_Start = 35001,
 
 		[Display(Name = "", Description = "", GroupName = "GStore")]
 		GStore_ViewAbout = 40001,

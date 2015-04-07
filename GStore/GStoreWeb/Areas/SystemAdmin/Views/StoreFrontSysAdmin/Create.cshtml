@@ -38,7 +38,7 @@
 		@Html.EditorFor(model => model.EndDateTimeUtc, "FieldDateTime")
 
 		@Html.EditorFor(model => createDefaultConfig, "FieldCheckbox", new { labelText = "Create Default Configuration" })
-		@Html.EditorFor(model => themeId, "FieldThemeId", new { labelText = "Theme for Configuration" })
+		@Html.EditorFor(model => themeId, "FieldThemeId", new { clientId = Model.ClientId, labelText = "Theme for Configuration" })
 		@Html.EditorFor(model => populateProducts, "FieldCheckbox", new { labelText = "Load Sample Products" })
 		@Html.EditorFor(model => populateDiscounts, "FieldCheckbox", new { labelText = "Load Sample Discounts" })
 		@Html.EditorFor(model => populatePages, "FieldCheckbox", new { labelText = "Load Simple Sample Pages" })

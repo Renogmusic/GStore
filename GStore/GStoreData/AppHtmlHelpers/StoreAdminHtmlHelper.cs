@@ -495,11 +495,29 @@ namespace GStoreData.AppHtmlHelpers
 				});
 		}
 
-		public static IEnumerable<SelectListItem> ThemeList(this HtmlHelper htmlHelper)
+		public static IEnumerable<SelectListItem> ThemeList(this HtmlHelper htmlHelper, int? clientId)
 		{
 			int selectedThemeId = (htmlHelper.ViewData.Model as int?) ?? 0;
 
-			List<Theme> themes = htmlHelper.CurrentClient(true).Themes.AsQueryable().ApplyDefaultSort().ToList();
+			Client client = null;
+			if (clientId.HasValue && clientId.Value != 0)
+			{
+				client = htmlHelper.GStoreDb().Clients.FindById(clientId.Value);
+				if (client == null)
+				{
+					throw new ArgumentException("clientId", "Cannot find client by id. client id: " + clientId.Value);
+				}
+			}
+			else
+			{
+				client = htmlHelper.CurrentClient(true);
+				if (client == null)
+				{
+					throw new ArgumentNullException("HtmlHelper.CurrentClient");
+				}
+			}
+
+			List<Theme> themes = client.Themes.AsQueryable().ApplyDefaultSort().ToList();
 			return themes.Select(t =>
 				new SelectListItem()
 				{
@@ -569,8 +587,33 @@ namespace GStoreData.AppHtmlHelpers
 				new SelectListItem()
 				{
 					Value = c.ProductCategoryId.ToString(),
-					Text = c.CategoryPath() + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName + (showProductCount ? " Products: " + c.Products.Count.ToString("N0") + " Bundles: " + c.ProductBundles.Count.ToString("N0") : ""),
+					Text = c.CategoryPath() + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName 
+					+ (showProductCount ?
+						" Products: " + c.Products.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.Products.Count.ToString("N0")
+						+ " Bundles: " + c.ProductBundles.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.ProductBundles.Count.ToString("N0")
+						+ " Child Public/Registered  " + c.ChildActiveCountForAnonymous.ToString("N0") + " / " + c.ChildActiveCountForRegistered.ToString("N0")
+						: ""
+						),
 					Selected = c.ProductCategoryId == selectedProductCategoryId
+				});
+		}
+
+		public static IEnumerable<SelectListItem> ChildProductCategoryList(this HtmlHelper<ProductCategory> htmlHelper, bool showProductCount = true)
+		{
+			ProductCategory currentProductCategory = htmlHelper.ViewData.Model;
+
+			List<ProductCategory> childCategories = htmlHelper.CurrentStoreFront(true).ProductCategories.AsQueryable().Where(pc => pc.ParentCategoryId == currentProductCategory.ProductCategoryId).ApplyDefaultSort().ToList();
+			return childCategories.Select(c =>
+				new SelectListItem()
+				{
+					Value = c.ProductCategoryId.ToString(),
+					Text = c.Name + " [" + c.ProductCategoryId + "]" + (c.IsActiveBubble() ? "" : " [INACTIVE]") + " Url Name: " + c.UrlName
+					+ (showProductCount ?
+						" Products: " + c.Products.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.Products.Count.ToString("N0")
+						+ " Bundles: " + c.ProductBundles.AsQueryable().WhereIsActive().Count().ToString("N0") + " / " + c.ProductBundles.Count.ToString("N0")
+						+ " Child Public/Registered  " + c.ChildActiveCountForAnonymous.ToString("N0") + " / " + c.ChildActiveCountForRegistered.ToString("N0")
+						: ""
+						),
 				});
 		}
 

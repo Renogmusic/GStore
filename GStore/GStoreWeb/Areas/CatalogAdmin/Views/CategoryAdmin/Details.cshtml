@@ -1,12 +1,19 @@
 ﻿@model CategoryEditAdminViewModel
 
 <div class="row">
-	<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+	<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 		<span class="text-warning">Category Details</span>
 		<br /><small>@(Html.DisplayFor(model => model.ProductCategory, "ProductCategoryWithProductsLink"))</small>
 	</h1>
 </div>
 
+<div class="row">
+	<div class="col-md-offset-1 col-md-8">
+		@Html.DisplayFor(model => model.ProductCategory, "CategoryPath")
+		@Html.DisplayFor(model => model.ProductCategory, "ChildCategoryDropdownLinks")
+		<br /><br />
+	</div>
+</div>
 
 <div class="row">
 	<div class="form-actions no-color col-md-offset-2 col-md-7">
@@ -20,7 +27,7 @@
 				@Html.ActionLink("OK / Cancel", "Manager", null, new { @class = "btn btn-default" })
 			}
 			&nbsp;&nbsp;|&nbsp;&nbsp;
-			@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab=Model.ActiveTab }, new { id="EditTop", @class = "btn btn-warning" })
+			@Html.ActionLink("Edit", "Edit", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "EditTop", @class = "btn btn-warning" })
 			&nbsp;&nbsp;|&nbsp;&nbsp;
 			@Html.ActionLink("Delete", "Delete", new { id = Model.ProductCategoryId, ReturnToFrontEnd = Model.ReturnToFrontEnd, Tab = Model.ActiveTab }, new { id = "DeleteTop", @class = "btn btn-danger" })
 		</center>

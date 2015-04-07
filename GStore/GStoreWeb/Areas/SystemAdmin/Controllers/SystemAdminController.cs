@@ -5,6 +5,7 @@ using GStoreData;
 using GStoreData.AppHtmlHelpers;
 using GStoreData.Areas.SystemAdmin;
 using GStoreData.Models;
+using System.Linq;
 
 namespace GStoreWeb.Areas.SystemAdmin.Controllers
 {
@@ -23,10 +24,10 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			}
 
 			bool hasErrorMessage = false;
-			StoreFront storeFront = null;
+			StoreFrontConfiguration storeFrontConfig = null;
 			try
 			{
-				 storeFront = GStoreDb.GetCurrentStoreFront(Request, true, false, false);
+				storeFrontConfig = GStoreDb.GetCurrentStoreFrontConfig(Request, true, false);
 			}
 			catch(GStoreData.Exceptions.StoreFrontInactiveException exSFI)
 			{
@@ -79,30 +80,36 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				}
 				else
 				{
-					StoreFront guessStoreFront = GStoreDb.SeedAutoMapStoreFrontBestGuess();
-					StoreFrontConfiguration config = guessStoreFront.CurrentConfigOrAny();
-					if (config == null)
+					StoreFrontConfiguration guessStoreFrontConfig = GStoreDb.SeedAutoMapStoreFrontConfigBestGuess();
+					StoreFront firstStoreFront = GStoreDb.StoreFronts.All().FirstOrDefault();
+					if (firstStoreFront == null)
 					{
-						string nmbMessageHtml = "No store front found for this Url.\n"
-							+ "\nThe best guess store front id: " + guessStoreFront.StoreFrontId + " has no configuration defined."
-							+ "\n<a href=\"" + this.Url.Action("CreateConfig", "StoreFrontSysAdmin", new { id = guessStoreFront.StoreFrontId } ) + "\">Click here to Create a Default Configuration for Store Front Id: " + guessStoreFront.StoreFrontId.ToString().ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+						string nmbMessageHtml = "No store fronts where found in the database.\n"
+							+ "\n<a href=\"" + this.Url.Action("Create", "StoreFrontSysAdmin") + "\">Click here to Create a a Store Front</a>\n"
 							+ exNMB.Message.ToHtml();
 						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
 					}
-					else if (!config.IsActiveDirect())
+					else if (guessStoreFrontConfig == null)
 					{
-						string configName = config.Name;
+						string nmbMessageHtml = "No store front configurations where found in the database.\n"
+							+ "\n<a href=\"" + this.Url.Action("CreateConfig", "StoreFrontSysAdmin", new { id = firstStoreFront.StoreFrontId }) + "\">Click here to Create a Default Configuration for Store Front Id: " + firstStoreFront.StoreFrontId.ToString().ToHtml() + " [" + firstStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ exNMB.Message.ToHtml();
+						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
+					}
+					else if (!guessStoreFrontConfig.IsActiveDirect())
+					{
+						string configName = guessStoreFrontConfig.Name;
 						string nmbMessageHtml = "No store front found for this Url.\n"
-							+ "\nThe best guess store front '" + config.Name.ToHtml() + "' [" + guessStoreFront.StoreFrontId + "] has an Inactive configuration."
-							+ "\n<a href=\"" + this.Url.Action("ActivateConfig", "StoreFrontSysAdmin", new { id = config.StoreFrontConfigurationId }) + "\">Click here to Activate the inactive Configuration for Store Front " + configName.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ "\nThe best guess store front '" + guessStoreFrontConfig.Name.ToHtml() + "' [" + guessStoreFrontConfig.StoreFrontConfigurationId + "] has an Inactive configuration."
+							+ "\n<a href=\"" + this.Url.Action("ActivateConfig", "StoreFrontSysAdmin", new { id = guessStoreFrontConfig.StoreFrontConfigurationId }) + "\">Click here to Activate the inactive Configuration for Store Front " + configName.ToHtml() + " [" + guessStoreFrontConfig.StoreFrontId + "]" + "</a>\n"
 							+ exNMB.Message.ToHtml();
 						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
 					}
 					else
 					{
-						string configName = config.Name;
+						string configName = guessStoreFrontConfig.Name;
 						string nmbMessageHtml = "No store front found for this Url.\n"
-							+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + configName.ToHtml() + " [" + guessStoreFront.StoreFrontId + "]" + "</a>\n"
+							+ "<a href=\"" + this.Url.Action("BindSeedBestGuessStoreFront") + "\">Click here to Create Store Binding for Store Front : " + configName.ToHtml() + " [" + guessStoreFrontConfig.StoreFrontId + "]" + "</a>\n"
 							+ exNMB.Message.ToHtml();
 						AddUserMessageBottom("Error getting current storefront: No matching bindings", nmbMessageHtml, UserMessageType.Danger);
 					}

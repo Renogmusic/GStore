@@ -4,26 +4,37 @@
 	string action = ViewContext.RouteData.Action();
 	string controller = ViewContext.RouteData.Controller();
 }
-@using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { id="EditForm", enctype = "multipart/form-data" }))
+@using (Html.BeginForm(action, controller, FormMethod.Post, htmlAttributes: new { id = "EditForm", enctype = "multipart/form-data" }))
 {
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(model => model.ReturnToFrontEnd)
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.ReturnToFrontEnd)
 	<div class="row">
 		@if (Model.IsCreatePage)
 		{
-			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 				<span class="text-info">Create a New Product Bundle</span>
 			</h1>
 		}
 		else
 		{
-			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8">
+			<h1 class="jumbotron CatalogAdminEditPageTitle col-md-offset-1 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 				<span class="text-warning">Edit Product Bundle</span>
-				<br/>
+				<br />
 				<small>@Html.DisplayFor(model => model.ProductBundle)</small>
 			</h1>
 		}
 	</div>
+
+	if (!Model.IsCreatePage)
+	{
+		<div class="row">
+			<div class="col-md-offset-1 col-md-8">
+				@Html.DisplayFor(model => model.Category, "CategoryPath")
+				@Html.DisplayFor(model => model.Category, "ChildCategoryDropdownLinks")
+				<br /><br />
+			</div>
+		</div>
+	}
 
 	<div class="row">
 		<div class="form-actions">
@@ -69,7 +80,7 @@
 	</div>
 
 	Html.RenderPartial("_EditPartial");
-	
+
 	<div class="row">
 		<div class="form-actions">
 			<div class="col-md-offset-1 col-md-8">
@@ -115,6 +126,6 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+	@Html.ActionLink("Back to List", "Index")
 </div>
 

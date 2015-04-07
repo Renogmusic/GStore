@@ -214,6 +214,7 @@
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\AreaBaseController\SystemAdminAreaBaseController.cs" />
     <Compile Include="Controllers\AreaBaseController\RootAreaPageBaseController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderStatusController.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Controllers\AreaBaseController\RootAreaBaseController.cs" />
     <Compile Include="Controllers\StoreFrontFileController.cs" />
+    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\NotifyHub.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -374,6 +376,7 @@
     <Content Include="Content\Server\CatalogContent\Categories\Sample_san-diego-morning-2.jpg" />
     <Content Include="Content\Server\CatalogContent\Categories\Sample_spanners_small.jpg" />
     <Content Include="Content\Server\CatalogContent\Categories\Sample_sportcanoe_small.jpg" />
+    <Content Include="Content\Server\Images\Email.png" />
     <Content Include="Content\Server\Images\Logo\large.png" />
     <Content Include="Content\Archive\base\accordion.css" />
     <Content Include="Content\Archive\base\all.css" />
@@ -442,7 +445,7 @@
     <Content Include="Content\Server\CatalogContent\Products\Sample_san-diego-morning-2.jpg" />
     <Content Include="Content\Server\CatalogContent\Products\Sample_spanners_small.jpg" />
     <Content Include="Content\Server\CatalogContent\Products\Sample_sportcanoe_small.jpg" />
-    <Content Include="Content\Server\Images\Utility\LeftUpArrow.png" />
+    <Content Include="Content\Server\Images\New.png" />
     <Content Include="Content\Server\Scripts\intlTelInput.js" />
     <Content Include="Content\Server\Scripts\intlTelInput.min.js" />
     <Content Include="Content\Server\Scripts\Scripts.js" />
@@ -1089,6 +1092,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\CategoryPath.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\FieldStoreFrontIdWithPostback.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\FieldStoreFrontConfigurationId.cshtml" />
+    <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\ChildCategoryDropdownLinks.cshtml" />
+    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Datetime - Copy.cshtml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -1160,7 +1168,7 @@
     <Content Include="Areas\SystemAdmin\Views\ClientSysAdmin\SeekAndDestroy.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\StoreFrontSysAdmin\SeekAndDestroy.cshtml" />
     <Content Include="Areas\OrderAdmin\Views\web.config" />
-    <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Datetime.cshtml" />
+    <Content Include="Areas\StoreAdmin\Views\Shared\DisplayTemplates\Html.cshtml" />
     <Content Include="Areas\OrderAdmin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\OrderAdmin\Views\OrderAdmin\Index.cshtml" />
     <Content Include="Views\Shared\_AdminFooterPartial.cshtml" />
@@ -1889,9 +1897,9 @@
     <Content Include="Views\Shared\_NavbarPartial.cshtml" />
     <Content Include="Views\Shared\_NavBarMenuPartial.cshtml" />
     <Content Include="Views\Catalog\ViewCategory.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_ProductDetails_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_CategoryList_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_ProductList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_ProductDetails_Partial.cshtml" />
+    <Content Include="Views\Catalog\_CategoryList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_ProductList_Partial.cshtml" />
     <Content Include="Views\Shared\_ErrorDetailsPartial.cshtml" />
     <Content Include="Views\Shared\Error_BadRequest.cshtml" />
     <Content Include="Views\Shared\Error_UnknownError.cshtml" />
@@ -1959,12 +1967,12 @@
     <Content Include="Views\Shared\DisplayTemplates\UserProfile.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryId.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldCurrency.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_ProductForList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_ProductForList_Partial.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductCategoryIdNullable.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldThemeIdNullable.cshtml" />
     <Content Include="Views\Page\Page Simple 3x3 With Carousel.cshtml" />
     <Content Include="Views\Catalog\ViewProduct.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_Top_Partial.cshtml" />
+    <Content Include="Views\Catalog\_Top_Partial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Theme.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldTimeZone.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldTimeZoneFieldOnly.cshtml" />
@@ -1988,22 +1996,20 @@
     <Content Include="Views\Checkout\DisplayTemplates\DeliveryInfoDigitalForEmailText.cshtml" />
     <Content Include="Views\Checkout\DisplayTemplates\DeliveryInfoShippingForEmailText.cshtml" />
     <Content Include="Views\Catalog\ViewBundle.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_BundleForList_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_BundleDetails_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_BundleList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_BundleForList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_BundleDetails_Partial.cshtml" />
+    <Content Include="Views\Catalog\_BundleList_Partial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CheckoutBundleProduct.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CartBundle.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CartBundleItem.cshtml" />
-    <Content Include="Views\Cart\Index - Copy %282%29.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CurrencyOrCall.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_BundleItemForList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_BundleItemForList_Partial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\ProductBundleCatalogFileInfo.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldProductBundleCatalogFile.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CheckoutBundle.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_Layout.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_CategoryDetails_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_Top_CategoryList_Partial.cshtml" />
-    <Content Include="Views\Catalog\SimpleBlocked\_BundleItemList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_CategoryDetails_Partial.cshtml" />
+    <Content Include="Views\Catalog\_Top_CategoryList_Partial.cshtml" />
+    <Content Include="Views\Catalog\_BundleItemList_Partial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Enum.cshtml" />
     <Content Include="Views\Page\Page Simple About Us.cshtml" />
     <Content Include="Views\Page\Page Simple Contact Us.cshtml" />
@@ -2014,6 +2020,12 @@
     <Content Include="Views\Shared\EditorTemplates\FieldProductCatalogFile.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FieldUrlName.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\PageVariableEditViewModel.cshtml" />
+    <Content Include="Views\Shared\_ShareByEmail_Partial.cshtml" />
+    <Content Include="Views\Catalog\SimpleBlocked\_Layout.cshtml" />
+    <Content Include="Views\Catalog\eCommerce4ColumnSideFilters\_Layout.cshtml" />
+    <Content Include="Views\Catalog\ECommerce4ColumnNoSide\_Layout.cshtml" />
+    <Content Include="Views\Chat\Messages.cshtml" />
+    <Content Include="Views\Chat\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -2025,10 +2037,8 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\StoreAdmin\Views\Shared\EditorTemplates\" />
     <Folder Include="Content\Clients\" />
+    <Folder Include="Content\Server\Images\Utility\" />
     <Folder Include="Content\Server\Pages\" />
-    <Folder Include="Views\Catalog\DisplayTemplates\" />
-    <Folder Include="Views\Catalog\ECommerceWithRotator\" />
-    <Folder Include="Views\Catalog\ECommerce\" />
     <Folder Include="Views\Home\" />
   </ItemGroup>
   <ItemGroup>

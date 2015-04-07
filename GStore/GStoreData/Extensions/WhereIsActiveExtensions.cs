@@ -293,6 +293,52 @@ namespace GStoreData
 				);
 		}
 
+		public static IQueryable<ProductCategoryAltProduct> WhereIsActive(this IQueryable<ProductCategoryAltProduct> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<ProductCategoryAltProduct> WhereIsActiveOn(this IQueryable<ProductCategoryAltProduct> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Product.IsPending)
+				&& (data.Product.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Product.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Client.IsPending)
+				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.StoreFront.IsPending)
+				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+		public static IQueryable<ProductCategoryAltProductBundle> WhereIsActive(this IQueryable<ProductCategoryAltProductBundle> query)
+		{
+			return query.WhereIsActiveOn(DateTime.UtcNow);
+		}
+		public static IQueryable<ProductCategoryAltProductBundle> WhereIsActiveOn(this IQueryable<ProductCategoryAltProductBundle> query, DateTime dateTimeUtc, bool includePending = false)
+		{
+			return query.Where(data =>
+				(includePending || !data.IsPending)
+				&& (data.StartDateTimeUtc < dateTimeUtc)
+				&& (data.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.ProductBundle.IsPending)
+				&& (data.ProductBundle.StartDateTimeUtc < dateTimeUtc)
+				&& (data.ProductBundle.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.Client.IsPending)
+				&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+				&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				&& (includePending || !data.StoreFront.IsPending)
+				&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+				&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+				);
+		}
+
+
+
 		public static IQueryable<NavBarItem> WhereIsActive(this IQueryable<NavBarItem> query)
 		{
 			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);

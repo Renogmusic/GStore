@@ -45,9 +45,12 @@
 	if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
 	{
 		containerClasses += " modelinvalid";
+		if (userProfile.AspNetIdentityUserIsInRoleSystemAdmin())
+		{
+			string valErrors = ViewData.ModelState.ErrorDetails();
+			Html.BaseControllerOrThrow().AddUserMessageBottom("Validation errors", valErrors.ToHtmlLines(), UserMessageType.Danger);
+		}
 	}
-	
-
 }
 <!DOCTYPE html>
 <html>
@@ -83,6 +86,18 @@
 	<script src="~/signalr/hubs"></script>
 	@Scripts.Render("~/Js/GStoreApp.js")
 	@Scripts.Render("~/Js/Scripts.js")
+	@if (!string.IsNullOrEmpty(ViewData.FocusId()))
+	{
+		<script>
+			SetFocusToFieldId(@(ViewData.FocusId().ToJavaScriptMvcString(true)));
+		</script>
+	}
+	else if (ViewData.SetFocusToFirstInput())
+	{
+		<script>
+			SetFocusToFirstInput();
+		</script>
+	}
 </head>
 <body>
 	@if (page != null)

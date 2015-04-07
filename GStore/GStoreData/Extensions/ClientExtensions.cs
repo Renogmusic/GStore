@@ -442,10 +442,10 @@ namespace GStoreData
 			productCategory.HideInMenuIfEmpty = false;
 			productCategory.ShowInCatalogIfEmpty = true;
 			productCategory.DisplayForDirectLinks = true;
-			productCategory.ProductTypeSingle = "Item";
-			productCategory.ProductTypePlural = "Items";
-			productCategory.BundleTypeSingle = "Bundle";
-			productCategory.BundleTypePlural = "Bundles";
+			productCategory.ProductTypeSingle = null;
+			productCategory.ProductTypePlural = null;
+			productCategory.BundleTypeSingle = null;
+			productCategory.BundleTypePlural = null;
 
 			productCategory.IsPending = false;
 			productCategory.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);

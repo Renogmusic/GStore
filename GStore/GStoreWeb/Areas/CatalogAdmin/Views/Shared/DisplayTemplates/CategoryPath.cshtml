@@ -1,0 +1,54 @@
+﻿@model ProductCategory
+@{
+	bool showCategoryLink = true;
+	if (Model == null)
+	{
+		@:Category: (null)
+	}
+	else
+	{
+		if (Model.ParentCategoryId.HasValue)
+		{
+			@Html.DisplayFor(model => model.ParentCategory, "CategoryPath") @: <br/>
+		}
+		else
+		{
+			@Html.ActionLink("Top", "Manager", "CategoryAdmin", null, null)<br/>
+		}
+
+		StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+		bool isActive = Model.IsActiveDirect();
+		int itemActiveCount = Model.Products.AsQueryable().WhereIsActive().Count();
+		int itemTotalCount = Model.Products.Count;
+		int bundleActiveCount = Model.ProductBundles.AsQueryable().WhereIsActive().Count();
+		int bundleTotalCount = Model.ProductBundles.Count;
+		
+		string itemLinkLabel = Model.ProductTypePluralOrSystemDefault(config) + " " + itemActiveCount.ToString("N0") + " / " + itemTotalCount;
+		string bundleLinkLabel = Model.BundleTypePluralOrSystemDefault(config) + " " + bundleActiveCount.ToString("N0") + " / " + bundleTotalCount.ToString("N0");
+		
+		string itemClass = "";
+		if (!isActive)
+		{
+			itemClass = "text-warning";
+		}
+		@:<span class="@(itemClass)">
+			if (showCategoryLink && Html.UserHasPermission(GStoreAction.Categories_View))
+			{
+				@Html.ActionLink(Model.Name, "Details", "CategoryAdmin", new { Id = Model.ProductCategoryId }, null)
+				@: (
+				@: @(Html.ActionLink(itemLinkLabel, "Manager", "ProductAdmin", new { ProductCategoryId = Model.ProductCategoryId }, null))
+				@: - @(Html.ActionLink(bundleLinkLabel, "Manager", "BundleAdmin", new { ProductCategoryId = Model.ProductCategoryId }, null))
+				@: - Child Public/Registered @(Model.ChildActiveCountForAnonymous.ToString("N0")) / @(Model.ChildActiveCountForRegistered.ToString("N0"))
+				@: )
+			}
+			else
+			{
+				@:Category: @(Model.Name)
+			}
+			if (!isActive)
+			{
+				@: [INACTIVE]
+			}
+		@:</span>
+	}
+}

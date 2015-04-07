@@ -82,20 +82,27 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			model.SetDefaultsForNew(Request, clientId, storeFrontId);
 			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, model.ClientId, model.StoreFront, model);
 
-			if (clientId == null)
+			if (clientId == null || clientId.Value == 0 || clientId.Value == -1)
 			{
 				Client firstClient = GStoreDb.Clients.Where(c => c.StoreFronts.Any()).ApplyDefaultSort().First();
 				model.Client = firstClient;
 				model.ClientId = firstClient.ClientId;
+				if (storeFrontId == null || storeFrontId.Value == 0)
+				{
+					StoreFront firstStoreFront = firstClient.StoreFronts.AsQueryable().ApplyDefaultSort().First();
+					model.StoreFront = firstStoreFront;
+					model.StoreFrontId = firstStoreFront.StoreFrontId;
+				}
 			}
+
 			return View(model);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(StoreBinding storeBinding, bool? clientIdChanged)
+		public ActionResult Create(StoreBinding storeBinding, bool? clientIdChanged, bool? storeFrontIdChanged)
 		{
-			if (ModelState.IsValid && !(clientIdChanged ?? false))
+			if (ModelState.IsValid && !(clientIdChanged ?? false) && !(storeFrontIdChanged ?? false))
 			{
 				storeBinding = GStoreDb.StoreBindings.Create(storeBinding);
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
@@ -109,6 +116,16 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 			if (storeBinding.ClientId != default(int))
 			{
 				clientId = storeBinding.ClientId;
+			}
+
+			if (clientIdChanged ?? false)
+			{
+				storeBinding.StoreFrontId = 0;
+				storeBinding.StoreFrontConfigurationId = 0;
+			}
+			if (storeFrontIdChanged ?? false)
+			{
+				storeBinding.StoreFrontConfigurationId = 0;
 			}
 
 			int? storeFrontId = null;
@@ -139,9 +156,9 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(StoreBinding storeBinding, bool? clientIdChanged)
+		public ActionResult Edit(StoreBinding storeBinding, bool? clientIdChanged, bool? storeFrontIdChanged)
 		{
-			if (ModelState.IsValid && !(clientIdChanged ?? false))
+			if (ModelState.IsValid && !(clientIdChanged ?? false) && !(storeFrontIdChanged ?? false))
 			{
 				storeBinding.UpdateAuditFields(CurrentUserProfileOrThrow);
 				storeBinding = GStoreDb.StoreBindings.Update(storeBinding);
@@ -150,6 +167,15 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				return RedirectToAction("Index");
 			}
 
+			if (clientIdChanged ?? false)
+			{
+				storeBinding.StoreFrontId = 0;
+				storeBinding.StoreFrontConfigurationId = 0;
+			}
+			else if (storeFrontIdChanged ?? false)
+			{
+				storeBinding.StoreFrontConfigurationId = 0;
+			}
 			this.BreadCrumbsFunc = html => this.BindingBreadcrumb(html, storeBinding.ClientId, storeBinding.StoreFront, storeBinding);
 			return View(storeBinding);
 		}

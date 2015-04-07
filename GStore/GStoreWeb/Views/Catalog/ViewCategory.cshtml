@@ -14,7 +14,6 @@
 	{
 		userCanEditCategory = true;
 	}
-
 }
 
 <div class="row CatalogTitleRow">
@@ -41,16 +40,24 @@
 
 @if (userCanEditCategory)
 {
-	if (Html.UserHasPermission(GStoreAction.Categories_Manager))
-	{
-		<hr />
-		@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-		@:&nbsp;&nbsp;|&nbsp;&nbsp;
-		@Html.ActionLink("View " + Model.CurrentCategoryOrNull.ProductTypePlural, "Manager", "ProductAdmin", new { area = "CatalogAdmin", productCategoryId = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-		@:&nbsp;&nbsp;|&nbsp;&nbsp;
-		@Html.ActionLink("New " + Model.CurrentCategoryOrNull.ProductTypeSingle, "Create", "ProductAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-		@:&nbsp;&nbsp;|&nbsp;&nbsp;
-		@Html.ActionLink("New " + Model.CurrentCategoryOrNull.BundleTypeSingle, "Create", "BundleAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
-	}
+	StoreFrontConfiguration config = Model.StoreFrontConfig;
+	string productSingle = category.ProductTypeSingleOrSystemDefault(config);
+	string productsPlural = category.ProductTypePluralOrSystemDefault(config);
+	string bundleSingle = category.BundleTypeSingleOrSystemDefault(config);
+	string bundlesPlural = category.BundleTypePluralOrSystemDefault(config);
+	<hr />
+	@Html.ActionLink("View Category", "Details", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View " + productsPlural, "Manager", "ProductAdmin", new { area = "CatalogAdmin", productCategoryId = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View " + bundlesPlural, "Manager", "BundleAdmin", new { area = "CatalogAdmin", productCategoryId = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New " + productSingle, "Create", "ProductAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New " + bundleSingle, "Create", "BundleAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Child Category", "Create", "CategoryAdmin", new { area = "CatalogAdmin", id = Model.CurrentCategoryOrNull.ProductCategoryId, ReturnToFrontEnd = true }, null)
 }
 <!-- View Category End -->

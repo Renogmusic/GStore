@@ -19,6 +19,7 @@
 	{
 		showSampleAudio = true;
 	}
+	bool newThisWeek = DateTime.UtcNow.Subtract(bundleItem.Product.CreateDateTimeUtc).Days <= 7;
 }
 <script>
 	function showItemDetails_@(bundleItem.ProductBundleItemId)()
@@ -43,9 +44,9 @@
 		if (showSampleAudio)
 		{
 			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
-			<div class="ProductMusicRow">
-				<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
-				<span class="ProductMusicLabel">@(bundleItem.Product.SampleAudioCaptionOrDefault())</span>
+			<div class="ProductAudioRow">
+				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductAudioLabel">@(bundleItem.Product.SampleAudioCaptionOrSystemDefault(config))</span>
 			</div>
 		}
 		if (showListPrice)
@@ -75,9 +76,9 @@
 		if (showSampleAudio)
 		{
 			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
-			<div class="ProductMusicRow">
-				<span class="ProductMusic">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
-				<span class="ProductMusicLabel">@(bundleItem.Product.SampleAudioCaptionOrDefault())</span>
+			<div class="ProductAudioRow">
+				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductAudioLabel">@(bundleItem.Product.SampleAudioCaptionOrSystemDefault(config))</span>
 			</div>
 		}
 		if (showListPrice)
@@ -97,8 +98,11 @@
 		@:&nbsp;&nbsp;&nbsp;&nbsp;<a id="ShowBundleItem_@(bundleItem.ProductBundleItemId)" href="javascript:showItemDetails_@(bundleItem.ProductBundleItemId)();">Show Details</a>
 		<a id="HideBundleItem_@(bundleItem.ProductBundleItemId)" href="javascript:hideItemDetails_@(bundleItem.ProductBundleItemId)();" style="display: none">Hide Details</a>
 		@:&nbsp;&nbsp;&nbsp;&nbsp;<a href="@(url)" title="View @(bundleItem.Product.Name) Page">View @(bundleItem.Product.Name) &raquo;</a>
-		}
-
+	}
+	@if (newThisWeek)
+	{
+		<br/><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
+	}
 	<div id="BundleItem_@(bundleItem.ProductBundleItemId)" class="BundleItemDetails" style="display: none">
 		@{ Html.RenderCatalogProductDetailsPartialForBundleItem(); }
 	</div>

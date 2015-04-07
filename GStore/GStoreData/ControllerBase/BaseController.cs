@@ -297,90 +297,7 @@ namespace GStoreData.ControllerBase
 		{
 			get
 			{
-				try
-				{
-					if (_currentStoreFrontError)
-					{
-						return null;
-					}
-					//
-					string rawUrl = Request.RawUrl;
-					string url = Request.Url.ToString();
-
-					return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive, _useInactiveStoreFrontConfigAsActive);
-				}
-				catch (Exceptions.StoreFrontInactiveException exSFI)
-				{
-					if (_useInactiveStoreFrontAsActive)
-					{
-						GStoreDb.CachedStoreFront = exSFI.StoreFront;
-						GStoreDb.CachedStoreFrontConfig = exSFI.StoreFront.CurrentConfigOrAny();
-						return exSFI.StoreFront;
-					}
-					_currentStoreFrontError = true;
-					throw;
-				}
-				catch (Exceptions.NoMatchingBindingException exNMB)
-				{
-					if (GStoreDb.StoreFronts.IsEmpty())
-					{
-						AspNetIdentityContext identityCtx = Identity.AspNetIdentityContext.Create();
-						identityCtx.Initialize(true);
-						GStoreDb.Initialize(true);
-						GStoreDb.SeedDatabase();
-					}
-					if (GStoreDb.StoreFronts.IsEmpty())
-					{
-						throw new NoMatchingBindingException("No Store Fronts in database. Be sure database is seeded. You can log into system admin section and create a storefront or run the seed database command.\n" + exNMB.Message, exNMB.Uri);
-					}
-					if (!Settings.AppEnableBindingAutoMapToFirstStoreFront)
-					{
-						_currentStoreFrontError = true;
-						throw new NoMatchingBindingException("No Store Front found matching current site, and auto-map is disabled. Either this site is invalid or wrong bindings exist in database. Turn on Auto-Binding-Map by setting Settings.AppEnableBindingAutoMapToFirstStoreFront to true \n" + exNMB.Message, exNMB.Uri);
-					}
-					try
-					{
-						StoreBinding binding = GStoreDb.AutoMapBinding(this);
-					}
-					catch (Exception)
-					{
-						_currentStoreFrontError = true;
-						throw new NoMatchingBindingException("Auto-Map failed. You will have to log into the system admin section and set a binding manually for this url.\n" + exNMB.Message, exNMB.Uri);
-					}
-					try
-					{
-						return GStoreDb.GetCurrentStoreFront(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive, _useInactiveStoreFrontConfigAsActive);
-					}
-					catch (Exception)
-					{
-						_currentStoreFrontError = true;
-						throw;
-					} 
-				}
-				catch (Exceptions.DatabaseErrorException dbEx)
-				{
-					if (!_databaseErrorRetry)
-					{
-						AspNetIdentityContext identityCtx = Identity.AspNetIdentityContext.Create();
-						identityCtx.Initialize(true);
-						GStoreDb.Initialize(true);
-						GStoreDb.SeedDatabase();
-						_databaseErrorRetry = true;
-						return CurrentStoreFrontOrThrow;
-					}
-
-					System.Diagnostics.Trace.WriteLine("--Database Error in CurrentStoreFront: " + dbEx.Message);
-					System.Diagnostics.Trace.Indent();
-					System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
-					System.Diagnostics.Trace.Unindent();
-					_currentStoreFrontError = true;
-					throw;
-				}
-				catch (Exception ex)
-				{
-					_currentStoreFrontError = true; 
-					throw new ApplicationException("Cannot find active current store front", ex);
-				}
+				return CurrentStoreFrontConfigOrThrow.StoreFront;
 			}
 		}
 		private bool _databaseErrorRetry = false;
@@ -440,21 +357,98 @@ namespace GStoreData.ControllerBase
 		{
 			get
 			{
-				if (_currentstoreFrontConfiguration != null)
+				try
 				{
-					return _currentstoreFrontConfiguration;
+					if (_currentStoreFrontError)
+					{
+						return null;
+					}
+					//
+					if (_currentstoreFrontConfiguration != null)
+					{
+						return _currentstoreFrontConfiguration;
+					}
+
+					string rawUrl = Request.RawUrl;
+					string url = Request.Url.ToString();
+
+					return GStoreDb.GetCurrentStoreFrontConfig(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive);
 				}
-				StoreFront storeFront = CurrentStoreFrontOrThrow;
-				_currentstoreFrontConfiguration = storeFront.CurrentConfig();
-				if (_currentstoreFrontConfiguration == null && _useInactiveStoreFrontConfigAsActive)
+				catch (Exceptions.StoreFrontInactiveException exSFI)
 				{
-					_currentstoreFrontConfiguration = CurrentStoreFrontConfigOrAny;
+					if (_useInactiveStoreFrontAsActive)
+					{
+						GStoreDb.CachedStoreFront = exSFI.StoreFront;
+						GStoreDb.CachedStoreFrontConfig = exSFI.StoreFront.CurrentConfigOrAny();
+						_currentstoreFrontConfiguration = exSFI.StoreFront.CurrentConfigOrAny();
+						return _currentstoreFrontConfiguration;
+					}
+					_currentStoreFrontError = true;
+					throw;
 				}
-				if (_currentstoreFrontConfiguration == null)
+				catch (Exceptions.NoMatchingBindingException exNMB)
 				{
-					throw new ApplicationException("Active StoreFront Configuration not found for store front id [" + storeFront.StoreFrontId + "] Client '" + storeFront.Client.Name + "' [" + storeFront.ClientId + "]");
+					if (GStoreDb.StoreFronts.IsEmpty())
+					{
+						AspNetIdentityContext identityCtx = Identity.AspNetIdentityContext.Create();
+						identityCtx.Initialize(true);
+						GStoreDb.Initialize(true);
+						GStoreDb.SeedDatabase();
+					}
+					if (GStoreDb.StoreFronts.IsEmpty())
+					{
+						throw new NoMatchingBindingException("No Store Fronts in database. Be sure database is seeded. You can log into system admin section and create a storefront or run the seed database command.\n" + exNMB.Message, exNMB.Uri);
+					}
+					if (!Settings.AppEnableBindingAutoMapToFirstStoreFront)
+					{
+						_currentStoreFrontError = true;
+						throw new NoMatchingBindingException("No Store Front found matching current site, and auto-map is disabled. Either this site is invalid or wrong bindings exist in database. Turn on Auto-Binding-Map by setting Settings.AppEnableBindingAutoMapToFirstStoreFront to true \n" + exNMB.Message, exNMB.Uri);
+					}
+					try
+					{
+						StoreBinding binding = GStoreDb.AutoMapBinding(this);
+					}
+					catch (Exception)
+					{
+						_currentStoreFrontError = true;
+						throw new NoMatchingBindingException("Auto-Map failed. You will have to log into the system admin section and set a binding manually for this url.\n" + exNMB.Message, exNMB.Uri);
+					}
+					try
+					{
+						_currentstoreFrontConfiguration = GStoreDb.GetCurrentStoreFrontConfig(Request, _throwErrorIfStoreFrontNotFound, _useInactiveStoreFrontAsActive);
+						return _currentstoreFrontConfiguration;
+					}
+					catch (Exception)
+					{
+						_currentStoreFrontError = true;
+						throw;
+					} 
 				}
-				return _currentstoreFrontConfiguration;
+				catch (Exceptions.DatabaseErrorException dbEx)
+				{
+					if (!_databaseErrorRetry)
+					{
+						AspNetIdentityContext identityCtx = Identity.AspNetIdentityContext.Create();
+						identityCtx.Initialize(true);
+						GStoreDb.Initialize(true);
+						GStoreDb.SeedDatabase();
+						_databaseErrorRetry = true;
+						return CurrentStoreFrontConfigOrThrow;
+					}
+
+					System.Diagnostics.Trace.WriteLine("--Database Error in CurrentStoreFront: " + dbEx.Message);
+					System.Diagnostics.Trace.Indent();
+					System.Diagnostics.Trace.WriteLine("-- inner exception: " + dbEx.InnerException.ToString());
+					System.Diagnostics.Trace.Unindent();
+					_currentStoreFrontError = true;
+					throw;
+				}
+				catch (Exception ex)
+				{
+					_currentStoreFrontError = true; 
+					throw new ApplicationException("Cannot find active current store front", ex);
+				}
+
 			}
 		}
 		protected StoreFrontConfiguration _currentstoreFrontConfiguration = null;

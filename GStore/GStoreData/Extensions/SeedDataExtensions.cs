@@ -23,10 +23,10 @@ namespace GStoreData
 			HttpRequestBase request = baseController.Request;
 
 			UserProfile profile = storeDb.SeedAutoMapUserBestGuess();
-			StoreFront storeFront = storeDb.SeedAutoMapStoreFrontBestGuess();
+			StoreFrontConfiguration storeFrontConfig = storeDb.SeedAutoMapStoreFrontConfigBestGuess();
 
-			IGstoreDb systemDb = storeDb.NewContext(profile.UserName, storeFront, storeFront.CurrentConfigOrAny(), profile);
-			StoreBinding binding = systemDb.CreateSeedStoreBindingToCurrentUrl(storeFront);
+			IGstoreDb systemDb = storeDb.NewContext(profile.UserName, storeFrontConfig.StoreFront, storeFrontConfig, profile);
+			StoreBinding binding = systemDb.CreateSeedStoreBindingToCurrentUrl(storeFrontConfig);
 
 			string message = "--Bindings auto-mapped to StoreFront '" + binding.StoreFront.CurrentConfigOrAny().Name + "' [" + binding.StoreFront.StoreFrontId + "]"
 				+ " For HostName: " + binding.HostName + " Port: " + binding.Port + " RootPath: " + binding.RootPath
@@ -44,14 +44,14 @@ namespace GStoreData
 		public static StoreBinding CreatAutoMapStoreBindingToCatchAll(this IGstoreDb storeDb, BaseController baseController)
 		{
 			UserProfile profile = storeDb.SeedAutoMapUserBestGuess();
-			StoreFront storeFront = storeDb.SeedAutoMapStoreFrontBestGuess();
+			StoreFrontConfiguration storeFrontConfig = storeDb.SeedAutoMapStoreFrontConfigBestGuess();
 
 			IGstoreDb systemDb = storeDb;
 			systemDb.UserName = profile.UserName;
-			systemDb.CachedStoreFront = storeFront;
+			systemDb.CachedStoreFront = storeFrontConfig.StoreFront;
 			systemDb.CachedUserProfile = profile;
 			string urlStoreName = baseController.RouteData.UrlStoreName();
-			StoreBinding binding = systemDb.CreateSeedStoreBindingToCatchAll(storeFront, urlStoreName);
+			StoreBinding binding = systemDb.CreateSeedStoreBindingToCatchAll(storeFrontConfig, urlStoreName);
 
 			HttpRequestBase request = baseController.Request;
 
@@ -71,7 +71,7 @@ namespace GStoreData
 
 		}
 
-		public static StoreFront SeedAutoMapStoreFrontBestGuess(this IGstoreDb storeDb)
+		public static StoreFrontConfiguration SeedAutoMapStoreFrontConfigBestGuess(this IGstoreDb storeDb)
 		{
 
 			//find a suitable store front for auto-map
@@ -80,25 +80,58 @@ namespace GStoreData
 				throw new ApplicationException("No storefronts in database for auto-mapping. Be sure database is seeded.");
 			}
 
-			StoreFront storeFrontFirstActive = storeDb.StoreFronts.All().WhereIsActive().OrderByDescending(sf => sf.StoreFrontId).FirstOrDefault();
+			if (storeDb.StoreFrontConfigurations.IsEmpty())
+			{
+				throw new ApplicationException("No storefront configuration in database for auto-mapping. Be sure database is seeded.");
+			}
+
+			StoreFrontConfiguration storeFrontConfigFirstActive = storeDb.StoreFrontConfigurations.All().WhereIsActive().OrderByDescending(sfc => sfc.Order).ThenBy(sfc => sfc.StoreFrontConfigurationId).FirstOrDefault();
+			if (storeFrontConfigFirstActive != null)
+			{
+				return storeFrontConfigFirstActive;
+			}
+
+			var activeClientInactiveStoreFrontQuery = from sfc in storeDb.StoreFrontConfigurations.All()
+													  join c in storeDb.Clients.All().WhereIsActive()
+													  on sfc.ClientId equals c.ClientId
+													  orderby sfc.Order, sfc.StoreFrontConfigurationId, c.ClientId
+													  select sfc;
+
+			StoreFrontConfiguration storeFrontConfigFirstInactiveWithActiveClient = activeClientInactiveStoreFrontQuery.FirstOrDefault();
+			if (storeFrontConfigFirstInactiveWithActiveClient != null)
+			{
+				return storeFrontConfigFirstInactiveWithActiveClient;
+			}
+
+			//no active storefront, pick the first inactive one
+			return storeDb.StoreFrontConfigurations.All().OrderBy(sf => sf.StoreFrontId).FirstOrDefault();
+		}
+
+		public static StoreFront SeedAutoMapStoreFrontBestGuessX(this IGstoreDb storeDb)
+		{
+
+			//find a suitable store front for auto-map
+			if (storeDb.StoreFronts.IsEmpty())
+			{
+				throw new ApplicationException("No storefronts in database for auto-mapping. Be sure database is seeded.");
+			}
+
+			if (storeDb.StoreFrontConfigurations.IsEmpty())
+			{
+				throw new ApplicationException("No storefront configuration in database for auto-mapping. Be sure database is seeded.");
+			}
+
+			StoreFront storeFrontFirstActive = storeDb.StoreFronts.All().WhereIsActive().Where(sf => sf.StoreFrontConfigurations.Any()).OrderByDescending(sf => sf.StoreFrontId).FirstOrDefault();
 			if (storeFrontFirstActive != null)
 			{
 				return storeFrontFirstActive;
 			}
 
-			var activeClientInactiveStoreFrontQuery = from sf in storeDb.StoreFronts.All()
+			var activeClientInactiveStoreFrontQuery = from sf in storeDb.StoreFronts.All().Where(sf => sf.StoreFrontConfigurations.Any())
 													  join c in storeDb.Clients.All().WhereIsActive()
 													  on sf.ClientId equals c.ClientId
 													  orderby sf.StoreFrontId descending, c.ClientId descending
 													  select sf;
-
-			//same qurery in lambda syntax
-			//var activeClientInactiveStoreFrontQuery2 = storeDb.StoreFronts.All().Join(
-			//	storeDb.Clients.All().WhereIsActive(),
-			//	sf => sf.ClientId,
-			//	c => c.ClientId,
-			//	(sf, c) => sf
-			//	);
 
 			StoreFront storeFrontFirstInactiveWithActiveClient = activeClientInactiveStoreFrontQuery.FirstOrDefault();
 			if (storeFrontFirstInactiveWithActiveClient != null)
@@ -107,7 +140,7 @@ namespace GStoreData
 			}
 
 			//no active storefront, pick the first inactive one
-			return storeDb.StoreFronts.All().OrderBy(sf => sf.StoreFrontId).FirstOrDefault();
+			return storeDb.StoreFronts.All().Where(sf => sf.StoreFrontConfigurations.Any()).OrderBy(sf => sf.StoreFrontId) .FirstOrDefault();
 		}
 
 		public static UserProfile SeedAutoMapUserBestGuess(this IGstoreDb storeDb)
@@ -146,18 +179,21 @@ namespace GStoreData
 
 		}
 
-		public static StoreBinding CreateSeedStoreBindingToCatchAll(this IGstoreDb storeDb, StoreFront storeFront, string urlStoreName)
+		public static StoreBinding CreateSeedStoreBindingToCatchAll(this IGstoreDb storeDb, StoreFrontConfiguration storeFrontConfig, string urlStoreName)
 		{
 			StoreBinding storeBinding = storeDb.StoreBindings.Create();
-			storeBinding.ClientId = storeFront.ClientId;
-			storeBinding.StoreFrontId = storeFront.StoreFrontId;
+			storeBinding.ClientId = storeFrontConfig.ClientId;
+			storeBinding.StoreFrontId = storeFrontConfig.StoreFrontId;
 			storeBinding.IsPending = false;
+			storeBinding.StoreFrontConfigurationId = storeFrontConfig.StoreFrontConfigurationId;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
 
 			storeBinding.HostName = "*";
 			storeBinding.Port = 0;
 			storeBinding.RootPath = "*";
+
+			storeBinding.Order = 9000;
 
 			if (!string.IsNullOrEmpty(urlStoreName))
 			{
@@ -170,11 +206,12 @@ namespace GStoreData
 			return storeBinding;
 		}
 
-		public static StoreBinding CreateSeedStoreBindingToCurrentUrl(this IGstoreDb storeDb, StoreFront storeFront)
+		public static StoreBinding CreateSeedStoreBindingToCurrentUrl(this IGstoreDb storeDb, StoreFrontConfiguration storeFrontConfig)
 		{
 			StoreBinding storeBinding = storeDb.StoreBindings.Create();
-			storeBinding.ClientId = storeFront.ClientId;
-			storeBinding.StoreFrontId = storeFront.StoreFrontId;
+			storeBinding.ClientId = storeFrontConfig.ClientId;
+			storeBinding.StoreFrontId = storeFrontConfig.StoreFrontId;
+			storeBinding.StoreFrontConfigurationId = storeFrontConfig.StoreFrontConfigurationId;
 			storeBinding.IsPending = false;
 			storeBinding.StartDateTimeUtc = DateTime.UtcNow.AddSeconds(-1);
 			storeBinding.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
@@ -364,7 +401,7 @@ namespace GStoreData
 
 			if (storeDb.StoreBindings.IsEmpty())
 			{
-				StoreBinding storeBinding = storeDb.CreateSeedStoreBindingToCurrentUrl(firstStoreFront);
+				StoreBinding storeBinding = storeDb.CreateSeedStoreBindingToCurrentUrl(firstStoreFrontConfig);
 			}
 
 			if (storeDb.Pages.IsEmpty())
@@ -936,14 +973,14 @@ namespace GStoreData
 			product.Category = category;
 			product.BaseListPrice = baseListPrice;
 			product.BaseUnitPrice = baseUnitPrice;
-			product.SummaryCaption= "Summary for " + product.Name;
-			product.SummaryHtml = "Summary has not been entered yet for " + product.Name;
-			product.TopDescriptionCaption= "Description for " + product.Name;
-			product.TopDescriptionHtml = "Description has not been entered yet for " + product.Name;
+			product.SummaryCaption = null;
+			product.SummaryHtml = product.Name + " is available for a limited time.";
+			product.TopDescriptionCaption = null;
+			product.TopDescriptionHtml = product.Name + " is a good fit for anyone interested in expanding their collection.";
 			product.TopLinkLabel = null;
 			product.TopLinkHref = null;
-			product.BottomDescriptionCaption = "Details for " + product.Name;
-			product.BottomDescriptionHtml = "Details have not been entered yet for " + product.Name;
+			product.BottomDescriptionCaption = null;
+			product.BottomDescriptionHtml = "Note: This is a sample product.";
 			product.BottomLinkLabel = null;
 			product.BottomLinkHref = null;
 			product.ProductDetailTemplate = ProductDetailTemplateEnum.Default;
@@ -1222,6 +1259,18 @@ namespace GStoreData
 			storeFrontConfig.CatalogRootHeaderHtml = null;
 			storeFrontConfig.CatalogRootFooterHtml = null;
 
+			storeFrontConfig.CatalogDefaultBottomDescriptionCaption = null;
+			storeFrontConfig.CatalogDefaultNoProductsMessageHtml = null;
+			storeFrontConfig.CatalogDefaultProductBundleTypePlural = null;
+			storeFrontConfig.CatalogDefaultProductBundleTypeSingle = null;
+			storeFrontConfig.CatalogDefaultProductTypePlural = null;
+			storeFrontConfig.CatalogDefaultProductTypeSingle = null;
+			storeFrontConfig.CatalogDefaultSampleAudioCaption = null;
+			storeFrontConfig.CatalogDefaultSampleDownloadCaption = null;
+			storeFrontConfig.CatalogDefaultSampleImageCaption = null;
+			storeFrontConfig.CatalogDefaultSummaryCaption = null;
+			storeFrontConfig.CatalogDefaultTopDescriptionCaption = null;
+
 			storeFrontConfig.NavBarCatalogMaxLevels = 6;
 			storeFrontConfig.NavBarItemsMaxLevels = 6;
 			storeFrontConfig.CatalogCategoryColLg = 3;
@@ -1236,6 +1285,9 @@ namespace GStoreData
 			storeFrontConfig.CatalogProductBundleItemColLg = 3;
 			storeFrontConfig.CatalogProductBundleItemColMd = 4;
 			storeFrontConfig.CatalogProductBundleItemColSm = 6;
+
+			storeFrontConfig.ChatEnabled = true;
+			storeFrontConfig.ChatRequireLogin = false;
 
 			storeFrontConfig.HtmlFooter = storeFrontName;
 			storeFrontConfig.HomePageUseCatalog = true;

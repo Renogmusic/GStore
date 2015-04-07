@@ -111,31 +111,39 @@ namespace GStoreData.Areas.SystemAdmin
 				Text = c.Name + " [" + c.ClientId + "]" + (c.IsActiveDirect() ? "" : " [INACTIVE]") + " Store Fronts: " + c.StoreFronts.Count() });
 		}
 
-		public static IEnumerable<SelectListItem> StoreFrontList(this HtmlHelper htmlHelper)
+		/// <summary>
+		/// Will check for parameter client id, then viewdata["ClientId"] then parent record client id
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> StoreFrontList(this HtmlHelper htmlHelper, int? clientId)
 		{
-			Models.BaseClasses.ClientRecord parentModel = htmlHelper.ViewData.ModelMetadata.Container as Models.BaseClasses.ClientRecord;
-			int clientId = 0;
-			if (parentModel != null)
+			if (!clientId.HasValue)
 			{
-				clientId = parentModel.ClientId;
-			}
-			else
-			{
-				UserProfile parentUserProfile = htmlHelper.ViewData.ModelMetadata.Container as UserProfile;
-				if (parentUserProfile != null)
+				clientId = htmlHelper.ViewData["ClientId"] as int?;
+				if (!clientId.HasValue)
 				{
-					clientId = parentUserProfile.ClientId ?? 0;
+					Models.BaseClasses.ClientRecord parentModel = htmlHelper.ViewData.ModelMetadata.Container as Models.BaseClasses.ClientRecord;
+					clientId = 0;
+					if (parentModel != null)
+					{
+						clientId = parentModel.ClientId;
+					}
+					else
+					{
+						UserProfile parentUserProfile = htmlHelper.ViewData.ModelMetadata.Container as UserProfile;
+						if (parentUserProfile != null)
+						{
+							clientId = parentUserProfile.ClientId ?? 0;
+						}
+					}
 				}
 			}
 
 			IQueryable<StoreFront> query = htmlHelper.GStoreDb().StoreFronts.Where(c => c.ClientId == clientId);
 
-			int? selectedStoreFrontId = null;
-			Models.BaseClasses.StoreFrontRecord parentStoreFrontModel = htmlHelper.ViewData.ModelMetadata.Container as Models.BaseClasses.StoreFrontRecord;
-			if (parentStoreFrontModel != null && parentStoreFrontModel.StoreFrontId != 0)
-			{
-				selectedStoreFrontId = parentStoreFrontModel.StoreFrontId;
-			}
+			int? selectedStoreFrontId = htmlHelper.ViewData.Model as int?;
 
 			List<StoreFront> storeFronts = query.ApplyDefaultSort().ToList();
 
@@ -143,6 +151,55 @@ namespace GStoreData.Areas.SystemAdmin
 				Value = s.StoreFrontId.ToString(), 
 				Selected = (selectedStoreFrontId.HasValue && selectedStoreFrontId.Value == s.StoreFrontId),
 				Text = (s.CurrentConfigOrAny() == null ? "Store Front Id " + s.StoreFrontId : s.CurrentConfigOrAny().Name) + " [" + s.StoreFrontId + "]" + (s.IsActiveBubble() ? "" : " [INACTIVE]") + " - Client " + s.Client.Name + "[" + s.ClientId + "]" + (s.Client.IsActiveDirect() ? "" : " [INACTIVE]")}).ToList();
+		}
+
+
+		/// <summary>
+		/// Will check for parameter client id, then viewdata["ClientId"] then parent record client id
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		public static IEnumerable<SelectListItem> StoreFrontConfigurationList(this HtmlHelper htmlHelper, int? storeFrontId = null, int? selectedStoreFrontConfigurationId = null)
+		{
+			if (!storeFrontId.HasValue)
+			{
+				storeFrontId = htmlHelper.ViewData["StoreFrontId"] as int?;
+				if (!storeFrontId.HasValue)
+				{
+					Models.BaseClasses.StoreFrontRecord parentModel = htmlHelper.ViewData.ModelMetadata.Container as Models.BaseClasses.StoreFrontRecord;
+					storeFrontId = 0;
+					if (parentModel != null)
+					{
+						storeFrontId = parentModel.StoreFrontId;
+					}
+					else
+					{
+						UserProfile parentUserProfile = htmlHelper.ViewData.ModelMetadata.Container as UserProfile;
+						if (parentUserProfile != null)
+						{
+							storeFrontId = parentUserProfile.StoreFrontId ?? 0;
+						}
+					}
+				}
+			}
+
+			if (!selectedStoreFrontConfigurationId.HasValue)
+			{
+				selectedStoreFrontConfigurationId = htmlHelper.ViewData.Model as int?;
+			}
+			IQueryable<StoreFrontConfiguration> query = htmlHelper.GStoreDb().StoreFrontConfigurations.Where(sfc => sfc.StoreFrontId == storeFrontId);
+
+			List<StoreFrontConfiguration> storeFrontConfigurations = query.ApplyDefaultSort().ToList();
+
+			return storeFrontConfigurations.Select(s => new SelectListItem()
+			{
+				Value = s.StoreFrontConfigurationId.ToString(),
+				Selected = (selectedStoreFrontConfigurationId.HasValue && s.StoreFrontConfigurationId == selectedStoreFrontConfigurationId.Value),
+				Text = s.ConfigurationName + " [" + s.StoreFrontConfigurationId + "]" + (s.IsActiveBubble() ? "" : " [INACTIVE]")
+					+ " - Store Front " + s.Name + "[" + s.StoreFrontId + "]" + (s.StoreFront.IsActiveDirect() ? "" : " [INACTIVE]")
+					+ " - Client " + s.Client.Name + "[" + s.ClientId + "]" + (s.Client.IsActiveDirect() ? "" : " [INACTIVE]")
+			}).ToList();
 		}
 
 		/// <summary>

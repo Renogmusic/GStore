@@ -48,9 +48,9 @@ namespace GStoreData
 		/// </summary>
 		/// <param name="db"></param>
 		/// <returns></returns>
-		public static StoreFront AutoMapStoreFrontTarget(this IGstoreDb db)
+		public static StoreFrontConfiguration AutoMapStoreFrontConfigTarget(this IGstoreDb db)
 		{
-			return SeedDataExtensions.SeedAutoMapStoreFrontBestGuess(db);
+			return SeedDataExtensions.SeedAutoMapStoreFrontConfigBestGuess(db);
 		}
 
 		public static Page AutoCreateHomePage(this IGstoreDb db, HttpRequestBase request, StoreFrontConfiguration storeFrontConfig, GStoreData.ControllerBase.BaseController baseController)

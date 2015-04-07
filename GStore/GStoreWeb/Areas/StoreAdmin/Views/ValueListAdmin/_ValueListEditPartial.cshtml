@@ -17,6 +17,11 @@
 	if (ViewData.ModelState != null && !ViewData.ModelState.IsValid)
 	{
 		containerClasses += " modelinvalid";
+		if (Html.CurrentUserProfile(false).AspNetIdentityUserIsInRoleSystemAdmin())
+		{
+			string valErrors = ViewData.ModelState.ErrorDetails();
+			Html.BaseControllerOrThrow().AddUserMessageBottom("Validation errors", valErrors.ToHtmlLines(), UserMessageType.Danger);
+		}
 	}
 	
 	switch ((Model.ActiveTab ?? string.Empty).Trim().ToLower())

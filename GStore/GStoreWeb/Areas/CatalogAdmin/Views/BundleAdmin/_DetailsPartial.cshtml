@@ -7,6 +7,7 @@
 	string tabDisplayActive = string.Empty;
 	string tabResourcesActive = string.Empty;
 	string tabMetaTagsActive = string.Empty;
+	string tabCrossSellCategoriesActive = string.Empty;
 	string tabActivationActive = string.Empty;
 
 	switch ((Model.ActiveTab ?? string.Empty).ToLower())
@@ -33,18 +34,30 @@
 		case "metatags":
 			tabMetaTagsActive = "active";
 			break;
+		case "crosssellcategories":
+			tabCrossSellCategoriesActive = "active";
+			break;
 		case "activation":
 			tabActivationActive = "active";
 			break;
 		default:
 			goto case "";
 	}
+
+	StoreFrontConfiguration config = Html.CurrentStoreFrontConfig(true);
+	bool userCanViewProducts = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Products_View);
+	bool userCanViewCrossSellCategories = config.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Categories_View);
 	
 	decimal? unitPrice = Model.ProductBundle.UnitPrice(1);
 	decimal? listPrice = Model.ProductBundle.ListPrice(1);
 	List<ProductBundleItem> bundleItems = Model.ProductBundle.ProductBundleItems.AsQueryable().ApplyDefaultSort().ToList();
+	int bundleItemsActive = bundleItems.AsQueryable().WhereIsActive().Count();
+	int bundleItemsTotal = bundleItems.Count;
 
-	bool userCanViewProducts = Model.StoreFront.Authorization_IsAuthorized(Html.CurrentUserProfile(true), GStoreAction.Products_View);
+	List<ProductCategoryAltProductBundle> crossSellCategories = Model.ProductBundle.CategoryAltBundles.AsQueryable().ApplyDefaultSort().ToList();
+	int crossSellCategoryActiveCount = crossSellCategories.AsQueryable().WhereIsActive().Count();
+	int crossSellCategoryTotalCount = crossSellCategories.Count;
+	
 }
 <script>
 	function GetActiveTab()
@@ -111,12 +124,16 @@
 <hr />
 <ul class="nav nav-tabs row col-md-offset-3 col-md-9" style="width:100%">
 	<li class="@(tabBasicActive)"><a data-toggle="tab" href="#sectionBasic" onclick="SetActiveTab('Basic');">Basic</a></li>
-	<li class="@(tabItemsActive)"><a data-toggle="tab" href="#sectionItems" onclick="SetActiveTab('Items');">Items</a></li>
+	<li class="@(tabItemsActive)"><a data-toggle="tab" href="#sectionItems" onclick="SetActiveTab('Items');">Items @(bundleItemsActive) / @(bundleItemsTotal)</a></li>
 	<li class="@(tabDescriptionActive)"><a data-toggle="tab" href="#sectionDescription" onclick="SetActiveTab('Description');">Description</a></li>
 	<li class="@(tabAvailabilityActive)"><a data-toggle="tab" href="#sectionAvailability" onclick="SetActiveTab('Availability');">Availability</a></li>
 	<li class="@(tabDisplayActive)"><a data-toggle="tab" href="#sectionDisplay" onclick="SetActiveTab('Display');">Display and Template</a></li>
 	<li class="@(tabResourcesActive)"><a data-toggle="tab" href="#sectionResources" onclick="SetActiveTab('Resources');">Resources</a></li>
 	<li class="@(tabMetaTagsActive)"><a data-toggle="tab" href="#sectionMetaTags" onclick="SetActiveTab('MetaTags');">Meta Tags</a></li>
+	@if (userCanViewCrossSellCategories)
+	{
+		<li class="@(tabCrossSellCategoriesActive)"><a data-toggle="tab" href="#sectionCrossSellCategories" onclick="SetActiveTab('CrossSellCategories');">Cross-Sell Categories @(crossSellCategoryActiveCount.ToString("N0")) / @(crossSellCategoryTotalCount.ToString("N0"))</a></li>
+	}
 	<li class="@(tabActivationActive)"><a data-toggle="tab" href="#sectionActivation" onclick="SetActiveTab('Activation');">Activation</a></li>
 </ul>
 
@@ -279,7 +296,7 @@
 			</dt>
 
 			<dd>
-				@Model.ProductBundle.SummaryCaptionOrDefault(true)
+				@Model.ProductBundle.SummaryCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.SummaryCaption)
 			</dd>
 
@@ -299,7 +316,7 @@
 			</dt>
 
 			<dd>
-				@Model.ProductBundle.TopDescriptionCaptionOrDefault(true)
+				@Model.ProductBundle.TopDescriptionCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.TopDescriptionCaption)
 			</dd>
 
@@ -339,7 +356,7 @@
 			</dt>
 
 			<dd>
-				@Model.ProductBundle.BottomDescriptionCaptionOrDefault(true)
+				@Model.ProductBundle.BottomDescriptionCaptionOrSystemDefault(config, true)
 				<br />@Html.HelpLabelFor(model => model.BottomDescriptionCaption)
 			</dd>
 
@@ -586,6 +603,28 @@
 			</dd>
 		</dl>
 	</div>
+
+	@if (userCanViewCrossSellCategories)
+	{
+		<div id="sectionCrossSellCategories" class="tab-pane fade in @(tabCrossSellCategoriesActive)">
+			<div class="row">
+				<h3 class="col-md-offset-3 col-md-7 bg-success title-align">Cross-Sell Categories</h3>
+			</div>
+			<dl class="dl-horizontal">
+				@foreach (ProductCategoryAltProductBundle altCategory in crossSellCategories)
+				{
+					<dt>
+						@Html.DisplayNameFor(model => altCategory.Category)
+					</dt>
+
+					<dd>
+						@Html.DisplayFor(model => altCategory.Category.Name) [@(altCategory.ProductCategoryId)]
+						 - @Html.ActionLink("View Category (new window)", "Details", "CategoryAdmin", new { id = altCategory.ProductCategoryId }, new { @class = "btn btn-xs btn-info", target = "_blank" })
+					</dd>
+				}
+			</dl>
+		</div>
+	}
 
 	<div id="sectionActivation" class="tab-pane fade in @(tabActivationActive)">
 		<div class="row">

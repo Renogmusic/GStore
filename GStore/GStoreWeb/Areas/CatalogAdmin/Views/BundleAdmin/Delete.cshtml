@@ -1,8 +1,16 @@
 ﻿@model ProductBundleEditAdminViewModel
 
 <div class="row">
-	<div class="jumbotron CatalogAdminDeletePageTitle col-md-offset-2 col-md-8 NoBottomMarginOrPad">
+	<div class="jumbotron CatalogAdminDeletePageTitle col-md-offset-2 col-md-8 NoTopMarginOrPad NoBottomMarginOrPad">
 		<h2 class="text-danger">Confirm Product Bundle Delete</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-offset-1 col-md-8">
+		@Html.DisplayFor(model => model.Category, "CategoryPath")
+		@Html.DisplayFor(model => model.Category, "ChildCategoryDropdownLinks")
+		<br /><br />
 	</div>
 </div>
 

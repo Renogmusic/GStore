@@ -6,7 +6,7 @@
 	{
 		throw new ArgumentNullException("Model.CurrentProductOrNull");
 	}
-	
+
 	bool isBundlePage = (ViewData["isBundlePage"] as bool?) ?? false;
 
 	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(false);
@@ -39,12 +39,16 @@
 		showBottomInfo = false;
 		showSampleAudio = false;
 	}
-	
+
 	ViewBag.Title = product.Name + " - " + product.Category.Name;
 
 	string imageUrl = product.ImageUrl(Request.ApplicationPath, ViewContext.RouteData);
 
 	bool showSampleAudioDownloadLink = true;
+
+	bool newThisWeek = DateTime.UtcNow.Subtract(product.CreateDateTimeUtc).Days <= 7;
+
+	bool shareByEmailEnabled = Settings.AppEnableEmail && storeFrontConfig.Client.UseSendGridEmail;
 
 	if (!isBundlePage)
 	{
@@ -57,6 +61,14 @@
 						<br />
 					}
 					<h2>@Html.DisplayFor(model => product.Name)</h2>
+					@if (newThisWeek)
+					{
+						<br /><img src="@(Url.GStoreLocalUrl("/Images/new.png"))" alt="New this week!" title="New This Week!" />
+					}
+					@if (shareByEmailEnabled)
+					{
+						Html.RenderPartial("_ShareByEmail_Partial", product);
+					}
 				</center>
 			</div>
 			<div class="col-md-2">
@@ -96,10 +108,10 @@
 	}
 }
 
-<hr/>
+<hr />
 @if (!string.IsNullOrWhiteSpace(product.SummaryHtml))
 {
-	string summaryCaption = product.SummaryCaptionOrDefault();
+	string summaryCaption = product.SummaryCaptionOrSystemDefault(storeFrontConfig);
 	<div class="btn btn-info NoClick">
 		@summaryCaption
 	</div>
@@ -133,7 +145,7 @@
 	{
 		audioType = "audio/ogg";
 	}
-	string sampleAudioCaption = product.SampleAudioCaptionOrDefault();
+	string sampleAudioCaption = product.SampleAudioCaptionOrSystemDefault(storeFrontConfig);
 	string sampleAudioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
 	<div class="btn btn-info NoClick">
 		@sampleAudioCaption
@@ -144,7 +156,7 @@
 		</audio>
 		@if (showSampleAudioDownloadLink)
 		{
-			<br/>
+			<br />
 			<a href="@(Html.Raw(sampleAudioUrl))">Download Sample Audio File</a>
 		}
 		<hr />
@@ -155,7 +167,7 @@
 {
 	<div class="row">
 		<div class="btn btn-info NoClick">
-			@product.TopDescriptionCaptionOrDefault()
+			@product.TopDescriptionCaptionOrSystemDefault(storeFrontConfig)
 		</div>
 	</div>
 	<div class="row">
@@ -166,7 +178,7 @@
 
 @if (!string.IsNullOrWhiteSpace(product.SampleDownloadFileName))
 {
-	string sampleDownloadCaption = product.SampleDownloadCaptionOrDefault();
+	string sampleDownloadCaption = product.SampleDownloadCaptionOrSystemDefault(storeFrontConfig);
 	string sampleDownloadUrl = product.SampleDownloadFileUrl(Request.ApplicationPath, ViewContext.RouteData);
 	<div class="btn btn-info NoClick">
 		@sampleDownloadCaption
@@ -179,7 +191,7 @@
 
 @if (!string.IsNullOrWhiteSpace(product.SampleImageFileName))
 {
-	string sampleImageCaption = product.SampleImageCaptionOrDefault();
+	string sampleImageCaption = product.SampleImageCaptionOrSystemDefault(storeFrontConfig);
 	string sampleImageUrl = product.SampleImageFileUrl(Request.ApplicationPath, ViewContext.RouteData);
 	<div class="btn btn-info NoClick">
 		@sampleImageCaption
@@ -187,7 +199,7 @@
 	<div class="row">
 		<a href="@(Html.Raw(sampleImageUrl))">
 			<img class="ViewProductSampleImage" src="@(Html.Raw(sampleImageUrl))" alt="@(sampleImageCaption)" title="@(sampleImageCaption)" />
-			<br/>Click here to view full size
+			<br />Click here to view full size
 		</a>
 		<hr />
 	</div>
@@ -207,7 +219,7 @@
 
 @if (!string.IsNullOrWhiteSpace(product.BottomDescriptionHtml))
 {
-	string bottomDescriptionCaption = product.BottomDescriptionCaptionOrDefault();
+	string bottomDescriptionCaption = product.BottomDescriptionCaptionOrSystemDefault(storeFrontConfig);
 	<div class="row">
 		<div class="btn btn-info NoClick">
 			@bottomDescriptionCaption
@@ -231,6 +243,7 @@
 		<hr />
 	</div>
 }
+
 @if (showBottomInfo)
 {
 	<h3>@Html.DisplayFor(model => product.Name)</h3>
@@ -276,7 +289,7 @@
 	}
 	if (bundles.Count != 0)
 	{
-		@:<hr/>Also available in the following @(bundles.Count != 1 ? bundles.Count.ToString("N0") : "") @(bundles.Count == 1 ? product.Category.BundleTypeSingle : product.Category.BundleTypePlural):
+		@:<hr />Also available in the following @(bundles.Count != 1 ? bundles.Count.ToString("N0") : "") @(bundles.Count == 1 ? product.Category.BundleTypeSingle : product.Category.BundleTypePlural):
 	}
 	foreach (ProductBundle bundle in bundles)
 	{

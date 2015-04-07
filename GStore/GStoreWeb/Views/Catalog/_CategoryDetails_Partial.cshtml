@@ -1,6 +1,13 @@
 ﻿@model CatalogViewModel
 <!-- Category Details Start -->
 @{
+	StoreFrontConfiguration storeFrontConfig = Html.CurrentStoreFrontConfig(true); 
+	ProductCategory category = Model.CurrentCategoryOrNull;
+	if (category == null)
+	{
+		throw new ArgumentNullException("Model.CurrentCategoryOrNull");
+	}
+	
 	bool hasChildCategories = false;
 	hasChildCategories = Model.CurrentCategoryNodeOrNull.ChildNodes.Count() != 0;
 	ViewBag.Title = Model.CurrentCategoryOrNull.Name;
@@ -8,6 +15,14 @@
 	UserProfile profile = Html.CurrentUserProfile(false);
 	List<ProductBundle> bundles = Model.CurrentProductBundlesListOrNull(profile);
 	List<Product> products = Model.CurrentProductsListOrNull(profile);
+
+	bool shareByEmailEnabled = Settings.AppEnableEmail && storeFrontConfig.Client.UseSendGridEmail;
+
+}
+
+@if (shareByEmailEnabled)
+{
+	Html.RenderPartial("_ShareByEmail_Partial", category);
 }
 	
 @{ Html.RenderCatalogCategoryListPartial(); }
@@ -40,7 +55,7 @@
 {
 	if (!hasChildCategories && (bundles == null || bundles.Count == 0))
 	{
-		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault().ToHtmlString()))
+		@Html.Raw(Html.ReplaceVariables(Model.CurrentCategoryOrNull.NoProductsMessageHtmlOrSystemDefault(storeFrontConfig).ToHtmlString()))
 	}
 }
 else

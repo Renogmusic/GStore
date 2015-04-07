@@ -41,9 +41,27 @@
 
 @if (userCanEditBundle)
 {
+	StoreFrontConfiguration config = Model.StoreFrontConfig;
+	ProductCategory category = productBundle.Category;
+	string productSingle = category.ProductTypeSingleOrSystemDefault(config);
+	string productsPlural = category.ProductTypePluralOrSystemDefault(config);
+	string bundleSingle = category.BundleTypeSingleOrSystemDefault(config);
+	string bundlesPlural = category.BundleTypePluralOrSystemDefault(config);
 	<hr />
-	@Html.ActionLink("Edit Bundle", "Edit", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductBundleId, ReturnToFrontEnd = true }, null)
-	<br /><br/>
-	@Html.ActionLink("New Bundle in this category", "Create", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@Html.ActionLink("View " + bundleSingle, "Details", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductBundleId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit " + bundleSingle, "Edit", "BundleAdmin", new { area = "CatalogAdmin", id = productBundle.ProductBundleId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category", "Details", "CategoryAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit Category", "Edit", "CategoryAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category " + productsPlural, "Manager", "ProductAdmin", new { area = "CatalogAdmin", productCategoryId = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("View Category " + bundlesPlural, "Manager", "BundleAdmin", new { area = "CatalogAdmin", productCategoryId = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Category " + productSingle, "Create", "ProductAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Category " + bundleSingle, "Create", "BundleAdmin", new { area = "CatalogAdmin", id = category.ProductCategoryId, ReturnToFrontEnd = true }, null)
 }
 <!-- View Bundle End -->

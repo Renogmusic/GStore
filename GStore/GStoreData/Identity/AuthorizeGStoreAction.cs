@@ -58,13 +58,13 @@ namespace GStoreData.Identity
 
 			IGstoreDb db = RepositoryFactory.StoreFrontRepository(httpContext);
 			UserProfile userProfile = db.GetCurrentUserProfile(true, true);
-			StoreFront storeFront = db.GetCurrentStoreFront(httpContext.Request, false, _treatInactiveStoreFrontAsActive, _treatInactiveStoreFrontConfigAsActive);
-			if (storeFront == null)
+			StoreFrontConfiguration storeFrontConfig = db.GetCurrentStoreFrontConfig(httpContext.Request, false, _treatInactiveStoreFrontAsActive);
+			if (storeFrontConfig == null)
 			{
 				//no storefront, 
 				return AuthorizationExtensions.Authorization_IsAuthorized(null, userProfile, _allowAnyMatch, _actions.ToArray());
 			}
-			return storeFront.Authorization_IsAuthorized(userProfile, _allowAnyMatch, _actions.ToArray());
+			return storeFrontConfig.StoreFront.Authorization_IsAuthorized(userProfile, _allowAnyMatch, _actions.ToArray());
 		}
 		protected override void HandleUnauthorizedRequest(System.Web.Mvc.AuthorizationContext filterContext)
 		{
