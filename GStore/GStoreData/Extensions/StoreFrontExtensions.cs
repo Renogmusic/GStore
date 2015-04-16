@@ -527,6 +527,7 @@ namespace GStoreData
 			storeFrontConfig.Folder = storeFrontConfig.Name;
 			storeFrontConfig.HtmlFooter = storeFrontConfig.Name.ToHtml();
 			storeFrontConfig.HomePageUseCatalog = true;
+			storeFrontConfig.ShowAboutGStoreMenu = true;
 			storeFrontConfig.Order = 100;
 			storeFrontConfig.PublicUrl = "http://www.gstore.renog.info";
 			storeFrontConfig.TimeZoneId = (client == null ? Settings.AppDefaultTimeZoneId : client.TimeZoneId);

@@ -163,6 +163,15 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.ShowAboutGStoreMenu)
+		</dt>
+
+		<dd>
+			@Html.Raw(Model.ShowAboutGStoreMenu)
+			<br />@Html.HelpLabelFor(model => model.ShowAboutGStoreMenu, new { @class = "help-label" })
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.MetaApplicationName)
 		</dt>
 
@@ -849,6 +858,24 @@
 		<dd>
 			@Html.DisplayFor(model => model.ProfileTheme)
 			<br />@Html.HelpLabelFor(model => model.ProfileTheme, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.BlogTheme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.BlogTheme)
+			<br />@Html.HelpLabelFor(model => model.BlogTheme, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ChatTheme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ChatTheme)
+			<br />@Html.HelpLabelFor(model => model.ChatTheme, new { @class = "help-label" })
 		</dd>
 
 		<dt>

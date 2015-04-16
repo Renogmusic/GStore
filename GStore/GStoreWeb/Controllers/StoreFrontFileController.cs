@@ -22,6 +22,11 @@ namespace GStoreWeb.Controllers
 			return StoreFile("/Images/" + path, true);
 		}
 
+		public ActionResult Audio(string path)
+		{
+			return StoreFile("/Audio/" + path);
+		}
+
 		public ActionResult Styles(string path)
 		{
 			return StoreFile("/Styles/" + path);

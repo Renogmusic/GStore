@@ -26,7 +26,7 @@ namespace GStoreWeb.Areas.OrderAdmin.Controllers.AreaBaseController
 		{
 			if (!User.IsRegistered())
 			{
-				this.BounceToLogin("You must log in to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in to view this page", this.TempData);
 				return;
 			}
 
@@ -34,21 +34,21 @@ namespace GStoreWeb.Areas.OrderAdmin.Controllers.AreaBaseController
 			UserProfile profile = CurrentUserProfileOrNull;
 			if (profile == null)
 			{
-				this.BounceToLogin("You must log in with an active account to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in with an active account to view this page", this.TempData);
 				return;
 			}
 
 			StoreFront storeFront = CurrentStoreFrontOrNull;
 			if (storeFront == null)
 			{
-				this.BounceToLogin("You must log in with an account on an active store front to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in with an account on an active store front to view this page", this.TempData);
 				return;
 			}
 
 			//check area permission
 			if (!storeFront.Authorization_IsAuthorized(profile, GStoreAction.Admin_OrderAdminArea))
 			{
-				this.BounceToLogin("You must log in with an account that has permission to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in with an account that has permission to view this page", this.TempData);
 				return;
 			}
 

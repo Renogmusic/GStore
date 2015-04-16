@@ -857,6 +857,7 @@ namespace GStoreData
 
 		public static void CreateClientFolders(string basePath)
 		{
+			CreateFolderIfNotExists(basePath + "\\Audio");
 			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Categories");
 			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Products");
 			CreateFolderIfNotExists(basePath + "\\DigitalDownload\\Products");
@@ -920,6 +921,7 @@ namespace GStoreData
 		/// <param name="basePath"></param>
 		public static void CreateStoreFrontFolders(string basePath)
 		{
+			CreateFolderIfNotExists(basePath + "\\Audio");
 			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Categories");
 			CreateFolderIfNotExists(basePath + "\\CatalogContent\\Products");
 			CreateFolderIfNotExists(basePath + "\\DigitalDownload\\Products");

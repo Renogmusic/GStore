@@ -930,23 +930,51 @@ namespace GStoreData.ControllerBase
 		}
 
 		/// <summary>
+		/// Bounces the user to the home page. if userMessage is not blank, it will be shown next to a Sorry, user message
+		/// </summary>
+		/// <param name="userMessage"></param>
+		protected ActionResult BounceToHomeResult(string userMessage)
+		{
+			SetSessionVars(this.Request.RequestContext);
+
+			if (!string.IsNullOrEmpty(userMessage))
+			{
+				AddUserMessage("Sorry,", userMessage, UserMessageType.Warning);
+			}
+
+			if (!string.IsNullOrEmpty(RouteData.UrlStoreName()))
+			{
+				return new RedirectToRouteResult("Stores-HomeRoute", null);
+			}
+			return new RedirectToRouteResult("HomeRoute", null);
+		}
+
+		/// <summary>
 		/// Bounces the user to the login page with a specific error explaining why
 		/// </summary>
 		/// <param name="userMessage"></param>
-		public void BounceToLogin(string userMessage, TempDataDictionary tempData)
+		protected ActionResult BounceToLoginNoAccessResult(string userMessage)
+		{
+			AddUserMessage("Login required", userMessage, UserMessageType.Warning);
+			SetSessionVars(this.Request.RequestContext);
+			return this.RedirectToAction("Login", "Account", new { area="", returnUrl = this.Request.RawUrl });
+		}
+
+		/// <summary>
+		/// Used for HandleUnknownAction to require login
+		/// </summary>
+		/// <param name="userMessage"></param>
+		protected void ExecuteBounceToLoginNoAccess(string userMessage, TempDataDictionary tempData)
 		{
 			if (this.ControllerContext == null)
 			{
 				this.ControllerContext = new ControllerContext(new HttpContextWrapper(System.Web.HttpContext.Current), this.RouteData, this);
 				this.TempData = tempData;
 			}
-			AddUserMessage("Login required", userMessage, UserMessageType.Warning);
-
 			SetSessionVars(this.Request.RequestContext);
 
-			RedirectToRouteResult action = this.RedirectToAction("Login", "Account", new { area="", returnUrl = this.Request.RawUrl });
+			ActionResult action = BounceToLoginNoAccessResult(userMessage);
 			action.ExecuteResult(this.ControllerContext);
 		}
-
 	}
 }

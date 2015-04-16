@@ -12,7 +12,9 @@ namespace GStoreData.ViewModels
 		public UserProfile UserProfile { get; protected set; }
 		public bool ShowCart { get; protected set; }
 		public bool ShowChat { get; protected set;}
+		public bool ShowAboutGStore { get; protected set; }
 		public Cart Cart { get; protected set; }
+		public long? ChatUserCount { get; protected set; }
 
 		/// <summary>
 		/// this constructor will internally call functions to create the navbar tree and category tree for menus
@@ -20,7 +22,7 @@ namespace GStoreData.ViewModels
 		/// <param name="storeFrontConfig"></param>
 		/// <param name="userProfile"></param>
 		/// <param name="sessionId"></param>
-		public MenuViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, string sessionId)
+		public MenuViewModel(StoreFrontConfiguration storeFrontConfig, UserProfile userProfile, string sessionId, long? chatUserCount)
 		{
 			bool isRegistered = false;
 			if (userProfile != null)
@@ -34,10 +36,18 @@ namespace GStoreData.ViewModels
 			this.NavBarItemTree = this.StoreFront.NavBarTreeWhereActive(isRegistered);
 			this.UserProfile = userProfile;
 
+			this.ShowAboutGStore = true;
+			if (storeFrontConfig != null && (!storeFrontConfig.ShowAboutGStoreMenu))
+			{
+				this.ShowAboutGStore = false;
+			}
+
+
+			ChatUserCount = chatUserCount;
 			this.ShowChat = false;
 			if (Settings.AppEnableChat && (storeFrontConfig != null) && (storeFrontConfig.ChatEnabled))
 			{
-				ShowChat = true;
+				this.ShowChat = true;
 			}
 
 			this.ShowCart = false;

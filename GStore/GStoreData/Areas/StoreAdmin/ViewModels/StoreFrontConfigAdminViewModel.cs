@@ -70,6 +70,11 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.CatalogProductBundleItemColMd = storeFrontConfig.CatalogProductBundleItemColMd;
 			this.CatalogProductBundleItemColSm = storeFrontConfig.CatalogProductBundleItemColSm;
 
+			this.BlogTheme = storeFrontConfig.BlogTheme;
+			this.BlogThemeId = storeFrontConfig.BlogThemeId;
+
+			this.ChatTheme = storeFrontConfig.ChatTheme;
+			this.ChatThemeId = storeFrontConfig.ChatThemeId;
 			this.ChatEnabled = storeFrontConfig.ChatEnabled;
 			this.ChatRequireLogin = storeFrontConfig.ChatRequireLogin;
 
@@ -82,6 +87,7 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.GoogleAnalyticsWebPropertyId = storeFrontConfig.GoogleAnalyticsWebPropertyId;
 			this.HtmlFooter = storeFrontConfig.HtmlFooter;
 			this.HomePageUseCatalog = storeFrontConfig.HomePageUseCatalog;
+			this.ShowAboutGStoreMenu = storeFrontConfig.ShowAboutGStoreMenu;
 			this.MetaApplicationName = storeFrontConfig.MetaApplicationName;
 			this.MetaApplicationTileColor = storeFrontConfig.MetaApplicationTileColor;
 			this.MetaDescription = storeFrontConfig.MetaDescription;
@@ -543,6 +549,9 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[MaxLength(200)]
 		public string PublicUrl { get; set; }
 
+		[Display(Name = "Show About GStore Menu")]
+		public bool ShowAboutGStoreMenu { get; set; }
+
 		[Display(Name = "Registered Notify", Description = "This profile will receive a notification when a new user signs up")]
 		public UserProfile RegisteredNotify { get; protected set; }
 
@@ -607,6 +616,20 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Payment Method - PayPal API - Client_Secret", Description = "Enter your PayPal API key labeled 'client_secret' \nExample: AbCDE1fGHIjkLMno_pqrStuVL1ZYaPFHJ23BD126512651211111y0fztLABCDEFGHIJKLMNabc1P-SN")]
 		public string PaymentMethod_PayPal_Client_Secret { get; set; }
 
+		[Display(Name = "Blog Theme")]
+		public Theme BlogTheme { get; set; }
+
+		[Required]
+		[Display(Name = "Blog Theme")]
+		public int BlogThemeId { get; set; }
+
+		[Display(Name = "Chat Theme")]
+		public Theme ChatTheme { get; set; }
+
+		[Required]
+		[Display(Name = "Chat Theme")]
+		public int ChatThemeId { get; set; }
+
 		[Display(Name = "Enable Chat", Description = "Enable the Chat feature of the site for general chat on your web site.")]
 		public bool ChatEnabled { get; set; }
 
@@ -649,7 +672,6 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		}
 
 		#endregion
-
 
 
 	}

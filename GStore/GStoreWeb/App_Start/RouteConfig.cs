@@ -104,6 +104,13 @@ namespace GStoreWeb
 				);
 
 				routes.MapRoute(
+					name: "Stores-Audio",
+					url: "Stores/{urlstorename}/Audio/{*path}",
+					defaults: new { controller = "StoreFrontFile", action = "Audio", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+					namespaces: new[] { "GStoreWeb.Controllers" }
+				);
+
+				routes.MapRoute(
 					name: "Stores-Styles",
 					url: "Stores/{urlstorename}/Styles/{*path}",
 					defaults: new { controller = "StoreFrontFile", action = "Styles", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
@@ -298,6 +305,13 @@ namespace GStoreWeb
 				name: "Images",
 				url: "Images/{*path}",
 				defaults: new { controller = "StoreFrontFile", action = "Images", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStoreWeb.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "Audio",
+				url: "Audio/{*path}",
+				defaults: new { controller = "StoreFrontFile", action = "Audio", path = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStoreWeb.Controllers" }
 			);
 

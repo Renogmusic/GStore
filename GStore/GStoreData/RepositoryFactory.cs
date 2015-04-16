@@ -26,7 +26,7 @@ namespace GStoreData
 			{
 				throw new ApplicationException("HTTP Context is null, call repository method with valid context");
 			}
-			string userName = httpContext.User.Identity.Name;
+			string userName = (httpContext.User == null ? "" : httpContext.User.Identity.Name);
 
 			IGstoreDb db = NewRepository(userName);
 

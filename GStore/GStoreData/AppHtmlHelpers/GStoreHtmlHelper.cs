@@ -1727,9 +1727,9 @@ namespace GStoreData.AppHtmlHelpers
 		}
 
 
-		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile)
+		public static MenuViewModel MenuViewModel(this HtmlHelper htmlHelper, StoreFrontConfiguration storeFrontConfiguration, UserProfile userProfile, long? chatUserCount)
 		{
-			return new MenuViewModel(storeFrontConfiguration, userProfile, htmlHelper.ViewContext.HttpContext.Session.SessionID);
+			return new MenuViewModel(storeFrontConfiguration, userProfile, htmlHelper.ViewContext.HttpContext.Session.SessionID, chatUserCount);
 		}
 
 		public static MvcHtmlString LogFolderFileCount(this HtmlHelper htmlHelper, string logfolder)

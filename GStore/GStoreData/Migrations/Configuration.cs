@@ -11,8 +11,8 @@ namespace GStoreData.Migrations
 	{
 		public Configuration()
 		{
-			AutomaticMigrationsEnabled = true;
-			AutomaticMigrationDataLossAllowed = true;
+			AutomaticMigrationsEnabled = false;
+			AutomaticMigrationDataLossAllowed = false;
 		}
 
 		protected override void Seed(EntityFrameworkCodeFirstProvider.GStoreEFDbContext context)

@@ -2,27 +2,103 @@
 <script>
 	var chatHub;
 	var myUserName = @(Model.ToJavaScriptMvcString(true))
+	var sfId = @(Html.CurrentStoreFrontConfig(true).StoreFrontConfigurationId.ToString().ToMvcJavaScriptString(true));
+
 	$(document).ready(function ()
 	{
 		chatHub = $.connection.chatHub;
+		$.connection.hub.qs = { 'sfId' : sfId };
 		chatHub.client.MessageIncoming = MessageIncoming;
 		chatHub.client.UpdatedUserList = UpdatedUserList;
+		chatHub.client.UserJoined = UserJoined;
+		chatHub.client.UserLeft = UserLeft;
 		$.connection.hub.start().done(function ()
 		{
 			//nothing to do here
 		})
 	});
 
-	function MessageIncoming(message, user, isPrivate)
+	function UserJoined(userName)
 	{
-		if (isPrivate)
+		var message = "User Joined: " + userName;
+		AddMessage(message, userName, false, false, true, false);
+	}
+
+	function UserLeft(userName)
+	{
+		var message = "User Left: " + userName;
+		AddMessage(message, userName, false, false, false, true);
+	}
+
+	function MessageIncoming(message, sender, isPrivate, isMine)
+	{
+		AddMessage(message, sender, isPrivate, isMine, false, false);
+	}
+
+	function AddMessage(message, sender, isPrivate, isMine, isJoin, isLeft)
+	{
+		if (isJoin || isLeft)
 		{
-			$('#PrivateMessages').append("<br/><div class=\"text-right col-xs-5 col-md-3\">" + htmlEncode(user) + ":</div><div class=\"text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+			$('#PublicMessages').prepend("<br/><div class=\"text-right col-xs-5 col-md-3\"><span class=\"DateStamp hidden-xs hidden-sm\">" + DateToString(new Date()) + " - </span><span class=\"" + (isJoin ? "UserJoin" : "UserLeft") + "\">" + htmlEncode(sender) + ":</span></div><div class=\"" + (isJoin ? "UserJoinMsg" : "UserLeftMsg") + " text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+			if (isJoin)
+			{
+				PlaySound("ChatUserJoined");
+			}
+			else
+			{
+				PlaySound("ChatUserLeft");
+			}
+		}
+		else if (isPrivate)
+		{
+			$('#PrivateMessages').prepend("<br/><div class=\"text-right col-xs-5 col-md-3\"><span class=\"DateStamp hidden-xs hidden-sm\">" + DateToString(new Date()) + " - </span><span class=\"" + (isMine ? "FromMe" : "FromUser") + "\">" + htmlEncode(sender) + ":</span></div><div class=\"" + (isMine ? "Mine " : "") + "text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+			if (isMine)
+			{
+				PlaySound("ChatMessageSentPrivate");
+			}
+			else
+			{
+				PlaySound("ChatMessagePrivate");
+			}
 		}
 		else
 		{
-			$('#PublicMessages').append("<br/><div class=\"text-right col-xs-5 col-md-3\">" + htmlEncode(user) + ":</div><div class=\"text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+			$('#PublicMessages').prepend("<br/><div class=\"text-right col-xs-5 col-md-3\"><span class=\"DateStamp hidden-xs hidden-sm\">" + DateToString(new Date()) + " - </span><span class=\"" + (isMine ? "FromMe" : "FromUser") + "\">" + htmlEncode(sender) + ":</span></div><div class=\"" + (isMine ? "Mine " : "") + "text-left col-xs-7 col-md-9\">" + htmlEncode(message) + "</div>");
+			if (isMine)
+			{
+				PlaySound("ChatMessageSentPublic");
+			}
+			else
+			{
+				PlaySound("ChatMessagePublic");
+			}
 		}
+
+	}
+
+	var userList = null;
+
+	function UpdatedUserList(newUserList)
+	{
+		var lastSelectedUser = $('#NewMessageTarget').val();
+
+		userList = newUserList;
+		$('#UserCount').text("Users: " + userList.length);
+		$('#NewMessageTarget').empty();
+
+		$('#NewMessageTarget')
+			.append($("<option></option>")
+			.attr("value", "")
+			.text("- All -"));
+
+		$.each(userList, function (index)
+		{
+			$('#NewMessageTarget')
+				.append($("<option></option>")
+				.attr("value", userList[index])
+				.attr("selected", userList[index] == lastSelectedUser)
+				.text((userList[index] == myUserName ? "- Me - " : "") + userList[index]));
+		});
 	}
 
 	function SendMessage()
@@ -41,29 +117,64 @@
 		}
 	}
 
-	var userList = null;
-
-	function UpdatedUserList(newUserList)
-	{
-		userList = newUserList;
-		$('#UserCount').text("Users: " + userList.length);
-		$('#NewMessageTarget').empty();
-
-		$('#NewMessageTarget')
-			.append($("<option></option>")
-			.attr("value", "")
-			.text("- All -"));
-
-		$.each(userList, function (index)
-		{
-			$('#NewMessageTarget')
-				.append($("<option></option>")
-				.attr("value", userList[index])
-				.text((userList[index] == myUserName ? "- Me - " : "") + userList[index]));
-		});
+	function ClearPublicMessages(){
+		$('#PublicMessages').empty();
 	}
+	function ClearPrivateMessages(){
+		$('#PrivateMessages').empty();
+	}
+
+	function PlaySound(soundName)
+	{
+		if (document.getElementById("Silent"))
+		{
+			if (document.getElementById("Silent").checked)
+			{
+				return;
+			}
+		}
+		var rootSounds = document.getElementById("Audio");
+
+		if (document.getElementById(soundName + "Audio"))
+		{
+			if (!document.getElementById(soundName + "Audio").ended)
+			{
+				document.getElementById(soundName + "Audio").pause();
+			}
+		}
+
+		//get the src of the sound file before we destroy and re-create the audio element
+		var oldSoundSrc = document.getElementById(soundName + "AudioSource").src;
+			
+		//destroy the old audio element
+		rootSounds.removeChild(document.getElementById(soundName + "Audio"));
+
+		//create new audio element
+		var newSound = document.createElement("audio");
+		newSound.id = soundName + "Audio";
+		newSound.preload = "auto";
+
+		//create new source under audio
+		var newSoundSourceElement = document.createElement("source");
+		newSoundSourceElement.id = soundName + "AudioSource";
+		newSoundSourceElement.src = oldSoundSrc;
+		newSoundSourceElement.type = "audio/mpeg";
+		newSound.appendChild(newSoundSourceElement);
+
+		//all new elements to "Sounds" root element
+		rootSounds.appendChild(newSound);
+
+		//play new sound
+		document.getElementById(soundName + "Audio").play();
+			
+	}
+
 </script>
 <style>
+	.DateStamp{
+		color: #9f9f9f;
+	}
+
 	#NewMessageToAllBox{
 		background-color: lightcyan; 
 		border: 1px solid red;
@@ -85,6 +196,15 @@
 		margin-right: auto;
 		color: black;
 	}
+
+	#PublicMessages .FromMe, #PrivateMessages .FromMe{
+		color: #7b7b7b;
+	}
+
+	#PublicMessages .Mine{
+		color: #7b7b7b;
+	}
+
 	#PrivateMessagesHeader{
 		color: salmon;
 	}
@@ -102,32 +222,66 @@
 		margin-right: auto;
 		color: darkred;
 	}
+	#PrivateMessages .Mine{
+		color: #7b7b7b;
+	}
 </style>
 <div style="background-color: white; color: black;">
 	<div id="NewMessageToAllBox" class="row">
 		<form onsubmit="return false;">
-			<label for="NewMessageText">Message:</label>
+			<label for="NewMessageText"><small>@(Model)</small> Message:</label>
 			<input id="NewMessageText" name="NewMessageText" type="text" size="100" maxlength="1000" />
 			<label for="NewMessageTarget">To:</label>
-			<select id="NewMessageTarget" class="form-control">
+			<select id="NewMessageTarget" class="form-control" onchange="$('#NewMessageText').focus()">
 				<option value="">All</option>
 			</select>
 			<button id="SendButton" class="btn btn-success" type="submit" onclick="SendMessage()">Send</button>
 			&nbsp;&nbsp;&nbsp;&nbsp;
+			<label for="Silent">Quiet</label> <input type="checkbox" name="Silent" id="Silent" />
+			&nbsp;&nbsp;&nbsp;
 			<span id="UserCount">Users: -</span>
 			&nbsp;&nbsp;&nbsp;&nbsp;@Html.ActionLink("Sign Out", "SignOut")
 		</form>
 	</div>
-	<h1 id="PublicMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad" style="margin-top: 1em;">Public Messages</h1>
+	<h1 id="PublicMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad" style="margin-top: 1em;">Public Messages &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript: ClearPublicMessages();"><small>Clear</small></a></h1>
 	<div id="PublicMessagesBox">
 		<div id="PublicMessages" class="row Border3Black">
 			Chat started at @(DateTime.UtcNow.ToUserDateTimeString(Html))<br />
 		</div>
 	</div>
 	<hr />
-	<h1 id="PrivateMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad">Private Messages</h1>
+	<h1 id="PrivateMessagesHeader" class="NoBottomMarginOrPad NoTopMarginOrPad">Private Messages &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript: ClearPrivateMessages();"><small>Clear</small></a></h1>
 	<div id="PrivateMessagesBox">
 		<div id="PrivateMessages" class="row Border3Black">
+			Chat started at @(DateTime.UtcNow.ToUserDateTimeString(Html))<br />
 		</div>
 	</div>
+</div>
+
+	<input type="button" onclick="PlaySound('ChatUserJoined');" value="ChatUserJoined" />
+	<input type="button" onclick="PlaySound('ChatUserLeft');" value="ChatUserLeft" />
+	<input type="button" onclick="PlaySound('ChatMessagePublic');" value="ChatMessagePublic" />
+	<input type="button" onclick="PlaySound('ChatMessagePrivate');" value="ChatMessagePrivate" />
+	<input type="button" onclick="PlaySound('ChatMessageSentPublic');" value="ChatMessageSentPublic" />
+	<input type="button" onclick="PlaySound('ChatMessageSentPrivate');" value="ChatMessageSentPrivate" />
+
+<div id="Audio">
+	<audio id="ChatUserJoinedAudio" preload="auto">
+		<source id="ChatUserJoinedAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatUserJoined.mp3"))" type="audio/mpeg" />
+	</audio>
+	<audio id="ChatUserLeftAudio" preload="auto">
+		<source id="ChatUserLeftAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatUserLeft.mp3"))" type="audio/mpeg" />
+	</audio>
+	<audio id="ChatMessagePublicAudio" preload="auto">
+		<source id="ChatMessagePublicAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatMessagePublic.mp3"))" type="audio/mpeg" />
+	</audio>
+	<audio id="ChatMessagePrivateAudio" preload="auto">
+		<source id="ChatMessagePrivateAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatMessagePrivate.mp3"))" type="audio/mpeg" />
+	</audio>
+	<audio id="ChatMessageSentPublicAudio" preload="auto">
+		<source id="ChatMessageSentPublicAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatMessageSentPublic.mp3"))" type="audio/mpeg" />
+	</audio>
+	<audio id="ChatMessageSentPrivateAudio" preload="auto">
+		<source id="ChatMessageSentPrivateAudioSource" src="@(Url.GStoreLocalUrl("/Audio/ChatMessageSentPrivate.mp3"))" type="audio/mpeg" />
+	</audio>
 </div>

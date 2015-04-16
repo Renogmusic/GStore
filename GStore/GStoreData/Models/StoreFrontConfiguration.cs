@@ -49,6 +49,9 @@ namespace GStoreData.Models
 		[Display(Name = "Use Catalog as Home Page")]
 		public bool HomePageUseCatalog { get; set; }
 
+		[Display(Name = "Show About GStore Menu")]
+		public bool ShowAboutGStoreMenu { get; set; }
+
 		[Display(Name = "Nav Bar Items Max Levels")]
 		[Range(1, 6)]
 		public int NavBarItemsMaxLevels { get; set; }
@@ -568,6 +571,22 @@ namespace GStoreData.Models
 		public int CatalogProductBundleItemColSm { get; set; }
 
 		#endregion
+
+		[Required]
+		[Display(Name = "Blog Theme Id")]
+		public int BlogThemeId { get; set; }
+
+		[Display(Name = "Blog Theme")]
+		[ForeignKey("BlogThemeId")]
+		public virtual Theme BlogTheme { get; set; }
+
+		[Required]
+		[Display(Name = "Chat Theme Id")]
+		public int ChatThemeId { get; set; }
+
+		[Display(Name = "Chat Theme")]
+		[ForeignKey("ChatThemeId")]
+		public virtual Theme ChatTheme { get; set; }
 
 		[Display(Name = "Enable Chat", Description = "Enable the Chat feature of the site for general chat on your web site.")]
 		public bool ChatEnabled { get; set; }

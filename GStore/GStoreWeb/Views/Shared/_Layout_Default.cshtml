@@ -29,7 +29,7 @@
 	MvcHtmlString bodyTopScriptTag = Html.BodyTopScriptTag();
 	MvcHtmlString bodyBottomScriptTag = Html.BodyBottomScriptTag();
 
-	MenuViewModel menuViewModel = Html.MenuViewModel(storeFrontConfig, userProfile);
+	MenuViewModel menuViewModel = Html.MenuViewModel(storeFrontConfig, userProfile, GStoreWeb.Hubs.ChatHub.ActiveUsers(storeFrontConfig == null ? 0 : storeFrontConfig.StoreFrontConfigurationId));
 
 	string containerClasses = string.Empty;
 	RouteData routeData = ViewContext.RouteData;

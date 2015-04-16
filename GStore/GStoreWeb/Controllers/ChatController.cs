@@ -15,13 +15,14 @@ namespace GStoreWeb.Controllers
 
 		public ActionResult Index(string name)
 		{
-			if (!CheckChatEnabled())
+			if (!CheckIsChatEnabled())
 			{
-				return BounceToHome();
+				return BounceToHomeResult(null);
 			}
+
 			if (!CheckAccess())
 			{
-				return BounceToLogin();
+				return BounceToLoginNoAccessResult("Login is Required to use Chat");
 			}
 
 			if (ChatName() != null)
@@ -32,7 +33,7 @@ namespace GStoreWeb.Controllers
 			if (!string.IsNullOrWhiteSpace(name))
 			{
 				name = name.Trim();
-				if (NameIsTaken(name))
+				if (NameIsTaken(CurrentStoreFrontConfigOrThrow, name))
 				{
 					this.ModelState.AddModelError("name", "Sorry, the name '" + name + "' is already taken, please enter a new name.");
 				}
@@ -54,13 +55,14 @@ namespace GStoreWeb.Controllers
 
 		public ActionResult Messages()
 		{
-			if (!CheckChatEnabled())
+			if (!CheckIsChatEnabled())
 			{
-				return BounceToHome();
+				return BounceToHomeResult(null);
 			}
+
 			if (!CheckAccess())
 			{
-				return BounceToLogin();
+				return BounceToLoginNoAccessResult("Login is Required to use Chat.");
 			}
 
 			string chatName = ChatName();
@@ -79,7 +81,7 @@ namespace GStoreWeb.Controllers
 		{
 			get
 			{
-				return CurrentStoreFrontConfigOrThrow.CartTheme.FolderName;
+				return CurrentStoreFrontConfigOrThrow.ChatTheme.FolderName;
 			}
 		}
 
@@ -123,7 +125,7 @@ namespace GStoreWeb.Controllers
 		}
 
 
-		protected bool CheckChatEnabled()
+		protected bool CheckIsChatEnabled()
 		{
 			if (!Settings.AppEnableChat)
 			{
@@ -149,25 +151,15 @@ namespace GStoreWeb.Controllers
 			return true;
 		}
 
-		protected bool NameIsTaken(string name)
+		protected bool NameIsTaken(StoreFrontConfiguration config, string name)
 		{
 			if (string.IsNullOrWhiteSpace(name))
 			{
 				return true;
 			}
 
-			return Hubs.ChatHub.UserExists("[" + name + "]");
+			return Hubs.ChatHub.UserExists(config, "[" + name + "]");
 		}
 
-		protected ActionResult BounceToLogin()
-		{
-			AddUserMessage("Login required.", "You must log in to use Chat.", UserMessageType.Info);
-			return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-		}
-
-		protected ActionResult BounceToHome()
-		{
-			return Redirect(Url.GStoreLocalUrl("/"));
-		}
 	}
 }

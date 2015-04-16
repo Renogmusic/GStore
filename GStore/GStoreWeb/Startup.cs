@@ -9,7 +9,10 @@ namespace GStoreWeb
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            app.MapSignalR();
+
+			Microsoft.AspNet.SignalR.HubConfiguration config = new Microsoft.AspNet.SignalR.HubConfiguration();
+			config.EnableDetailedErrors = true;
+			app.MapSignalR(config);
         }
     }
 }

@@ -26,19 +26,19 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers.AreaBaseController
 		{
 			if (!User.IsRegistered())
 			{
-				this.BounceToLogin("You must log in to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in to view this page", this.TempData);
 				return;
 			}
 			//perform redirect if not authorized for system admin
 			UserProfile profile = CurrentUserProfileOrNull;
 			if (profile == null)
 			{
-				this.BounceToLogin("You must log in with an active account to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in with an active account to view this page", this.TempData);
 				return;
 			}
 			if (!profile.AspNetIdentityUserIsInRoleSystemAdmin())
 			{
-				this.BounceToLogin("You must log in with an account that has permission to view this page", this.TempData);
+				this.ExecuteBounceToLoginNoAccess("You must log in with an account that has permission to view this page", this.TempData);
 				return;
 			}
 

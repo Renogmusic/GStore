@@ -204,6 +204,15 @@
 			</dd>
 
 			<dt>
+				@Html.DisplayNameFor(model => model.ShowAboutGStoreMenu)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ShowAboutGStoreMenu)
+				<br />@Html.HelpLabelFor(model => model.ShowAboutGStoreMenu, new { @class = "help-label" })
+			</dd>
+
+			<dt>
 				@Html.DisplayNameFor(model => model.NavBarItemsMaxLevels)
 			</dt>
 
@@ -483,6 +492,24 @@
 			<dd>
 				@Html.DisplayFor(model => model.CatalogAdminTheme)
 				<br />@Html.HelpLabelFor(model => model.CatalogAdminTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.BlogTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.BlogTheme)
+				<br />@Html.HelpLabelFor(model => model.BlogTheme, new { @class = "help-label" })
+			</dd>
+
+			<dt>
+				@Html.DisplayNameFor(model => model.ChatTheme)
+			</dt>
+
+			<dd>
+				@Html.DisplayFor(model => model.ChatTheme)
+				<br />@Html.HelpLabelFor(model => model.ChatTheme, new { @class = "help-label" })
 			</dd>
 
 			<dt>

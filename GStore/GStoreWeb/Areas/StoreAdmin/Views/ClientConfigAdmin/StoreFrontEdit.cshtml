@@ -206,6 +206,7 @@
 				@Html.EditorFor(model => model.TimeZoneId, "FieldTimeZone")
 				@Html.EditorFor(model => model.HtmlFooter, "FieldHtml")
 				@Html.EditorFor(model => model.HomePageUseCatalog, "FieldCheckbox")
+				@Html.EditorFor(model => model.ShowAboutGStoreMenu, "FieldCheckbox")
 				@Html.EditorFor(model => model.NavBarItemsMaxLevels, "FieldInt")
 				@Html.EditorFor(model => model.Order, "FieldInt")
 				@Html.EditorFor(model => model.Folder, "FieldText")
@@ -264,6 +265,8 @@
 				@Html.EditorFor(model => model.ProfileThemeId, "FieldThemeId")
 				@Html.EditorFor(model => model.CatalogAdminThemeId, "FieldThemeId")
 				@Html.EditorFor(model => model.AdminThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.BlogThemeId, "FieldThemeId")
+				@Html.EditorFor(model => model.ChatThemeId, "FieldThemeId")
 
 				<div style="border: 1px solid red;">
 					@Html.EditorFor(model => model.ResetPagesToThemeId, "FieldThemeIdNullable", new { OptionLabel = "(none: leave with current theme)" })

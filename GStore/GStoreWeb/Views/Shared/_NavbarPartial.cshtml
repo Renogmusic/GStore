@@ -29,10 +29,15 @@
 				@{Html.RenderPartial("_NavBarMenuPartial", Model);}
 				@if (Model.ShowChat)
 				{
-					<li>@(Html.ActionLink("Chat", "Index", "Chat", null, new { title = "Click here for Chat" }))</li>
+					<li>@(Html.ActionLink("Chat" + (Model.ChatUserCount.HasValue ? " (" + Model.ChatUserCount.Value.ToString("N0") + ")" : ""), "Index", "Chat", null, new { title = "Click here for Chat" }))</li>
 				}
-				<li>@(Html.ActionLink("About GStore", "About", "GStore", null, new { title = "Click here for information about GStore" }))</li>
+				@if (Model.ShowAboutGStore)
+				{
+					<li>@(Html.ActionLink("About GStore", "About", "GStore", null, new { title = "Click here for information about GStore" }))</li>
+				}
 			</ul>
+
+
 
 			@{Html.RenderPartial("_LoginPartial");}
 		</div>

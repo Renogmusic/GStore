@@ -306,6 +306,8 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColMd = model.CatalogProductBundleItemColMd;
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
+				config.BlogThemeId = model.BlogThemeId;
+				config.ChatThemeId = model.ChatThemeId;
 				config.ChatEnabled = model.ChatEnabled;
 				config.ChatRequireLogin = model.ChatRequireLogin;
 
@@ -315,6 +317,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
 				config.HtmlFooter = model.HtmlFooter;
 				config.HomePageUseCatalog = model.HomePageUseCatalog;
+				config.ShowAboutGStoreMenu = model.ShowAboutGStoreMenu;
 				config.MetaApplicationName = model.MetaApplicationName;
 				config.MetaApplicationTileColor = model.MetaApplicationTileColor;
 				config.MetaDescription = model.MetaDescription;
@@ -561,6 +564,8 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColMd = model.CatalogProductBundleItemColMd;
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
+				config.BlogThemeId = model.BlogThemeId;
+				config.ChatThemeId = model.ChatThemeId;
 				config.ChatEnabled = model.ChatEnabled;
 				config.ChatRequireLogin = model.ChatRequireLogin;
 
@@ -571,6 +576,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
 				config.HtmlFooter = model.HtmlFooter;
 				config.HomePageUseCatalog = model.HomePageUseCatalog;
+				config.ShowAboutGStoreMenu = model.ShowAboutGStoreMenu;
 				config.MetaApplicationName = model.MetaApplicationName;
 				config.MetaApplicationTileColor = model.MetaApplicationTileColor;
 				config.MetaDescription = model.MetaDescription;

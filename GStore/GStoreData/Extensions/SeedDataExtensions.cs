@@ -1286,11 +1286,16 @@ namespace GStoreData
 			storeFrontConfig.CatalogProductBundleItemColMd = 4;
 			storeFrontConfig.CatalogProductBundleItemColSm = 6;
 
+			storeFrontConfig.BlogTheme = selectedTheme;
+			storeFrontConfig.BlogThemeId = selectedTheme.ThemeId;
+			storeFrontConfig.ChatTheme = selectedTheme;
+			storeFrontConfig.ChatThemeId = selectedTheme.ThemeId;
 			storeFrontConfig.ChatEnabled = true;
 			storeFrontConfig.ChatRequireLogin = false;
 
 			storeFrontConfig.HtmlFooter = storeFrontName;
 			storeFrontConfig.HomePageUseCatalog = true;
+			storeFrontConfig.ShowAboutGStoreMenu = true;
 
 			storeFrontConfig.NavBarShowRegisterLink = true;
 			storeFrontConfig.NavBarRegisterLinkText = "Sign-Up";

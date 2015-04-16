@@ -8,95 +8,169 @@ using Microsoft.AspNet.SignalR;
 
 namespace GStoreWeb.Hubs
 {
-	public class ChatHub : Hub
+	public interface iChatHub
 	{
-		private static List<String> _userList = new List<string>();
+		//client-side functions
+		void UpdatedUserList(IList<string> listOfNames);
+		void MessageIncoming(string message, string sender, bool isPrivate, bool isMine);
+		void UserJoined(string userName);
+		void UserLeft(string userName);
+	}
 
-		public static Int64 ActiveUsers()
+	public class ChatHub : Hub<iChatHub>
+	{
+		#region static members and consts
+
+		public const string storeFrontGroupPrefix = "GStore_StoreFront";
+
+		public struct ChatUserInfo
 		{
-			return _userList.Count;
+			public int StoreFrontConfigurationId;
+			public string Name;
+			public string ConnectionId;
+			public bool IsSet;
+		}
+		protected static List<ChatUserInfo> _userList = new List<ChatUserInfo>();
+
+		public static long ActiveUsers(int storeFrontConfigurationId)
+		{
+			return _userList.Count(u => u.StoreFrontConfigurationId == storeFrontConfigurationId);
 		}
 
-		public static bool UserExists(string name)
+		public static bool UserExists(StoreFrontConfiguration config, string name)
 		{
-			return _userList.Contains(name);
+			if (_userList.Any(u => u.StoreFrontConfigurationId == config.StoreFrontConfigurationId && u.Name.ToLower() == name.ToLower()))
+			{
+				return true;
+			}
+			return false;
 		}
 
-		public void SendToAll(string message)
+		public static string StoreFrontGroupName(StoreFrontConfiguration config)
 		{
+			if (config == null)
+			{
+				throw new ArgumentNullException("config");
+			}
+			return "[" + storeFrontGroupPrefix + config.StoreFrontConfigurationId + "]";
+		}
+
+		protected static string StoreFrontGroupName(int storeFrontConfigId)
+		{
+			if (storeFrontConfigId == 0)
+			{
+				throw new ArgumentNullException("storeFrontConfigId");
+			}
+			return "[" + storeFrontGroupPrefix + storeFrontConfigId + "]";
+		}
+
+		#endregion
+
+
+		public virtual void SendToAll(string message)
+		{
+			UpdateSfIdFromQuerystring();
 			string user = UserName();
-			Clients_All_MessageIncoming(message, user, false);
+			Clients.OthersInGroup(StoreFrontGroupName(_currentStoreFrontConfigurationId)).MessageIncoming(message, user, false, false);
+			Clients.Caller.MessageIncoming(message, user, false, true);
 		}
 
-		public void SendToUser(string message, string toUser)
+		public virtual void SendToUser(string message, string toUser)
 		{
+			UpdateSfIdFromQuerystring();
 			string sender = UserName();
-			User_MessageIncoming(message, toUser, sender);
+			IList<string> userList = CurrentStoreFrontUserList();
+
+			Clients.Group(toUser).MessageIncoming(message, "From " + sender, true, false);
+			Clients.Group(toUser).UpdatedUserList(userList);
+
+			Clients.Group(sender).MessageIncoming(message, "To " + toUser, true, true);
+			Clients.Group(sender).UpdatedUserList(userList);
 		}
 
 		[Authorize(Roles = "SystemAdmin")]
-		public void SendToAllAsAdmin(string message)
+		public virtual void GlobalSendToAllAsAdmin(string message)
 		{
 			string user = "System Admin";
-			Clients_All_MessageIncoming(message, user, false);
+			Clients.All.MessageIncoming(message, user, false, false);
 		}
 
-		private void Clients_All_MessageIncoming(string message, string sender, bool isPrivate)
+		[Authorize(Roles = "SystemAdmin")]
+		public virtual void SendToStoreAllAsAdmin(int sfId, string message)
 		{
-			Clients.All.MessageIncoming(message, sender, isPrivate);
-			Clients_All_UpdatedUserList(_userList);
-		}
-
-		private void Clients_All_UpdatedUserList(IList<string> newUserList)
-		{
-			Clients.All.UpdatedUserList(newUserList);
-		}
-
-		private void User_MessageIncoming(string message, string toUser, string sender)
-		{
-			Clients.Group(toUser).MessageIncoming(message, "From " + sender, true);
-			Clients.Group(toUser).UpdateUserList(_userList);
-
-			Clients.Group(sender).MessageIncoming(message, "To " + toUser, true);
-			Clients.Group(sender).UpdateUserList(_userList);
+			string user = "System Admin";
+			CurrentStoreFrontGroup.MessageIncoming(message, user, false, false);
 		}
 
 		public override System.Threading.Tasks.Task OnConnected()
 		{
+			UpdateSfIdFromQuerystring();
 			Join();
 			return base.OnConnected();
 		}
 
 		public override System.Threading.Tasks.Task OnDisconnected(bool stopCalled)
 		{
+			UpdateSfIdFromQuerystring();
 			string userName = UserName();
-			if (_userList.Contains(userName))
+			ChatUserInfo user = _userList.SingleOrDefault(u => u.StoreFrontConfigurationId == _currentStoreFrontConfigurationId && u.Name.ToLower() == userName.ToLower());
+			if (user.IsSet)
 			{
-				_userList.Remove(userName);
-				SendToAllAsAdmin("User Left: " + userName);
-				Clients_All_UpdatedUserList(_userList);
+				_userList.Remove(user);
+				CurrentStoreFrontGroup.UserLeft(userName);
+				CurrentStoreFrontGroup.UpdatedUserList(CurrentStoreFrontUserList());
 			}
 			return base.OnDisconnected(stopCalled);
 		}
 
 		public override System.Threading.Tasks.Task OnReconnected()
 		{
+			UpdateSfIdFromQuerystring();
 			Join();
 			return base.OnReconnected();
 		}
 
-		private void Join()
+		protected void UpdateSfIdFromQuerystring()
+		{
+			if (string.IsNullOrEmpty(Context.QueryString["sfId"]))
+			{
+				throw new ArgumentNullException("sfId");
+			}
+
+			int result;
+			if (!int.TryParse(Context.QueryString["sfId"], out result))
+			{
+				throw new ArgumentException("sfId must be numeric", "sfId");
+			}
+			if (result == 0)
+			{
+				throw new ArgumentException("sfId cannot be zero", "sfId");
+			}
+			_currentStoreFrontConfigurationId = result;
+		}
+
+		protected virtual IList<string> CurrentStoreFrontUserList()
+		{
+			return _userList.Where(u => u.StoreFrontConfigurationId == _currentStoreFrontConfigurationId).OrderBy(u => u.Name).Select(u => u.Name).ToList();
+		}
+
+		protected void Join()
 		{
 			string userName = UserName();
-			SendToAllAsAdmin("User joined: " + userName);
 			Groups.Add(Context.ConnectionId, userName);
-			if (!_userList.Contains(userName))
+			Groups.Add(Context.ConnectionId, StoreFrontGroupName(_currentStoreFrontConfigurationId));
+			ChatUserInfo user = _userList.SingleOrDefault(u => u.StoreFrontConfigurationId == _currentStoreFrontConfigurationId && u.Name.ToLower() == userName.ToLower());
+			if (!user.IsSet)
 			{
-				_userList.Add(userName);
-				Clients_All_UpdatedUserList(_userList);
+				user = new ChatUserInfo() { ConnectionId = this.Context.ConnectionId, Name = userName, StoreFrontConfigurationId = _currentStoreFrontConfigurationId, IsSet = true };
+				_userList.Add(user);
+				CurrentStoreFrontGroup.UpdatedUserList(CurrentStoreFrontUserList());
 			}
-			Clients.Caller.UpdateUserList(_userList);
+
+			CurrentStoreFrontGroup.UserJoined(userName);
+			Clients.Caller.UpdatedUserList(CurrentStoreFrontUserList());
 		}
+
 
 		protected string UserName()
 		{
@@ -124,6 +198,17 @@ namespace GStoreWeb.Hubs
 
 			return userName;
 		}
+
+		protected int _currentStoreFrontConfigurationId = 0;
+
+		protected iChatHub CurrentStoreFrontGroup
+		{
+			get
+			{
+				return this.Clients.Group(StoreFrontGroupName(_currentStoreFrontConfigurationId));
+			}
+		}
+
 
 	}
 }
