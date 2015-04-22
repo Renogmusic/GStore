@@ -12,6 +12,8 @@ namespace GStoreData.ViewModels
 		public UserProfile UserProfile { get; protected set; }
 		public bool ShowCart { get; protected set; }
 		public bool ShowChat { get; protected set;}
+		public bool ShowBlog { get; protected set; }
+
 		public bool ShowAboutGStore { get; protected set; }
 		public Cart Cart { get; protected set; }
 		public long? ChatUserCount { get; protected set; }
@@ -44,6 +46,12 @@ namespace GStoreData.ViewModels
 
 
 			ChatUserCount = chatUserCount;
+			this.ShowBlog = false;
+			if ((storeFrontConfig != null) && storeFrontConfig.ShowBlogInMenu)
+			{
+				this.ShowBlog = true;
+			}
+
 			this.ShowChat = false;
 			if (Settings.AppEnableChat && (storeFrontConfig != null) && (storeFrontConfig.ChatEnabled))
 			{

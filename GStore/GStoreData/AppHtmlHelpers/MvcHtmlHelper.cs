@@ -1614,5 +1614,54 @@ namespace GStoreData.AppHtmlHelpers
 
 			return errors.ToString();
 		}
+
+		public static string Md5Hash(this HtmlHelper html, string value)
+		{
+			System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+
+			// Convert the input string to a byte array and compute the hash. 
+			byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
+
+			// Create a new Stringbuilder to collect the bytes 
+			// and create a string.
+			StringBuilder sBuilder = new StringBuilder();
+
+			// Loop through each byte of the hashed data  
+			// and format each one as a hexadecimal string. 
+			for (int i = 0; i < data.Length; i++)
+			{
+				sBuilder.Append(data[i].ToString("x2"));
+			}
+
+			// Return the hexadecimal string. 
+			return sBuilder.ToString();
+		}
+
+		/// <summary>
+		/// Returns an actionlink with the linkText spanning multiple lines (use \n to create a line break)
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="linkText"></param>
+		/// <param name="actionName"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionLinkMultiLine(this HtmlHelper htmlHelper, string linkText, string actionName)
+		{
+			return new MvcHtmlString(htmlHelper.ActionLink("XXX-LINKTEXT-XXX", actionName).ToHtmlString().Replace("XXX-LINKTEXT-XXX", linkText.ToHtmlLines()));
+		}
+
+		/// <summary>
+		/// Returns an actionlink with the linkText spanning multiple lines (use \n to create a line break)
+		/// </summary>
+		/// <param name="htmlHelper"></param>
+		/// <param name="linkText"></param>
+		/// <param name="actionName"></param>
+		/// <param name="routeValues"></param>
+		/// <param name="htmlAttributes"></param>
+		/// <returns></returns>
+		public static MvcHtmlString ActionLinkMultiLine(this HtmlHelper htmlHelper, string linkText, string actionName, object routeValues, object htmlAttributes)
+		{
+			return new MvcHtmlString(htmlHelper.ActionLink("XXX-LINKTEXT-XXX", actionName, routeValues, htmlAttributes).ToHtmlString().Replace("XXX-LINKTEXT-XXX", linkText.ToHtmlLines()));
+		}
+
 	}
 }

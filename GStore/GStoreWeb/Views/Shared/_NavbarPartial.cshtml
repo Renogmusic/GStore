@@ -29,11 +29,11 @@
 				@{Html.RenderPartial("_NavBarMenuPartial", Model);}
 				@if (Model.ShowChat)
 				{
-					<li>@(Html.ActionLink("Chat" + (Model.ChatUserCount.HasValue ? " (" + Model.ChatUserCount.Value.ToString("N0") + ")" : ""), "Index", "Chat", null, new { title = "Click here for Chat" }))</li>
+					<li>@(Html.ActionLink("Chat" + (Model.ChatUserCount.HasValue ? " (" + Model.ChatUserCount.Value.ToString("N0") + ")" : ""), "Index", "Chat", null, new { title = "Click here for Chat", accesskey="c" }))</li>
 				}
-				@if (Model.ShowAboutGStore)
+				@if (Model.ShowBlog)
 				{
-					<li>@(Html.ActionLink("About GStore", "About", "GStore", null, new { title = "Click here for information about GStore" }))</li>
+					<li>@(Html.ActionLink("Blog", "Index", "Blog", new { blogUrlName = "", blogEntryUrlName = "" }, new { title = "Blog", accesskey = "b" }))</li>
 				}
 			</ul>
 

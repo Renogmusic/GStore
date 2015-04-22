@@ -317,6 +317,9 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
 				config.HtmlFooter = model.HtmlFooter;
 				config.HomePageUseCatalog = model.HomePageUseCatalog;
+				config.HomePageUseBlog = model.HomePageUseBlog;
+
+				config.ShowBlogInMenu = model.ShowBlogInMenu;
 				config.ShowAboutGStoreMenu = model.ShowAboutGStoreMenu;
 				config.MetaApplicationName = model.MetaApplicationName;
 				config.MetaApplicationTileColor = model.MetaApplicationTileColor;
@@ -576,6 +579,8 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.GoogleAnalyticsWebPropertyId = model.GoogleAnalyticsWebPropertyId;
 				config.HtmlFooter = model.HtmlFooter;
 				config.HomePageUseCatalog = model.HomePageUseCatalog;
+				config.HomePageUseBlog = model.HomePageUseBlog;
+
 				config.ShowAboutGStoreMenu = model.ShowAboutGStoreMenu;
 				config.MetaApplicationName = model.MetaApplicationName;
 				config.MetaApplicationTileColor = model.MetaApplicationTileColor;

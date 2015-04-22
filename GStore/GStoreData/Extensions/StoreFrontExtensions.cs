@@ -527,6 +527,8 @@ namespace GStoreData
 			storeFrontConfig.Folder = storeFrontConfig.Name;
 			storeFrontConfig.HtmlFooter = storeFrontConfig.Name.ToHtml();
 			storeFrontConfig.HomePageUseCatalog = true;
+			storeFrontConfig.HomePageUseBlog = false;
+			storeFrontConfig.ShowBlogInMenu = false;
 			storeFrontConfig.ShowAboutGStoreMenu = true;
 			storeFrontConfig.Order = 100;
 			storeFrontConfig.PublicUrl = "http://www.gstore.renog.info";
@@ -1092,7 +1094,7 @@ namespace GStoreData
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Chat", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "ShareByEmail", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
+			string[] blockedUrls = { "Account", "Blog", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Chat", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "ShareByEmail", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{

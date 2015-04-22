@@ -87,6 +87,9 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 			this.GoogleAnalyticsWebPropertyId = storeFrontConfig.GoogleAnalyticsWebPropertyId;
 			this.HtmlFooter = storeFrontConfig.HtmlFooter;
 			this.HomePageUseCatalog = storeFrontConfig.HomePageUseCatalog;
+			this.HomePageUseBlog = storeFrontConfig.HomePageUseBlog;
+
+			this.ShowBlogInMenu = storeFrontConfig.ShowBlogInMenu;
 			this.ShowAboutGStoreMenu = storeFrontConfig.ShowAboutGStoreMenu;
 			this.MetaApplicationName = storeFrontConfig.MetaApplicationName;
 			this.MetaApplicationTileColor = storeFrontConfig.MetaApplicationTileColor;
@@ -386,8 +389,11 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[MaxLength(250)]
 		public string HtmlFooter { get; set; }
 
-		[Display(Name="Use Catalog as Home Page", Description="Check this box to use your catalog page as your home page. Uncheck this box to use a custom page as your home page.\nDefault: Checked")]
+		[Display(Name = "Use Catalog as Home Page", Description = "Check this box to use your catalog page as your home page. Uncheck this box to use a custom page as your home page.\nDefault: Checked")]
 		public bool HomePageUseCatalog { get; set; }
+
+		[Display(Name = "Use Blog as Home Page", Description = "Check this box to use your Blog page as your home page. Uncheck this box to use a custom page as your home page.\nDefault: Checked")]
+		public bool HomePageUseBlog { get; set; }
 
 		[Display(Name = "Meta Application Name", Description = "Application Name for Pinned Site in Windows 7 and Windows 8 Tiles\nExample: Your Store Name\nLeave blank to use system default.")]
 		[MaxLength(250)]
@@ -548,6 +554,9 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Public Url", Description = "Enter the full URL to your site\nExample: http://www.gstore.renog.info/stores/gstore")]
 		[MaxLength(200)]
 		public string PublicUrl { get; set; }
+
+		[Display(Name = "Show Blog in Site Menu")]
+		public bool ShowBlogInMenu { get; set; }
 
 		[Display(Name = "Show About GStore Menu")]
 		public bool ShowAboutGStoreMenu { get; set; }

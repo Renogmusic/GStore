@@ -4094,6 +4094,15 @@ namespace GStoreData
 			return query.OrderBy(alt => alt.Order).ThenBy(alt => alt.ProductBundle.Order);
 		}
 
+		public static IOrderedQueryable<Blog> ApplyDefaultSort(this IQueryable<Blog> query)
+		{
+			return query.OrderBy(b => b.Order).ThenBy(b => b.BlogId);
+		}
+
+		public static IOrderedQueryable<BlogEntry> ApplyDefaultSort(this IQueryable<BlogEntry> query)
+		{
+			return query.OrderBy(be => be.Blog.Order).ThenBy(be => be.Blog.BlogId).ThenBy(be => be.Order).ThenByDescending(be => be.PostDateTimeUtc).ThenBy(be => be.BlogEntryId);
+		}
 
 	}
 }

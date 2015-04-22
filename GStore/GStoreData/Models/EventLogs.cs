@@ -62,6 +62,8 @@ namespace GStoreData.Models
 		public string ProductUrlName { get; set; }
 		public string ProductBundleUrlName { get; set; }
 		public string DiscountCode { get; set; }
+		public int? BlogId { get; set; }
+		public int? BlogEntryId { get; set; }
 		public int? NotificationId { get; set; }
 		public string EmailAddress { get; set; }
 		public string SmsPhone { get; set; }
@@ -199,12 +201,13 @@ namespace GStoreData.Models
 		Catalog = 200,
 		Checkout = 300,
 		Chat = 350,
+		Blog = 380,
 		GStore = 400,
 		Notifications = 500,
 		Orders = 600,
 		Page = 700,
 		Profile = 800,
-		StoreFrontFile = 900
+		StoreFrontFile = 900,
 	}
 
 	public enum UserActionActionEnum : int
@@ -268,6 +271,15 @@ namespace GStoreData.Models
 
 		[Display(Name = "", Description = "", GroupName = "Chat")]
 		Chat_Start = 35001,
+
+		[Display(Name = "", Description = "", GroupName = "Blog")]
+		Blog_List = 37001,
+
+		[Display(Name = "", Description = "", GroupName = "Blog")]
+		Blog_View = 37011,
+
+		[Display(Name = "", Description = "", GroupName = "Blog")]
+		Blog_ViewEntry = 37015,
 
 		[Display(Name = "", Description = "", GroupName = "GStore")]
 		GStore_ViewAbout = 40001,

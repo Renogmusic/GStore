@@ -163,6 +163,24 @@
 		</dd>
 
 		<dt>
+			@Html.DisplayNameFor(model => model.HomePageUseBlog)
+		</dt>
+
+		<dd>
+			@Html.Raw(Model.HomePageUseBlog)
+			<br />@Html.HelpLabelFor(model => model.HomePageUseBlog, new { @class = "help-label" })
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ShowBlogInMenu)
+		</dt>
+
+		<dd>
+			@Html.Raw(Model.ShowBlogInMenu)
+			<br />@Html.HelpLabelFor(model => model.ShowBlogInMenu, new { @class = "help-label" })
+		</dd>
+
+		<dt>
 			@Html.DisplayNameFor(model => model.ShowAboutGStoreMenu)
 		</dt>
 

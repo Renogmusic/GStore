@@ -1,0 +1,49 @@
+﻿@model List<Blog>
+
+<h1>Blogs</h1>
+
+@if (Model.Count == 0)
+{
+	@:<br />
+	<h3>Sorry, there are no blogs right now.<br />Please sign up to be notified of new posts.</h3>
+}
+@foreach (Blog blog in Model)
+{
+	List<BlogEntry> entries = blog.BlogEntries.AsQueryable().WhereIsActive().WhereRegisteredAnonymousCheck(User.IsRegistered()).ApplyDefaultSort().ToList();
+	int postCount = entries.Count;
+	<div class="row">
+		<div class="col-xs-6">
+			<h2 class="text-right NoTopMarginOrPad">
+				@if (!string.IsNullOrEmpty(blog.ImageName))
+				{
+					@Html.DisplayFor(model => blog.ImageName)
+				}
+				@(Html.ActionLink(blog.Name, "Index", new { blogUrlName = blog.UrlName, blogEntryUrlName = "" }))
+				<br />
+				<small>@(Html.DisplayFor(model => blog.Description))</small>
+			</h2>
+
+		</div>
+		<div class="col-xs-6 text-left">
+			Posts: <strong>(@(postCount.ToString("N0")))</strong><br />
+			@if (postCount != 0)
+			{
+				int showCount = postCount;
+				if (showCount > 5)
+				{
+					showCount = 5;
+				}
+				@:@(showCount.ToString("N0")) Latest Posts:<br />
+				for (int i = 0; i < showCount; i++)
+				{
+					<h4>@(i+1) - @(entries[i].EntryInfoLink(Html))</h4>
+				}
+				if (postCount > showCount)
+				{
+					@(Html.ActionLink("More...", "Index", new { blogUrlName = blog.UrlName, blogEntryUrlName = "All" }))
+				}
+			}
+		</div>
+	</div>
+	<hr />
+}

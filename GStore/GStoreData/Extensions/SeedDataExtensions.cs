@@ -652,6 +652,10 @@ namespace GStoreData
 			{
 				//no home page if catalog is home
 			}
+			else if (storeFrontConfig.HomePageUseBlog)
+			{
+				//no home page if catalog is home
+			}
 			else
 			{
 				Page homePage = storeDb.CreateSeedPage("New Home Page", string.Empty, homeUrl, 100, storeFrontConfig, homeTemplate, true);
@@ -1295,6 +1299,8 @@ namespace GStoreData
 
 			storeFrontConfig.HtmlFooter = storeFrontName;
 			storeFrontConfig.HomePageUseCatalog = true;
+			storeFrontConfig.HomePageUseBlog = false;
+			storeFrontConfig.ShowBlogInMenu = false;
 			storeFrontConfig.ShowAboutGStoreMenu = true;
 
 			storeFrontConfig.NavBarShowRegisterLink = true;

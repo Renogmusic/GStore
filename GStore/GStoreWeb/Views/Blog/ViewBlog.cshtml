@@ -1,0 +1,31 @@
+﻿@model Blog
+
+<h4>@(Html.ActionLink("Blogs", "Index", new { blogUrlName = "All", blogEntryUrlName = "" })) &raquo; @(Model.Name)</h4>
+
+@{
+	List<BlogEntry> entries = Model.BlogEntriesForUser(User.IsRegistered());
+}
+
+@if (!string.IsNullOrEmpty(Model.ImageName))
+{
+	@Html.DisplayFor(model => model.ImageName)<br />
+}
+<h2>@Html.DisplayFor(model => model.Name)</h2>
+@Html.DisplayFor(model => model.Description)<br />
+
+@if (entries.Count == 0)
+{
+	@:<br/><h3>Sorry, there are no entries for this blog.<br/>Please sign up to be notified of new posts.</h3>
+}
+else
+{
+	@:@(entries.Count.ToString("N0")) Post@(entries.Count == 1 ? "" : "s sorted by most recent first")<br />
+	@Html.DisplayFor(model => model.ListHeaderHtml)<br />
+}
+@foreach(BlogEntry entry in entries)
+{
+	@Html.DisplayFor(model => entry, "BlogEntryForList")
+}
+
+@Html.DisplayFor(model => model.ListFooterHtml)<br />
+

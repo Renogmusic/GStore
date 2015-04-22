@@ -89,6 +89,13 @@ namespace GStoreWeb
 					namespaces: new[] { "GStoreWeb.Controllers" }
 				);
 
+				//routes.MapRoute(
+				//	name: "Stores-Blog",
+				//	url: "Stores/{urlstorename}/Blog/{blogUrlName}/{blogEntryUrlName}",
+				//	defaults: new { controller = "Blog", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				//	namespaces: new[] { "GStoreWeb.Controllers" }
+				//);
+
 				routes.MapRoute(
 					name: "Stores-OrderStatus",
 					url: "Stores/{urlstorename}/OrderStatus/{action}/{id}",
@@ -290,6 +297,13 @@ namespace GStoreWeb
 				name: "Chat",
 				url: "Chat/{action}/{id}",
 				defaults: new { controller = "Chat", action = "Index", id = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
+				namespaces: new[] { "GStoreWeb.Controllers" }
+			);
+
+			routes.MapRoute(
+				name: "Blog",
+				url: "Blog/{blogUrlName}/{blogEntryUrlName}",
+				defaults: new { controller = "Blog", action = "Index", blogUrlName = UrlParameter.Optional, blogEntryUrlName = UrlParameter.Optional, stores = UrlParameter.Optional, urlstorename = UrlParameter.Optional },
 				namespaces: new[] { "GStoreWeb.Controllers" }
 			);
 

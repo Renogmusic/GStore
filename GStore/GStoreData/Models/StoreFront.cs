@@ -26,6 +26,9 @@ namespace GStoreData.Models
 		[Display(Name = "Configurations")]
 		public virtual ICollection<StoreFrontConfiguration> StoreFrontConfigurations { get; set; }
 
+		[Display(Name = "Blogs")]
+		public virtual ICollection<Blog> Blogs { get; set; }
+
 		[Display(Name = "Shopping Carts")]
 		public virtual ICollection<Cart> Carts { get; set; }
 

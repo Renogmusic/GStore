@@ -1,0 +1,20 @@
+﻿@model BlogEntry
+
+<div class="row">
+	<div class="col-xs-12">
+		@if (!string.IsNullOrEmpty(Model.ImageName))
+		{
+			@Html.DisplayFor(model => model.ImageName)
+		}
+		<h4 class="NoTopMarginOrPad NoBottomMarginOrPad">
+			@Html.ActionLink(Model.Name, "Index", new { blogUrlName = Model.Blog.UrlName, blogEntryUrlName = Model.UrlName })
+		</h4>
+		@Html.DisplayFor(model => model.Description)
+		@if (!string.IsNullOrEmpty(Model.Description))
+		{
+			@: - 
+		}
+		@Html.DisplayFor(model => model.PostDateTimeUtc)
+	</div>
+</div>
+<br />

@@ -89,6 +89,12 @@ namespace GStoreData
 		[Display(Name = "Bad Requests", Description = "Bad and Invalid Requests (HTTP Errors thrown by MVC actions) system-wide")]
 		IGStoreRepository<Models.BadRequest> BadRequests { get; }
 
+		[Display(Name = "Blogs", Description = "Blogs for a store front.")]
+		IGStoreRepository<Models.Blog> Blogs { get; }
+
+		[Display(Name = "Blog Entries", Description = "Blog Entries for a store front.")]
+		IGStoreRepository<Models.BlogEntry> BlogEntries { get; }
+
 		[Display(Name = "Carts", Description = "Shopping Carts for a store front.")]
 		IGStoreRepository<Models.Cart> Carts { get; }
 

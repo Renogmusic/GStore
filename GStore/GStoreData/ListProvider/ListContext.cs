@@ -8,6 +8,8 @@ namespace GStoreData.ListProvider
 	public class ListContext : IGstoreDb
 	{
 		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreListSourceRepository<Models.BadRequest>(); } }
+		public IGStoreRepository<Models.Blog> Blogs { get { return new GenericGStoreListSourceRepository<Models.Blog>(); } }
+		public IGStoreRepository<Models.BlogEntry> BlogEntries { get { return new GenericGStoreListSourceRepository<Models.BlogEntry>(); } }
 		public IGStoreRepository<Models.Cart> Carts { get { return new GenericGStoreListSourceRepository<Models.Cart>(); } }
 		public IGStoreRepository<Models.CartBundle> CartBundles { get { return new GenericGStoreListSourceRepository<Models.CartBundle>(); } }
 		public IGStoreRepository<Models.CartItem> CartItems { get { return new GenericGStoreListSourceRepository<Models.CartItem>(); } }

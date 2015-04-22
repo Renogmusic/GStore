@@ -687,6 +687,59 @@ namespace GStoreData
 
 		}
 
+		public static IQueryable<Blog> WhereIsActive(this IQueryable<Blog> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<Blog> WhereIsActiveOnOrSelected(this IQueryable<Blog> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.BlogId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+		}
+
+		public static IQueryable<BlogEntry> WhereIsActive(this IQueryable<BlogEntry> query)
+		{
+			return query.WhereIsActiveOnOrSelected(DateTime.UtcNow, 0);
+		}
+		public static IQueryable<BlogEntry> WhereIsActiveOnOrSelected(this IQueryable<BlogEntry> query, DateTime dateTimeUtc, int? selectedId, bool includePending = false)
+		{
+
+			int selectedValue = selectedId ?? 0;
+
+			return query.Where(data => data.BlogEntryId == selectedValue
+				||
+				(
+					(includePending || !data.IsPending)
+					&& (data.StartDateTimeUtc < dateTimeUtc)
+					&& (data.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Blog.IsPending)
+					&& (data.Blog.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Blog.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.StoreFront.IsPending)
+					&& (data.StoreFront.StartDateTimeUtc < dateTimeUtc)
+					&& (data.StoreFront.EndDateTimeUtc > dateTimeUtc)
+					&& (includePending || !data.Client.IsPending)
+					&& (data.Client.StartDateTimeUtc < dateTimeUtc)
+					&& (data.Client.EndDateTimeUtc > dateTimeUtc)
+				)
+				);
+		}
+
 		/// <summary>
 		/// Returns true if store front and client (parent record) are both active
 		/// </summary>

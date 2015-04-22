@@ -10,6 +10,7 @@ namespace GStoreData.Identity
 		Admin_StoreAdminArea = 10000,
 		Admin_CatalogAdminArea = 20000,
 		Admin_OrderAdminArea = 30000,
+		Admin_BlogAdminArea = 40000,
 
 		#region StoreAdmin Actions
 

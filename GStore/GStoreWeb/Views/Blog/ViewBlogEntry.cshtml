@@ -1,0 +1,48 @@
+﻿@model BlogEntry
+@{
+	List<BlogEntry> entries = Model.Blog.BlogEntriesForUser(User.IsRegistered());
+	if (entries.Contains(Model))
+	{
+		entries.Remove(Model);
+	}
+}
+<h4>
+	@(Html.ActionLink("Blogs", "Index", new { blogUrlName = "All", blogEntryUrlName = "" }))
+	 &raquo; @(Html.ActionLink(Model.Blog.Name, "Index", new { blogUrlName = Model.Blog.UrlName, blogEntryUrlName = "All" }))
+	 &raquo; @(Model.Name)
+</h4>
+
+@if (!string.IsNullOrEmpty(Model.ImageName))
+{
+	@Html.DisplayFor(model => model.ImageName)
+}
+<h3>@Html.DisplayFor(model => model.Name)</h3>
+
+@Html.Raw(Model.HeaderHtml)
+
+@Html.Raw(Model.Body1)
+@if (!string.IsNullOrEmpty(Model.Body1))
+{
+	<br /><br />
+}
+@Html.Raw(Model.Body2)
+@if (!string.IsNullOrEmpty(Model.Body2))
+{
+	<br /><br/>
+}
+@Html.Raw(Model.Body3)
+@if (!string.IsNullOrEmpty(Model.Body3))
+{
+	<br /><br />
+}
+
+@Html.Raw(Model.FooterHtml)
+
+@if (entries.Count != 0)
+{
+	@:More Posts from this blog...<br/>
+}
+@foreach (BlogEntry entry in entries)
+{
+	@Html.DisplayFor(model => entry, "BlogEntryForFooter")
+}

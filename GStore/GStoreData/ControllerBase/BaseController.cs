@@ -952,10 +952,10 @@ namespace GStoreData.ControllerBase
 		/// <summary>
 		/// Bounces the user to the login page with a specific error explaining why
 		/// </summary>
-		/// <param name="userMessage"></param>
+		/// <param name="userMessage">HTML Encoded user message</param>
 		protected ActionResult BounceToLoginNoAccessResult(string userMessage)
 		{
-			AddUserMessage("Login required", userMessage, UserMessageType.Warning);
+			AddUserMessage("Login required.", userMessage, UserMessageType.Warning);
 			SetSessionVars(this.Request.RequestContext);
 			return this.RedirectToAction("Login", "Account", new { area="", returnUrl = this.Request.RawUrl });
 		}
@@ -963,7 +963,7 @@ namespace GStoreData.ControllerBase
 		/// <summary>
 		/// Used for HandleUnknownAction to require login
 		/// </summary>
-		/// <param name="userMessage"></param>
+		/// <param name="userMessage">HTML Encoded user message</param>
 		protected void ExecuteBounceToLoginNoAccess(string userMessage, TempDataDictionary tempData)
 		{
 			if (this.ControllerContext == null)

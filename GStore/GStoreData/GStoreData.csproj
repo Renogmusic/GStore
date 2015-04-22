@@ -37,11 +37,15 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AppHtmlHelpers\BlogHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\GStoreHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\MvcHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\CatalogHtmlHelper.cs" />
     <Compile Include="AppHtmlHelpers\EnumHelper.cs" />
     <Compile Include="AppHtmlHelpers\GaEvent.cs" />
+    <Compile Include="Areas\BlogAdmin\ControllerBase\BlogAdminBaseController.cs" />
+    <Compile Include="Areas\BlogAdmin\ViewModels\BlogAdminViewModel.cs" />
+    <Compile Include="Extensions\BlogExtensions.cs" />
     <Compile Include="Migrations\201503310056263_Release7.cs" />
     <Compile Include="Migrations\201503310056263_Release7.Designer.cs">
       <DependentUpon>201503310056263_Release7.cs</DependentUpon>
@@ -62,6 +66,24 @@
     <Compile Include="Migrations\201504160905378_Release11.Designer.cs">
       <DependentUpon>201504160905378_Release11.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504161906336_Release12.cs" />
+    <Compile Include="Migrations\201504161906336_Release12.Designer.cs">
+      <DependentUpon>201504161906336_Release12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504212129148_Release13.cs" />
+    <Compile Include="Migrations\201504212129148_Release13.Designer.cs">
+      <DependentUpon>201504212129148_Release13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504212229446_Release14.cs" />
+    <Compile Include="Migrations\201504212229446_Release14.Designer.cs">
+      <DependentUpon>201504212229446_Release14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504220052252_Release15.cs" />
+    <Compile Include="Migrations\201504220052252_Release15.Designer.cs">
+      <DependentUpon>201504220052252_Release15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BlogEntry.cs" />
+    <Compile Include="Models\Blog.cs" />
     <Compile Include="Models\ProductCategoryImage.cs" />
     <Compile Include="Models\ProductImage.cs" />
     <Compile Include="Models\ProductCategoryAltProduct.cs" />
@@ -160,7 +182,7 @@
     <Compile Include="Identity\IdentityModels.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces.cs" />
+    <Compile Include="Repository\Interfaces.cs" />
     <Compile Include="ListProvider\GenericGStoreListSource.cs" />
     <Compile Include="ListProvider\ListContext.cs" />
     <Compile Include="Models\CartPaymentInfo.cs" />
@@ -173,7 +195,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RepositoryFactory.cs" />
+    <Compile Include="Repository\RepositoryFactory.cs" />
     <Compile Include="Models\BaseClasses\AuditFieldsAllRequired.cs" />
     <Compile Include="Models\BaseClasses\AuditFieldsUserProfileOptional.cs" />
     <Compile Include="Models\BaseClasses\ClientRecord.cs" />
@@ -385,6 +407,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504160905378_Release11.resx">
       <DependentUpon>201504160905378_Release11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504161906336_Release12.resx">
+      <DependentUpon>201504161906336_Release12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504212129148_Release13.resx">
+      <DependentUpon>201504212129148_Release13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504212229446_Release14.resx">
+      <DependentUpon>201504212229446_Release14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504220052252_Release15.resx">
+      <DependentUpon>201504220052252_Release15.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

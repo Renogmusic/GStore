@@ -21,6 +21,12 @@ namespace GStoreData.EntityFrameworkCodeFirstProvider
 		public virtual DbSet<BadRequest> BadRequestsTable { get; set; }
 		public IGStoreRepository<Models.BadRequest> BadRequests { get { return new GenericGStoreEFEntity<Models.BadRequest>(this); } }
 
+		public virtual DbSet<Blog> BlogsTable { get; set; }
+		public IGStoreRepository<Models.Blog> Blogs { get { return new GenericGStoreEFEntity<Models.Blog>(this); } }
+
+		public virtual DbSet<BlogEntry> BlogEntiresTable { get; set; }
+		public IGStoreRepository<Models.BlogEntry> BlogEntries { get { return new GenericGStoreEFEntity<Models.BlogEntry>(this); } }
+
 		public virtual DbSet<Cart> CartsTable { get; set; }
 		public IGStoreRepository<Models.Cart> Carts { get { return new GenericGStoreEFEntity<Models.Cart>(this); } }
 

@@ -192,6 +192,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\BlogAdmin\BlogAdminAreaRegistration.cs" />
+    <Compile Include="Areas\BlogAdmin\Controllers\AreaBaseController\BlogAdminAreaBaseController.cs" />
+    <Compile Include="Areas\BlogAdmin\Controllers\GStoreController.cs" />
     <Compile Include="Areas\CatalogAdmin\CatalogAdminAreaRegistration.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\AreaBaseController\CatalogAdminAreaBaseController.cs" />
     <Compile Include="Areas\CatalogAdmin\Controllers\BundleAdminController.cs" />
@@ -218,6 +221,7 @@
     <Compile Include="Areas\StoreAdmin\Controllers\StoreAdminController.cs" />
     <Compile Include="Areas\SystemAdmin\Controllers\AreaBaseController\SystemAdminAreaBaseController.cs" />
     <Compile Include="Controllers\AreaBaseController\RootAreaPageBaseController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1107,6 +1111,8 @@
     <Content Include="Areas\SystemAdmin\Views\Shared\EditorTemplates\FieldStoreFrontConfigurationId.cshtml" />
     <Content Include="Areas\CatalogAdmin\Views\Shared\DisplayTemplates\ChildCategoryDropdownLinks.cshtml" />
     <Content Include="Areas\SystemAdmin\Views\Shared\DisplayTemplates\Datetime - Copy.cshtml" />
+    <Content Include="Areas\BlogAdmin\Views\web.config" />
+    <Content Include="Areas\BlogAdmin\Views\_ViewStart.cshtml" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -2036,6 +2042,11 @@
     <Content Include="Views\Catalog\ECommerce4ColumnNoSide\_Layout.cshtml" />
     <Content Include="Views\Chat\Messages.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Blog\ViewBlogEntry.cshtml" />
+    <Content Include="Views\Blog\ViewBlog.cshtml" />
+    <Content Include="Views\Blog\DisplayTemplates\BlogEntryForList.cshtml" />
+    <Content Include="Views\Blog\DisplayTemplates\BlogEntryForFooter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -2045,6 +2056,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\BlogAdmin\Models\" />
+    <Folder Include="Areas\BlogAdmin\Views\Shared\" />
     <Folder Include="Areas\StoreAdmin\Views\Shared\EditorTemplates\" />
     <Folder Include="Content\Clients\" />
     <Folder Include="Content\Server\Images\Utility\" />

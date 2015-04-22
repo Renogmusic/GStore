@@ -514,7 +514,7 @@ namespace GStoreData
 			return newEvent;
 		}
 
-		public static UserActionEvent LogUserActionEvent(this IGstoreDb ctx, HttpContextBase httpContext, RouteData routeData, GStoreData.ControllerBase.BaseController controller, UserActionCategoryEnum category, UserActionActionEnum action, string label, bool success, int? cartId = null, string categoryUrlName = null, string discountCode = null, string emailAddress = null, int? notificationId = null, string orderNumber = null, int? orderItemId = null, int? pageId = null, string productUrlName = null, string productBundleUrlName = null, string smsPhone = null, string uploadFileName = null)
+		public static UserActionEvent LogUserActionEvent(this IGstoreDb ctx, HttpContextBase httpContext, RouteData routeData, GStoreData.ControllerBase.BaseController controller, UserActionCategoryEnum category, UserActionActionEnum action, string label, bool success, int? cartId = null, string categoryUrlName = null, string discountCode = null, string emailAddress = null, int? notificationId = null, string orderNumber = null, int? orderItemId = null, int? pageId = null, string productUrlName = null, string productBundleUrlName = null, int? blogId = null, int? blogEntryId = null, string smsPhone = null, string uploadFileName = null)
 		{
 			if (!Settings.AppEnableUserActionLog)
 			{
@@ -540,6 +540,10 @@ namespace GStoreData
 			newEvent.DiscountCode = discountCode;
 			newEvent.EmailAddress = emailAddress;
 			newEvent.Label = label;
+
+			newEvent.BlogId = blogId;
+			newEvent.BlogEntryId = blogEntryId;
+
 			newEvent.NotificationId = notificationId;
 			newEvent.OrderNumber = orderNumber;
 			newEvent.OrderItemId = orderItemId;

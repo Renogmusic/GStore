@@ -49,6 +49,12 @@ namespace GStoreData.Models
 		[Display(Name = "Use Catalog as Home Page")]
 		public bool HomePageUseCatalog { get; set; }
 
+		[Display(Name = "Use Blog as Home Page")]
+		public bool HomePageUseBlog { get; set; }
+
+		[Display(Name = "Show Blog in Site Menu")]
+		public bool ShowBlogInMenu { get; set; }
+
 		[Display(Name = "Show About GStore Menu")]
 		public bool ShowAboutGStoreMenu { get; set; }
 
@@ -667,7 +673,6 @@ namespace GStoreData.Models
 		#endregion
 
 		public virtual ICollection<StoreBinding> StoreBindings { get; set; }
-
 
 	}
 

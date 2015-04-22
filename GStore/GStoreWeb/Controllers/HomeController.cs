@@ -20,6 +20,11 @@ namespace GStoreWeb.Controllers
 			{
 				return CatalogIndexResult();
 			}
+			if (config.HomePageUseBlog)
+			{
+				return BlogIndexResult();
+			}
+
 			return HomePageResult();
         }
 
@@ -47,6 +52,19 @@ namespace GStoreWeb.Controllers
 			catalogController.ControllerContext = new ControllerContext(HttpContext, routeData, catalogController);
 			catalogController.TempData = this.TempData;
 			return catalogController.Index();
+		}
+
+		protected ActionResult BlogIndexResult()
+		{
+			BlogController blogController = new BlogController();
+			System.Web.Routing.RouteData routeData = this.RouteData;
+			routeData.Values["action"] = "Index";
+			routeData.Values["controller"] = "Blog";
+			routeData.DataTokens["area"] = "";
+
+			blogController.ControllerContext = new ControllerContext(HttpContext, routeData, blogController);
+			blogController.TempData = this.TempData;
+			return blogController.Index(null, null);
 		}
 
 		protected override string ThemeFolderName
