@@ -1,0 +1,254 @@
+﻿@model GStoreData.Models.BlogEntry
+
+@(Html.ActionLink("Blog List", "Index", new { blogId = "", blogEntryId = "" }))
+&raquo;
+Blog: @(Html.ActionLink(Model.Blog.Name + " [" + Model.BlogId + "]", "Details", new { blogId = Model.BlogId, blogEntryId = "" }))
+@(Html.ActionLink("[Edit]", "Edit", new { blogId = Model.BlogId, blogEntryId = "" }))
+&raquo;
+@(Html.ActionLink("Blog Entries (" + Model.Blog.BlogEntries.Count.ToString("N0") + ")", "EntryIndex", new { blogId = Model.BlogId, blogEntryId = "" }))
+&raquo;
+@("Entry '" + Model.Name + "' [" + Model.BlogEntryId + "]")
+&raquo;
+Details
+&raquo;
+@Html.ActionLink("Create a new Entry", "EntryCreate", new { blogId = Model.BlogId, blogEntryId = "" })
+<h3>Blog Entry Details</h3>
+<h5>@(Model.Name) [@(Model.BlogEntryId)]</h5>
+<p>
+	@Html.ActionLink("Edit", "Edit", new { blogId = Model.BlogId, blogEntryId = Model.BlogEntryId })
+	&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Delete", "Delete", new { blogId = Model.BlogId, blogEntryId = Model.BlogEntryId })
+</p>
+<div>
+    <dl class="dl-horizontal">
+		<dt>
+			@Html.DisplayNameFor(model => model.BlogId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.BlogId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.BlogEntryId)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.BlogEntryId)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Name)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Name)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Description)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Description)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.UrlName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.UrlName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ImageName)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ImageName)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Order)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Order)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.PostDateTimeUtc)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.PostDateTimeUtc)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ForRegisteredOnly)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ForRegisteredOnly)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ForAnonymousOnly)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ForAnonymousOnly)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.ShowInListEvenIfNoPermission)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.ShowInListEvenIfNoPermission)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Theme)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Theme)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.HeaderHtml)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.HeaderHtml)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.FooterHtml)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.FooterHtml)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaDescription)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaDescription)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.MetaKeywords)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.MetaKeywords)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Body1)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Body1)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Body2)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Body2)
+		</dd>
+
+		<dt>
+			@Html.DisplayNameFor(model => model.Body3)
+		</dt>
+
+		<dd>
+			@Html.DisplayFor(model => model.Body3)
+		</dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsPending)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsPending)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreateDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy_UserProfileId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy_UserProfileId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateDateTimeUtc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdateDateTimeUtc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedBy_UserProfileId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedBy_UserProfileId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ClientId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ClientId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StoreFrontId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StoreFrontId)
+        </dd>
+
+    </dl>
+</div>
+<p>
+	@Html.ActionLink("Edit", "Edit", new { blogId = Model.BlogId, blogEntryId = Model.BlogEntryId })
+	&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Delete", "Delete", new { blogId = Model.BlogId, blogEntryId = Model.BlogEntryId })
+</p>

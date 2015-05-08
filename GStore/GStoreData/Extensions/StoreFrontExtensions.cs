@@ -394,6 +394,15 @@ namespace GStoreData
 			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_StoreAdminArea);
 		}
 
+		public static bool ShowBlogAdminLink(this StoreFront storeFront, UserProfile userProfile)
+		{
+			if (userProfile == null)
+			{
+				return false;
+			}
+			return storeFront.Authorization_IsAuthorized(userProfile, GStoreAction.Admin_BlogAdminArea);
+		}
+
 		public static bool ShowOrderAdminLink(this StoreFront storeFront, UserProfile userProfile)
 		{
 			if (userProfile == null)
@@ -1094,7 +1103,7 @@ namespace GStoreData
 			}
 
 			string trimUrl = "/" + url.Trim().Trim('~').Trim('/').ToLower();
-			string[] blockedUrls = { "Account", "Blog", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Chat", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "ShareByEmail", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
+			string[] blockedUrls = { "Account", "Blog", "BlogAdmin", "Bundles", "Category", "Catalog", "CatalogAdmin", "CatalogContent", "Cart", "Chat", "Checkout", "Content", "Edit", "Fonts", "GStore", "Images", "JS", "Notifications", "Order", "OrderAdmin", "Pages", "Products", "Profile", "Styles", "Scripts", "StoreAdmin", "ShareByEmail", "SubmitForm", "SystemAdmin", "Themes", "UpdatePageAjax", "UpdateSectionAjax", "View" };
 
 			foreach (string blockedUrl in blockedUrls)
 			{

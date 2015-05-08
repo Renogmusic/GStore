@@ -112,7 +112,7 @@ namespace GStoreData.ViewModels
 
 			if (CurrentCategoryOrNull.CategoryAltProductBundles.Count == 0)
 			{
-				List<ProductBundle> bundles = CurrentCategoryOrNull.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ApplyDefaultSort().ToList();
+				_bundles = CurrentCategoryOrNull.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(profile != null).WhereIsActive().ApplyDefaultSort().ToList();
 			}
 			else
 			{
@@ -123,6 +123,7 @@ namespace GStoreData.ViewModels
 				bundles.AddRange(crossSellBundles);
 				_bundles = bundles.OrderBy(t => t.Item1).ThenBy(t => t.Item2.Order).Select(t => t.Item2).ToList();
 			}
+
 			return _bundles;
 		}
 		protected List<ProductBundle> _bundles = null;

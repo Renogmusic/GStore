@@ -77,6 +77,35 @@ namespace GStoreData
 			return (maxLevels > category.Depth && category.Entity.AllowChildCategoriesInMenu && category.ChildNodes.Any());
 		}
 
+		public static bool HasChildProductsToList(this TreeNode<ProductCategory> category, bool isRegistered)
+		{
+			if (category == null)
+			{
+				return false;
+			}
+			if (!category.Entity.ShowTop10ChildProductsInMenu)
+			{
+				return false;
+			}
+			if (category.Entity.Products.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).Any())
+			{
+				return true;
+			}
+			if (category.Entity.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).Any())
+			{
+				return true;
+			}
+			if (category.Entity.CategoryAltProducts.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).Any())
+			{
+				return true;
+			}
+			if (category.Entity.CategoryAltProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).Any())
+			{
+				return true;
+			}
+			return false;
+		}
+
 		#endregion
 
 		#region Category Counts
@@ -501,6 +530,7 @@ namespace GStoreData
 			productCategory.ParentCategoryId = parentProductCategory.ProductCategoryId;
 
 			productCategory.AllowChildCategoriesInMenu = parentProductCategory.AllowChildCategoriesInMenu;
+			productCategory.ShowTop10ChildProductsInMenu = parentProductCategory.ShowTop10ChildProductsInMenu;
 			productCategory.BundleListTemplate = parentProductCategory.BundleListTemplate;
 			productCategory.BundleTypePlural = parentProductCategory.BundleTypePlural;
 			productCategory.BundleTypeSingle = parentProductCategory.BundleTypeSingle;
@@ -900,10 +930,29 @@ namespace GStoreData
 			return StoreFrontExtensions.FolderRandomImageFileName(folderPath);
 		}
 
+		public static string BundleViewUrl(this ProductBundle bundle, UrlHelper urlHelper)
+		{
+			if (bundle == null)
+			{
+				throw new ArgumentNullException("bundle");
+			}
+			return urlHelper.Action("ViewBundleByName", "Catalog", new { urlName = bundle.UrlName });
+		}
+
+
 
 		#endregion
 
 		#region Product
+
+		public static string ProductViewUrl(this Product product, UrlHelper urlHelper)
+		{
+			if (product == null)
+			{
+				throw new ArgumentNullException("product");
+			}
+			return urlHelper.Action("ViewProductByName", "Catalog", new { urlName = product.UrlName });
+		}
 
 		/// <summary>
 		/// Main product image
@@ -1335,6 +1384,7 @@ namespace GStoreData
 			ProductCategory record = db.ProductCategories.Create();
 
 			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
+			record.ShowTop10ChildProductsInMenu = viewModel.ShowTop10ChildProductsInMenu;
 			record.ChildActiveCountForAnonymous = 0;
 			record.ChildActiveCountForRegistered = 0;
 			record.DirectActiveCountForAnonymous = 0;
@@ -1405,6 +1455,7 @@ namespace GStoreData
 			}
 
 			record.AllowChildCategoriesInMenu = viewModel.AllowChildCategoriesInMenu;
+			record.ShowTop10ChildProductsInMenu = viewModel.ShowTop10ChildProductsInMenu;
 			record.ImageName = viewModel.ImageName;
 			record.ParentCategoryId = viewModel.ParentCategoryId;
 			record.ProductTypeSingle = viewModel.ProductTypeSingle;

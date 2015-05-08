@@ -223,6 +223,10 @@ namespace GStoreData.Models
 		public DateTime? LastOrderAdminVisitDateTimeUtc { get; set; }
 
 		[Editable(false)]
+		[Display(Name = "Last Blog Admin Visit")]
+		public DateTime? LastBlogAdminVisitDateTimeUtc { get; set; }
+
+		[Editable(false)]
 		[Display(Name = "Last Catalog Admin Visit")]
 		public DateTime? LastCatalogAdminVisitDateTimeUtc { get; set; }
 

@@ -1,0 +1,16 @@
+﻿@model string
+@if (!string.IsNullOrEmpty(Model))
+{
+	string audioType = "audio/mpeg";
+	<audio controls="controls" title="@(Model)" preload="metadata" style="width: 100%" onplay="@Html.GaEventScript("Product-Sample-Audio-Play", Model, "Product Sample Audio Play")">
+		@if (Model.FileExtensionIs("wav"))
+		{
+			audioType = "audio/wav";
+		}
+		else if (Model.FileExtensionIs("ogg"))
+		{
+			audioType = "audio/ogg";
+		}
+		<source title="Sample Audio" src="@Html.Raw(Model)" type="@(audioType)" />
+	</audio>
+}

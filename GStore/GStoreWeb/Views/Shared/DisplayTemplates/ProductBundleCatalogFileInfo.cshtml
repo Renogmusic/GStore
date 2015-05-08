@@ -35,7 +35,7 @@ else
 		else if (Model.FileExtensionIsAudio())
 		{
 			string audioType = "audio/mpeg";
-			<audio controls="controls" title="@(Model)" preload="metadata">
+			<audio controls="controls" title="@(Model)" preload="metadata" onplay="@Html.GaEventScript("ProductBundle-Audio-Play", Model, "Product Bundle Audio Play")">
 				@if (Model.FileExtensionIs("wav"))
 				{
 					audioType = "audio/wav";

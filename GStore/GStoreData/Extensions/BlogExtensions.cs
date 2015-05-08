@@ -174,5 +174,110 @@ namespace GStoreData
 			return blog.BlogEntries.AsQueryable().WhereIsActive().WhereRegisteredAnonymousCheck(isRegistered).ApplyDefaultSort().FirstOrDefault();
 		}
 
+		public static BlogEntry LatestEntryForAdmin(this Blog blog)
+		{
+			return blog.BlogEntries.AsQueryable().ApplyDefaultSort().FirstOrDefault();
+		}
+
+		public static void SetDefaultsForNew(this Blog blog, StoreFront storeFront, UserProfile userProfile)
+		{
+			blog.SetDefaults(userProfile);
+
+			if (storeFront == null)
+			{
+				blog.Name = "New Blog";
+				blog.UrlName = blog.Name.FixUrlName();
+				blog.Order = 1000;
+			}
+			else
+			{
+				blog.Client = storeFront.Client;
+				blog.ClientId = storeFront.ClientId;
+				blog.StoreFront = storeFront;
+				blog.StoreFrontId = blog.StoreFrontId;
+
+				blog.Name = "New Blog";
+				blog.UrlName = blog.Name.FixUrlName();
+
+				if (!storeFront.Blogs.Any())
+				{
+					blog.Order = 1000;
+				}
+				else 
+				{
+					blog.Order = storeFront.Blogs.Max(b => b.Order) + 10;
+					if (storeFront.Blogs.Any(b => b.Name.ToLower() == blog.Name.ToLower() || b.UrlName.ToLower() == blog.UrlName.ToLower()))
+					{
+						bool conflict = true;
+						int index = 0;
+						do
+						{
+							index++;
+							blog.Name = "New Blog " + index;
+							blog.UrlName = blog.Name.FixUrlName();
+							conflict = storeFront.Blogs.Any(b => b.Name.ToLower() == blog.Name.ToLower() || b.UrlName.ToLower() == blog.UrlName.ToLower());
+						} while (conflict);
+					}
+				}
+			}
+
+			blog.AutoDisplayLatestEntry = true;
+			blog.Description = blog.Name;
+			blog.ShowInListEvenIfNoPermission = true;
+			blog.IsPending = false;
+			blog.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+			blog.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+
+		}
+
+		public static void SetDefaultsForNew(this BlogEntry blogEntry, Blog blog, UserProfile userProfile)
+		{
+			if (blog == null)
+			{
+				throw new ArgumentNullException("blog");
+			}
+			StoreFront storeFront = blog.StoreFront;
+
+			blogEntry.SetDefaults(userProfile);
+
+			blogEntry.Client = storeFront.Client;
+			blogEntry.ClientId = storeFront.ClientId;
+			blogEntry.StoreFront = storeFront;
+			blogEntry.StoreFrontId = storeFront.StoreFrontId;
+			blogEntry.Blog = blog;
+			blogEntry.BlogId = blog.BlogId;
+
+			blogEntry.Name = "New Blog Post";
+			blogEntry.UrlName = blogEntry.Name.FixUrlName();
+
+			if (!blog.BlogEntries.Any())
+			{
+				blogEntry.Order = 1000;
+			}
+			else
+			{
+				blogEntry.Order = blog.BlogEntries.Max(be => be.Order) + 10;
+				if (blog.BlogEntries.Any(be => be.Name.ToLower() == blogEntry.Name.ToLower() || be.UrlName.ToLower() == blogEntry.UrlName.ToLower()))
+				{
+					bool conflict = true;
+					int index = 0;
+					do
+					{
+						index++;
+						blogEntry.Name = "New Blog Entry " + index;
+						blogEntry.UrlName = blogEntry.Name.FixUrlName();
+						conflict = blog.BlogEntries.Any(be => be.Name.ToLower() == blogEntry.Name.ToLower() || be.UrlName.ToLower() == blogEntry.UrlName.ToLower());
+					} while (conflict);
+				}
+			}
+
+			blogEntry.PostDateTimeUtc = DateTime.UtcNow;
+			blogEntry.ShowInListEvenIfNoPermission = true;
+			blogEntry.IsPending = false;
+			blogEntry.StartDateTimeUtc = DateTime.UtcNow.AddMinutes(-1);
+			blogEntry.EndDateTimeUtc = DateTime.UtcNow.AddYears(100);
+
+		}
+
 	}
 }

@@ -244,6 +244,7 @@ namespace GStoreWeb.Areas.SystemAdmin.Controllers
 				newConfig.AdminTheme = theme;
 				newConfig.CartTheme = theme;
 				newConfig.BlogTheme = theme;
+				newConfig.BlogAdminTheme = theme;
 				newConfig.ChatTheme = theme;
 				newConfig.CheckoutTheme = theme;
 				newConfig.CatalogTheme = theme;

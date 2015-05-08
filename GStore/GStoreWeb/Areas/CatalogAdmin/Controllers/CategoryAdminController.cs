@@ -289,6 +289,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 				return HttpBadRequest("ProductCategoryId = null");
 			}
 
+			
 			StoreFront storeFront = CurrentStoreFrontOrThrow;
 			ProductCategory productCategory = storeFront.ProductCategories.Where(pc => pc.ProductCategoryId == id.Value).SingleOrDefault();
 			if (productCategory == null)
@@ -310,7 +311,7 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 		[ActionName("Delete")]
 		[ValidateAntiForgeryToken]
 		[AuthorizeGStoreAction(GStoreAction.Categories_Delete)]
-		public ActionResult DeleteConfirmed(int? id, bool returnToFrontEnd = false)
+		public ActionResult DeleteConfirmed(int? id, int? moveToCategoryId, bool returnToFrontEnd = false)
 		{
 			if (!id.HasValue)
 			{
@@ -332,6 +333,55 @@ namespace GStoreWeb.Areas.CatalogAdmin.Controllers
 			string productCategoryName = productCategory.Name;
 			try
 			{
+				ProductCategory moveToCategory = null;
+				if (moveToCategoryId.HasValue)
+				{
+					moveToCategory = storeFront.ProductCategories.Where(pc => pc.ProductCategoryId == moveToCategoryId.Value).SingleOrDefault();
+				}
+
+				if (moveToCategory != null)
+				{
+					List<ProductCategory> childCategories = GStoreDb.ProductCategories.Where(pc => pc.ProductCategoryId == productCategory.ProductCategoryId).ToList();
+					foreach (ProductCategory childCategory in childCategories)
+					{
+						childCategory.ParentCategoryId = moveToCategory.ProductCategoryId;
+						GStoreDb.ProductCategories.Update(childCategory);
+					}
+
+					List<ProductBundle> childBundles = productCategory.ProductBundles.ToList();
+					foreach (ProductBundle bundle in childBundles)
+					{
+						bundle.ProductCategoryId = moveToCategory.ProductCategoryId;
+						GStoreDb.ProductBundles.Update(bundle);
+					}
+
+					List<ProductCategoryAltProductBundle> childAltBundles = productCategory.CategoryAltProductBundles.ToList();
+					foreach (ProductCategoryAltProductBundle altBundle in childAltBundles)
+					{
+						altBundle.ProductCategoryId = moveToCategory.ProductCategoryId;
+						GStoreDb.ProductCategoryAltProductBundles.Update(altBundle);
+					}
+
+					List<Product> childProducts = productCategory.Products.ToList();
+					foreach (Product product in childProducts)
+					{
+						product.ProductCategoryId = moveToCategory.ProductCategoryId;
+						GStoreDb.Products.Update(product);
+					}
+
+					List<ProductCategoryAltProduct> childAltProducts = productCategory.CategoryAltProducts.ToList();
+					foreach (ProductCategoryAltProduct altProduct in childAltProducts)
+					{
+						altProduct.ProductCategoryId = moveToCategory.ProductCategoryId;
+						GStoreDb.ProductCategoryAltProducts.Update(altProduct);
+					}
+
+
+
+					AddUserMessage("Child Items are being moved to Category '" + moveToCategory.Name.ToHtml() + "' [" + moveToCategory.ProductCategoryId + "]", "Category '" + productCategoryName.ToHtml() + "' [" + id + "] was deleted successfully.", UserMessageType.Success);
+
+				}
+
 				bool deleted = GStoreDb.ProductCategories.DeleteById(id.Value);
 				GStoreDb.SaveChanges();
 				if (deleted)

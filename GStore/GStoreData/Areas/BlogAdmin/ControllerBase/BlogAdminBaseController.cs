@@ -34,7 +34,7 @@ namespace GStoreData.Areas.BlogAdmin.ControllerBase
 		{
 			get
 			{
-				return CurrentStoreFrontConfigOrAny.BlogTheme.FolderName;
+				return CurrentStoreFrontConfigOrAny.BlogAdminTheme.FolderName;
 			}
 		}
 

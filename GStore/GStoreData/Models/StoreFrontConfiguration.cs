@@ -587,6 +587,14 @@ namespace GStoreData.Models
 		public virtual Theme BlogTheme { get; set; }
 
 		[Required]
+		[Display(Name = "Blog Admin Theme Id")]
+		public int BlogAdminThemeId { get; set; }
+
+		[Display(Name = "Blog Admin Theme")]
+		[ForeignKey("BlogAdminThemeId")]
+		public virtual Theme BlogAdminTheme { get; set; }
+
+		[Required]
 		[Display(Name = "Chat Theme Id")]
 		public int ChatThemeId { get; set; }
 

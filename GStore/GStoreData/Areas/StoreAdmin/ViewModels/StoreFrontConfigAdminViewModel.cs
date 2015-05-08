@@ -72,6 +72,8 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 
 			this.BlogTheme = storeFrontConfig.BlogTheme;
 			this.BlogThemeId = storeFrontConfig.BlogThemeId;
+			this.BlogAdminTheme = storeFrontConfig.BlogAdminTheme;
+			this.BlogAdminThemeId = storeFrontConfig.BlogAdminThemeId;
 
 			this.ChatTheme = storeFrontConfig.ChatTheme;
 			this.ChatThemeId = storeFrontConfig.ChatThemeId;
@@ -625,18 +627,25 @@ namespace GStoreData.Areas.StoreAdmin.ViewModels
 		[Display(Name = "Payment Method - PayPal API - Client_Secret", Description = "Enter your PayPal API key labeled 'client_secret' \nExample: AbCDE1fGHIjkLMno_pqrStuVL1ZYaPFHJ23BD126512651211111y0fztLABCDEFGHIJKLMNabc1P-SN")]
 		public string PaymentMethod_PayPal_Client_Secret { get; set; }
 
-		[Display(Name = "Blog Theme")]
+		[Display(Name = "Blog Theme", Description="Theme for the Blog List page and blogs that do not have a specific theme defined.")]
 		public Theme BlogTheme { get; set; }
 
 		[Required]
-		[Display(Name = "Blog Theme")]
+		[Display(Name = "Blog Theme", Description="Theme for the Blog List page and blogs that do not have a specific theme defined.")]
 		public int BlogThemeId { get; set; }
 
-		[Display(Name = "Chat Theme")]
+		[Display(Name = "Blog Admin Theme", Description="Theme for the Blog Admin pages.")]
+		public Theme BlogAdminTheme { get; set; }
+
+		[Required]
+		[Display(Name = "Blog Admin Theme", Description="Theme for the Blog Admin pages.")]
+		public int BlogAdminThemeId { get; set; }
+
+		[Display(Name = "Chat Theme", Description="Theme for the Chat pages.")]
 		public Theme ChatTheme { get; set; }
 
 		[Required]
-		[Display(Name = "Chat Theme")]
+		[Display(Name = "Chat Theme", Description="Theme for the Chat pages.")]
 		public int ChatThemeId { get; set; }
 
 		[Display(Name = "Enable Chat", Description = "Enable the Chat feature of the site for general chat on your web site.")]

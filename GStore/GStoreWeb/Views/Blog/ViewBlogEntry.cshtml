@@ -46,3 +46,17 @@
 {
 	@Html.DisplayFor(model => entry, "BlogEntryForFooter")
 }
+@if (Html.UserHasPermission(GStoreAction.Admin_BlogAdminArea))
+{
+	@Html.ActionLink("Edit Blog Entry", "EntryEdit", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = Model.BlogEntryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Blog Entry Details", "EntryDetails", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = Model.BlogEntryId, ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Create a new Blog Entry", "EntryCreate", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = "", ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Blog Entry Admin", "EntryIndex", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = "", ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Edit Blog", "Edit", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = "", ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("Blog Details", "Details", "BlogAdmin", new { area = "BlogAdmin", blogId = Model.BlogId, blogEntryId = "", ReturnToFrontEnd = true }, null)
+}

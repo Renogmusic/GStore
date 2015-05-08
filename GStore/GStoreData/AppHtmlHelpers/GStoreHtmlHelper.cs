@@ -682,9 +682,10 @@ namespace GStoreData.AppHtmlHelpers
 
 			// Create a Web transport for sending email.
 			SendGrid.Web transportWeb = new SendGrid.Web(credentials);
-			transportWeb.Deliver(myMessage);
+			System.Threading.Tasks.Task sendMailTask = transportWeb.DeliverAsync(myMessage);
+			sendMailTask.Wait(15000);
 
-			return true;
+			return !sendMailTask.IsFaulted;
 		}
 
 		public static string EmailHtmlSignature(string fromName, string fromAddress, string urlHost)
@@ -830,7 +831,7 @@ namespace GStoreData.AppHtmlHelpers
 			{
 				displayName += " (" + category.Entity.ChildActiveCountForAnonymous.ToString("N0") + ")";
 			}
-			if (level == 1 && category.HasChildMenuItems(maxLevels))
+			if (level == 1 && (category.HasChildMenuItems(maxLevels) || category.HasChildProductsToList(isRegistered)))
 			{
 				//for dropdown categories, make bootstrap dropdown menu for root
 				html.AppendLine(htmlHelper.Tab(3 + level * 2) + "<li class=\"dropdown CatalogMenu CatalogMenuLevel" + level + "\">"
@@ -992,6 +993,69 @@ namespace GStoreData.AppHtmlHelpers
 			}
 
 			return new MvcHtmlString(html);
+		}
+
+		public static MvcHtmlString CatalogMenuChildProductList<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<ProductCategory> category, int level, int maxLevels, bool isRegistered)
+		{
+			List<ProductBundle> bundles = category.Entity.ProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).ApplyDefaultSort().ToList();
+			List<ProductCategoryAltProductBundle> altBundles = category.Entity.CategoryAltProductBundles.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).ApplyDefaultSort().ToList();
+			if (altBundles.Count != 0)
+			{
+				bundles.AddRange(altBundles.Select(b => b.ProductBundle));
+				bundles = bundles.AsQueryable().ApplyDefaultSort().ToList();
+			}
+
+			List<Product> products = category.Entity.Products.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).ApplyDefaultSort().ToList();
+			List<ProductCategoryAltProduct> altProducts = category.Entity.CategoryAltProducts.AsQueryable().WhereRegisteredAnonymousCheck(isRegistered).ApplyDefaultSort().ToList();
+			if (altProducts.Count != 0)
+			{
+				products.AddRange(altProducts.Select(b => b.Product));
+				products = products.AsQueryable().ApplyDefaultSort().ToList();
+			}
+
+
+			if (products.Count == 0 && bundles.Count == 0)
+			{
+				return null;
+			}
+
+			int counter = 0;
+			StringBuilder html = new StringBuilder();
+
+			foreach (ProductBundle bundle in bundles)
+			{
+				counter++;
+				if (counter > 10)
+				{
+					break;
+				}
+				string bundleName = bundle.Name;
+				string bundleUrl = bundle.BundleViewUrl(htmlHelper.UrlHelper());
+				html.AppendLine(htmlHelper.Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + " CatalogNavBarProduct\">"
+					+ "<a href=\"" + bundleUrl + "\">&nbsp;-&nbsp;" + bundleName.ToHtml() + "</a>"
+					+ "</li>");
+			}
+
+
+			foreach (Product product in products)
+			{
+				counter++;
+				if (counter > 10)
+				{
+					break;
+				}
+				string productName = product.Name;
+				string productUrl = product.ProductViewUrl(htmlHelper.UrlHelper());
+				html.Append(htmlHelper.Tab(4 + level * 2) + "<li class=\"CatalogMenu CatalogMenuLevel" + level + " CatalogNavBarProduct\">");
+				if (level != 1)
+				{
+					html.Append(htmlHelper.RepeatString("&nbsp;", level * 2));
+				}
+				html.Append("<a href=\"" + productUrl + "\">&nbsp;-&nbsp;" + productName.ToHtml() + "</a>");
+				html.AppendLine("</li>");
+			}
+
+			return new MvcHtmlString(html.ToString());
 		}
 
 		public static MvcHtmlString NavBarItemChildContainerStart<TModel>(this HtmlHelper<TModel> htmlHelper, TreeNode<NavBarItem> NavBarItem, int level, int maxLevels)
@@ -1828,6 +1892,11 @@ namespace GStoreData.AppHtmlHelpers
 			return true;
 		}
 
+		/// <summary>
+		/// Replaces invalid urlname chatacters with -
+		/// </summary>
+		/// <param name="urlName"></param>
+		/// <returns></returns>
 		public static string FixUrlName(this string urlName)
 		{
 			char[] invalidChars = urlName.InvalidUrlNameCharactersArray();
@@ -1838,6 +1907,11 @@ namespace GStoreData.AppHtmlHelpers
 			return urlName;
 		}
 
+		/// <summary>
+		/// URLEncodes a string to make a valid file name
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static string ToFileName(this string value)
 		{
 			return HttpUtility.UrlEncode(value);
@@ -2307,6 +2381,21 @@ namespace GStoreData.AppHtmlHelpers
 			viewData["Theme"] = theme;
 		}
 
+		const string Session_BlogAdminVisitLogged = "BlogAdminVisitLogged";
+		public static bool BlogAdminVisitLogged(this HttpSessionStateBase session)
+		{
+			bool? value = session[Session_BlogAdminVisitLogged] as bool?;
+			if (value.HasValue && value.Value)
+			{
+				return true;
+			}
+			return false;
+		}
+		public static void BlogAdminVisitLogged(this HttpSessionStateBase session, bool value)
+		{
+			session[Session_BlogAdminVisitLogged] = value;
+		}
+
 		const string Session_CatalogAdminVisitLogged = "CatalogAdminVisitLogged";
 		public static bool CatalogAdminVisitLogged(this HttpSessionStateBase session)
 		{
@@ -2696,7 +2785,11 @@ namespace GStoreData.AppHtmlHelpers
 				relativeUrl = url.Remove(0, appPath.Length);
 			}
 
-			if (relativeUrl.StartsWith("catalogadmin"))
+			if (relativeUrl.StartsWith("blogadmin"))
+			{
+				return "BlogAdmin";
+			}
+			else if (relativeUrl.StartsWith("catalogadmin"))
 			{
 				return "CatalogAdmin";
 			}

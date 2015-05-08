@@ -52,102 +52,93 @@ namespace GStoreData.Areas.BlogAdmin.ViewModels
 		[Display(Name = "User Profile")]
 		public UserProfile UserProfile { get; protected set; }
 
-		[Display(Name = "Is Active")]
-		public bool IsActiveDirect { get; protected set; }
-
 		[Display(Name = "Return to Front End")]
 		public bool ReturnToFrontEnd { get; set; }
 
-		public int? FilterProductCategoryId { get; set; }
+		public int? FilterBlogId { get; set; }
 
 		public string SortBy { get; set; }
 
 		public bool? SortAscending { get; set; }
 
-		public List<Product> Products
+		public List<Blog> Blogs
 		{
 			get
 			{
-				if (_products != null)
+				if (_blogs != null)
 				{
-					return _products;
+					return _blogs;
 				}
 				if (this.StoreFront == null)
 				{
 					throw new ArgumentNullException("storeFront");
 				}
 
-				_products = this.StoreFront.Products.AsQueryable().ApplyDefaultSort().ToList();
-				return _products;
+				_blogs = this.StoreFront.Blogs.AsQueryable().ApplyDefaultSort().ToList();
+				return _blogs;
 			}
 		}
 
-		public List<ProductBundle> ProductBundles
+		public void UpdateSortedBlogs(IOrderedQueryable<Blog> sortedBlogs)
+		{
+			_blogs = sortedBlogs.ToList();
+		}
+		protected List<Blog> _blogs = null;
+
+		public List<BlogEntry> BlogEntries
 		{
 			get
 			{
-				if (_productBundles != null)
+				if (_blogEntries != null)
 				{
-					return _productBundles;
+					return _blogEntries;
 				}
 				if (this.StoreFront == null)
 				{
 					throw new ArgumentNullException("storeFront");
 				}
 
-				_productBundles = this.StoreFront.ProductBundles.AsQueryable().ApplyDefaultSort().ToList();
-				return _productBundles;
+				if (!this.FilterBlogId.HasValue)
+				{
+					_blogEntries = new List<BlogEntry>();
+				}
+				if (this.FilterBlogId.HasValue)
+				{
+					Blog blog = this.StoreFront.Blogs.Where(b => b.BlogId == this.FilterBlogId.Value).SingleOrDefault();
+					if (blog == null)
+					{
+						throw new ApplicationException("blog not found by id: " + this.FilterBlogId.Value);
+					}
+					_blogEntries = blog.BlogEntries.AsQueryable().ApplyDefaultSort().ToList();
+				}
+				return _blogEntries;
 			}
 		}
 
-		public void UpdateSortedProducts(IOrderedQueryable<Product> sortedProducts)
+		public void UpdateSortedBlogEntries(IOrderedQueryable<Blog> sortedBlogEntries)
 		{
-			_products = sortedProducts.ToList();
+			_blogEntries = _blogEntries.ToList();
 		}
-		protected List<Product> _products = null;
+		protected List<BlogEntry> _blogEntries = null;
 
-		public IEnumerable<TreeNode<ProductCategory>> ProductCategoryTree
+		public Blog FilterBlog
 		{
 			get
 			{
-				if (_productCategoryTree != null)
+				if (!this.FilterBlogId.HasValue)
 				{
-					return _productCategoryTree;
+					return null;
 				}
-				if (this.StoreFront == null)
+				if (_filterBlog != null)
 				{
-					throw new ArgumentNullException("storeFront");
+					return _filterBlog;
 				}
-				_productCategoryTree = this.ProductCategories.AsTree(pc => pc.ProductCategoryId, pc => pc.ParentCategoryId);
-				return _productCategoryTree;
+
+				_filterBlog = this.Blogs.Find(b => b.BlogId == this.FilterBlogId.Value);
+				return _filterBlog;
 			}
 		}
-		protected IEnumerable<TreeNode<ProductCategory>> _productCategoryTree = null;
-
-		public List<ProductCategory> ProductCategories
-		{
-			get
-			{
-				if (_productCategories != null)
-				{
-					return _productCategories;
-				}
-				if (this.StoreFront == null)
-				{
-					throw new ArgumentNullException("storeFront");
-				}
-
-				_productCategories = this.StoreFront.ProductCategories.AsQueryable().ApplyDefaultSort().ToList();
-				return _productCategories;
-			}
-		}
-		protected List<ProductCategory> _productCategories = null;
-
-		public void UpdateSortedProductBundles(IOrderedQueryable<ProductBundle> sortedProductBundles)
-		{
-			_productBundles = sortedProductBundles.ToList();
-		}
-		protected List<ProductBundle> _productBundles = null;
+		Blog _filterBlog = null;
 
 
 

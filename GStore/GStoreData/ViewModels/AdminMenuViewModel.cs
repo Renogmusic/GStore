@@ -8,6 +8,7 @@ namespace GStoreData.ViewModels
 	public class AdminMenuViewModel
 	{
 		public UserProfile UserProfile { get; protected set; }
+		public bool ShowBlogAdminLink { get; protected set; }
 		public bool ShowOrderAdminLink { get; protected set; }
 		public bool ShowCatalogAdminLink { get; protected set; }
 		public bool ShowStoreAdminLink { get; protected set; }
@@ -16,6 +17,10 @@ namespace GStoreData.ViewModels
 		public AdminMenuViewModel(StoreFront storeFront, UserProfile userProfile, string currentArea)
 		{
 			this.UserProfile = userProfile;
+			if (currentArea.ToLower() != "blogadmin")
+			{
+				this.ShowBlogAdminLink = storeFront.ShowBlogAdminLink(userProfile);
+			}
 			if (currentArea.ToLower() != "catalogadmin")
 			{
 				this.ShowCatalogAdminLink = storeFront.ShowCatalogAdminLink(userProfile);

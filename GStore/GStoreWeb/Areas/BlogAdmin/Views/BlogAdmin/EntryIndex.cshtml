@@ -1,0 +1,84 @@
+﻿@model BlogAdminViewModel
+@(Html.ActionLink("Blog List", "Index", new { blogId = "", blogEntryId = "" }))
+&raquo;
+Blog: @(Html.ActionLink(Model.FilterBlog.Name + " [" + Model.FilterBlog.BlogId + "]", "Details", new { blogId = Model.FilterBlog.BlogId, blogEntryId = "" }))
+@(Html.ActionLink("[Edit]", "Edit", new { blogId = Model.FilterBlog.BlogId, blogEntryId = "" }))
+&raquo;
+@("Blog Entries (" + Model.BlogEntries.Count.ToString("N0") + ")")
+&raquo;
+@Html.ActionLink("Create a new Entry", "EntryCreate", new { blogId = Model.FilterBlog.BlogId, blogEntryId = "" })
+<h3>Blog Entry Admin</h3>
+<script>
+	function ChangeBlog()
+	{
+		var url = @(Url.Action("EntryIndex", new { blogId = "XXX" }).ToJavaScriptMvcString(true));
+		url = url.replace("XXX", $("#FilterBlogId").val());
+		window.location.href = url;
+	}
+</script>
+@if (Model.Blogs.Count == 0)
+{
+	@:There are no blogs for this store front.
+}
+else
+{
+	List<Blog> blogs = Model.Blogs;
+	IEnumerable<SelectListItem> blogsList = blogs.Select(b => new SelectListItem() { Value = b.BlogId.ToString(), Text = b.Name + " [" + b.BlogId + "]", Selected = (b.BlogId == Model.FilterBlogId.Value) });
+
+	@:<label for="FilterBlogId">Blog:</label>
+	@Html.DropDownList("FilterBlogId", blogsList, null, new { id = "FilterBlogId", @class = "form-control", onchange = "ChangeBlog();" })
+	if (Model.BlogEntries.Count == 0)
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<h4 class="text-warning">There are no entries for this blog.</h4>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="table-responsive">
+					<table class="table table-bordered table-hover table-striped">
+						<tr>
+							<th>&nbsp;</th>
+							<th>Blog</th>
+							<th>Url Name</th>
+							<th>Entry</th>
+							<th>Posted</th>
+							<th>Created</th>
+						</tr>
+						@foreach (BlogEntry blogEntry in Model.BlogEntries)
+						{
+							MvcHtmlString rowClick = new MvcHtmlString("onclick=\"$('#Details_" + blogEntry.BlogEntryId + "')[0].click();\"");
+							<tr>
+								<td>
+									@Html.ActionLink("Edit", "EntryEdit", new { blogId = blogEntry.BlogId, blogEntryId = blogEntry.BlogEntryId }, new { id="Edit_" + blogEntry.BlogEntryId, @class = "btn-sm btn-warning" })
+									@Html.ActionLink("Details", "EntryDetails", new { blogId = blogEntry.BlogId, blogEntryId = blogEntry.BlogEntryId }, new { id="Details_" + blogEntry.BlogEntryId, @class = "btn-sm btn-success" })
+									@Html.ActionLink("Delete", "EntryDelete", new { blogId = blogEntry.BlogId, blogEntryId = blogEntry.BlogEntryId }, new { id = "Delete_" + blogEntry.BlogEntryId, @class = "btn-sm btn-danger" })
+								</td>
+								<td @rowClick>
+									@(blogEntry.Blog.Name + " [" + blogEntry.Blog.BlogId + "]")
+								</td>
+								<td @rowClick>
+									@(Html.DisplayFor(model => blogEntry.UrlName))
+								</td>
+								<td @rowClick>
+									@(blogEntry.Name + " [" + blogEntry.BlogEntryId + "]")
+								</td>
+								<td @rowClick>
+									@(Html.DisplayFor(model => blogEntry.PostDateTimeUtc))
+								</td>
+								<td @rowClick>
+									@(Html.DisplayFor(model => blogEntry.CreateDateTimeUtc))
+								</td>
+							</tr>
+						}
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}
+@Html.ActionLink("New Blog Entry", "CreateEntry", new { blogId = Model.FilterBlogId.Value, blogEntryId = "" }, new { @class = "btn btn-info" })

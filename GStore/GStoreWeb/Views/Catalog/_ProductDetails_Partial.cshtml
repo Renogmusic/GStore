@@ -151,7 +151,7 @@
 		@sampleAudioCaption
 	</div>
 	<div class="row">
-		<audio controls="controls" title="@(sampleAudioCaption)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Play", product.Name, "Product Details Page")">
+		<audio controls="controls" title="@(sampleAudioCaption)" preload="metadata" onplay="@Html.GaEventScript("Product-Sample-Audio-Play", product.Name, "Product Details Page")">
 			<source title="Sample" src="@Html.Raw(sampleAudioUrl)" type="@(audioType)" />
 		</audio>
 		@if (showSampleAudioDownloadLink)

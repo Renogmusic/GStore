@@ -13,6 +13,11 @@
 			@Html.ActionLink("Categories: showing " + top10Categories.Count.ToString("N0") + " of " + categoryCount.ToString("N0"), "Manager", "CategoryAdmin", null, new { @class = "btn btn-info" })
 			<br/>
 			@{
+				if (top10Categories == null || top10Categories.Count == 0)
+				{
+					@:There are no product categories for this store front.
+					@Html.ActionLink("Create a Product Category", "Create", "CategoryAdmin", null, null)
+				}
 				foreach (ProductCategory category in top10Categories)
 				{
 					@Html.DisplayFor(model => category)
@@ -30,6 +35,11 @@
 			@Html.ActionLink("Products: showing " + top10Products.Count.ToString("N0") + " of " + productCount.ToString("N0"), "Manager", "ProductAdmin", null, new { @class = "btn btn-info" })
 			<br/>
 			@{
+				if (top10Products == null || top10Products.Count == 0)
+				{
+					@:There are no products for this store front.
+					@Html.ActionLink("Create a Product", "Create", "ProductAdmin", null, null)
+				}
 				foreach (Product product in top10Products)
 				{
 					@Html.DisplayFor(model => product)

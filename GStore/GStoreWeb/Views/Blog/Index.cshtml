@@ -36,7 +36,7 @@
 				@:@(showCount.ToString("N0")) Latest Posts:<br />
 				for (int i = 0; i < showCount; i++)
 				{
-					<h4>@(i+1) - @(entries[i].EntryInfoLink(Html))</h4>
+					<h4>@(i + 1) - @(entries[i].EntryInfoLink(Html))</h4>
 				}
 				if (postCount > showCount)
 				{
@@ -46,4 +46,10 @@
 		</div>
 	</div>
 	<hr />
+}
+@if (Html.UserHasPermission(GStoreAction.Admin_BlogAdminArea))
+{
+	@Html.ActionLink("Blog Admin", "Index", "BlogAdmin", new { area = "BlogAdmin", blogId = "", blogEntryId = "", ReturnToFrontEnd = true }, null)
+	@:&nbsp;&nbsp;|&nbsp;&nbsp;
+	@Html.ActionLink("New Blog", "Create", "BlogAdmin", new { area = "BlogAdmin", blogId = "", blogEntryId = "", ReturnToFrontEnd = true }, null)
 }

@@ -1292,6 +1292,9 @@ namespace GStoreData
 
 			storeFrontConfig.BlogTheme = selectedTheme;
 			storeFrontConfig.BlogThemeId = selectedTheme.ThemeId;
+			storeFrontConfig.BlogAdminTheme = selectedTheme;
+			storeFrontConfig.BlogAdminThemeId = selectedTheme.ThemeId;
+
 			storeFrontConfig.ChatTheme = selectedTheme;
 			storeFrontConfig.ChatThemeId = selectedTheme.ThemeId;
 			storeFrontConfig.ChatEnabled = true;

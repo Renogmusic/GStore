@@ -1,0 +1,75 @@
+﻿@model BlogAdminViewModel
+
+<h3>Blog List</h3>
+
+@if (Model.Blogs.Count == 0)
+{
+	@:There are no blogs for this store front.
+}
+else
+{
+	@:<div class="row">
+		@:	<div class="col-xs-12">
+			@:		<div class="table-responsive">
+			@:<table class="table table-bordered table-hover table-striped">
+			@:<tr>
+			@:<th>&nbsp;</th>
+			@:<th>Blog</th>
+			@:<th>Url Name</th>
+			@:<th>Last Post</th>
+			@:<th>Posts</th>
+			@:<th>Created</th>
+			@:</tr>
+}
+@foreach (Blog blog in Model.Blogs)
+{
+	BlogEntry latestEntry = blog.LatestEntryForAdmin();
+	MvcHtmlString rowClick = new MvcHtmlString("onclick=\"$('#Details_" + blog.BlogId + "')[0].click();\"");
+	
+	<tr>
+		<td>
+			@Html.ActionLink("Edit", "Edit", new { blogId = blog.BlogId }, new { id = "Edit_" + blog.BlogId, @class = "btn-sm btn-warning" })
+			@Html.ActionLink("Details", "Details", new { blogId = blog.BlogId }, new { id="Details_" + blog.BlogId, @class = "btn-sm btn-success" })
+			@Html.ActionLink("Delete", "Delete", new { blogId = blog.BlogId }, new { id = "Delete_" + blog.BlogId, @class = "btn-sm btn-danger" })
+		</td>
+		<td @rowClick>
+			@(blog.Name + " [" + blog.BlogId + "]")<br/>
+		</td>
+		<td @rowClick>
+			@(Html.DisplayFor(model => blog.UrlName))
+		</td>
+		<td>
+			@if (latestEntry == null)
+			{
+				@:None
+			}
+			else
+			{
+				@(latestEntry.Name + " [" + latestEntry.BlogEntryId + "]")<br />
+				@Html.ActionLink("Edit", "EntryEdit", new { blogId = blog.BlogId, blogEntryId = latestEntry.BlogEntryId }, new { @class = "btn-xs btn-warning" })
+				@: -
+				@Html.ActionLink("Details", "EntryDetails", new { blogId = blog.BlogId, blogEntryId = latestEntry.BlogEntryId }, new { @class = "btn-xs btn-success" })
+				@: -
+				@Html.ActionLink("Delete", "EntryDelete", new { blogId = blog.BlogId, blogEntryId = latestEntry.BlogEntryId }, new { @class = "btn-xs btn-danger" })
+			}
+		</td>
+		<td>
+			@(blog.BlogEntries.Count.ToString("N0"))<br/>
+			@Html.ActionLink("New Entry", "EntryCreate", new { blogId = blog.BlogId, blogEntryId = "" }, new { @class = "btn-xs btn-info" })
+			 - 
+			@Html.ActionLink("View Entries", "EntryIndex", new { blogId = blog.BlogId, blogEntryId = "" }, new { @class="btn-xs btn-success" })
+		</td>
+		<td @rowClick>
+			@(Html.DisplayFor(model => blog.CreateDateTimeUtc))
+		</td>
+	</tr>
+}
+@if (Model.Blogs.Count != 0)
+{
+	@:</table>
+	@:		</div>
+	@:	</div>
+	@:</div>
+
+}
+@Html.ActionLink("New Blog", "Create", new { blogId = "", blogEntryId = "" }, new { @class = "btn btn-info" })

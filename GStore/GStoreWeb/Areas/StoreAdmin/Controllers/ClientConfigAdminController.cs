@@ -307,6 +307,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
 				config.BlogThemeId = model.BlogThemeId;
+				config.BlogAdminThemeId = model.BlogAdminThemeId;
 				config.ChatThemeId = model.ChatThemeId;
 				config.ChatEnabled = model.ChatEnabled;
 				config.ChatRequireLogin = model.ChatRequireLogin;
@@ -568,6 +569,7 @@ namespace GStoreWeb.Areas.StoreAdmin.Controllers
 				config.CatalogProductBundleItemColSm = model.CatalogProductBundleItemColSm;
 
 				config.BlogThemeId = model.BlogThemeId;
+				config.BlogAdminThemeId = model.BlogAdminThemeId;
 				config.ChatThemeId = model.ChatThemeId;
 				config.ChatEnabled = model.ChatEnabled;
 				config.ChatRequireLogin = model.ChatRequireLogin;

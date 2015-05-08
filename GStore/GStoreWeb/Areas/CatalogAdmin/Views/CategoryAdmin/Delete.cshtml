@@ -44,6 +44,21 @@
 			</center>
 		</div>
 	</div>
+	
+	if (Model.ProductCategory.Products.Any() || Model.ProductCategory.ProductBundles.Any() || Model.ProductCategory.CategoryAltProducts.Any() || Model.ProductCategory.CategoryAltProductBundles.Any())
+	{
+		@:<br />
+		@:Move items to category
+		List<SelectListItem> categories = Html.ProductCategoryList().Where(pc => pc.Value != Model.ProductCategoryId.ToString()).ToList();
+		if (categories.Count == 0)
+		{
+			@:Please create another category to child products and child categories to
+		}
+		else
+		{
+			@Html.DropDownList("MoveToCategoryId", categories, null, new { required = "required" })
+		}
+	}
 }
 
 @{ Html.RenderPartial("_DetailsPartial"); }

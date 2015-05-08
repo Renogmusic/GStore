@@ -878,7 +878,7 @@ namespace GStoreData
 			string source = routeData.Controller() + " -> " + routeData.Action();
 			if (!string.IsNullOrEmpty(routeData.Area()))
 			{
-				source = routeData.Area() + " -> " + source;
+				source = routeData.Area() + " Area -> " + source;
 			}
 			return source;
 		}

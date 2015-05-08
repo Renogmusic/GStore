@@ -439,6 +439,7 @@ namespace GStoreData
 			productCategory.UseDividerAfterOnMenu = false;
 			productCategory.ShowInMenu = true;
 			productCategory.AllowChildCategoriesInMenu = true;
+			productCategory.ShowTop10ChildProductsInMenu = false;
 			productCategory.HideInMenuIfEmpty = false;
 			productCategory.ShowInCatalogIfEmpty = true;
 			productCategory.DisplayForDirectLinks = true;

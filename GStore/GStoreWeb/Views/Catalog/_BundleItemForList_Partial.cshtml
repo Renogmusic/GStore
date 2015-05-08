@@ -45,7 +45,7 @@
 		{
 			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
 			<div class="ProductAudioRow">
-				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "ProductSampleAudio"))</span>
 				<span class="ProductAudioLabel">@(bundleItem.Product.SampleAudioCaptionOrSystemDefault(config))</span>
 			</div>
 		}
@@ -77,7 +77,7 @@
 		{
 			string audioUrl = bundleItem.Product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
 			<div class="ProductAudioRow">
-				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+				<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "ProductSampleAudio"))</span>
 				<span class="ProductAudioLabel">@(bundleItem.Product.SampleAudioCaptionOrSystemDefault(config))</span>
 			</div>
 		}

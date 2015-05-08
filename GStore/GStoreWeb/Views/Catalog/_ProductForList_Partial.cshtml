@@ -31,7 +31,7 @@
 			{
 				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
 				<div class="ProductAudioRow">
-					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "ProductSampleAudio"))</span>
 					<span class="ProductAudioLabel">@(product.SampleAudioCaptionOrSystemDefault(config))</span>
 				</div>
 			}
@@ -49,7 +49,7 @@
 			{
 				string audioUrl = product.SampleAudioUrl(Request.ApplicationPath, ViewContext.RouteData);
 				<div class="ProductAudioRow">
-					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "SampleAudio"))</span>
+					<span class="ProductAudio">@(Html.DisplayFor(model => audioUrl, "ProductSampleAudio"))</span>
 					<span class="ProductAudioLabel">@(product.SampleAudioCaptionOrSystemDefault(config))</span>
 				</div>
 			}

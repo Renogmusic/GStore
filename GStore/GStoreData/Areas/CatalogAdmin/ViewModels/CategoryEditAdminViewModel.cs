@@ -88,6 +88,7 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 			this.ShowInCatalogIfEmpty = productCategory.ShowInCatalogIfEmpty;
 			this.DisplayForDirectLinks = productCategory.DisplayForDirectLinks;
 			this.AllowChildCategoriesInMenu = productCategory.AllowChildCategoriesInMenu;
+			this.ShowTop10ChildProductsInMenu = productCategory.ShowTop10ChildProductsInMenu;
 			this.ImageName = productCategory.ImageName;
 			this.ThemeId = productCategory.ThemeId;
 			this.Theme = productCategory.Theme;
@@ -225,6 +226,9 @@ namespace GStoreData.Areas.CatalogAdmin.ViewModels
 
 		[Display(Name = "Show Children in Menu", Description = "Check this box to show child categories in the menu, uncheck to not show child categories.")]
 		public bool AllowChildCategoriesInMenu { get; set; }
+
+		[Display(Name = "Show Top 10 Child Products In Menu", Description = "Show the top 10 child products in this category on the menu. Default = false (unchecked)")]
+		public bool ShowTop10ChildProductsInMenu { get; set; }
 
 		[Required]
 		[Display(Name = "Category Details Template", Description = "Template for Category details.")]

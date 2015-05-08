@@ -18,13 +18,6 @@ namespace GStoreWeb.Areas.BlogAdmin
 			if (Settings.AppEnableStoresVirtualFolders)
 			{
 				context.MapRoute(
-					name: "Stores-BlogAdmin_Root",
-					url: "Stores/{urlstorename}/BlogAdmin",
-					defaults: new { controller = "BlogAdmin", action = "Index" },
-					namespaces: new[] { "GStoreWeb.Areas.BlogAdmin.Controllers" }
-				);
-
-				context.MapRoute(
 					name: "Stores-BlogAdmin_GStore",
 					url: "Stores/{urlstorename}/BlogAdmin/GStore/{action}",
 					defaults: new { controller = "GStore", action = "About" },
@@ -33,18 +26,11 @@ namespace GStoreWeb.Areas.BlogAdmin
 
 				context.MapRoute(
 					name: "Stores-BlogAdmin_Default",
-					url: "Stores/{urlstorename}/BlogAdmin/{controller}/{action}/{id}",
-					defaults: new { action = "Manager", id = UrlParameter.Optional },
+					url: "Stores/{urlstorename}/BlogAdmin/{action}/{blogId}/{blogEntryId}",
+					defaults: new { controller = "BlogAdmin", action = "Index", blogId = UrlParameter.Optional, blogEntryId = UrlParameter.Optional },
 					namespaces: new[] { "GStoreWeb.Areas.BlogAdmin.Controllers" }
 				);
 			}
-
-			context.MapRoute(
-				name: "BlogAdmin_Root",
-				url: "BlogAdmin",
-				defaults: new { controller = "BlogAdmin", action = "Index" },
-				namespaces: new[] { "GStoreWeb.Areas.BlogAdmin.Controllers" }
-			);
 
 			context.MapRoute(
 				name: "BlogAdmin_GStore",
@@ -55,8 +41,8 @@ namespace GStoreWeb.Areas.BlogAdmin
 
 			context.MapRoute(
 				name: "BlogAdmin_Default",
-				url: "BlogAdmin/{controller}/{action}/{id}",
-				defaults: new { action = "Manager", id = UrlParameter.Optional },
+				url: "BlogAdmin/{action}/{blogId}/{blogEntryId}",
+				defaults: new { controller = "BlogAdmin", action = "Index", blogId = UrlParameter.Optional, blogEntryId = UrlParameter.Optional },
 				namespaces: new[] { "GStoreWeb.Areas.BlogAdmin.Controllers" }
 			);
 

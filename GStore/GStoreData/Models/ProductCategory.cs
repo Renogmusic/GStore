@@ -77,6 +77,9 @@ namespace GStoreData.Models
 		[Display(Name = "Show a Divider after this item")]
 		public bool UseDividerAfterOnMenu { get; set; }
 
+		[Display(Name = "Show Top 10 Child Products In Menu", Description="Show the top 10 child products in this category on the menu. Default = false (unchecked)")]
+		public bool ShowTop10ChildProductsInMenu { get; set; }
+
 		[Display(Name = "Direct Active Item Count for Anonymous")]
 		public int DirectActiveCountForAnonymous { get; set; }
 
